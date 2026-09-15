@@ -1,0 +1,33 @@
+{
+  "author": "@SlawomirNowaczyk",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "280758b78932e09666ec05c28d3500443d1c0298",
+  "committed_at": "2026-09-09T15:05:19Z",
+  "evidence": {
+    "api_compatibility": "No API changes whatsoever. Only an internal comment and a static test function name in the test binary.",
+    "documentation": "No user-facing documentation touched. The reworded comment is internal code documentation that now more accurately describes the behavior of the policy-parser path versus direct callers.",
+    "manual_release_testing": "Not applicable — this PR contains no behavioral changes, only a comment and a test name. No new CLI commands, GUI elements, or user-visible features.",
+    "post_approval_commits": "The PR had three commits: the initial cleanup, a follow-up addressing @fl0rianr's review nits (\"Improved as requested\"), and a merge of main into the branch. The follow-up commit was expected and scoped to the reviewer's guidance; @Bekhouche approved after it. No unreviewed post-approval churn.",
+    "review": "PR #3444 was authored by @SlawomirNowaczyk (smart-router subject-area expert per contribute.md). @fl0rianr (smart-router expertise) provided a constructive inline review noting the original comment was slightly more absolute than the API guarantees, suggesting the qualifier \"when constructed through the policy parser\" and a test rename to match — @SlawomirNowaczyk addressed both nits in a follow-up commit. @Bekhouche then approved after the fix. All three commits were reviewed before merge. @fl0rianr applied subject-matter expertise in smart router. @SlawomirNowaczyk is also listed with smart-router expertise.",
+    "security": "No security-impacting changes. Comment and test rename only.",
+    "tests": "The only test change is renaming `test_feature_serialization_opt_in` to `test_parsed_author_classifier_never_serializes_request_features` to better describe what the test asserts after #3330 removed the sibling-rule opt-in path. No tests were weakened or deleted. The updated name matches the clarified behavior."
+  },
+  "generation_seconds": 149.9,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-09T15:49:54Z",
+  "pr_number": 3444,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T16:56:16+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@Bekhouche"
+  ],
+  "sha": "280758b78932e09666ec05c28d3500443d1c0298",
+  "shout_outs": [],
+  "subject": "Minor follow-up cleanup to #3330 (#3444)",
+  "summary": "Minor follow-up cleanup to #3330, rewording an imprecise inline comment and renaming a test to better reflect its assertion about parsed-author classifiers not serializing request features.",
+  "verdict": "Clean",
+  "verdict_reason": "No behavior change — only a comment reword and a test rename, both substantively reviewed and approved."
+}
