@@ -1,0 +1,32 @@
+{
+  "author": "@noamsto",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "1f1b4825ef89d1c9eb74361183632b1932d4f762",
+  "committed_at": "2026-09-09T18:09:14Z",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The file `src/cpp/resources/server_models.json` is an internal model registry; the change only corrects which checkpoint file is selected and does not alter any external API contract, schema, or behavior contract.",
+    "documentation": "Not required. The change is a bugfix that restores intended behavior and does not introduce new features, CLI commands, or documented behavior. The PR description provides clear context for future maintainers.",
+    "manual_release_testing": "Not required. This is a config-data fix only (one JSON field in a static registry file), not new user-facing behavior, CLI commands, or GUI changes. It corrects a broken load path that was already part of the release surface.",
+    "post_approval_commits": "None. The PR contained a single commit (82155368) which was the one approved; no commits were added after approval.",
+    "review": "Approved by @fl0rianr (collaborator, subject area: llamacpp, Lemonade Mix omni models) with 'Thanks! LGTM' submitted at 2026-09-09T16:38:08Z. The reviewer's expertise in llamacpp makes them a qualified reviewer for this checkpoint-resolution fix. No inline comments or requested changes.",
+    "security": "No concerns. The change simply narrows a glob to an explicit filename within the existing `ggml-org/gpt-oss-120b-GGUF` HuggingFace repo. No network calls, supply-chain changes, or credential handling.",
+    "tests": "No new test files were added, but the change is a single-line JSON correction in the server model registry (server_models.json) following the exact same pattern as the other 227 entries. The author verified end-to-end functionality on their own hardware (Strix Halo/gfx1151, llamacpp vulkan b0.2.0) confirming the model loads the correct 59 GiB file and generates normally (~55 tok/s, finish_reason: stop). The Server Download Registry Tests workflow passed successfully (conclusion: success)."
+  },
+  "generation_seconds": 125.1,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-09T19:27:30Z",
+  "pr_number": 3496,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T17:04:38+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "1f1b4825ef89d1c9eb74361183632b1932d4f762",
+  "shout_outs": [],
+  "subject": "fix: name the gpt-oss-120b checkpoint instead of globbing (#3496)",
+  "summary": "The fix names the gpt-oss-120b-mxfp-GGUF checkpoint file explicitly instead of using a glob pattern that was resolving to the wrong EAGLE3 speculative-decoding draft file.",
+  "verdict": "Clean",
+  "verdict_reason": "A one-line config change following the established 227-entry convention, approved by a llamacpp subject-matter expert, with all CI passing and no post-approval commits."
+}
