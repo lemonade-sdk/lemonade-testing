@@ -5,29 +5,41 @@
   "commit_sha": "8312c1a8dc67854d36c82b559b5d00a719ad0012",
   "committed_at": "2026-09-11T04:24:11Z",
   "evidence": {
-    "api_compatibility": "No breaking API changes. The PR adds a new internal utility header and extends the forwarding behavior by attaching one additional header to outbound cloud requests. Existing callers, config formats, and the HTTP contract are unaffected. Discovery requests explicitly do not carry session headers.",
-    "documentation": "docs/guide/configuration/cloud.md gains a \"Session continuity headers\" subsection describing the relay behavior, the allowlisted header names, and the exclusion of configured telemetry headers from relay. The PR description links to the fix issue (#3504).",
-    "manual_release_testing": "No manual release testing required. This is a pure header-relay fix with no new CLI commands, no GUI changes, and no new user-visible behavior. The existing relay points (anthropic_api.cpp, cloud_server.cpp) already operate through well-tested HTTP paths; only the new session-header attachment is added on the hot path, and the tests cover the new logic end-to-end.",
-    "post_approval_commits": "No commits were added after the first approval (2026-09-09T19:25:49Z) or after the latest approval (2026-09-10T15:10:32Z). The branch was clean through merge.",
-    "review": "PR #3510 was requested for review by @ramkrishna2910 (cloud API integration expert per contribute.md) and @jeremyfowers (new backends/CI expert). @abn (telemetry/HTTP subject area) opened with a substantive review: identified CRLF line endings, noted the title format would be misrecognized by the merge bot, and raised a reasonable follow-up to consolidate session forwarding with the existing anthropic relay headers. @superm1 (security expert per contribute.md) approved without comment. Both @abn and @superm1 provided substantive review on a change touching telemetry and upstream forwarding — subject-matter expertise was present.",
-    "security": "The design intentionally separates telemetry session resolution (configured + well-known headers, which may include internal/corporate identifiers) from cloud relay (well-known allowlist only). Configured telemetry headers are never forwarded upstream, preventing internal identifiers from leaking to external providers — this is the core security property and it is tested. The allowlist is explicitly enumerated in the header. No new credential handling, network call paths, or authentication changes.",
-    "tests": "New file test/cpp/test_session_utils.cpp (191 lines) with 16 test cases covering well-known resolution, configured-header precedence, whitespace trimming, case-insensitive matching, the namespacing contract (client identity gated on session), and critically the split between telemetry resolution (configured + well-known) and the well-known-only relay allowlist. Tests use a pass/fail counter instead of assert() so they survive Release builds with -DNDEBUG. This is thorough for the scope."
+    "api_compatibility": "No breaking changes. The change is additive: recognized session headers arriving on inbound requests are now forwarded upstream. Existing requests without session headers behave identically. Discovery (GET /models) explicitly does not carry a session header. No schema, protocol, config, or CLI contract changes.",
+    "documentation": "New section 'Session continuity headers' added to docs/guide/configuration/cloud.md (correct location per @abn's review). Documents the allowlist, the verbatim relay behavior, which headers leak vs. don't leak, and that discovery is exempt. No CLI, API spec, or behavior-change documentation needed beyond this.",
+    "manual_release_testing": "CI passed (Triage dashboard: success, auto-label: success). No test logs confirm that a human exercised the session header relay end-to-end with a real cloud provider. The diagnostic logs from @ziouf confirmed the [session-diag] output appeared, but the provider returned 500 errors so success was not demonstrated. The unit tests cover the header-parsing logic in isolation but not the actual wire relay through CloudServer. This warrants a quick smoke test with a live cloud provider before release.",
+    "post_approval_commits": "No commits were added after the latest approval (@abn on 2026-09-10T15:10:32Z). The branch was stable through merge. The final PR head (5ba46094) contains only whitespace cleanup after the last approval.",
+    "review": "PR #3510 received a comprehensive, architecture-shaping review from @abn (telemetry, HTTP specialist per contribute.md). @abn identified six concrete issues across design (hardcoded header name, subsystem coupling, discovery-side header leak, missing tests, docs in wrong file, duplicate trim function) and pushed the PR toward a much cleaner design. @superm1 (security specialist, approved per contribute.md) approved after the revisions. A tester (@ziouf) ran multiple builds and provided diagnostic logs that confirmed the relay plumbing worked correctly. The PR title, description, and labels (area::api, rfc:not-required) were all updated to match the evolved scope.",
+    "security": "Well-scoped. The session relay uses a strict well-known-only allowlist (x-opencode-session, x-session-id, x-client-session-id, mcp-session-id, x-conversation-id, session-id) and deliberately excludes configured telemetry headers (telemetry.session.headers.id), preventing internal identifiers from leaking to external providers. Discovery endpoints are exempt. The thread-local g_request_session is reset per request to prevent cross-request leakage on reused worker threads. No new credential handling or network paths introduced beyond forwarding existing headers.",
+    "tests": "New file test/cpp/test_session_utils.cpp with 191 lines covering well-known resolution, fallback order, configured-header precedence, whitespace trimming, case-insensitive matching, client identity namespacing, telemetry vs. relay allowlist separation, and apply_forwardable_session no-op. All checks use explicit pass/fail counters (not assert()) to survive Release builds with -DNDEBUG. Wired into CMakeLists.txt under BUILD_TESTING. Test code was cleaned of CRLF line endings (flagged by @abn, fixed before approval). No existing tests were weakened or deleted."
   },
-  "generation_seconds": 125.6,
-  "maintainer_todos": [],
+  "generation_seconds": 168.7,
+  "maintainer_todos": [
+    {
+      "text": "Start lemond with a cloud provider configured, send a curl request with a session header (e.g. -H 'x-opencode-session: test-abc'), and confirm the upstream provider receives the same session ID in its request headers."
+    },
+    {
+      "text": "Send a GET /models request and confirm no session header is attached to that discovery call."
+    }
+  ],
   "merge_date": "2026-09-11T05:53:18Z",
   "pr_number": 3510,
   "range_start": "v11.9.0",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-09-15T17:41:16+00:00",
+  "reviewed_at": "2026-09-15T22:41:00+00:00",
   "reviewers": [
     "@abn",
     "@superm1"
   ],
   "sha": "8312c1a8dc67854d36c82b559b5d00a719ad0012",
-  "shout_outs": [],
+  "shout_outs": [
+    {
+      "handle": "@abn",
+      "reason": "Substantively rewired the PR's architecture: replaced a hardcoded OpenCode-specific header relay with a generic, allowlisted session utility (session_utils.h) that forwards the actual incoming header verbatim, and mandated test coverage, documentation placement, and leak-prevention separation of telemetry vs. cloud forwarding."
+    }
+  ],
   "subject": "[cloud][fix] Relay caller session continuity headers upstream (#3510)",
-  "summary": "Relays the caller's session-identity header (x-opencode-session, x-session-id, etc.) verbatim when forwarding inference requests to cloud providers, enabling OpenCode Zen to maintain prompt-cache continuity across the Lemonade hop.",
-  "verdict": "Clean",
-  "verdict_reason": "Well-scoped bug fix with subject-matter-expert review, no post-approval commits, and comprehensive test coverage including a security-critical leak-prevention case."
+  "summary": "Relays the caller's session continuity header (e.g. x-opencode-session, x-session-id) verbatim to cloud providers so prompt-cache continuity works across the Lemonade hop.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The PR adds user-facing cloud-relay behavior that is thoroughly unit-tested but has no evidence of manual end-to-end exercise with a real cloud provider, so a quick integration check is warranted before shipping."
 }
