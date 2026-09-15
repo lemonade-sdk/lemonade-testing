@@ -5,21 +5,21 @@
   "commit_sha": "280758b78932e09666ec05c28d3500443d1c0298",
   "committed_at": "2026-09-09T15:05:19Z",
   "evidence": {
-    "api_compatibility": "No API changes whatsoever. Only an internal comment and a static test function name in the test binary.",
-    "documentation": "No user-facing documentation touched. The reworded comment is internal code documentation that now more accurately describes the behavior of the policy-parser path versus direct callers.",
-    "manual_release_testing": "Not applicable — this PR contains no behavioral changes, only a comment and a test name. No new CLI commands, GUI elements, or user-visible features.",
-    "post_approval_commits": "The PR had three commits: the initial cleanup, a follow-up addressing @fl0rianr's review nits (\"Improved as requested\"), and a merge of main into the branch. The follow-up commit was expected and scoped to the reviewer's guidance; @Bekhouche approved after it. No unreviewed post-approval churn.",
-    "review": "PR #3444 was authored by @SlawomirNowaczyk (smart-router subject-area expert per contribute.md). @fl0rianr (smart-router expertise) provided a constructive inline review noting the original comment was slightly more absolute than the API guarantees, suggesting the qualifier \"when constructed through the policy parser\" and a test rename to match — @SlawomirNowaczyk addressed both nits in a follow-up commit. @Bekhouche then approved after the fix. All three commits were reviewed before merge. @fl0rianr applied subject-matter expertise in smart router. @SlawomirNowaczyk is also listed with smart-router expertise.",
-    "security": "No security-impacting changes. Comment and test rename only.",
-    "tests": "The only test change is renaming `test_feature_serialization_opt_in` to `test_parsed_author_classifier_never_serializes_request_features` to better describe what the test asserts after #3330 removed the sibling-rule opt-in path. No tests were weakened or deleted. The updated name matches the clarified behavior."
+    "api_compatibility": "No API changes whatsoever. The only touched files are src/cpp/server/routing_policy.cpp (comment only, within class LlmClassifier::build_context_payload) and test/cpp/test_routing_policy_llm_router.cpp (test function rename). No schema, protocol, CLI contract, exported API, or documented behavior was altered.",
+    "documentation": "The inline comment in build_context_payload() was improved for accuracy, clarifying that the expose_request_features_ guard applies specifically to the policy parser path (the routing.router sugar's synthesized classifier) rather than implying a general policy-driven decision. No external documentation (guides, API docs, release notes) required updating since there is no user-visible change.",
+    "manual_release_testing": "No user-visible surface changed. This PR only rewords an internal code comment and renames a test function — there is no API, CLI flag, GUI element, config option, or installed behavior to exercise. Manual release testing is not applicable.",
+    "post_approval_commits": "After @fl0rianr's first approval, the author pushed commit 6b7383ba implementing @fl0rianr's suggested fix (adding the parser-path qualifier and renaming the test), then rebased onto main (45c2bcd9) before @Bekhouche's second approval. These post-approval commits were purely in response to review feedback and did not introduce new behavior, weaken tests, or change the risk profile.",
+    "review": "PR #3444 received two approvals. @fl0rianr (smart router specialist per contribute.md) submitted a substantive review at commit 1876b2fa, noting the new comment wording was slightly more absolute than the API guarantees and suggesting qualification with \"when constructed through the policy parser\" plus a test rename. The author implemented these suggestions in post-approval commit 6b7383ba (\"Improved as requested\"), which stayed within the spirit and scope of the approved PR before rebase. @Bekhouche then approved the rebased branch (45c2bcd9) with LGTM. Both reviewers have subject matter expertise in smart router areas. The review followed project philosophy: the changes improved code clarity without introducing behavior, aligning with the tenet that user-facing code quality matters.",
+    "security": "No security concerns. The changes are a comment reword and test rename with zero behavioral impact. No credentials, network calls, auth changes, permissions, telemetry, or supply-chain changes are involved.",
+    "tests": "The test `test_parsed_author_classifier_never_serializes_request_features` in test/cpp/test_routing_policy_llm_router.cpp was renamed from `test_feature_serialization_opt_in`; no test logic was altered. All CI tests passed including C++ unit tests, CodeQL analysis, and the full build-and-release pipeline. No tests were weakened, deleted, or skipped."
   },
-  "generation_seconds": 149.9,
+  "generation_seconds": 182.0,
   "maintainer_todos": [],
   "merge_date": "2026-09-09T15:49:54Z",
   "pr_number": 3444,
   "range_start": "v11.9.0",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-09-15T16:56:16+00:00",
+  "reviewed_at": "2026-09-15T21:52:16+00:00",
   "reviewers": [
     "@fl0rianr",
     "@Bekhouche"
@@ -27,7 +27,7 @@
   "sha": "280758b78932e09666ec05c28d3500443d1c0298",
   "shout_outs": [],
   "subject": "Minor follow-up cleanup to #3330 (#3444)",
-  "summary": "Minor follow-up cleanup to #3330, rewording an imprecise inline comment and renaming a test to better reflect its assertion about parsed-author classifiers not serializing request features.",
+  "summary": "Two non-functional follow-up cleanups to #3330: rewording an inline comment for accuracy and renaming a test to match the removed sibling-rule opt-in path.",
   "verdict": "Clean",
-  "verdict_reason": "No behavior change — only a comment reword and a test rename, both substantively reviewed and approved."
+  "verdict_reason": "Purely cosmetic changes (comment reword and test rename) with no behavioral impact, properly reviewed by a subject-matter expert and fully passing CI."
 }
