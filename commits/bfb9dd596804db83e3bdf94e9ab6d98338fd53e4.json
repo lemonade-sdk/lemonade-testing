@@ -5,28 +5,32 @@
   "commit_sha": "bfb9dd596804db83e3bdf94e9ab6d98338fd53e4",
   "committed_at": "2026-09-15T15:23:51Z",
   "evidence": {
-    "api_compatibility": "No user-facing API changes. tools/version.py gains a --release-branch CLI flag that is backward-compatible (default behavior unchanged). The internal release_branch_name() function is new. The release-v* branch naming scheme is an internal convention, not a public API contract.",
-    "documentation": "The PR references approved RFC #3522. The new workflow is self-documenting via inline comments. The argparse refactor gives --help for free. No user-facing docs, API specs, or release notes need updating for internal CI tooling.",
-    "manual_release_testing": "This is an internal CI/infrastructure change (scheduled workflow + CLI tool extension). It is not a user-facing feature and does not modify the release surface shipped to users. No manual release testing required beyond normal release-branch artifact validation when the cron job fires.",
-    "post_approval_commits": "One commit was added after approval: 2da5cc76a12b5b39862d66364287036a8d20d9ba ('ci: parse version.py arguments with argparse'). This directly implements @superm1's inline suggestion and remains within the spirit, scope, and risk profile of the approved PR. No new behavior or security changes introduced.",
-    "review": "PR #3580 was opened by @jeremyfowers as a draft and closed/merged by @superm1. @superm1 (MEMBER, CI subject-area expert per contribute.md) left inline feedback suggesting argparse over sys.argv scanning and commented on the release-v* push rules. @jeremyfowers responded positively and committed the argparse refactor. @superm1 approved at 2026-09-14T19:40:46Z. The @chatgpt-codex-connector[bot] automated review was informational only.",
-    "security": "The workflow uses a GitHub App token (stored as REPO secrets, not hardcoded) with permissions: {} (no excess permissions). The app must be on the release-v* branch push allowlist. No credentials, network calls, code execution, or supply-chain changes. Safe.",
-    "tests": "test/test_version.py adds ReleaseBranchNameTests with five test cases covering the Wednesday 19:00 UTC cutoff boundary, late-wednesday runs, ISO year rollover, and branch-week alignment with dev version. No existing tests weakened or deleted. All CI checks passed on merge (C++ Server Build, CodeQL, Container Build Tests, Docker Smoke Test, MCP Smoke Test, etc.)."
+    "api_compatibility": "No breaking changes. The only API-adjacent change is tools/version.py gaining a --release-branch flag via argparse; existing invocations without flags continue to print the normal version string. The workflow does not change any user-facing API, config, CLI contract, or documented behavior.",
+    "documentation": "tools/version.py gains a --release-branch CLI flag with --help text. The release_branch_name() function is self-describing via its name. The module docstring (unchanged) already explains the Wednesday cutoff semantics. No user-facing docs, release notes, or changelog entries are affected since this is CI-only infrastructure. The PR references RFC #3522 as the design specification.",
+    "manual_release_testing": "The workflow file .github/workflows/create-release-branch.yml (37 lines) is entirely new and has never run on a release candidate branch. There is no evidence of a human exercising the full path: scheduled or manual trigger → app-token lookup → checkout main → branch-creation check → git push → candidate build pipeline start. Manual validation is warranted.",
+    "post_approval_commits": "There is exactly one commit added after @superm1's first (and latest) approval at 2026-09-14T19:40:46Z: commit 2da5cc7 'ci: parse version.py arguments with argparse'. This commit directly addresses @superm1's inline review comment requesting argparse. It is a small, scoped refactor in the same file (tools/version.py) that adds the argparse import, replaces the sys.argv scan, drops the docstring that Codex flagged, and adds --help text. It does not change the logic of release_branch_name() or the workflow, and it remains within the approved spirit and scope. No re-approval was recorded; this is a routine response to review feedback.",
+    "review": "The PR was approved by @superm1, a maintainer with CI subject-area expertise (docs/dev/contribute.md lists @superm1 for ci). The PR references RFC #3522 as approved. @superm1 submitted one inline suggestion (use argparse instead of sys.argv[1:]) and approved the PR at 2026-09-14T19:40:46Z. @fl0rianr also has ci subject-area expertise but did not review this PR. The RFC check provides additional design oversight. CodeQL passed (analyze + c-cpp + javascript-typescript + python + rust).",
+    "security": "The workflow uses actions/create-github-app-token@v3 with credentials sourced from ${{ vars.RELEASE_BRANCH_APP_CLIENT_ID }} and ${{ secrets.RELEASE_BRANCH_APP_PRIVATE_KEY }}. These are expected repo-level GitHub App credentials scoped to branch creation. The workflow declares permissions: {} (no permissions) which is correct for a minimal token-scoped push. The GITHUB_TOKEN restriction on release-v* branches is why the GitHub App was necessary. No new credentials, code execution paths, or network calls beyond standard CI. No supply-chain concerns in the dependencies used.",
+    "tests": "test/test_version.py gains 5 new tests in ReleaseBranchNameTests: (1) at Wednesday cutoff names next week, (2) late Wednesday run still names next week, (3) before Wednesday cutoff names the branch cut last week, (4) branch week matches dev version week before cutoff, (5) ISO year follows release date across year boundary. These cover the edge cases of the release_branch_name() function thoroughly. The existing VersionTests continue to pass. No evidence of test weakening or deletion."
   },
-  "generation_seconds": 135.1,
-  "maintainer_todos": [],
+  "generation_seconds": 186.8,
+  "maintainer_todos": [
+    {
+      "text": "Trigger the Create Release Branch workflow (Actions > workflows > Create Release Branch > Run workflow) and confirm that release-v2026.39 (or the next upcoming week) is created from main and triggers the candidate build pipeline."
+    }
+  ],
   "merge_date": "2026-09-15T16:06:39Z",
   "pr_number": 3580,
   "range_start": "v11.9.0",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-09-15T18:10:04+00:00",
+  "reviewed_at": "2026-09-15T23:17:39+00:00",
   "reviewers": [
     "@superm1"
   ],
   "sha": "bfb9dd596804db83e3bdf94e9ab6d98338fd53e4",
   "shout_outs": [],
   "subject": "ci: create the weekly release branch on a schedule (#3580)",
-  "summary": "Adds a scheduled GitHub Actions workflow that creates weekly release-v<year>.<week> branches from main using a GitHub App token, plus argparse support and prerelease tagging for candidate builds.",
-  "verdict": "Clean",
-  "verdict_reason": "Well-scoped CI infrastructure change backed by RFC #3522, adequate unit tests, successful review by @superm1 with subject-matter expertise in CI, all checks passing, and post-approval commits that directly address reviewer feedback."
+  "summary": "Adds a Wednesday 19:00 UTC scheduled GitHub workflow that pushes main to release-v<year>.<week>, uses a GitHub App token to bypass branch protection, and adds tests plus an argparse CLI flag in tools/version.py.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The CI-only change was approved by @superm1 (who has ci subject-area expertise) and all checks passed, but the workflow will begin running in production with no evidence that a human has manually exercised the end-to-end branch-creation path."
 }
