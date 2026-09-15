@@ -1,0 +1,36 @@
+{
+  "author": "@superm1",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "fb6c133c034b7312588ba117e70a61dfd9d32c6b",
+  "committed_at": "2026-09-15T17:19:01Z",
+  "evidence": {
+    "api_compatibility": "No API change. This is a documentation-only update.",
+    "documentation": "The commit rewrites the entire release guide: replaces manual version bumps with deterministic year.week.number versioning, introduces three release channels (stable/candidate/bleeding-edge), documents automated Wednesday cron-based branch creation, hotfix/revert workflows, and the tools/release.py promotion tool. The content is well-organized and comprehensive. The bot comments correctly flag that some described workflows were not yet implemented at merge time; follow-up PRs (#3579, #3580, #3581) added the corresponding CI changes.",
+    "manual_release_testing": "The updated release guide describes a fully automated weekly candidate process (cron-driven release-branch creation, prerelease publishing, candidate Docker tags, automated checklists). This is a significant procedural change that should be validated end-to-end before users are directed to it. The bot flagged P1 (missing scheduled workflow) and P2 (missing Docker candidate trigger) gaps that suggest the doc was merged ahead of the full CI implementation. Maintain: verify all CI changes are live before pointing release admins to this doc.",
+    "post_approval_commits": "None. The single final commit was approved before merge; no post-approval churn.",
+    "review": "PR #3553 was approved by @jeremyfowers (admin maintainer, CI subject-area expertise per contribute.md), who also pushed editorial edits. No commits were added after approval. The chatgpt-codex-connector[bot] posted three inline comments flagging that the doc describes workflows (create-release-branch.yml, prerelease creation on release-v*, Docker candidate tag trigger) that did not yet exist at the time of review. @jeremyfowers approved despite these flagged gaps, which suggests he may have been aware of follow-up PRs or accepted the doc as forward-looking.",
+    "security": "No security impact. Pure documentation rewrite with no code changes, no new dependencies, no credential handling or network calls.",
+    "tests": "N/A. This is a documentation-only change touching only docs/dev/release.md (85 additions, 111 deletions). No source or test files were modified."
+  },
+  "generation_seconds": 133.9,
+  "maintainer_todos": [
+    {
+      "text": "Confirm the CI changes described in this doc (weekly release-branch workflow, prerelease publishing, Docker candidate tagging) are all merged and deployed before users rely on the updated release guide."
+    }
+  ],
+  "merge_date": "2026-09-15T17:19:01Z",
+  "pr_number": 3553,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T18:14:55+00:00",
+  "reviewers": [
+    "@jeremyfowers"
+  ],
+  "sha": "fb6c133c034b7312588ba117e70a61dfd9d32c6b",
+  "shout_outs": [],
+  "subject": "Adjust release.md for new release process (#3553)",
+  "summary": "Reworks docs/dev/release.md to document a new weekly release-candidate process with automated branch creation, candidate Docker tags, and GitHub prereleases.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The documentation accurately describes the eventual CI state but was merged before the corresponding CI changes; reviewers caught implementation gaps via bot inline comments but the doc-to-code timing mismatch means readers could encounter incomplete workflows."
+}
