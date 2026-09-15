@@ -1,0 +1,4 @@
+# Every file here is written by a tool on Linux and read as a diff by a human. One line
+# ending keeps that diff about the content.
+*.json text eol=lf
+*.md   text eol=lf
