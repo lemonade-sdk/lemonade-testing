@@ -1,13 +1,24 @@
 {
   "branch": "main",
   "breaking_changes": [
-    "Version format changed from X.Y.Z (e.g. 11.9.0) to YYYY.WW.N (e.g. 2026.39.0); pin the new format if you parse version strings from --version output, build logs, or installer metadata.",
-    "CMake configure time now requires Python 3 (find_package(Python3)); the build will fail on systems without a Python 3 interpreter available at CMake configure time.",
-    "Windows installer product version (Product.wxs.in) now derives from the date-part of the version rather than PROJECT_VERSION; installer version numbering will differ from the prior release format."
+    "Version format changed from X.Y.Z (e.g. 11.9.0) to YYYY.WW.N (e.g. 2026.39.0); pin versions to the new format if you rely on them.",
+    "GET /models and GET /pull/variants now return an empty string for registry_source when a model has no explicit source, instead of 'huggingface'; clients that assume a non-empty value may need updating.",
+    "GET /docs now returns a JSON 404 instead of falling through to the SPA web-app; use /v1/docs for the API reference.",
+    "FLM model download now respects default_model_source config and explicit per-model source always overrides; FLM models without an explicit source fall back to the default rather than always using HuggingFace."
   ],
   "bucket": "v2026.39",
   "candidate_issues": [],
   "checklist": [
+    {
+      "author": "@noamsto",
+      "commit": "1f1b4825ef89d1c9eb74361183632b1932d4f762",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3496,
+      "priority": "P0",
+      "text": "Run `lemonade load gpt-oss-120b-mxfp-GGUF` and confirm the model loads successfully with the correct 63 GB MXFP4 file (not the 1.5 GB EAGLE3 draft head)."
+    },
     {
       "author": "@superm1",
       "commit": "c47aa2a491e8c8c6e07a895eaad88b27452f2bb2",
@@ -30,23 +41,13 @@
     },
     {
       "author": "@jeremyfowers",
-      "commit": "bfb9dd596804db83e3bdf94e9ab6d98338fd53e4",
+      "commit": "d7ddd1030ff4972c7447cf4fe71ae098a46be8e0",
       "platforms": [
-        "all"
+        "Docker"
       ],
-      "pr_number": 3580,
+      "pr_number": 3581,
       "priority": "P0",
-      "text": "Trigger the Create Release Branch workflow (Actions > workflows > Create Release Branch > Run workflow) and confirm that release-v2026.39 (or the next upcoming week) is created from main and triggers the candidate build pipeline."
-    },
-    {
-      "author": "@noamsto",
-      "commit": "1f1b4825ef89d1c9eb74361183632b1932d4f762",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3496,
-      "priority": "P1",
-      "text": "Run `lemonade load gpt-oss-120b-mxfp-GGUF` and confirm the model loads successfully with the correct 63 GB MXFP4 file (not the 1.5 GB EAGLE3 draft head)."
+      "text": "Pull ghcr.io/lemonade-sdk/lemonade-server:candidate on a machine and confirm the container starts and serves the same API version as the associated release-v branch."
     },
     {
       "author": "@abn",
@@ -179,6 +180,16 @@
       "text": "Send a GET /models request and confirm no session header is attached to that discovery call."
     },
     {
+      "author": "@meghsat",
+      "commit": "8b5a23b52755d08f3738d0dc1375357653e8f78a",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3565,
+      "priority": "P1",
+      "text": "Start Lemonade with auto_evict enabled and a llama.cpp model, send a prompt, wait for the model to go soft-idle, then send a follow-up prompt and confirm the /stats endpoint reports non-zero cache_tokens (the prompt prefix was reused instead of re-prefilled)."
+    },
+    {
       "author": "@bitgamma",
       "commit": "378622dcce2c4930f2b5ce91232cd079c4e79eff",
       "platforms": [
@@ -187,6 +198,16 @@
       "pr_number": 3494,
       "priority": "P1",
       "text": "Post a `/images/edit` request through the server with a valid model, prompt, and base64 image data, and confirm the endpoint returns b64_json in the response instead of an unsupported error."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "bfb9dd596804db83e3bdf94e9ab6d98338fd53e4",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3580,
+      "priority": "P1",
+      "text": "Trigger the Create Release Branch workflow (Actions > workflows > Create Release Branch > Run workflow) and confirm that release-v2026.39 (or the next upcoming week) is created from main and triggers the candidate build pipeline."
     },
     {
       "author": "@jeremyfowers",
@@ -216,23 +237,23 @@
       ],
       "pr_number": 3547,
       "priority": "P2",
-      "text": "Add --bind 127.0.0.1 to the python3 -m http.server 8080 commands in examples/README.md and examples/debate-arena.md, then confirm the examples serve only on localhost."
+      "text": "Start the Lemonade server, serve the HTML examples with python3 -m http.server 8080 from an examples directory, and confirm the demo pages load and communicate with the server as described."
     }
   ],
   "commits_reviewed": 41,
   "commits_unreviewed": 0,
   "evidence": {
-    "blockers": "Three release-infrastructure to-dos are P0: confirming the new version format renders correctly on the server binary (c47aa2a-1), verifying the candidate prerelease publishing path works end-to-end (658d565-1), and validating the automated release branch creation workflow (bfb9dd5-1). These are foundational to the new release pipeline — if any fails, the candidate cannot ship.",
-    "breaking_changes": "Three breaking changes: version string format changed (users parsing version output must adapt), Python 3 is now a hard build dependency (systems without it will fail to build), and Windows installer version numbering changed. All three were flagged by the commit review on #3539 and were coordinated with other PRs in the release pipeline. No migration is needed for end users running pre-built artifacts — only for people building from source or parsing version strings.",
-    "coverage": "All 41 commits reviewed; 21 to-dos across 15 PRs rated. The release infrastructure PRs (#3539, #3579, #3580, #3581, #3588) form a cohesive set covering the new versioning scheme, weekly release branch automation, candidate artifact publishing, and website behavior. CI evidence was assessed for all entries.",
-    "manual_testing": "18 to-dos require a human with the release candidate installed. Key categories: (1) new version format display, (2) three new API surfaces — /v1/docs endpoints and lemonade_docs MCP tool (#3347), /images/edit endpoint (#3494), and wildcard origins (#3470), (3) behavioral changes on existing surfaces — /pull/variants filtering (#3198), FLM ModelScope download path (#2841), session header relay (#3510), and gpt-oss model loading (#3496), (4) website and GitHub Releases page behavior for the new prerelease channel (#3588), (5) documentation security fix for examples (#3547).",
-    "security": "Wildcard origin matching (#3470) introduces new configuration syntax that should be verified against the release candidate — wildcard_port and subdomain matching are security-sensitive features. The FLM ModelScope source resolution (#2841) changes how registry_source is serialized in API responses, which could affect clients assuming a non-empty source field. The examples/ README security gap (#3547) — missing --bind 127.0.0.1 — would expose local file trees on all interfaces if followed."
+    "blockers": "Four P0 items: verifying the gpt-oss model loads the correct 63 GB file (last glob entry in registry), confirming the new version format appears in shipped artifacts, validating the prerelease publishing pipeline publishes correctly, and verifying the candidate Docker tag actually installs and runs. These all block a safe ship.",
+    "breaking_changes": "The version format change (X.Y.Z to YYYY.WW.N) is a hard break for anyone parsing version strings. The registry_source empty-string default in /models and /pull/variants responses is a subtle API change. The /docs 404 behavior is a deliberate fix that replaces an undocumented SPA fallback. The FLM download precedence change affects FLM users switching between HuggingFace and ModelScope.",
+    "coverage": "Reviewed all 41 commits in the range v11.9.0..e71baf2. All 23 to-dos from the commit reviews are rated. The release infrastructure is the most complex surface: version format rewrite, candidate release pipeline, branch creation workflow, and Docker candidate tag are all new and unexercised end-to-end.",
+    "manual_testing": "Four new user-facing surfaces need human verification: wildcard allowed_origins patterns, /pull/variants error handling, the docs API (GET /v1/docs) and its MCP tool, and the /images/edit endpoint. The FLM ModelScope download path and session header relay need live integration checks. Soft-idle prompt cache reuse with auto_evict needs end-to-end model serving verification. CI covers compilation and unit tests but not these live paths.",
+    "security": "Wildcard allowed_origins (PR #3470) was reviewed by a security-area maintainer with dot-boundary subdomain enforcement. The internal MCP client endpoints were removed (PR #3498), improving posture. The model-viewer vendor pin security hardening (PR #2709) is in this release. Session header relay uses a strict allowlist and is discovery-exempt. No new credential handling or supply-chain risks observed."
   },
-  "generation_seconds": 190.4,
+  "generation_seconds": 149.4,
   "head_sha": "e71baf23dae6aedd0f59d67a1be8f81e3369305c",
   "is_hotfix": false,
   "last_stable_tag": "",
   "range_start": "v11.9.0",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-09-15T23:33:02+00:00"
+  "reviewed_at": "2026-09-15T23:51:03+00:00"
 }
