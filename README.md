@@ -26,15 +26,19 @@ taking a hotfix.
 
 ## Editing notes.md and announcement.md
 
-Edit them in GitHub's web editor and commit. The release action reads `notes.md` when it
-builds the release page, and the Discord post is copied from `announcement.md`.
+These two files are yours to edit. Open either one in GitHub's web editor, change it, and
+commit.
 
-repo-manager will not overwrite your edits. It hashes what it generates into
-`generated.json` and skips any file whose content no longer matches. Regenerating over an
-edit takes `--force`.
+| You want to | Do this |
+| --- | --- |
+| Reword the release notes or the Discord post | Edit the file and commit. repo-manager leaves it alone from then on. |
+| Add a commit that landed after you edited | Edit the file again and write it in yourself. repo-manager will not add it for you. |
+| Throw your edit away and get repo-manager's version back | Delete the file and commit. The next run writes a fresh one. |
+| Check whether a file has been edited | The dashboard's Release Review tab lists them under "Edited by hand". |
 
-One consequence: once you have edited `notes.md`, a hotfix landing afterwards will not show
-up in it until you edit again.
+Why it works that way: repo-manager records a hash of every file it writes into
+`generated.json`. When a file no longer matches its hash, a person changed it, and
+repo-manager skips it on every later run.
 
 `review.json` is protected the same way, but it is not meant for hand-editing. It is where
 the dashboard's verdict and tester plan come from.
