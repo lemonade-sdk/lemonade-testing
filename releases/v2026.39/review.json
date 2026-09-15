@@ -50,7 +50,7 @@
       "author": "@wariobot09",
       "commit": "92037d872234285eba32b76318f297219d6b1f74",
       "platforms": [
-        "all"
+        "macOS"
       ],
       "pr_number": 2841,
       "priority": "P1",
@@ -90,11 +90,7 @@
       "author": "@superm1",
       "commit": "c47aa2a491e8c8c6e07a895eaad88b27452f2bb2",
       "platforms": [
-        "Windows",
-        "Snap",
-        "Docker",
-        "Fedora",
-        "Debian"
+        "all"
       ],
       "pr_number": 3539,
       "priority": "P1",
@@ -204,19 +200,19 @@
   "commits_reviewed": 38,
   "commits_unreviewed": 2,
   "evidence": {
-    "blockers": "The candidate pipeline (658d565-2) is P0 because the new candidate-v* publishing surface hasn't been verified end-to-end — if the pipeline produces incorrect artifacts, candidates cannot be trusted for release testing.",
-    "breaking_changes": "The version scheme changed from M.m.p to YYYY.WW.N with MSI using YY.MM.PATCH mapping. All downstream consumers need verification that they correctly handle the new format.",
-    "coverage": "36 of 38 commits in this range have review coverage; 2 commits have no review. All 19 to-do items from the digest are rated.",
-    "manual_testing": "Verify the candidate pipeline end-to-end (658d565-2), test the new /v1/docs endpoints (304d27f-1), verify the lemonade_docs MCP tool (304d27f-2), test the FLM ModelScope download path (92037d8-2), and confirm JSON round-trips for registry_source (92037d8-3).",
-    "security": "No security-relevant observations beyond the origin wildcard feature (6a5e307) which includes explicit security warnings, and the HF compatibility filter (6a60710) which prevents downloading incompatible GGUF repositories."
+    "blockers": "The candidate pipeline (658d565-2) is the only P0: it is a new shipping surface for release testing that has never been exercised end-to-end — without verifying MSI signing is skipped, candidate-v* tags are created, artifacts publish correctly, and release notes carry the unsigned-installer warning, we can't confidently build or test a release candidate. Downstream version-format handling (c47aa2a-3) is P1 — the YYYY>255 concern is real but the conversion code (YY.MM.PATCH) exists and needs verification, not a blocker.",
+    "breaking_changes": "The version scheme is the primary breaking change. The YYYY.WW.N format with potential YYYY exceeding 255 affects MSI version fields, CMake variable derivation, and downstream packaging. The release-notes and announcement steps surface each entry from this list.",
+    "coverage": "All 19 to-dos from the previous review have been rated. The digest contains 38 commits; 2 commits in this range have no commit review and are not in the digest.",
+    "manual_testing": "Two user-facing new surfaces need human verification: the /v1/docs endpoint and the lemonade_docs MCP tool (both P1). The FLM ModelScope download path (P1) requires a macOS NPU-capable runner. HF API monitoring (6a60710-2, P1) should be tracked after the candidate ships to catch 429s from the extra compatibility-metadata call.",
+    "security": "No new security concerns observed. The wildcard origin matching (6a5e307) has proper scheme enforcement. The GGUF architecture filter (6a60710) improves security by rejecting incompatible repositories. The MCP client revert (496bb24) reduces attack surface by removing an undocumented process-launch endpoint."
   },
-  "generation_seconds": 232.8,
+  "generation_seconds": 242.5,
   "head_sha": "2897f245f0a9bfadb367fbbf8f645d2358bc7407",
   "is_hotfix": false,
   "last_stable_tag": "",
   "range_start": "v11.9.0",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-09-15T20:38:10+00:00",
+  "reviewed_at": "2026-09-15T20:49:33+00:00",
   "verdict": "Blocked",
-  "verdict_reason": "The candidate pipeline hasn't been verified end-to-end — pushing a release-v* branch must produce unsigned MSI, candidate-v* tags, and correct artifacts before we can rely on it for release testing. Everything else is P1 verification or P2 housekeeping."
+  "verdict_reason": "One item still blocks the release: the candidate pipeline hasn't been verified end-to-end so we can't confidently test the release candidate. Downstream consumers need confirmation they handle the new version format, but that doesn't hold up the build itself. The rest of the list is P1 or P2 work that should be checked before shipping."
 }
