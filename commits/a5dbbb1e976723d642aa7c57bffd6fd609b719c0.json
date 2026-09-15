@@ -1,0 +1,32 @@
+{
+  "author": "@jamespthomas",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "a5dbbb1e976723d642aa7c57bffd6fd609b719c0",
+  "committed_at": "2026-09-09T21:18:53Z",
+  "evidence": {
+    "api_compatibility": "No API compatibility concerns. The change only affects build-time library discovery in CMakeLists.txt and does not alter any public API, CLI contract, config format, or integration behavior. The PR author confirmed no breaking changes.",
+    "documentation": "Not affected. This is an internal build-system change with no user-facing documentation impact.",
+    "manual_release_testing": "This is a build-system internal change with no user-visible behavior or CLI/GUI surface. Not release-critical for manual testing.",
+    "post_approval_commits": "No commits were added after approval. The single PR commit (3dd53790630ea852ef5b19b20ca7d7c5557f1280) was the only commit; the merge commit (a5dbbb1e976723d642aa7c57bffd6fd609b719c0) is the squashed result.",
+    "review": "PR #3516 was approved by @superm1 (superm1) on 2026-09-09T19:12:29Z. @superm1 is an admin maintainer with subject-matter expertise in linux packaging, system info, ROCm, and security — directly relevant to this CMakeLists.txt build-system change. The PR author self-reviewed the full diff, confirmed it addresses one clear issue, and described concrete local testing.",
+    "security": "No security concerns. The change replaces a hardcoded library link name with pkgconfig-driven include and library directory discovery. No network calls, credential handling, code execution paths, or supply-chain surface changes are introduced.",
+    "tests": "This is a CMake build-system change; no unit tests are appropriate. The PR author verified the change locally by building with PKG_CONFIG_PATH set to non-standard libdrm locations and confirming ldd linkage, and also verified the FATAL_ERROR path by building without PKG_CONFIG_PATH. CI validation is strong — the C++ Server Build, Test, and Release workflow passed across Linux (amd64 and arm64), Windows, and macOS, plus container build tests, smoke tests, and unit tests all succeeded."
+  },
+  "generation_seconds": 106.2,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-10T01:36:00Z",
+  "pr_number": 3516,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T17:26:07+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "a5dbbb1e976723d642aa7c57bffd6fd609b719c0",
+  "shout_outs": [],
+  "subject": "Use pkgconfig to find libdrm_amdgpu (#3516)",
+  "summary": "Switches libdrm_amdgpu detection in CMakeLists.txt from a hardcoded library name to pkgconfig-based discovery, enabling builds on systems with non-standard include and library paths.",
+  "verdict": "Clean",
+  "verdict_reason": "Well-scoped build-system change with adequate review from a maintainer with relevant subject-matter expertise, passing all checks, and no post-approval commits."
+}
