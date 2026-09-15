@@ -1,0 +1,36 @@
+{
+  "author": "@popey",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "6a607106ce467849e9f64c17de9f249f2936a7a9",
+  "committed_at": "2026-09-09T19:10:12Z",
+  "evidence": {
+    "api_compatibility": "New public functions added to headers (hf_variants.h: llamacpp_gguf_incompatibility; model_registry.h: registry_task_is_excluded, is_official_huggingface_endpoint, huggingface_repository_api_url, parse_huggingface_compatibility_metadata, fetch_huggingface_compatibility_metadata). These are additions, not breaking changes. The /pull/variants endpoint returns 400 for previously accepted incompatible repositories, which is a behavioral narrowing (bug fix) rather than an API contract break.",
+    "documentation": "PR body states no documentation change is required because this is an internal filter applied before model download. No user-facing surface changed. The generated allowlist header is self-documenting with its generation comment. No documentation gap detected.",
+    "manual_release_testing": "The /pull/variants API endpoint now rejects previously accepted Hugging Face repositories. The change does not add a new CLI command or user-visible GUI, but the API behavior change means it is prudent for maintainers to confirm that valid models (TinyLlama, Gemma 3 multimodal, Nomic embedding) still return positive variant sizes and that the reported incompatible checkpoint returns 400 before promoting this change.",
+    "post_approval_commits": "None. The branch was stable after the sixth commit and both approvals came after it.",
+    "review": "Two substantive approvals from reviewers with llamacpp subject-matter expertise (@pwilkin per contribute.md; @fl0rianr who conducted four iterative review rounds). The PR description accurately maps to the diff. Copilot autofix was accepted but did not introduce new behavior. No post-approval commits were added — the last commit (0f79b38, 2026-09-03T07:24:40Z) predates fl0rianr's first approval (2026-09-03T18:03:48Z) and pwilkin's approval (2026-09-03T19:46:55Z).",
+    "security": "The change improves security posture by preventing download of incompatible GGUF repositories before the pull. The new Python script (.github/scripts/update_llamacpp_architectures.py) fetches source code from upstream llama.cpp and ROCm releases via public GitHub APIs — no credential handling beyond standard GH_TOKEN. No supply-chain or obfuscation concerns.",
+    "tests": "Comprehensive: 100 lines of C++ unit tests in test/cpp/test_hf_variants.cpp covering valid metadata, unsupported architectures, missing architecture, malformed data, blank architecture, mirror permissiveness, and ModelScope isolation. 83 lines in test/cpp/test_model_registry.cpp covering official vs mirror error handling (429/5xx fail closed, non-200 on mirrors returns nullopt). One opt-in integration test (LEMONADE_INTEGRATION_TESTS=1) against the live Krea checkpoint. No evidence of inappropriate test weakening or deletion."
+  },
+  "generation_seconds": 154.9,
+  "maintainer_todos": [
+    "Confirm that the common-denominator allowlist is an intentional, documented policy and that false negatives for models only supported by newer backend pins (bailingmoe3, minimax-01, kimi-k3) are acceptable for this release.",
+    "Monitor HF API latency and 429 rates after merge, since the extra compatibility-metadata request is now scoped to generic fetch_repository() which touches all HF repository operations (not just /pull/variants)."
+  ],
+  "merge_date": "2026-09-09T22:10:34Z",
+  "pr_number": 3198,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T17:14:13+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@pwilkin"
+  ],
+  "sha": "6a607106ce467849e9f64c17de9f249f2936a7a9",
+  "shout_outs": [],
+  "subject": "Fix incompatible GGUF results in model search (#3198)",
+  "summary": "Fixes #3136 by adding a GGUF architecture compatibility filter to the /pull/variants endpoint so incompatible Hugging Face repositories (media tasks, missing architecture metadata, unsupported architectures) are rejected before download.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The generated architecture allowlist uses an intersection policy across all shipped llama.cpp pins (CPU, ROCm, nightly) which will cause legitimate models like bailingmoe3 and kimi-k3 to be rejected until every backend catches up, and the extra HF metadata request now runs inside generic HuggingFaceRegistry::fetch_repository() affecting all HF operations."
+}
