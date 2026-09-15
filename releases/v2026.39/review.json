@@ -1,43 +1,13 @@
 {
   "branch": "main",
   "breaking_changes": [
-    "Version format changed from X.Y.Z (e.g., 11.9.0) to YYYY.WW.N (e.g., 2026.39.0); scripts or CI that parse --version output or the server startup log must be updated to match the new date-part scheme.",
-    "FLM model info registry_source in GET /pull/variants and GET /models responses is now an empty string for models without an explicit source instead of 'huggingface'; clients that assume the field always contains 'huggingface' or 'modelscope' will see '' and may misinterpret it.",
-    "The unversioned /docs route now returns a JSON 404 instead of falling through to the SPA web-app; anyone relying on /docs/example being silently served by the SPA will receive a 404."
+    "Version format changed from X.Y.Z (e.g. 11.9.0) to YYYY.WW.N (e.g. 2026.39.0); pin the new format if you parse version strings from --version output, build logs, or installer metadata.",
+    "CMake configure time now requires Python 3 (find_package(Python3)); the build will fail on systems without a Python 3 interpreter available at CMake configure time.",
+    "Windows installer product version (Product.wxs.in) now derives from the date-part of the version rather than PROJECT_VERSION; installer version numbering will differ from the prior release format."
   ],
   "bucket": "v2026.39",
   "candidate_issues": [],
   "checklist": [
-    {
-      "author": "@abn",
-      "commit": "6a5e307dcaa63fbca24c01f04033f6a8ea7fd0b4",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3470,
-      "priority": "P0",
-      "text": "Start the Lemonade server with `LEMONADE_ALLOWED_ORIGINS=http://192.168.1.50:*` and confirm that a browser or HTTP client connecting from `http://192.168.1.50:3000`, `:8080`, and `:5173` all succeed, while a connection from `http://192.168.1.51:3000` is rejected."
-    },
-    {
-      "author": "@abn",
-      "commit": "6a5e307dcaa63fbca24c01f04033f6a8ea7fd0b4",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3470,
-      "priority": "P0",
-      "text": "Start the server with `LEMONADE_ALLOWED_ORIGINS=http://*.local:*` and confirm that connections from `http://dashboard.local:3000` and `http://dev.local:5173` are accepted, while `http://evil.local:3000` and `http://local:3000` are rejected."
-    },
-    {
-      "author": "@wariobot09",
-      "commit": "92037d872234285eba32b76318f297219d6b1f74",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 2841,
-      "priority": "P0",
-      "text": "Call GET /pull/variants on an FLM model whose registry_source is empty (the default) and confirm the response does not contain an empty source field or a serialization error."
-    },
     {
       "author": "@superm1",
       "commit": "c47aa2a491e8c8c6e07a895eaad88b27452f2bb2",
@@ -79,6 +49,26 @@
       "text": "Run `lemonade load gpt-oss-120b-mxfp-GGUF` and confirm the model loads successfully with the correct 63 GB MXFP4 file (not the 1.5 GB EAGLE3 draft head)."
     },
     {
+      "author": "@abn",
+      "commit": "6a5e307dcaa63fbca24c01f04033f6a8ea7fd0b4",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3470,
+      "priority": "P1",
+      "text": "Start the Lemonade server with `LEMONADE_ALLOWED_ORIGINS=http://192.168.1.50:*` and confirm that a browser or HTTP client connecting from `http://192.168.1.50:3000`, `:8080`, and `:5173` all succeed, while a connection from `http://192.168.1.51:3000` is rejected."
+    },
+    {
+      "author": "@abn",
+      "commit": "6a5e307dcaa63fbca24c01f04033f6a8ea7fd0b4",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3470,
+      "priority": "P1",
+      "text": "Start the server with `LEMONADE_ALLOWED_ORIGINS=http://*.local:*` and confirm that connections from `http://dashboard.local:3000` and `http://dev.local:5173` are accepted, while `http://evil.local:3000` and `http://local:3000` are rejected."
+    },
+    {
       "author": "@popey",
       "commit": "6a607106ce467849e9f64c17de9f249f2936a7a9",
       "platforms": [
@@ -117,6 +107,16 @@
       "pr_number": 2841,
       "priority": "P1",
       "text": "Set default_model_source=modelscope in the server config, then run lemonade pull qwen3-0.6b-FLM without --source and confirm it downloads from ModelScope (not HuggingFace)."
+    },
+    {
+      "author": "@wariobot09",
+      "commit": "92037d872234285eba32b76318f297219d6b1f74",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 2841,
+      "priority": "P1",
+      "text": "Call GET /pull/variants on an FLM model whose registry_source is empty (the default) and confirm the response does not contain an empty source field or a serialization error."
     },
     {
       "author": "@anditherobot",
@@ -169,6 +169,16 @@
       "text": "Start lemond with a cloud provider configured, send a curl request with a session header (e.g. -H 'x-opencode-session: test-abc'), and confirm the upstream provider receives the same session ID in its request headers."
     },
     {
+      "author": "@SlawomirNowaczyk",
+      "commit": "8312c1a8dc67854d36c82b559b5d00a719ad0012",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3510,
+      "priority": "P1",
+      "text": "Send a GET /models request and confirm no session header is attached to that discovery call."
+    },
+    {
       "author": "@bitgamma",
       "commit": "378622dcce2c4930f2b5ce91232cd079c4e79eff",
       "platforms": [
@@ -199,16 +209,6 @@
       "text": "Open https://lemonade-sdk.github.io/lemonade/ (or the homepage that serves docs/index.html) and confirm the carousel shows only stable releases, with no candidate-v* tag appearing as the current version."
     },
     {
-      "author": "@SlawomirNowaczyk",
-      "commit": "8312c1a8dc67854d36c82b559b5d00a719ad0012",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3510,
-      "priority": "P2",
-      "text": "Send a GET /models request and confirm no session header is attached to that discovery call."
-    },
-    {
       "author": "@jeremyfowers",
       "commit": "421eabdf6f1061b15a6a960f216326cbbc7b4a42",
       "platforms": [
@@ -222,17 +222,17 @@
   "commits_reviewed": 41,
   "commits_unreviewed": 0,
   "evidence": {
-    "blockers": "Three items block shipping: the new release candidate publishing pipeline (GitHub prereleases and branch creation) has never been exercised end-to-end, the version format change affects all clients and scripts that parse version output, and the FLM API response encoding changed in a way that could break dependent clients. The wildcard origin security feature must also be verified before shipping.",
-    "breaking_changes": "The version format shift (X.Y.Z → YYYY.WW.N) is a fundamental change to every artifact's identity string — CMake, MSI, Docker, and server output all emit the new format. Python3 is now a hard build dependency on Linux (added to CMake find_package, Dockerfile apt deps, and debian/control). The FLM API response for registry_source changed default from 'huggingface' to empty string, a subtle but real encoding shift. The unversioned /docs route now returns JSON 404 instead of SPA fallback, a deliberate fix for a UI leak.",
-    "coverage": "All 41 commits were reviewed by the commit review pipeline. 21 to-dos carry across from those reviews; every to-do is represented in this checklist with a priority.",
-    "manual_testing": "Human verification is needed for: (1) the new candidate release infrastructure — push to release-v* and confirm prereleases and Docker candidate tags are published correctly; (2) the wildcard origin matching — test that wildcard port and subdomain patterns behave securely; (3) the /pull/variants error path — confirm incompatible GGUF repos return 400 while valid ones return variants; (4) the new docs endpoints and MCP tool — exercise live and confirm correct responses; (5) the version format — confirm the new YYYY.WW.N output on the release candidate.",
-    "security": "Wildcard origin matching (:) and subdomain pattern (*.domain) is a new security-sensitive feature — subdomain spoofing via loose matching would be a real vulnerability. The new session header relay uses a strict well-known-only allowlist and deliberately excludes telemetry headers. The /pull/variants architecture filter prevents downloading incompatible repos. The example HTML server docs need --bind 127.0.0.1 to avoid accidentally exposing file trees on all interfaces."
+    "blockers": "Three release-infrastructure to-dos are P0: confirming the new version format renders correctly on the server binary (c47aa2a-1), verifying the candidate prerelease publishing path works end-to-end (658d565-1), and validating the automated release branch creation workflow (bfb9dd5-1). These are foundational to the new release pipeline — if any fails, the candidate cannot ship.",
+    "breaking_changes": "Three breaking changes: version string format changed (users parsing version output must adapt), Python 3 is now a hard build dependency (systems without it will fail to build), and Windows installer version numbering changed. All three were flagged by the commit review on #3539 and were coordinated with other PRs in the release pipeline. No migration is needed for end users running pre-built artifacts — only for people building from source or parsing version strings.",
+    "coverage": "All 41 commits reviewed; 21 to-dos across 15 PRs rated. The release infrastructure PRs (#3539, #3579, #3580, #3581, #3588) form a cohesive set covering the new versioning scheme, weekly release branch automation, candidate artifact publishing, and website behavior. CI evidence was assessed for all entries.",
+    "manual_testing": "18 to-dos require a human with the release candidate installed. Key categories: (1) new version format display, (2) three new API surfaces — /v1/docs endpoints and lemonade_docs MCP tool (#3347), /images/edit endpoint (#3494), and wildcard origins (#3470), (3) behavioral changes on existing surfaces — /pull/variants filtering (#3198), FLM ModelScope download path (#2841), session header relay (#3510), and gpt-oss model loading (#3496), (4) website and GitHub Releases page behavior for the new prerelease channel (#3588), (5) documentation security fix for examples (#3547).",
+    "security": "Wildcard origin matching (#3470) introduces new configuration syntax that should be verified against the release candidate — wildcard_port and subdomain matching are security-sensitive features. The FLM ModelScope source resolution (#2841) changes how registry_source is serialized in API responses, which could affect clients assuming a non-empty source field. The examples/ README security gap (#3547) — missing --bind 127.0.0.1 — would expose local file trees on all interfaces if followed."
   },
-  "generation_seconds": 118.5,
+  "generation_seconds": 190.4,
   "head_sha": "e71baf23dae6aedd0f59d67a1be8f81e3369305c",
   "is_hotfix": false,
   "last_stable_tag": "",
   "range_start": "v11.9.0",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-09-15T23:31:11+00:00"
+  "reviewed_at": "2026-09-15T23:33:02+00:00"
 }
