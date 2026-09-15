@@ -5,28 +5,28 @@
   "commit_sha": "da6ce71609a4c82fa6ce5b2519227a666de1c448",
   "committed_at": "2026-09-09T19:09:12Z",
   "evidence": {
-    "api_compatibility": "No API changes. The only files modified are a deleted GitHub Actions workflow, README.md badges, and docs/dev/testing.md. No user-facing APIs, configurations, or contracts are affected.",
-    "documentation": "README.md badges for Arch and Debian were updated to point to the archlinux package and the cpp_server_build_test_release.yml workflow respectively. docs/dev/testing.md CI gate matrix was updated to remove Arch and openSUSE from the distro build group. All documentation changes are consistent with the workflow removal.",
-    "manual_release_testing": "Not applicable. This PR removes a CI job; it does not add user-visible features, CLI commands, or GUI changes. README badge URLs were updated but these are cosmetic redirect changes.",
-    "post_approval_commits": "No post-approval commits. The PR contained a single commit (766695f) and the branch was merged immediately after approval. No churn or scope creep.",
-    "review": "Single approval from @superm1, an admin maintainer whose subject areas include linux packaging, Docker, containers, and CI infrastructure. The approval had an empty body but was substantive given the low-risk nature of the change. No inline comments were requested. The reviewer's expertise aligns with the PR's scope of CI workflow removal.",
-    "security": "No security concerns. Deleting a CI workflow and updating documentation has no impact on credential handling, network calls, auth, permissions, or code execution paths.",
-    "tests": "No test changes. Removing a CI workflow does not require new tests, and no existing tests were weakened, deleted, or relaxed. The removed workflow itself contained CLI and endpoint tests, but those tests still exist in the repository and are exercised by other active CI jobs."
+    "api_compatibility": "No API changes. The deleted workflow was a GitHub Actions file — not an end-user API. README badges were updated to point at external build statuses (Arch package, .deb build), which is purely informational.",
+    "documentation": "docs/dev/testing.md was updated to remove 'Linux distro builds' from the gate-check table, keeping it consistent with the workflow deletion. README.md badges were corrected to point to actual upstream build sources (Arch package badge, cpp_server_build_test_release.yml). No major new feature docs needed.",
+    "manual_release_testing": "This commit touches no user-facing surface. It removes a CI job and updates documentation. No manual release testing needed.",
+    "post_approval_commits": "Zero post-approval commits. The PR consisted of a single commit (766695f) that was the basis of the sole approval. No churn, no last-minute additions.",
+    "review": "PR #3524 received an APPROVED review from @superm1 on 2026-09-09T19:07:54Z, roughly 5.5 hours after the PR was opened and ~1.5 hours before merge. @superm1 is listed as an admin maintainer with subject-area expertise in 'linux packaging' and 'ci' falls under @jeremyfowers' domain — this is a cross-area CI change where the reviewer has relevant packaging knowledge but may not be the primary CI owner. No inline comments or requested changes. No other reviewers engaged. The PR author (@jeremyfowers) is also the admin maintainer for CI, so self-approval is not an issue since a separate maintainer approved.",
+    "security": "No security concerns. The change deletes a CI workflow that ran untrusted code inside Arch Linux and openSUSE containers — arguably improving security posture by removing that attack surface. No credential changes, network calls, or supply-chain modifications.",
+    "tests": "This PR deletes a CI workflow file and updates two text files (README.md, docs/dev/testing.md). There are no new code paths, APIs, or behaviors to test. No existing tests were weakened or deleted — the deleted workflow was a CI gate, not a test. All CI checks on the PR passed or were correctly skipped (e.g., release-validation workflows skipped since no new release artifacts)."
   },
-  "generation_seconds": 100.0,
+  "generation_seconds": 105.7,
   "maintainer_todos": [],
   "merge_date": "2026-09-09T20:49:12Z",
   "pr_number": 3524,
   "range_start": "v11.9.0",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-09-15T17:08:44+00:00",
+  "reviewed_at": "2026-09-15T22:07:13+00:00",
   "reviewers": [
     "@superm1"
   ],
   "sha": "da6ce71609a4c82fa6ce5b2519227a666de1c448",
   "shout_outs": [],
   "subject": "Remove the Linux Distro Builds ci job (#3524)",
-  "summary": "Removes the Linux Distro Builds CI job that was blocking merge queues with negligible benefit, and updates README badges and docs/dev/testing.md to reflect the change.",
+  "summary": "Removes the unstable Linux Distro Builds CI job (Arch + openSUSE containers) that was blocking merge-queue attempts, and fixes stale README badges and dev docs referencing it.",
   "verdict": "Clean",
-  "verdict_reason": "Straightforward CI maintenance change approved by a maintainer with relevant subject-matter expertise, with no breaking changes and consistent documentation updates."
+  "verdict_reason": "A straightforward CI cleanup with a single commit, one approval from a maintainer with Linux packaging expertise, and all checks passing."
 }
