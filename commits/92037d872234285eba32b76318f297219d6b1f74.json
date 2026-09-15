@@ -1,0 +1,48 @@
+{
+  "author": "@wariobot09",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "92037d872234285eba32b76318f297219d6b1f74",
+  "committed_at": "2026-09-09T19:37:37Z",
+  "evidence": {
+    "api_compatibility": "Minor backward-compatible changes: ModelInfo::registry_source changed from default 'huggingface' to empty (unpinned). JSON API endpoints (GET /models, GET /models/:id) now always normalize registry_source through parse_remote_registry_source() / remote_registry_source_name() instead of raw string — empty values become empty string in JSON rather than 'huggingface'. This could affect clients that relied on seeing 'huggingface' as the literal default. No breaking changes to documented contracts.",
+    "documentation": "Updated docs/dev/model-registries.md clarifies that FLM does not persist per-model registry provenance and resolves against current default_model_source per pull. docs/guide/configuration/README.md documents the FLM-specific behavior. The standalone flm.modelscope recipe option was removed from docs/dev/backends-reference.md and docs/guide/cli.md (generated via gen_backend_boilerplate.py). The PR description originally referenced updating docs/guide/configuration/README.md which was added in the final refactor commit.",
+    "manual_release_testing": "The FLM download path should be manually tested: set default_model_source=modelscope and verify that flm pull receives --modelscope 1 for FLM models. Also test that an explicit --source huggingface on an FLM pull overrides the server default. The CLI change (lemonade pull/upgrade) adds a new code path that should be exercised.",
+    "post_approval_commits": "Three commits after first approval: (1) 901f598 pivoted from standalone recipe option to centralized model source resolution — a meaningful scope change that @ZaneNi reviewed. (2) 2b47236 fixed a bug where explicit source on a bare refresh was dropped for self-managed backends — caught by @ZaneNi's Windows test. (3) bcfc5c9e refactored to RemoteRegistrySource enum, renamed download_source_for, and fixed JSON serialization to always normalize registry_source through parse/round-trip. All post-approval commits were within the spirit of the PR and were ultimately re-approved by @ZaneNi. No evidence of hidden or scope-creep commits.",
+    "review": "PR author @superm1 (SME for FastFlowLM per docs/dev/contribute.md) approved on first commit (2026-07-29). Two post-approval commits followed — a rewrite to centralized model source and a bug fix — before @ZaneNi approved the final state (2026-09-02). @SlawomirNowaczyk raised six substantive points including an asymmetric precedence bug and missing naming discipline. The final refactor renamed effective_model_source to download_source_for, returned RemoteRegistrySource enum instead of string, and simplified the logic to: explicit registry_source wins, then default_model_source, then HuggingFace. This addresses the naming concern and simplifies precedence, but the asymmetric precedence issue (empty + explicit-huggingface being indistinguishable from unset) was only partially addressed — empty registry_source maps to HuggingFace default, which is the right fallback but makes it impossible to distinguish 'user explicitly chose HF' from 'nothing was set' in the download path.",
+    "security": "No security concerns. The change adds ModelScope as an alternative download source, which is a documented and user-configurable option. No new credential paths, network endpoints, or code execution surfaces beyond the existing flm CLI invocation.",
+    "tests": "New test cases in test/cpp/test_config_default_source.cpp (47 additions) cover: (1) download_source_for() with no provider (falls back to HuggingFace), with provider set (follows default), with explicit huggingface, and with explicit modelscope. (2) flm_pull_arguments() for both ModelScope (includes --modelscope 1) and HuggingFace (omits flag). (3) Explicit source preservation on checkpoint-less refresh for self-managed backends. No evidence of test weakening or deletion. However, there is no end-to-end test confirming the --modelscope flag actually reaches the flm binary in a mocked download scenario."
+  },
+  "generation_seconds": 184.4,
+  "maintainer_todos": [
+    {
+      "text": "Verify that the final refactor (bcfc5c9) was re-reviewed or re-approved after SlawomirNowaczyk's comments on asymmetric precedence; if not, confirm the fix addresses the concern before relying on it."
+    },
+    {
+      "text": "Test the FLM download path with default_model_source set to modelscope to confirm --modelscope 1 reaches the flm binary in both load-time and explicit pull paths."
+    },
+    {
+      "text": "Confirm that JSON API responses for source/registry_source round-trip correctly through parse_remote_registry_source() / remote_registry_source_name() for empty and non-empty registry_source values."
+    }
+  ],
+  "merge_date": "2026-09-09T23:32:14Z",
+  "pr_number": 2841,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T17:19:54+00:00",
+  "reviewers": [
+    "@superm1",
+    "@ZaneNi"
+  ],
+  "sha": "92037d872234285eba32b76318f297219d6b1f74",
+  "shout_outs": [
+    {
+      "handle": "@ZaneNi",
+      "reason": "Reproduced the bug (modelscope flag not passed) on Windows, reported it with reproducible evidence, and verified the fix on the platform."
+    }
+  ],
+  "subject": "feat(flm): resolve FLM model source from default_model_source (#2841)",
+  "summary": "Routes FLM backend model source selection through the server-wide default_model_source config and explicit per-model source, replacing a standalone flm.modelscope recipe option with --modelscope 1 passed to flm pull.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The PR is well-reviewed and mostly clean, but the final commit introduced a significant refactor that partially addressed SlawomirNowaczyk's substantive code review without a corresponding re-approval, and an asymmetric precedence bug in download_source_for() remains."
+}
