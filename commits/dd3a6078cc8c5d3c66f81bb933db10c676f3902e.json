@@ -1,0 +1,32 @@
+{
+  "author": "@zaneni6",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "dd3a6078cc8c5d3c66f81bb933db10c676f3902e",
+  "committed_at": "2026-09-09T02:43:02Z",
+  "evidence": {
+    "api_compatibility": "No API, schema, protocol, or contract changes. The only change is a version string in a resource JSON file.",
+    "documentation": "No documentation changes needed for a backend version bump. Release notes or changelogs would typically capture this in the release cycle.",
+    "manual_release_testing": "This is a backend version string change only, not a code change. The upstream FLM v1.0.4 binary is sourced externally; the CI validate and build pipelines confirm it downloads and integrates correctly. No manual release testing required.",
+    "post_approval_commits": "None. The PR contains a single commit authored by @zaneni6 and merged without any additional commits after approval.",
+    "review": "PR #3482 was approved by @superm1 (2026-09-02T04:25:25Z), a maintainer with documented NPU and FastFlowLM expertise. No comments or requested changes were posted. The PR body is minimal ('Update FLM to v1.0.4') but appropriate for a version bump of this scope.",
+    "security": "No security concerns. No code execution, network calls, credential handling, or supply-chain changes beyond a version number update.",
+    "tests": "No new code was added or changed — only a version string in backend_versions.json. No existing tests were weakened, deleted, or skipped. All CI test suites passed (C++ unit tests, CLI/endpoint tests, docker-smoke-test, etc.)."
+  },
+  "generation_seconds": 123.2,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-09T04:11:24Z",
+  "pr_number": 3482,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T16:49:21+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "dd3a6078cc8c5d3c66f81bb933db10c676f3902e",
+  "shout_outs": [],
+  "subject": "feat: update FLM to v1.0.4 (#3482)",
+  "summary": "Updates the FastFlowLM (FLM) NPU backend version from v1.0.3 to v1.0.4 in the backend_versions.json config file.",
+  "verdict": "Clean",
+  "verdict_reason": "Minimal single-line version bump with proper SME review, all CI passing, and no post-approval changes."
+}
