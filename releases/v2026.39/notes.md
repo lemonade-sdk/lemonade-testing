@@ -1,9 +1,10 @@
 ## Headline
 
-- Wildcard ports (:\*) and subdomains (\*.domain) are now accepted by `allowed_origins`, letting local development servers on dynamic ports connect without manual configuration.
-- The server's API documentation is now machine-readable at `GET /v1/docs` and accessible via the `lemonade_docs` MCP tool, with individual markdown pages served at `GET /v1/docs/{page}`.
-- The project now publishes weekly release candidates on a new YYYY.WW.N version scheme, automating the release cycle with candidate Docker tags and GitHub prereleases.
+- `allowed_origins` now supports wildcard port (`:*`) and subdomain (`*.domain`) matching so local development servers on dynamic ports can connect without manual configuration.
+- The `/images/edit` endpoint is now served on TheNoise backend, adding image editing support alongside existing generation, variation, and upscale operations.
+- Session identity headers are relayed verbatim to cloud providers, enabling prompt-cache continuity for applications like OpenCode Zen across the Lemonade proxy.
+- The `llamacpp-hrx` backend adds Meta-Llama-3.1-8B-Instruct as a new qualified model and introduces `auto_evict` configuration defaults for GPU memory management.
 
 ## Breaking Changes
 
-- The version scheme shifted from M.m.p to YYYY.WW.N — CMake version extraction moved to a Python-based git state derivation system, MSI installer versions use YY.MM.PATCH, and `get-version` now outputs YYYY.WW.N instead of the static CMake VERSION.
+- The version scheme changed from `M.m.p` to `YYYY.WW.N` format with a Python-based git state derivation replacing CMake version extraction; update downstream tooling and scripts that parse version strings.
