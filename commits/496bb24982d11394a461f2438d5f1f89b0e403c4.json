@@ -1,0 +1,33 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "496bb24982d11394a461f2438d5f1f89b0e403c4",
+  "committed_at": "2026-09-09T14:04:09Z",
+  "evidence": {
+    "api_compatibility": "No breaking API change. The removed endpoints were undocumented (/internal/mcp/* server registration) and never shipped as a supported contract. The revert restores pre-#2605 behavior. The existing MCP gateway API is untouched.",
+    "documentation": "No documentation changes needed. The removed feature was not documented. The MCP gateway documentation (docs/api/mcp.md) was not affected by this revert.",
+    "manual_release_testing": "No manual release testing required. The change is a deletion of an undocumented internal endpoint that was never shipped as supported behavior, per the PR author's documentation assessment. The MCP server gateway (mcp_server.cpp, POST /mcp) is unaffected and was not part of this revert.",
+    "post_approval_commits": "Zero post-approval commits. The single PR commit (49febe38ce) was approved at 2026-09-08T20:31:54Z and merged at 2026-09-09T14:47:32Z without any intermediate commits.",
+    "review": "PR #3498 was authored by @fl0rianr (also a maintainer, though not on the MCP subject area). @jeremyfowers opened an AI-assisted task asking whether this is a faithful and complete revert of #2605; Claude returned a thorough verification finding zero residual MCP-client references. @ramkrishna2910 (member, subject-area expertise in MCP) submitted the APPROVED review with the comment 'Revert is clean. Built and tested locally.' The reviewer applied subject-matter expertise as expected. The PR checklist was completed, including local build and test confirmation.",
+    "security": "No security concern. The revert removes a process-launch surface (MCP server registration could spawn arbitrary local processes) that was admin-key-gated but would have been inaccessible without an admin key on a keyless server. Removing it is a net security improvement by eliminating an attack surface. No credential handling, supply-chain changes, or suspicious code present.",
+    "tests": "The revert deleted the entire test suite for the removed feature: test/cpp/test_mcp_client_config.cpp (320 lines) and test/fixtures/mock_mcp_stdio_server.py (129 lines). Updated test/cpp/test_config_dir_migration.cpp to stop expecting mcp_servers.json in migration paths. No existing tests were weakened, skipped, or deleted — the test changes are consistent with a revert. CI C++ unit tests passed successfully."
+  },
+  "generation_seconds": 127.8,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-09T14:47:32Z",
+  "pr_number": 3498,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T16:53:46+00:00",
+  "reviewers": [
+    "@ramkrishna2910",
+    "@jeremyfowers"
+  ],
+  "sha": "496bb24982d11394a461f2438d5f1f89b0e403c4",
+  "shout_outs": [],
+  "subject": "revert internal mcp client code (#3498)",
+  "summary": "This reverts the internal MCP client feature introduced in PR #2605, removing two source files, a test suite, a test fixture, and all call-site plumbing per an RFC decision on scope.",
+  "verdict": "Clean",
+  "verdict_reason": "A clean, scoped revert of an undocumented feature with complete coverage (two files + tests + fixtures deleted, all call sites updated), subject-matter-approved by an MCP-expert reviewer, no post-approval commits, and all CI checks passing."
+}
