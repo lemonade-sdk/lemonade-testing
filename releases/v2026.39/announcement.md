@@ -1,35 +1,32 @@
 ## Lemonade v2026.39
 
-@everyone This is a big one — wildcard CORS, machine-readable docs, and a whole new way Lemonade ships itself.
+@everyone This release is a big one — we've got wildcard origins for local dev servers, image editing on TheNoise, session-continuity headers for your cloud backends, and Meta-Llama-3.1-8B joining the HRX roster!
 
 ### Breaking Changes
 
-- The version scheme shifted from M.m.p to YYYY.WW.N — CMake version extraction moved to a Python-based git state derivation system, MSI installer versions use YY.MM.PATCH, and `get-version` now outputs YYYY.WW.N instead of the static CMake VERSION.
+- The version scheme has moved from `M.m.p` to `YYYY.WW.N`, and the CMake-based version extraction has been replaced by a Python-driven git state derivation; MSI installer versions are now `YY.MM.PATCH`, and the `get-version` action spits out `YYYY.WW.N` instead of the old static CMake `VERSION`. Any downstream tooling or scripts that parse version strings need a look.
 
-### Wildcard CORS for local development
+### Wildcard origins for local dev servers
 
-If your local dev server lives on a dynamic port or a wildcard subdomain, it just works now. @abn added `:*` for port wildcards and `*.domain` for subdomain wildcards to `allowed_origins`, so you can spin up a server and connect without hand-editing configuration. (A security reminder lives in the docs about non-HTTPS wildcards — please read it!)
+`allowed_origins` now understands wildcard ports (`:*`) and wildcard subdomains (`*.domain`), so spinning up a dev server on a dynamic port doesn't require manual config edits anymore. @abn handled the validation logic and also cleaned up the docs page to make it actually render nicely — thanks @abn!
 
-### API docs you can actually read programmatically
+### Image editing lands on TheNoise
 
-The server now serves its own reference at `GET /v1/docs` as a machine-readable index, with individual markdown pages available at `GET /v1/docs/{page}`. The same docs are exposed through the `lemonade_docs` MCP tool by @anditherobot, with @jeremyfowers. Grab what you need, parse it, automate it — no more clicking through a browser.
+The `/images/edit` endpoint is now live on the TheNoise backend, adding image editing to the generation, variation, and upscale trio already available. @bitgamma also expanded ROCm GPU family support for AMD users — @bitgamma has brought image editing to the party!
 
-### Weekly release candidates on autopilot
+### Session identity headers for cloud prompt-cache continuity
 
-We're publishing release candidates every week now, on a `YYYY.WW.N` version scheme. Weekly `release-v<year>.<week>` branches roll from main, each one tagged with `candidate` Docker images and GitHub prereleases — all automated by a new scheduled workflow and a Python-based version derivation system, by @jeremyfowers with @superm1. Candidate tags never touch the stable namespace, and if you need a specific version, the `candidate-v<version>` tag is there for you. The release guide in `docs/dev/release.md` walks through everything.
+Lemonade now relays session identity headers (like `x-opencode-session` and `x-session-id`) verbatim when forwarding inference requests to cloud providers, so applications like OpenCode Zen can maintain prompt-cache continuity across the Lemonade hop. @SlawomirNowaczyk made it happen!
+
+### Llama 3.1 8B on HRX + auto-evict defaults
+
+@AaronStGeorge added Meta-Llama-3.1-8B-Instruct as a new qualified model for the `llamacpp-hrx` backend, and @GabrielReusRodriguez introduced `auto_evict` and `auto_evict_threshold_pct` configuration defaults to help keep GPU memory management from getting out of hand.
 
 ### Additional Improvements
 
-- Context auto-tuning now picks the right GPU memory pool for your selected backend, fixing incorrect sizing on mixed AMD/NVIDIA systems — @popey.
-- The `/pull/variants` endpoint rejects incompatible Hugging Face repos (wrong media tasks, missing architecture metadata) before you waste bandwidth — @popey.
-- Backend HTTP responses that closed without SSE data now report as errors instead of successful completions, and the SSE parser handles all line terminators properly — @Yigtwxx.
-- The FLM backend respects the server-wide `default_model_source` config instead of a standalone recipe option, with @ZaneNi.
-- OpenCode Zen session headers are relayed verbatim through Lemonade to cloud providers, keeping prompt-cache continuity intact — @SlawomirNowaczyk.
-- ROCm support extended to six GPU families and TheNoise `/images/edit` endpoint is live (no longer a stub), with @bitgamma.
-- A trio of fixes for the HTML example demos: serve them over localhost instead of `file://`, fix allowed origins docs rendering, and re-enable tool-calling tests for llamacpp and FLM backends — @jeremyfowers and @abn.
-- A new Interviewer app integration guide is live for AI-powered interview practice, and docs for Windows prerequisites were expanded — @antmikinka and @sofiageo.
-- A classifier fix so models filtered by hardware (e.g. NPUs on non-NPU hosts) no longer silently drop your entire routing policy — @Bekhouche, with @fl0rianr and @SlawomirNowaczyk.
-- Soft-idle downsize now preserves the prompt cache instead of needlessly destroying it — @meghsat.
+- A batch of fixes and cleanups: better context auto-tuning on mixed GPU systems (@popey), GGUF compatibility filtering before downloads (@popey), FLM model source selection through config defaults (@wariobot09), and LlamaCpp soft-idle downsize now preserves the prompt cache instead of needlessly erasing it (@meghsat)
+- CI got a tune-up — no more blocking Distro Builds job (@jeremyfowers), Hugging Face model cache persisted outside workspace to stop 9 GB re-downloads (@jeremyfowers), and self-hosted runners pinned to X64 to avoid ARM64 landmines (@jeremyfowers)
+- Backend version bumps across the board: FastFlowLM NPU up to v1.0.5 (@zaneni6), stable-diffusion.cpp up to master-843 (@github-actions), and an internal MCP client feature reverted per RFC scope decision (@fl0rianr)
+- Release pipeline work: weekly `release-v` branches auto-created (@jeremyfowers), candidate Docker tags and prerelease artifacts for RC builds (@jeremyfowers, @superm1), and an automated Debian PPA routing that sends release-v\* branches to the candidate channel (@superm1)
 
-Full release notes: https://github.com/lemonade-sdk/lemonade/releases/tag/v2026.39
-Come try the new weekly candidates and tell me how they feel!
+As always, check out the full release notes on GitHub and tell me what you think!
