@@ -1,0 +1,32 @@
+{
+  "author": "@AaronStGeorge",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "55aa7d3306c058659520c6662c167712cea969f0",
+  "committed_at": "2026-09-09T02:42:51Z",
+  "evidence": {
+    "api_compatibility": "No API changes. The modifications are internal resource files (backend_versions.json, server_models.json) and configuration. The model is registered with standard fields (checkpoint, recipe, labels, size) following the existing pattern. No breaking changes.",
+    "documentation": "The PR author checked 'Documentation is not affected by this change' which is correct: no user-facing API, CLI, GUI, or config contract is altered. Model metadata changes are self-documenting through server_models.json.",
+    "manual_release_testing": "The llamacpp-hrx CI test entry is now part of the release's CI surface, providing automated coverage. The change itself is a backend asset version bump and a new model registration, neither of which introduces new CLI, GUI, or API behavior that would require manual testing beyond existing CI. No action needed.",
+    "post_approval_commits": "None. The PR contained a single commit (364b7fb) submitted on 2026-09-03T15:38:13Z, which predates the approval at 2026-09-04T02:06:43Z. No commits were added after approval.",
+    "review": "PR #3503 received a single APPROVED review from @superm1 on 2026-09-04T02:06:43Z. Per docs/dev/contribute.md, @superm1 has subject-matter expertise in ROCm, llamacpp, and containers, making him well-qualified to review HRX and llamacpp-hrx changes. There were no inline review comments, and the PR body was self-contained with clear scope, testing instructions, and a checklist confirming local build and test. The PR was authored using AI tools with verification and hallucination checks noted by the author.",
+    "security": "No security concerns. The changes are metadata and CI configuration updates: a backend version reference bump, a new HuggingFace GGUF checkpoint reference, and a CI workflow matrix entry. No supply-chain changes, credential handling, network calls, or code execution path modifications.",
+    "tests": "The HRX contract test (test_hrx_contract.cpp) was updated to reference the new hrx-b69 release version and asset filename. Test capabilities (test/utils/capabilities.py) were extended to include llamacpp-hrx as a test backend with the new Meta-Llama-3.1-8B-Instruct-HRX model. The CI workflow gained a new llamacpp-hrx test entry targeting the hrx backend on ROCm. All CI checks on the merge commit passed (build, container tests, MCP smoke tests, C++ unit tests, packaging, etc.)."
+  },
+  "generation_seconds": 106.4,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-09T03:28:09Z",
+  "pr_number": 3503,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T16:47:18+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "55aa7d3306c058659520c6662c167712cea969f0",
+  "shout_outs": [],
+  "subject": "[hrx][experimental] Add llama-3.1 8b support + ci coverage (#3503)",
+  "summary": "Bumps the HRX backend version from b59 to b69 and adds Meta-Llama-3.1-8B-Instruct as a new qualified model for the llamacpp-hrx backend with corresponding CI coverage.",
+  "verdict": "Clean",
+  "verdict_reason": "A focused, small-scope change with appropriate tests updated for a backend version bump and new model addition, approved by a reviewer with llamacpp/ROCm subject-matter expertise, with all CI passing and no post-approval commits."
+}
