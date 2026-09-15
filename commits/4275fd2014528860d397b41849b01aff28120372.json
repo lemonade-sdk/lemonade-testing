@@ -5,21 +5,21 @@
   "commit_sha": "4275fd2014528860d397b41849b01aff28120372",
   "committed_at": "2026-09-09T19:38:12Z",
   "evidence": {
-    "api_compatibility": "No API compatibility impact. The vendored model-viewer.min.js is unchanged; only a SHA-256 sidecar file and CI workflow are added, plus README documentation.",
-    "documentation": "README.md (src/app/src/renderer/vendor/) is rewritten with comprehensive integrity documentation: the hash chain (npm tarball integrity → extracted-file SHA-256), both hashes listed, the npm registry metadata link, and a full hash-preserving update procedure. CI workflow comment explicitly calls the sidecar check a \"drift guard\" rather than an SRI replacement, correctly stating its limitation.",
-    "manual_release_testing": "Not applicable. The PR does not change user-visible behavior — the vendored JS file itself is unchanged (the verified 4.3.1 artifact already produces the existing SHA-256). It adds a CI drift-guard and documents an update procedure. No CLI, GUI, or API changes warrant release-critical manual testing.",
-    "post_approval_commits": "No commits were added after the first or latest approval (2026-09-09T19:12:11Z). The three PR commits were authored between 2026-07-14 and 2026-08-17, all well before approval. Merged 2026-09-10T00:14:06Z, ~5 hours after final approval.",
-    "review": "PR #2709 was authored by @superm1 and reviewed by @fl0rianr (maintainer with subject-area expertise in GUI, CI, and LMX omni models — see docs/dev/contribute.md). @fl0rianr provided four reviews: a changes-requested review on 2026-07-15 blocking on the shadow regression caused by reverting to 4.3.0 instead of 4.3.1; a commented review on 2026-07-28 catching that the integrity hash format mismatch would reject even the correct tarball (with a suggested Python fix); a third commented review on 2026-08-16 noting the PR still didn't replace the file; and a final LGTM on 2026-09-09 after all issues were resolved. Review applied project philosophy around design for agility and user error as a bug by making the update process robust (fail-closed, mktemp -d).",
-    "security": "This is a positive security change. It addresses the fact that a vendored third-party bundle had no integrity verification, which could allow undetected tampering or corruption. The npm dist.integrity (SHA-512) is the upstream trust anchor, and the documented update process verifies it before extracting the file. A CI drift-guard SHA-256 check will fail on any unauthorized modification. No new security concerns introduced — the update script uses mktemp -d for isolation and is fail-closed with set -euo pipefail. The bundle is already the correct upstream 4.3.1 artifact.",
-    "tests": "The PR adds a new CI check (vendored-asset-integrity in .github/workflows/docs_and_style.yml) that runs `sha256sum -c model-viewer.min.js.sha256` to fail on any drift of the vendored bundle. All CI checks passed on the merge commit, including the new check (conclusion: SUCCESS). No existing tests were weakened or deleted. The README documents a hash-preserving update process with npm dist.integrity verification as the update-time test."
+    "api_compatibility": "No API changes. The three touched files are a CI workflow (`.github/workflows/docs_and_style.yml`), a vendor README (`src/app/src/renderer/vendor/README.md`), and a new sidecar hash file (`src/app/src/renderer/vendor/model-viewer.min.js.sha256`). Zero lines deleted from production code. The vendored bundle is unchanged.",
+    "documentation": "The vendor README was rewritten comprehensively: it documents the hash chain (npm tarball integrity → extracted-file SHA-256), the integrity values, and the full secure update process with error handling and cleanup. The CI job includes an explanatory comment describing it as a drift guard. The update script is copy-paste ready with `set -euo pipefail`, `mktemp`, and a `trap` for cleanup. Version number updated from 4.3.0 to 4.3.1. No documentation gaps.",
+    "manual_release_testing": "No user-facing behavioral change. The bundle version (4.3.1) matches what was already in the file — the diff contains no changes to `model-viewer.min.js` itself. The CI drift guard and documented update process protect against future drift but do not alter the shipped artifact. This commit is purely documentation, a new CI job, and a new sidecar hash file.",
+    "post_approval_commits": "None. @fl0rianr approved commit 34e848a5 at 2026-09-09T19:12:11Z. The merge completed at 2026-09-10T00:14:06Z with no new commits. The PR was in the merge group for a few hours before landing. No post-approval churn whatsoever.",
+    "review": "PR #2709 received six substantive reviews from @fl0rianr over six weeks (Jul 15 – Sep 9). @fl0rianr holds security and CI as a subject area per contribute.md, and the review applied the project philosophy (designing for agility through automated integrity checks, treating user-facing bugs like the shadow regression as critical). The review chain: CHANGES_REQUESTED on the initial diff for accidentally reverting google/model-viewer#5168 (shadow mapping fix for models > 1×1); COMMENTED to require pinning the official 4.3.1 release instead; COMMENTED to fix the update script's integrity comparison (EXPECTED used `sha512-<base64>` but ACTUAL used `sha512:<hex>` — the script would have rejected every correct tarball); COMMENTED to add fail-closed behavior (`set -euo pipefail`, fresh `mktemp -d` extraction dir); and finally APPROVED on the last commit. Review quality is excellent. No post-approval commits exist. No commits were added after @fl0rianr's approval on 2026-09-09T19:12:11Z.",
+    "security": "This is a legitimate security hardening change. @superm1 replaced the vendor README's download-and-replace pattern with a secure update process that verifies npm's published `dist.integrity` (SHA-512) before extracting the tarball — exactly the trust chain the README documents. @fl0rianr correctly caught that the initial script compared integrity hashes using mismatched formats (base64 vs hex) which would have silently accepted tampered tarballs. The CI drift guard (SHA-256 `sha256sum -c`) is honestly described as a drift guard, not a true SRI replacement, which is technically accurate: the asset and checksum can be co-modified in the same commit. The npm dist.integrity is the real upstream anchor. Supply-chain risk is reduced.",
+    "tests": "The vendored-asset-integrity job was added to `.github/workflows/docs_and_style.yml` and runs `sha256sum -c model-viewer.min.js.sha256` on every CI run. All checks passed on the final commit (including the new vendored-asset-integrity job). CodeQL, server build, unit tests, CLI tests, and API tests all passed. The PR also resolves a rendering regression (shadow mapping fix from upstream #5168) by pinning 4.3.1, so existing Tauri app tests exercising the 3D panel validate that behavior."
   },
-  "generation_seconds": 152.1,
+  "generation_seconds": 157.5,
   "maintainer_todos": [],
   "merge_date": "2026-09-10T00:14:06Z",
   "pr_number": 2709,
   "range_start": "v11.9.0",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-09-15T17:22:27+00:00",
+  "reviewed_at": "2026-09-15T22:22:07+00:00",
   "reviewers": [
     "@fl0rianr"
   ],
@@ -27,11 +27,11 @@
   "shout_outs": [
     {
       "handle": "@fl0rianr",
-      "reason": "Identified the shadow mapping regression that the original pin was reverting and caught a format bug in the integrity verification script before it shipped."
+      "reason": "Caught a critical rendering regression (upstream shadow mapping fix being accidentally reverted), identified a broken integrity comparison in the update script that would have accepted tampered tarballs, and drove the PR to fail-closed through six substantive reviews over six weeks."
     }
   ],
   "subject": "fix(security): pin vendored model-viewer bundle to verified upstream (#2709)",
-  "summary": "Pins the vendored model-viewer.min.js bundle to the verified upstream npm artifact with an integrity hash chain and adds a CI drift-guard check.",
+  "summary": "Pins the vendored model-viewer bundle to its verified upstream npm artifact and adds a CI drift guard for the SHA-256 hash with a documented secure update process.",
   "verdict": "Clean",
-  "verdict_reason": "The bundle itself is unchanged because it was already the correct 4.3.1 artifact; this PR adds integrity verification and a safe update process with thorough reviewer scrutiny and all CI checks passing."
+  "verdict_reason": "Targeted security hardening with thorough multi-round review from a collaborator, verified upstream provenance, no behavioral changes for users, and a CI drift guard in place for future protection."
 }
