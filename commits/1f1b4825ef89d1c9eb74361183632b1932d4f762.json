@@ -5,28 +5,32 @@
   "commit_sha": "1f1b4825ef89d1c9eb74361183632b1932d4f762",
   "committed_at": "2026-09-09T18:09:14Z",
   "evidence": {
-    "api_compatibility": "No breaking changes. The file `src/cpp/resources/server_models.json` is an internal model registry; the change only corrects which checkpoint file is selected and does not alter any external API contract, schema, or behavior contract.",
-    "documentation": "Not required. The change is a bugfix that restores intended behavior and does not introduce new features, CLI commands, or documented behavior. The PR description provides clear context for future maintainers.",
-    "manual_release_testing": "Not required. This is a config-data fix only (one JSON field in a static registry file), not new user-facing behavior, CLI commands, or GUI changes. It corrects a broken load path that was already part of the release surface.",
-    "post_approval_commits": "None. The PR contained a single commit (82155368) which was the one approved; no commits were added after approval.",
-    "review": "Approved by @fl0rianr (collaborator, subject area: llamacpp, Lemonade Mix omni models) with 'Thanks! LGTM' submitted at 2026-09-09T16:38:08Z. The reviewer's expertise in llamacpp makes them a qualified reviewer for this checkpoint-resolution fix. No inline comments or requested changes.",
-    "security": "No concerns. The change simply narrows a glob to an explicit filename within the existing `ggml-org/gpt-oss-120b-GGUF` HuggingFace repo. No network calls, supply-chain changes, or credential handling.",
-    "tests": "No new test files were added, but the change is a single-line JSON correction in the server model registry (server_models.json) following the exact same pattern as the other 227 entries. The author verified end-to-end functionality on their own hardware (Strix Halo/gfx1151, llamacpp vulkan b0.2.0) confirming the model loads the correct 59 GiB file and generates normally (~55 tok/s, finish_reason: stop). The Server Download Registry Tests workflow passed successfully (conclusion: success)."
+    "api_compatibility": "No API breaking change. The change is internal to server_models.json and corrects a previously broken model entry. It restores the behavior that was working before the upstream HF repo added EAGLE3 checkpoints. Existing user configs and downloads are unaffected (the MXFP4 file was already being fetched by the glob, just not selected).",
+    "documentation": "No documentation update needed. This is a bugfix for a broken model entry, not a new feature or behavior change for users. The PR description adequately explains the root cause and the fix.",
+    "manual_release_testing": "This is the only `:*` glob entry remaining in the registry (227 other entries already use explicit filenames). It changes user-visible behavior for the `lemonade load gpt-oss-120b-mxfp-GGUF` command. There is no evidence a human exercised this code path on a release candidate build before merge; CI ran routing schema and download registry tests but did not test actual model loading end-to-end. A pre-release verification is recommended.",
+    "post_approval_commits": "None. The PR contains exactly one commit (82155368129d58eccd69837f3b39bace6ac395b7), which was the commit that received approval. No commits were added after approval.",
+    "review": "PR #3496 received one approval from @fl0rianr (submits at 2026-09-09T16:38:08Z, labeled 'COLLABORATOR') with the body 'Thanks! LGTM'. The reviewer has 'llamacpp' listed as a subject area in docs/dev/contribute.md, which is relevant. The PR author also noted the change is 'deliberately minimal' and explained why EAGLE3 draft support is out of scope. No inline review comments or follow-up questions were raised.",
+    "security": "No security concerns. The change only alters a JSON string value from a glob pattern to a specific filename. No code, credential, network call, or dependency changes.",
+    "tests": "The change touches only src/cpp/resources/server_models.json (one line: glob to explicit filename). There are no unit or integration tests added for this specific entry. The Server Download Registry Tests workflow checks server_models.json for general validity (schema, download paths) but does not verify that a specific checkpoint glob resolves to the correct model file. The author verified the fix on a Strix Halo (gfx1151) host with llamacpp vulkan backend, observing correct model load and ~55 tok/s generation."
   },
-  "generation_seconds": 125.1,
-  "maintainer_todos": [],
+  "generation_seconds": 153.2,
+  "maintainer_todos": [
+    {
+      "text": "Run `lemonade load gpt-oss-120b-mxfp-GGUF` and confirm the model loads successfully with the correct 63 GB MXFP4 file (not the 1.5 GB EAGLE3 draft head)."
+    }
+  ],
   "merge_date": "2026-09-09T19:27:30Z",
   "pr_number": 3496,
   "range_start": "v11.9.0",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-09-15T17:04:38+00:00",
+  "reviewed_at": "2026-09-15T22:02:54+00:00",
   "reviewers": [
     "@fl0rianr"
   ],
   "sha": "1f1b4825ef89d1c9eb74361183632b1932d4f762",
   "shout_outs": [],
   "subject": "fix: name the gpt-oss-120b checkpoint instead of globbing (#3496)",
-  "summary": "The fix names the gpt-oss-120b-mxfp-GGUF checkpoint file explicitly instead of using a glob pattern that was resolving to the wrong EAGLE3 speculative-decoding draft file.",
-  "verdict": "Clean",
-  "verdict_reason": "A one-line config change following the established 227-entry convention, approved by a llamacpp subject-matter expert, with all CI passing and no post-approval commits."
+  "summary": "Fixes gpt-oss-120b-mxfp-GGUF model loading by replacing a checkpoint glob that resolved to the wrong file with an explicit filename.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "A minimal, correct one-line fix that is adequately reviewed but should be manually verified before release since it is the only remaining glob entry in the registry and there is no evidence of end-to-end testing on a release candidate build."
 }
