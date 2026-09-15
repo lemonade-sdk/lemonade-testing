@@ -1,0 +1,32 @@
+{
+  "author": "@sofiageo",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "d9aa6f5040a98a4e70607cc059b1870e6791a289",
+  "committed_at": "2026-09-11T19:40:22Z",
+  "evidence": {
+    "api_compatibility": "No API, CLI, or behavioral changes. Only docs/dev/getting-started.md was touched.",
+    "documentation": "This PR is itself the documentation change. It addresses issue #936 by expanding the Windows prerequisites section to separate Lemond, Tauri app, and Windows Installer requirements with explicit installation paths.",
+    "manual_release_testing": "No release-critical behavior changed. This is a one-line documentation update to getting-started.md.",
+    "post_approval_commits": "No commits were added after approval. The merge commit (d9aa6f5) was merged by @jeremyfowers at 2026-09-11T22:09:42Z with only the single approved commit a229cf6dc646ba39ed6ad2c03c0ada5ef896b646 on the branch.",
+    "review": "PR #3443 was opened by @sofiageo on 2026-08-31 and reviewed by @jeremyfowers (admin maintainer, subject-area expertise includes Windows and GUI). @jeremyfowers left inline comments on the draft: flagged that WiX should be 5.x (addressed in final merge), questioned whether setup.ps1 already installs Rustup (author explained PowerShell execution policies prevent relying on it; reviewer accepted the explanation). All inline comments were resolved before approval, which was submitted at 2026-09-11T19:40:17Z.",
+    "security": "No code changes; only documentation updated. No security concerns.",
+    "tests": "No code changes; this is a documentation-only PR. No tests were weakened or deleted."
+  },
+  "generation_seconds": 91.8,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-11T22:09:42Z",
+  "pr_number": 3443,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T17:51:51+00:00",
+  "reviewers": [
+    "@jeremyfowers"
+  ],
+  "sha": "d9aa6f5040a98a4e70607cc059b1870e6791a289",
+  "shout_outs": [],
+  "subject": "docs: update windows prerequisites (#3443)",
+  "summary": "Updates the Windows prerequisites section in docs/dev/getting-started.md to clarify the C++ workload installation path and add Rustup/Tauri and WiX installer requirements.",
+  "verdict": "Clean",
+  "verdict_reason": "A single-line docs-only change that addresses issue #936, was reviewed by an admin maintainer with relevant subject-area knowledge (Windows), and introduced no behavioral or API changes."
+}
