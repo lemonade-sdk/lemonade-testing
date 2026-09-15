@@ -1,0 +1,32 @@
+{
+  "author": "@iswaryaalex",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "788dfb92adfe48e0ff611faf633130270163a568",
+  "committed_at": "2026-09-10T18:18:13Z",
+  "evidence": {
+    "api_compatibility": "No user-facing API, schema, or CLI contract changes. All touched files are CI infrastructure (.github/ and benchmark_forks.json). Adding an external fork reference (ROCm/ggml-staging-automation) is consistent with existing fork patterns in the project.",
+    "documentation": "No public-facing docs, API specs, or guides were updated. This is an internal CI change with no user-visible behavior; no doc updates are warranted.",
+    "manual_release_testing": "The changes are CI-only — they modify validate_backend_bench.py, benchmark-regression.yml, and benchmark_forks.json. The HRX backend is marked experimental and gated behind a fork config entry. No CLI commands, GUI changes, or user-facing APIs are affected. The nightly regression workflow itself is the test vehicle; if HRX integration breaks, CI will surface it.",
+    "post_approval_commits": "None. The final commit (5b7151df) is the same commit that received the approval. No commits were added after the sole approval.",
+    "review": "PR #3480 was approved by @jeremyfowers at 2026-09-10T18:18:02Z on the final commit (5b7151df). Per docs/dev/contribute.md, @jeremyfowers has subject-matter expertise in \"ci, new backends, large new features\". A Copilot bot commented with three \"changes recommended\" observations: (1) resolve_latest_version should skip tag-first-release scan if assets are absent (now addressed by asset check in the actual code), (2) version_fallback is not passed during the main bench loop (the bench loop does pass pinned and fallback in the merged code), and (3) workflow config_section default differs from script default (the workflow now reads config_section from the fork config). @jeremyfowers approved after these were resolved. No other human reviewers participated.",
+    "security": "No security concerns. The version resolution logic was improved to require releases with assets, which is a safety improvement over blindly trusting /releases/latest. No credential handling, code execution, network call changes, or supply-chain alterations beyond the expected new fork config entry.",
+    "tests": "No new unit tests were added for the Python validation script. The script supports a --dry-run flag and the CI workflow itself exercises the code path through the nightly benchmark run, which serves as the integration test. Copilot flagged correctness gaps in version resolution, but the merged code addresses those in resolve_latest_version (asset check, fallback chain). No tests were weakened or deleted."
+  },
+  "generation_seconds": 152.9,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-10T19:27:45Z",
+  "pr_number": 3480,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T17:36:58+00:00",
+  "reviewers": [
+    "@jeremyfowers"
+  ],
+  "sha": "788dfb92adfe48e0ff611faf633130270163a568",
+  "shout_outs": [],
+  "subject": "[ci][hrx-backend] Adds Backend regression testing on HRX experimental backend (#3480)",
+  "summary": "Registers an experimental HRX backend in the nightly benchmark regression pipeline and refactors version resolution and model discovery to be recipe-aware.",
+  "verdict": "Clean",
+  "verdict_reason": "Focused CI infrastructure change approved by the maintainer with subject-matter expertise in CI and backends, with no post-approval commits, all checks passing, and no user-facing breakage."
+}
