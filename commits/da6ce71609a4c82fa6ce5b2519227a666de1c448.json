@@ -1,0 +1,32 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "da6ce71609a4c82fa6ce5b2519227a666de1c448",
+  "committed_at": "2026-09-09T19:09:12Z",
+  "evidence": {
+    "api_compatibility": "No API changes. The only files modified are a deleted GitHub Actions workflow, README.md badges, and docs/dev/testing.md. No user-facing APIs, configurations, or contracts are affected.",
+    "documentation": "README.md badges for Arch and Debian were updated to point to the archlinux package and the cpp_server_build_test_release.yml workflow respectively. docs/dev/testing.md CI gate matrix was updated to remove Arch and openSUSE from the distro build group. All documentation changes are consistent with the workflow removal.",
+    "manual_release_testing": "Not applicable. This PR removes a CI job; it does not add user-visible features, CLI commands, or GUI changes. README badge URLs were updated but these are cosmetic redirect changes.",
+    "post_approval_commits": "No post-approval commits. The PR contained a single commit (766695f) and the branch was merged immediately after approval. No churn or scope creep.",
+    "review": "Single approval from @superm1, an admin maintainer whose subject areas include linux packaging, Docker, containers, and CI infrastructure. The approval had an empty body but was substantive given the low-risk nature of the change. No inline comments were requested. The reviewer's expertise aligns with the PR's scope of CI workflow removal.",
+    "security": "No security concerns. Deleting a CI workflow and updating documentation has no impact on credential handling, network calls, auth, permissions, or code execution paths.",
+    "tests": "No test changes. Removing a CI workflow does not require new tests, and no existing tests were weakened, deleted, or relaxed. The removed workflow itself contained CLI and endpoint tests, but those tests still exist in the repository and are exercised by other active CI jobs."
+  },
+  "generation_seconds": 100.0,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-09T20:49:12Z",
+  "pr_number": 3524,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T17:08:44+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "da6ce71609a4c82fa6ce5b2519227a666de1c448",
+  "shout_outs": [],
+  "subject": "Remove the Linux Distro Builds ci job (#3524)",
+  "summary": "Removes the Linux Distro Builds CI job that was blocking merge queues with negligible benefit, and updates README badges and docs/dev/testing.md to reflect the change.",
+  "verdict": "Clean",
+  "verdict_reason": "Straightforward CI maintenance change approved by a maintainer with relevant subject-matter expertise, with no breaking changes and consistent documentation updates."
+}
