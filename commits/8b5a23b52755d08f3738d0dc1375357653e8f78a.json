@@ -5,21 +5,25 @@
   "commit_sha": "8b5a23b52755d08f3738d0dc1375357653e8f78a",
   "committed_at": "2026-09-14T05:03:30Z",
   "evidence": {
-    "api_compatibility": "LlamaCppServer::downsize() is removed as an override in the header (llamacpp_server.h) and implementation (llamacpp_server.cpp). This is an internal C++ interface — it is not part of any public API, CLI, or configuration contract. The EvictionEngine contract remains unchanged (the base-class downsize() no-op is already the documented default for backends that cannot downsize). No breaking changes.",
-    "documentation": "Two doc files were updated. docs/guide/configuration/multi-model.md was corrected to accurately state that downsize for llama.cpp is a no-op that leaves the prompt cache intact. docs/dev/backends-reference.md gained a paragraph explaining the llama.cpp backend's behavior — the reviewer initially flagged this as potentially out-of-context, but the author defended it as addressing an acceptance criterion from the original issue #2961 ('Document the pinned llama-server runtime defaults'). Both changes are accurate and necessary for consistency.",
-    "manual_release_testing": "The only user-visible change occurs when `auto_evict=true` is configured: a conversation that goes soft-idle and resumes will now report non-zero `timings.cache_n` instead of re-prefilling its entire history. This requires `auto_evict` to be explicitly enabled (not the default), so it falls outside the common release surface. The existing `test_downsize_idle_timeout` in the server eviction test suite exercises the downsize code path. No manual release test is warranted given the narrow scope and the fact that the change is a method removal that falls through to the documented base-class no-op.",
-    "post_approval_commits": "Two commits were added after the first approval (@pwilkin, 2026-09-13T17:10:24Z): (1) 'PR feedback: Removing the test script' — a 55-line deletion of `test_downsize_preserves_prompt_cache` per @bitgamma's review request, which is a reduction in scope consistent with reviewer guidance and does not alter the core fix or weaken tests; (2) a merge of main into the feature branch. No commits were added after the latest approval (@bitgamma, 2026-09-14T05:01:00Z).",
-    "review": "PR #3565 was requested for review from @ramkrishna2910, @SlawomirNowaczyk, and @fl0rianr, but substantive review came from @bitgamma (requested changes on an over-scoped test) and @pwilkin (approved after test removal). Both reviewers with llamacpp subject-matter expertise participated (@superm1 and @pwilkin are listed as llamacpp experts in docs/dev/contribute.md). @bitgamma's feedback was practical and scoped: the initial review flagged a test that validated a no-op at the backend level (llamacpp) rather than Lemonade, and @bitgamma also flagged the backend-reference doc addition as potentially confusing out of context. @meghsat addressed both points. @pwilkin's approval noted the PR was 'much better scoped than the previous attempt.' The first approval was from @pwilkin at 2026-09-13T17:10:24Z; the final approval was from @bitgamma at 2026-09-14T05:01:00Z on the merged PR commit. No substantive code changed between first and latest approval beyond the test removal (requested by the reviewer who later approved).",
-    "security": "No security concerns. The change removes code that was performing `POST /slots/{id}?action=erase` — the review confirms this action freed zero device memory and only cleared logical KV bookkeeping. No new network calls, credential handling, code execution paths, or permissions are introduced.",
-    "tests": "The original PR included a test `test_downsize_preserves_prompt_cache` that was removed in response to reviewer feedback (@bitgamma: 'testing that a no-op is a no-op seems redundant'). The existing `test_downsize_idle_timeout` in test/server_eviction.py still covers the soft-idle downsize path and confirms the model reaches the DOWNSIZED state. There is no new feature test proving the prompt cache is preserved, but the PR explicitly removes the only test that attempted it, and the fix is a simple method removal with no logic to verify. The PR also adds a single constant `CACHE_TEST_CTX_SIZE = 1024` to test/server_eviction.py which is now unused (the test function that used it was deleted)."
+    "api_compatibility": "No breaking API change. LlamaCppServer no longer overrides downsize(), which means it inherits the default successful no-op from WrappedServer. This is the documented contract for backends that cannot downsize. The base class contract (transitions to DOWNSIZED once, not retried while idle) is unchanged. The existing eviction_engine.cpp path that calls s->downsize() and then s->finish_downsize(ok) is unaffected.",
+    "documentation": "docs/guide/configuration/multi-model.md updated to clarify that for llama.cpp, downsize is a no-op that leaves the prompt cache intact. docs/dev/backends-reference.md added a llama.cpp subsection documenting launch flags and downsize behavior (retained after @bitgamma raised a readability concern, with author citing issue #2961's documentation request). Both docs changes are accurate and helpful.",
+    "manual_release_testing": "This changes server-side behavior of the eviction engine for llama.cpp backends when auto_evict=true: after a conversation goes soft-idle, the next request should report non-zero cache_tokens instead of re-prefilling. A user can reach this through the multi-model soft-idle config path with auto_evict enabled. No evidence a human exercised this path end-to-end before merge; CI covers compilation and unit tests but not this specific idle-resume sequence.",
+    "post_approval_commits": "Two commits were added after @pwilkin's first approval: (1) removing the test_downsize_preserves_prompt_cache() test (in direct response to @bitgamma's review comment), and (2) a merge of main. After @bitgamma's latest approval (2026-09-14T05:01:00Z), no further commits were added. The post-approval commits were benign: removing a test and rebasing. @bitgamma re-approved on the final state.",
+    "review": "PR #3565 received two substantive reviews. @pwilkin (subject area includes llamacpp per contribute.md) approved with positive confirmation. @bitgamma requested removal of the prompt-cache preservation test (calling it redundant since it tests llamacpp behavior, not Lemonade) and flagged the dev/docs addition as unclear out of context. The author removed the test script (the only substantive code change after pwilkin's first approval) and kept the dev docs with a rebuttal pointing to issue #2961's documentation request. @bitgamma then approved on the final commit (cdeeb28). The review was thorough and correctly scoped.",
+    "security": "No security concerns. The change removes code (21 lines of erase-slot logic). It does not introduce network calls, credential handling, or permission changes. The only remaining path is the base-class no-op.",
+    "tests": "Removed test_downsize_preserves_prompt_cache() per reviewer request. Added CACHE_TEST_CTX_SIZE constant (1024) used by the removed test and existing test_downsize_idle_timeout(). No existing tests weakened or deleted beyond the requested removal. The base-class downsize() no-op is implicitly tested by the existing eviction tests that verify state transitions."
   },
-  "generation_seconds": 174.5,
-  "maintainer_todos": [],
+  "generation_seconds": 218.3,
+  "maintainer_todos": [
+    {
+      "text": "Start Lemonade with auto_evict enabled and a llama.cpp model, send a prompt, wait for the model to go soft-idle, then send a follow-up prompt and confirm the /stats endpoint reports non-zero cache_tokens (the prompt prefix was reused instead of re-prefilled)."
+    }
+  ],
   "merge_date": "2026-09-14T05:59:32Z",
   "pr_number": 3565,
   "range_start": "v11.9.0",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-09-15T22:57:34+00:00",
+  "reviewed_at": "2026-09-15T23:46:25+00:00",
   "reviewers": [
     "@bitgamma",
     "@pwilkin"
@@ -27,7 +31,7 @@
   "sha": "8b5a23b52755d08f3738d0dc1375357653e8f78a",
   "shout_outs": [],
   "subject": "fix(server): stop erasing llama.cpp slots on soft-idle downsize #2961 (#3565)",
-  "summary": "Removes the LlamaCppServer::downsize() override so soft-idle no longer erases llama.cpp KV cache slots, preserving the prompt cache instead of destroying it for a zero-VRAM-benefit re-prefill.",
-  "verdict": "Clean",
-  "verdict_reason": "A narrow, well-scoped fix that removes 21 lines of harmful code; it was reviewed by two experts with llamacpp domain knowledge, all CI checks pass, documentation was updated to match, and no problematic post-approval commits were added."
+  "summary": "Removes LlamaCppServer::downsize() override so soft-idle transitions fall through to the base-class no-op instead of issuing POST /slots?action=erase, which freed no VRAM and destroyed the prompt cache.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "Well-scoped bug fix with strong experimental evidence and thorough review, but the only automated test proving the fix was removed per reviewer request and no human verified the soft-idle resume path end-to-end before merge."
 }
