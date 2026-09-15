@@ -5,28 +5,28 @@
   "commit_sha": "a5dbbb1e976723d642aa7c57bffd6fd609b719c0",
   "committed_at": "2026-09-09T21:18:53Z",
   "evidence": {
-    "api_compatibility": "No API compatibility concerns. The change only affects build-time library discovery in CMakeLists.txt and does not alter any public API, CLI contract, config format, or integration behavior. The PR author confirmed no breaking changes.",
-    "documentation": "Not affected. This is an internal build-system change with no user-facing documentation impact.",
-    "manual_release_testing": "This is a build-system internal change with no user-visible behavior or CLI/GUI surface. Not release-critical for manual testing.",
-    "post_approval_commits": "No commits were added after approval. The single PR commit (3dd53790630ea852ef5b19b20ca7d7c5557f1280) was the only commit; the merge commit (a5dbbb1e976723d642aa7c57bffd6fd609b719c0) is the squashed result.",
-    "review": "PR #3516 was approved by @superm1 (superm1) on 2026-09-09T19:12:29Z. @superm1 is an admin maintainer with subject-matter expertise in linux packaging, system info, ROCm, and security — directly relevant to this CMakeLists.txt build-system change. The PR author self-reviewed the full diff, confirmed it addresses one clear issue, and described concrete local testing.",
-    "security": "No security concerns. The change replaces a hardcoded library link name with pkgconfig-driven include and library directory discovery. No network calls, credential handling, code execution paths, or supply-chain surface changes are introduced.",
-    "tests": "This is a CMake build-system change; no unit tests are appropriate. The PR author verified the change locally by building with PKG_CONFIG_PATH set to non-standard libdrm locations and confirming ldd linkage, and also verified the FATAL_ERROR path by building without PKG_CONFIG_PATH. CI validation is strong — the C++ Server Build, Test, and Release workflow passed across Linux (amd64 and arm64), Windows, and macOS, plus container build tests, smoke tests, and unit tests all succeeded."
+    "api_compatibility": "No API changes. The only surface is the build system: the old code used bare `target_link_libraries(... PRIVATE drm_amdgpu)`, and the new code uses pkg-config to resolve the same library within an `if(PkgConfig_FOUND)` block. This does not change the compiled binary's ABI, exported symbols, CLI, or any user-facing API. A build-time dependency on pkg-config is implied, but pkg-config is ubiquitous on modern Linux and was already used in the same file for libcap.",
+    "documentation": "No documentation changes needed. The author checked 'Documentation is not affected by this change' in the PR template. This is a build-system internal improvement that does not alter user-facing behavior, CLI options, or configuration.",
+    "manual_release_testing": "Not required. The change is build-system-only (CMakeLists.txt) and does not introduce user-facing behavior — it only changes how the build finds libdrm_amdgpu include/library paths. CI already exercises the full Linux build pipeline on amd64 and arm64, and the author confirmed on-target testing with actual AMD hardware.",
+    "post_approval_commits": "None. The PR contained a single commit (3dd5379). The PR was merged with that same commit as the merge commit (a5dbbb1). There are zero commits added after approval, so no post-approval drift to assess.",
+    "review": "PR #3516 was approved by @superm1 (MEMBER) at 2026-09-09T19:12:29Z. @superm1's documented subject areas include linux packaging, Docker/containers, and system info — directly relevant to a CMake build-system change for library discovery on Linux. There were no inline review comments and no requests for changes; the approval came without conditions. No reviewer had to push back or revisit scope.",
+    "security": "No security concerns. The change only alters how CMake locates a system library. No new network calls, credential handling, code execution paths, or permission changes. Supply-chain surface is unchanged (still the same system library, just discovered differently).",
+    "tests": "No unit tests were added, which is appropriate — this is a CMake build-system change, not runtime behavior. The author reported testing on target (AMD GPU hardware): building with PKG_CONFIG_PATH set to non-standard libdrm locations, verifying linkage with ldd, testing the error condition when pkg-config cannot find the library, and running lemond on the target. CI confirms: the 'C++ Server Build, Test, and Release' workflow succeeded on Linux amd64 and arm64, 'Container Build Tests' passed on both amd64 and arm64, and all other CI check suites (MCP Smoke Test, Docs And Style, Routing Schema Tests, etc.) passed. No tests were weakened or deleted."
   },
-  "generation_seconds": 106.2,
+  "generation_seconds": 131.6,
   "maintainer_todos": [],
   "merge_date": "2026-09-10T01:36:00Z",
   "pr_number": 3516,
   "range_start": "v11.9.0",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-09-15T17:26:07+00:00",
+  "reviewed_at": "2026-09-15T22:26:43+00:00",
   "reviewers": [
     "@superm1"
   ],
   "sha": "a5dbbb1e976723d642aa7c57bffd6fd609b719c0",
   "shout_outs": [],
   "subject": "Use pkgconfig to find libdrm_amdgpu (#3516)",
-  "summary": "Switches libdrm_amdgpu detection in CMakeLists.txt from a hardcoded library name to pkgconfig-based discovery, enabling builds on systems with non-standard include and library paths.",
+  "summary": "Switches libdrm_amdgpu discovery in CMakeLists.txt from bare library name linking to pkg-config-based detection, supporting non-standard library and include paths on Linux.",
   "verdict": "Clean",
-  "verdict_reason": "Well-scoped build-system change with adequate review from a maintainer with relevant subject-matter expertise, passing all checks, and no post-approval commits."
+  "verdict_reason": "A small, well-scoped build-system improvement reviewed by someone with relevant Linux packaging expertise, with CI passing across all platforms and the author confirming on-target testing."
 }
