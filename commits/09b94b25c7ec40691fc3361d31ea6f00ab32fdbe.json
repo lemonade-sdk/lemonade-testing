@@ -1,0 +1,33 @@
+{
+  "author": "@popey",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "09b94b25c7ec40691fc3361d31ea6f00ab32fdbe",
+  "committed_at": "2026-09-09T19:10:06Z",
+  "evidence": {
+    "api_compatibility": "The internal function get_available_memory_gb() in auto_tune.h gains two optional parameters (GpuMemoryVendor and std::string device) with default values, so existing call sites remain compatible. GpuMemoryPool and GPUInfo structs gain new fields but only as additions. No breaking changes to public APIs, CLI contracts, config schemas, or persistence formats.",
+    "documentation": "Bug fix for internal auto-tuning behavior; no new user-facing features, CLI commands, or configuration options. No documentation update required.",
+    "manual_release_testing": "The change affects internal auto-tuning logic for context size on GPU devices. On single-GPU systems the fallback order is unchanged; on mixed AMD/NVIDIA hosts the prior behavior was buggy. Residual risk on multi-vendor GPU configurations is mitigated by the new tests and the author's real-world verification on an AMD iGPU + NVIDIA dGPU Linux host. No CLI commands or GUI changes are introduced. Not flagged as release-blocking manual-test work.",
+    "post_approval_commits": "First approval: @bitgamma (2026-08-22). Latest approval: @kenvandine (2026-09-01). Two commits were added after the first approval: \"Address GPU memory selection review feedback\" (81f1431c) — responsive to review, and \"fix: add JSON dependency to GPU memory test\" (c143d0c) — a build fix that adds nlohmann_json to the test link line so the test compiles. Only the JSON-dependency commit (c143d0c) was added after the latest approval by @kenvandine. This is a benign CMakeLists.txt one-liner; it does not alter behavior, weaken tests, or change the risk profile. The commit follows naturally from the approved test and was required for correctness.",
+    "review": "PR #3018 received substantive review from @kenvandine (maintainer with subject-matter expertise in Nvidia CUDA, Linux, and hardware vendor support per contribute.md). @kenvandine flagged a json::get<std::string>() null-safety issue, a missing BUILD_TESTING guard on the test target, and questioned strict token parsing — all addressed by the author. @bitgamma provided initial approval; @kenvandine provided the second and more thorough review (submitted 2026-09-01). The author also responded to Copilot's automated inline comments identifying a mismatch between selected GPU vendor and its used-memory measurement, and a missing per-device index dispatch. Every inline comment was addressed with specific commit cross-references.",
+    "security": "No security concerns. The change is purely local GPU memory detection and selection logic. No network calls, supply-chain changes, credential handling, permission broadening, or code execution paths are introduced.",
+    "tests": "New file test/cpp/test_gpu_memory_selection.cpp (165 lines) adds comprehensive unit tests: CUDA device selection, ROCm device selection, explicit per-device ordinal dispatch (CUDA0, CUDA1), CUDA_VISIBLE_DEVICES ordinal and UUID filtering, multi-device comma-separated lists with most-constrained selection, malformed input rejection, Apple Metal vendor typing, unknown per-device usage handling, and generic fallback order preservation. 20+ assertion checks cover happy paths, edge cases, and failure modes. Tests run via the C++ CI workflow and passed on the merge commit."
+  },
+  "generation_seconds": 172.7,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-09T21:32:08Z",
+  "pr_number": 3018,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T17:11:38+00:00",
+  "reviewers": [
+    "@kenvandine",
+    "@bitgamma"
+  ],
+  "sha": "09b94b25c7ec40691fc3361d31ea6f00ab32fdbe",
+  "shout_outs": [],
+  "subject": "Use the selected GPU for context auto-tuning (#3018)",
+  "summary": "Uses the selected GPU backend or explicit device to choose the GPU memory pool for context auto-tuning, fixing incorrect context sizing on mixed AMD/NVIDIA systems.",
+  "verdict": "Clean",
+  "verdict_reason": "Thorough, expert-led review with comprehensive test coverage and no problematic post-approval changes; the merged commit is a well-scoped bug fix with no release risks."
+}
