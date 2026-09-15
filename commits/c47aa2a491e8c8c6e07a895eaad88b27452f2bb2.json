@@ -1,0 +1,42 @@
+{
+  "author": "@superm1",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "c47aa2a491e8c8c6e07a895eaad88b27452f2bb2",
+  "committed_at": "2026-09-15T11:17:12Z",
+  "evidence": {
+    "api_compatibility": "Breaking change. The version scheme changed from M.m.p to YYYY.WW.N[~count.hash], with the year component potentially exceeding 255. CMakeLists.txt no longer uses a static VERSION declaration — it invokes python3 tools/version.py at configure time. CMake variables PROJECT_VERSION_MAJOR, MINOR, PATCH are derived from the numeric portion of the version string. The MSI installer now uses @LEMONADE_MSI_VERSION@ (YY.MM.PATCH) instead of @PROJECT_VERSION@. The Windows assembly manifest uses @LEMONADE_NUMERIC_VERSION@ instead of @PROJECT_VERSION@. The get-version composite action output format changes to YYYY.WW.N. The author acknowledges this as a breaking change in the PR body. The PR is explicitly coordinated with PR #3529 for routing changes.",
+    "documentation": "The new tool modules include module-level docstrings with CLI and import usage examples (added during review). However, there is no documentation for maintainers about the new version scheme, how to interpret YYYY.WW.N format, or how to use tools/release.py for the release process. The PR body references RFC #3522 but does not describe the operational impact. The get-version action.yml description was updated from 'Extract version from CMakeLists.txt - single source of truth' to 'Calculate the Lemonade version from git', which is a useful clarification. The version.h.in comment was changed from 'auto-generated from CMakeLists.txt' to 'auto-generated at configure time'. The project has no dedicated release process doc in the cloned repo.",
+    "manual_release_testing": "New CI artifacts are generated: versioned source tarballs on release branch and tag events, plus a new deterministic release tagging tool. The source-tarball job in cpp_server_build_test_release.yml runs only on release-v* branches or v* tags, so it will not execute on standard PR CI runs — maintainers should confirm the full release flow works end-to-end (branch creation, tarball generation, artifact upload, release notes inclusion) before the next release. The MSI version field changed from @PROJECT_VERSION@ to @LEMONADE_MSI_VERSION@, which reformats YYYY.WW.N into YY.MM.PATCH for the Windows installer — this should be verified on the next MSI build.",
+    "post_approval_commits": "None. @jeremyfowers approved at 2026-09-14T17:54:50Z and the 11 commits on the PR were all authored before that timestamp. No post-approval churn.",
+    "review": "PR was authored by @superm1 (member) and approved by @jeremyfowers (subject-matter expert in CI per docs/dev/contribute.md). The review was substantive and responsive: @jeremyfowers raised four inline issues covering the need for a deterministic release helper, missing docstrings on new modules, non-deterministic versioning for main-branch builds, and a missing fetch-depth in cpp-unit-tests. @superm1 addressed all comments — the release helper (tools/release.py) was added as a follow-up commit, docstrings were added, and fetch-depth: 0 was applied to the cpp-unit-tests checkout. The review applied the project philosophy of design-for-agility (accepting time-based release automation over strict determinism). No commits were added after approval. The RFC-linked discussion (#3522) was referenced by the author.",
+    "security": "No security concerns. The new tools (version.py, source_archive.py, release.py) use subprocess only for git operations. No credential handling, network calls, or code execution beyond standard build tooling. The release.py tool includes safeguards: tag-existence checks, branch-advancement guards, and signed-tag confirmation prompts. GPG signing can be disabled with --no-sign but is the default.",
+    "tests": "Three new test files with 307 lines total: test/test_version.py (101 lines) covers release-week computation, .version override, release branch commit counting, exact release tag handling, and GitHub ref-based branch resolution. test/test_source_archive.py (82 lines) validates tarball content, version stamping, and version-file replacement. test/test_release.py (124 lines) tests branch selection, deterministic tagging, tag-existence guards, and dry-run behavior. The CI workflow (docs_and_style.yml) was updated to run these unit tests. Tests are well-scoped and cover edge cases identified in the RFC."
+  },
+  "generation_seconds": 193.4,
+  "maintainer_todos": [
+    {
+      "text": "Document the new version handling scheme for maintainers and release engineers, including how to interpret YYYY.WW.N formats and use tools/release.py."
+    },
+    {
+      "text": "Decide whether the non-deterministic versioning for bleeding-edge builds (where the same commit gets a different version number depending on the current date's release week) warrants a follow-up PR to anchor versions to commit date rather than build date."
+    },
+    {
+      "text": "Verify that all downstream consumers (Fedora, Debian, MSI, snap, containers) correctly handle the new YYYY.WW.N version format, especially the YYYY portion exceeding 255 which affects MSI version fields."
+    }
+  ],
+  "merge_date": "2026-09-15T11:59:57Z",
+  "pr_number": 3539,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T18:05:32+00:00",
+  "reviewers": [
+    "@jeremyfowers"
+  ],
+  "sha": "c47aa2a491e8c8c6e07a895eaad88b27452f2bb2",
+  "shout_outs": [],
+  "subject": "Implement new version handling scheme (#3539)",
+  "summary": "Replaces CMakeLists.txt static version extraction with a Python-based git state derivation system and introduces a deterministic release tagging helper tool, new source tarball CI workflow, and version-stamped source archives.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The new version scheme is a significant breaking change with no maintainer-facing documentation, and the review left an acknowledged non-deterministic versioning concern unresolved."
+}
