@@ -1,0 +1,47 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "658d5655967acbb0669278dae5d5f175ed795835",
+  "committed_at": "2026-09-15T14:14:41Z",
+  "evidence": {
+    "api_compatibility": "No user-facing API changes. The workflow change modifies release behavior: release-v* branches now produce prereleases with candidate-v* tags instead of entering the v* namespace. Downstream tooling that watches for v* tags will not see candidates; this is a behavioral change but not an API breaking change.",
+    "documentation": "The PR description summarizes what the change does and why. AGENTS.md or project documentation about CI/release process does not appear to have been updated to reflect the new candidate workflow. The generate-release-notes action.yml docstring references the version format example but the new required/env inputs are not fully documented in the action itself.",
+    "manual_release_testing": "This is new shipped behavior: release-v* branches will now produce unsigned MSI installers under candidate-v* tags with a SmartScreen warning disclaimer. The inference-test gating concern flagged by @superm1 (and a bot comment) means candidates could publish while inference tests are still running or have failed, since those jobs are not in release.needs. This should be tested by hand on a release-v* branch before relying on it.",
+    "post_approval_commits": "The PR consists of a single commit (fc2c998) which predates @superm1's first and only approval at 2026-09-14T19:13:32Z. No post-approval commits were added.",
+    "review": "PR #3579 was approved by @superm1 (submitted 2026-09-14T19:13:32Z) after multiple rounds of inline comments on design questions. @superm1 raised substantive points: PPA channel naming (should be candidate), whether manual workflow dispatch for signing should be preserved, whether candidate tagging is required, and whether the new action.yml inputs should all be required (merged version kept defaults). A GitHub copilot bot flagged the inference-test-gating issue (PR comment by chatgpt-codex-connector[bot]), which @superm1 also highlighted in review. The subject-matter reviewer check is satisfied: @superm1 covers 'ci' among his subject areas per docs/dev/contribute.md.",
+    "security": "Candidates intentionally produce unsigned MSIs (SignPath signing is skipped for release-v* branches). The generated release notes explicitly warn users that Windows SmartScreen will flag the unsigned installer. This is a documented trade-off. GITHUB_TOKEN and secrets are used appropriately; no credential exposure or supply-chain risk detected.",
+    "tests": "The PR removes .github/workflows/test_release_notes.yml (described as never really used) and modifies the release workflow to conditionally sign MSIs for candidates. No new tests are added; CI workflow changes are inherently tested by CI execution itself. The merge-group CI confirms the workflow syntax is valid and all jobs pass."
+  },
+  "generation_seconds": 136.0,
+  "maintainer_todos": [
+    {
+      "text": "Verify the generate-release-notes action.yml: @superm1 suggested all three new inputs (tag, target_commit, ppa_channel) should be required, but the merged version kept defaults and uses env vars in the workflow instead. Confirm this design is intentional."
+    },
+    {
+      "text": "Before using candidates for real release testing, verify the full candidate pipeline end-to-end: push a release-v* branch and confirm MSI signing is skipped, candidate-v* tag is created, artifacts publish correctly, and release notes display the unsigned-installer warning."
+    },
+    {
+      "text": "Confirm AGENTS.md or any internal CI documentation is updated to reflect the new candidate-prerelease workflow and tag scheme."
+    }
+  ],
+  "merge_date": "2026-09-15T14:54:23Z",
+  "pr_number": 3579,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T18:07:48+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "658d5655967acbb0669278dae5d5f175ed795835",
+  "shout_outs": [
+    {
+      "handle": "@superm1",
+      "reason": "Identified a significant release-quality risk: candidate publication was gated on inference tests, which are not in release.needs. This means testers could receive a known-bad candidate if an inference test fails or is still running. This would have caused user-visible bugs to reach testers before being caught."
+    }
+  ],
+  "subject": "ci: publish release branch builds as GitHub prereleases (#3579)",
+  "summary": "Adds prerelease artifact publishing for release-candidate builds triggered on release-v* branches, creating candidate-v* tags so candidates never enter the v* namespace that gates stable publication.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The CI change is well-constructed but the action.yml input design has an unresolved inconsistency (default vs required suggestion not addressed), and the new candidate prerelease workflow has never been exercised end-to-end in CI and warrants manual verification before relying on it for release candidates."
+}
