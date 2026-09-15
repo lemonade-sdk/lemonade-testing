@@ -1,0 +1,32 @@
+{
+  "author": "@abn",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "7c9a27aabe0a0864a2663fa4a95794cc8f818ca2",
+  "committed_at": "2026-09-11T18:08:25Z",
+  "evidence": {
+    "api_compatibility": "No API changes. Only documentation text and structure in docs/guide/configuration/README.md were modified.",
+    "documentation": "The PR fully addresses its own scope: replaces incompatible GitHub admonitions with standard Markdown callouts, introduces `####` subsections for sidebar navigation, converts inline snippets to fenced code blocks, and corrects technical inaccuracies. The changed file is the documentation itself, and the change is the documentation update.",
+    "manual_release_testing": "Not applicable — no code, CLI, GUI, or shipped behavior changed. This is a documentation rendering fix only.",
+    "post_approval_commits": "The PR had 3 commits. The sole approval from @fl0rianr was submitted at 2026-09-11T17:49:51Z against the final commit (c6e4d5be). No commits were added after approval. Both post-first-review commits were authored by @abn and directly addressed @fl0rianr's comments as confirmed in an inline comment.",
+    "review": "PR #3538 was reviewed by @fl0rianr (listed in contribute.md for GUI/CI). The first review correctly identified two factual inaccuracies: (1) `*.localhost` is not permitted by the implementation — only `tauri.localhost` among Tauri-native domains — and (2) `http://*:*` only matches any HTTP origin, not all schemes; only `*` is truly universal. The author addressed both in follow-up commits. @fl0rianr re-reviewed and approved after the fixes. The PR is marked as a 'fix' (no WG/RFC needed) with the PR checklist properly filled out.",
+    "security": "No security concerns. This is a documentation-only change. The content corrects security-related documentation about wildcard origins (e.g., clarifying that `*` is truly universal while `http://*:*` is scheme-restricted), which improves security guidance accuracy for users.",
+    "tests": "No code tests required — this is a pure documentation change touching only docs/guide/configuration/README.md (50 additions, 27 deletions). The author confirmed they built the docs locally with Zensical (`zensical build --clean`) with zero unresolved link warnings and verified rendering in headless Chrome."
+  },
+  "generation_seconds": 117.1,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-11T20:43:22Z",
+  "pr_number": 3538,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T17:47:35+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "7c9a27aabe0a0864a2663fa4a95794cc8f818ca2",
+  "shout_outs": [],
+  "subject": "docs(guide): fix allowed origins rendering and structure (#3538)",
+  "summary": "Fixes Allowed Origins documentation rendering by replacing unsupported GitHub-style callouts with Zensical-compatible Markdown and restructuring the dense configuration page into subsections.",
+  "verdict": "Clean",
+  "verdict_reason": "This is a well-scoped documentation-only fix that was reviewed, the reviewer caught accuracy issues that were addressed, and all checks passed."
+}
