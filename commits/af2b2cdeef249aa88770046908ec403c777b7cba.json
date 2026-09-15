@@ -1,0 +1,32 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "af2b2cdeef249aa88770046908ec403c777b7cba",
+  "committed_at": "2026-09-09T16:25:13Z",
+  "evidence": {
+    "api_compatibility": "No API changes. Only a GitHub Actions workflow YAML file was modified.",
+    "documentation": "No documentation changes needed. The diff adds inline comments in the workflow YAML explaining the rationale, which is sufficient for a CI-only change.",
+    "manual_release_testing": "Not applicable. This is a CI workflow optimization; it does not change any user-facing behavior, shipped artifact, or release promise. It will affect the vLLM validate CI run starting with the next workflow trigger.",
+    "post_approval_commits": "None. The single PR commit (8f0600b) was authored on 2026-08-25 and approved on 2026-08-27. No commits were added after approval.",
+    "review": "One approved review from @sree-ram-11 (COLLABORATOR) with a comment confirming the fix is correct and noting that the new Set HF_HOME step runs before the HOME override, so HF_HOME resolves to a persistent absolute path outside the workspace. No inline comments or requested changes. No review was requested in the PR metadata; the review came in independently.",
+    "security": "No security concerns. The change sets an environment variable to a well-known persistent cache path ($HOME/.cache/lemonade-ci/huggingface) and performs a mkdir -p. No new network calls, code execution, or permission changes.",
+    "tests": "No automated tests are appropriate for a CI workflow-only change. The PR author provided local validation: confirmed lemond honors HF_HOME by running the binary with empty vs populated cache dirs (0 downloaded vs 32 downloaded). The workflow YAML was verified to parse and pass the repo's workflow linters."
+  },
+  "generation_seconds": 121.0,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-09T17:14:22Z",
+  "pr_number": 3345,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T17:00:30+00:00",
+  "reviewers": [
+    "@sree-ram-11"
+  ],
+  "sha": "af2b2cdeef249aa88770046908ec403c777b7cba",
+  "shout_outs": [],
+  "subject": "ci(vllm): keep the HF model cache outside the workspace (#3345)",
+  "summary": "Reconfigures the vLLM validate workflow to persist the Hugging Face model cache outside the workspace, preventing a 9.3 GB re-download on every CI run.",
+  "verdict": "Clean",
+  "verdict_reason": "A minimal, well-scoped CI workflow fix with correct approval and no post-approval churn."
+}
