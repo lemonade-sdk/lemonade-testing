@@ -5,21 +5,21 @@
   "commit_sha": "ba35828181835870b8ebbcdfe9b19c92b388a263",
   "committed_at": "2026-09-09T19:39:55Z",
   "evidence": {
-    "api_compatibility": "Purely additive — two new keys added to defaults.json and their documentation table. No breaking changes. Existing user configurations are unaffected; new users get sensible defaults (false and 0.9).",
-    "documentation": "Updated docs/guide/configuration/README.md with two new table rows including types, defaults, and descriptions. The documentation change matches the code change one-for-one.",
-    "manual_release_testing": "The new auto_evict and auto_evict_threshold_pct config keys are user-facing via the lemonade config CLI. No evidence of a human exercising the auto-evict behavior end-to-end (e.g., triggering memory pressure and confirming eviction). However, this PR only ships default values for an existing feature, and the default is auto_evict: false (disabled), so the residual risk for this release is low.",
-    "post_approval_commits": "None. The single commit (71ae8485a1e2d12703a58315a017fb2fe7c055e2) was present at both the first and latest approval.",
-    "review": "Two maintainer approvals — @jeremyfowers (\"Thanks for the fix!\", 2026-09-09T14:42:29Z) and @superm1 (empty body, 2026-09-09T19:39:22Z) — on a single-commit PR. The review was brief and neither reviewer has explicit subject-matter expertise in VRAM management per the maintainers table, but the change scope (two config defaults in a JSON file plus docs) is small enough that the minimal review was adequate. No inline comments or requests for changes were raised.",
-    "security": "The change adds safe defaults (false for eviction, 0.9 for VRAM threshold). No credentials, network calls, or code execution paths touched. No supply-chain risk.",
-    "tests": "No automated tests. The author manually renamed config.json to config.json.old, restarted the server, and confirmed the values appeared via lemonade config. This is reasonable for a change that only adds default values with no new code logic."
+    "api_compatibility": "No breaking changes. Two new keys added to the top-level defaults.json with safe, non-disruptive defaults (auto_evict=false means the feature remains off by default). Existing user configs are unaffected. No schema, protocol, CLI contract, or persistence format changes. The PR author self-confirmed no breaking changes.",
+    "documentation": "Documentation updated in docs/guide/configuration/README.md. Two new table rows added documenting auto_evict (bool, default false, describes VRAM pressure-based eviction) and auto_evict_threshold_pct (number, default 0.90, describes the VRAM fraction threshold). The documentation example block in the same file also includes the new keys. Changes are consistent with the defaults.json additions.",
+    "manual_release_testing": "No user-facing behavior change beyond new default values for auto_evict (false) and auto_evict_threshold_pct (0.9) in the config. The auto_evict feature itself already exists in the codebase; this PR only fills in defaults that were previously missing from defaults.json. The CI validates the config schema through routing-schema and backend-doc-drift checks. The author's local smoke test (rename config.json, start server, confirm values visible) demonstrates the defaults land correctly. No additional manual testing is warranted for this release.",
+    "post_approval_commits": "Zero commits were added after either approval. The single commit (71ae848) was pushed on 2026-09-02; @jeremyfowers approved the same commit 7 days later. No post-approval churn whatsoever.",
+    "review": "PR #3488 was approved by @jeremyfowers (admin maintainer, review submitted 2026-09-09T14:42:29Z with 'Thanks for the fix!') and @superm1 (admin maintainer, review submitted 2026-09-09T19:39:22Z with an empty body). Both reviewers are in the maintainers table in contribute.md. No inline review comments were left. The PR is labeled rfc:not-required, consistent with the bug-fix nature. No review gaps identified.",
+    "security": "No security concerns. The change adds two configuration defaults — neither introduces code execution, credential handling, network calls, or permission changes. The values (false and 0.9) are conservative defaults.",
+    "tests": "This PR changes only defaults.json (two new keys) and documentation. No source code logic was added, so no new unit tests are expected. The author manually verified the config values appear via `lemonade config` after removing their config.json. All CI checks passed on the merge-group run (workflow #34365414332): C++ unit tests, build on Linux amd64/arm64, Docker smoke test, routing schema tests, server download registry tests, docs-and-style checks, and packaging builds all succeeded."
   },
-  "generation_seconds": 143.4,
+  "generation_seconds": 142.6,
   "maintainer_todos": [],
   "merge_date": "2026-09-10T00:55:35Z",
   "pr_number": 3488,
   "range_start": "v11.9.0",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-09-15T22:24:31+00:00",
+  "reviewed_at": "2026-09-15T23:42:46+00:00",
   "reviewers": [
     "@jeremyfowers",
     "@superm1"
@@ -27,7 +27,7 @@
   "sha": "ba35828181835870b8ebbcdfe9b19c92b388a263",
   "shout_outs": [],
   "subject": "Fix(#3479) Added auto_evict vars to defaults.json and updated doc (#3488)",
-  "summary": "Adds auto_evict and auto_evict_threshold_pct configuration defaults to defaults.json and updates the configuration documentation.",
+  "summary": "Adds auto_evict and auto_evict_threshold_pct default configuration values to defaults.json and updates the configuration documentation to document them.",
   "verdict": "Clean",
-  "verdict_reason": "A trivially small, purely additive change (6 lines) with two maintainer approvals, all CI checks passing, no post-approval commits, and documentation updated alongside the code."
+  "verdict_reason": "A minimal, two-file config-defaults-and-docs change with dual maintainer approval, clean CI, and no post-approval churn."
 }
