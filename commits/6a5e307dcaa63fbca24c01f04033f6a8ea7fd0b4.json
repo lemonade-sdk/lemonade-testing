@@ -1,0 +1,36 @@
+{
+  "author": "@abn",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "6a5e307dcaa63fbca24c01f04033f6a8ea7fd0b4",
+  "committed_at": "2026-09-09T18:10:36Z",
+  "evidence": {
+    "api_compatibility": "No breaking API changes. The Origin struct gains a wildcard_port bool field (adding a member, backward-compatible for existing callers). The parsing API accepts new wildcard syntax but existing configurations remain valid. No schema, config file format, or CLI contract changes.",
+    "documentation": "docs/guide/configuration/README.md updated to document wildcard port (:*) and wildcard domain (*.domain) syntax, including a SECURITY WARNING section about non-HTTPS wildcards. The diff also updates the security implications wording from singular to plural to cover universal wildcards.",
+    "manual_release_testing": "The wildcard port and host matching feature changes the security boundary of the allowed_origins configuration. A manual test should verify that http://*.local:* correctly allows dashboard.local:3000, that http://*.example.com:* rejects notexample.com and example.com.attacker.com, and that wildcard port (192.168.1.50:*) matches varying ports but still rejects scheme mismatches (https://192.168.1.50:3000 when pattern is http://192.168.1.50:*).",
+    "post_approval_commits": "No post-approval commits were added. The single PR commit (e3db3d13) was approved as-is. The merge commit (6a5e307d) is the squashed result of that single commit.",
+    "review": "Geramy (subject-matter expert in sockets/tcp/ip/security per contribute.md) provided inline review comments requesting regex use for cleaner, more standard logic. The PR author acknowledged the feedback (\"this Is better visually\") but preferred the current approach of a lightweight string-based subdomain suffix check plus std::regex_match only for port validation. No changes-requested follow-up was reopened; Geramy approved on 2026-09-09T18:09:16Z after seeing the updated implementation.",
+    "security": "Security-positive change: strict scheme enforcement is maintained even with wildcards, subdomain matching uses a dot-boundary check (notexample.com does not match *.example.com), and the documentation includes explicit warnings about the risks of http://*:* allowing unauthenticated cross-origin access. Malformed wildcard syntax (:*80, :** ) is rejected. Geramy noted regex could be \"safer\" in inline comments, but the string-based suffix comparison is functionally equivalent for the subdomain case.",
+    "tests": "Comprehensive test coverage in test/cpp/test_origin_utils.cpp: new parsing tests for wildcard ports (http://192.168.1.50:*, http://*.local:*, https://[::1]:*, http://*:*), matching tests for wildcard port across varying ports, subdomain dot-boundary enforcement (rejects notexample.com, badexample.com, example.com.attacker.com, apex example.com), and malformed input rejection (: *80, : *junk, :**). The PR reports 106/106 unit test passes, ctest OriginUtilsTest 100%, and 14/14 integration test passes. No existing tests were weakened or deleted; the existing verbose if/ok/fail blocks were refactored into a compact r.expect() helper."
+  },
+  "generation_seconds": 145.2,
+  "maintainer_todos": [
+    {
+      "text": "Verify whether the matches() method in origin_utils.h is a hot path; if called per request, consider static constexpr std::regex or precompilation to avoid repeated regex compilation overhead."
+    }
+  ],
+  "merge_date": "2026-09-09T20:09:16Z",
+  "pr_number": 3470,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T17:07:04+00:00",
+  "reviewers": [
+    "@Geramy"
+  ],
+  "sha": "6a5e307dcaa63fbca24c01f04033f6a8ea7fd0b4",
+  "shout_outs": [],
+  "subject": "feat(server): support wildcard port and host matching in allowed origins (#3470)",
+  "summary": "Adds wildcard port matching (:*) and subdomain wildcard matching (*.domain) to origin validation so local development servers on dynamic ports can connect to Lemonade without manual configuration changes.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "All checks passed and testing is thorough, but the review left an unresolved performance concern: std::regex is compiled fresh on every call in the hot path of origin matching and could slow down request processing under load."
+}
