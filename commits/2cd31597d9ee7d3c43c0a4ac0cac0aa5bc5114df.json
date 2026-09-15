@@ -1,0 +1,32 @@
+{
+  "author": "@github-actions[bot]",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "2cd31597d9ee7d3c43c0a4ac0cac0aa5bc5114df",
+  "committed_at": "2026-09-11T04:23:48Z",
+  "evidence": {
+    "api_compatibility": "No API changes. The diff modifies only version string values in a resource JSON file (sd-cpp backend pins). No schema, protocol, config contract, exported API, persistence format, or documented behavior is affected.",
+    "documentation": "The PR body serves as self-documenting release notes with detailed pin targets, validation methodology, and per-image evidence. No external documentation, API spec, or user-facing guide needs updating for a backend version pin.",
+    "manual_release_testing": "The change only updates version pins in src/cpp/resources/backend_versions.json — a JSON resource file consumed by the C++ server at startup. No CLI commands, GUI elements, or user-facing API contracts are changed. The CI validation exercise covers three backends with generation output images. No manual release testing required.",
+    "post_approval_commits": "No post-approval commits. The sole PR commit (924a35ed) was made before the approval at 2026-09-11T04:23:41Z. The merge commit (2cd3159) is a linear squash of that single commit with one parent (788dfb92a from PR #3480). No code changed after approval.",
+    "review": "PR #3513 was approved by superm1 (admin maintainer) at 2026-09-11T04:23:41Z, approximately 45 minutes before the merge. The PR is labeled rfc:not-required, consistent with the project's pattern for dependency pin updates. superm1's subject areas include ROCm, llamacpp, security, and linux packaging; stable-diffusion.cpp is explicitly under @ramkrishna2910's expertise, but this change is a version pin with automated validation rather than a new backend feature. The approval was substantive: the PR body includes detailed validation methodology, per-image evidence with timing data, and explicit notes about intentionally unvalidated platforms (CUDA and Metal). No inline review comments were filed.",
+    "security": "The change updates pinned commits for leejet/stable-diffusion.cpp (master-843-462d675) and lemonade-sdk/stable-diffusion.cpp fork (master-841-017cc8e). These are upstream dependency version bumps from trusted repositories. The automation workflow validates generation output as part of the update process, providing basic regression safety. No supply-chain, credential, network, or execution-path concerns introduced.",
+    "tests": "The PR includes extensive automated validation in the PR body: 12 generated images across 3 backends (cpu, vulkan, rocm-stable), 2 models (SD-Turbo-GGUF, Flux-2-Klein-4B), and 2 resolutions (512x256, 1024x1024), all using a consistent prompt and seed. Timing data is included for each run. CUDA and metal pins are updated but intentionally not validated due to missing infrastructure (no CUDA runner, no macOS matrix leg). All 4 CI checks passed: C++ Server Build/Test/Release, Validate stable-diffusion.cpp Release, Validate llama.cpp Release, and Validate vLLM Release."
+  },
+  "generation_seconds": 131.3,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-11T05:08:20Z",
+  "pr_number": 3513,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T17:39:10+00:00",
+  "reviewers": [
+    "superm1"
+  ],
+  "sha": "2cd31597d9ee7d3c43c0a4ac0cac0aa5bc5114df",
+  "shout_outs": [],
+  "subject": "Update stable-diffusion.cpp pins to master-843-462d675 and CUDA master-841-017cc8e (#3513)",
+  "summary": "Updates stable-diffusion.cpp backend pins from master-827 to master-843 (base release) and master-841 (CUDA release) with CI-validated generation tests across CPU, Vulkan, and ROCm backends.",
+  "verdict": "Clean",
+  "verdict_reason": "Routine automated dependency pin update with comprehensive CI validation, human review from an admin maintainer, and no post-approval churn."
+}
