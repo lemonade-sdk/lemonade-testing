@@ -1,0 +1,32 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "426d89ada9b81b2580d51d5478007ea208b31acd",
+  "committed_at": "2026-09-11T17:59:15Z",
+  "evidence": {
+    "api_compatibility": "No breaking or user-visible API changes. The change is strictly CI infrastructure: adding X64 to self-hosted runs-on lists and updating docs.",
+    "documentation": "Documentation was updated as part of the PR. docs/dev/self-hosted-runners.md gained a new Architecture label section explaining why the X64/ARM64 distinction is required, and docs/dev/adding-a-backend.md was updated to include X64 in the example runner spec. The doc updates are consistent with the code changes.",
+    "manual_release_testing": "Not applicable. This PR changes only GitHub Actions workflow labels and the self-hosted runner documentation. There are no user-facing behavioral changes, new CLI commands, GUI modifications, or shipped artifacts. The X64 pinning is a correctness hardening measure for internal CI scheduling.",
+    "post_approval_commits": "No commits were added after @kenvandine's approval at 2026-09-11T16:46:56Z. The PR had three small commits (initial X64 pinning, docs cleanup, runner heartbeat registration), all made before approval.",
+    "review": "PR #3552 was authored by @jeremyfowers (ci subject-maintainer) and approved by @kenvandine (Linux/ARM/CUDA subject-maintainer), who confirmed the approach. No inline comments or requested changes. No other reviewers were needed for this straightforward, mechanical fix.",
+    "security": "No security concerns. The change restricts runner placement to the correct architecture, which actually improves CI safety by preventing jobs from silently landing on mismatched hardware. Supply-chain surface is unchanged — only workflow YAML, runners.json, and docs are modified.",
+    "tests": "CI is purely configuration; there are no unit or integration tests to add. All 70+ CI checks on the merge-group commit passed (C++ Server Build/Test/Release, Docs And Style, CodeQL, Validate New llama.cpp/vLLM/sd-cpp Release, Launchpad PPA). The workflows themselves serve as the validation mechanism, and they ran clean with the X64 labels in place."
+  },
+  "generation_seconds": 130.4,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-11T19:20:32Z",
+  "pr_number": 3552,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T17:43:27+00:00",
+  "reviewers": [
+    "@kenvandine"
+  ],
+  "sha": "426d89ada9b81b2580d51d5478007ea208b31acd",
+  "shout_outs": [],
+  "subject": "ci: pin every self-hosted runs-on list to an architecture label (#3552)",
+  "summary": "Pin every self-hosted runs-on list to an X64 architecture label and update the runner guide so CI jobs avoid landing on ARM64 runners.",
+  "verdict": "Clean",
+  "verdict_reason": "A well-scoped infrastructure hardening change reviewed by a maintainer with ARM expertise, all CI checks passed, and no post-approval changes were made."
+}
