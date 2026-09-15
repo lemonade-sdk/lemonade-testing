@@ -1,0 +1,32 @@
+{
+  "author": "@kenvandine",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "e71baf23dae6aedd0f59d67a1be8f81e3369305c",
+  "committed_at": "2026-09-15T20:23:18Z",
+  "evidence": {
+    "api_compatibility": "No breaking changes. No API, CLI, config, protocol, or documented user behavior changed. The workflow files are internal CI configuration only.",
+    "documentation": "No documentation changes needed; the PR body correctly notes this. Internal workflow migration does not require user-facing docs.",
+    "manual_release_testing": "No user-facing surface was changed. The new .github/workflows/snap.yml triggers on release-v* branches in this repo and dispatches to sibling repos (lemonade-server-snap, lemonade-snap). The tools/version.py change is an internal build-time fallback exercised by CI; no end user touches it before release. No manual release testing needed.",
+    "post_approval_commits": "No commits were added after the first (and only) approval at 2026-09-15T14:53:41Z. The PR contains two commits — one from @jeremyfowers/Claude on tools/version.py and one from @kenvandine on the workflow — both landed before the approval. The merge-commit e71baf23 was built on a merge-queue branch (gh-readonly-queue/main/pr-3584-...) created by @superm1.",
+    "review": "PR #3584 received one approval from @superm1 at 2026-09-15T14:53:41Z with no inline comments. The PR author is @kenvandine, who is listed in docs/dev/contribute.md as the snaps/ARM/NVIDIA CUDA maintainer with admin rights — subject-matter expertise for snap workflow changes. RFC #3522 is referenced as approved in the PR body. @superm1 is an admin maintainer whose expertise includes Docker/containers and security, making them a reasonable reviewer. No substantive inline review comments were left, but the change is a straightforward workflow migration with no new behavior beyond what already existed in repo-manager.yml.",
+    "security": "No new security risk. The new snap workflow uses the same SNAP_RC_DISPATCH_TOKEN secret pattern already documented in repo-manager.yml. Permissions are minimal (contents: read). No network calls, credential handling changes, or supply-chain surface area was added.",
+    "tests": "A new test test_without_git_falls_back_to_dated_placeholder was added to test/test_version.py, covering the tools/version.py fallback that returns 'YYYY.WW.0~0.nogit' when run outside a git work tree (the docker build context case). The test mocks the current datetime to produce a deterministic expected string. CI all passed: Docs And Style, Server Download Registry Tests, C++ Server Build/Test/Release, CodeQL (all languages), Launchpad PPA, Routing Schema, and validation workflows completed successfully on the merge commit."
+  },
+  "generation_seconds": 133.5,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-15T21:08:01Z",
+  "pr_number": 3584,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T23:29:11+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "e71baf23dae6aedd0f59d67a1be8f81e3369305c",
+  "shout_outs": [],
+  "subject": "Moved the snap release candidate trigger from the repo-manager workflow (#3584)",
+  "summary": "Moved the snap release candidate trigger from the repo-manager workflow to a new dedicated snap workflow, plus a version.py fallback for non-git build contexts.",
+  "verdict": "Clean",
+  "verdict_reason": "A focused CI refactor with a single substantive approval from an admin maintainer, passing all checks, no post-approval churn, and an accompanying unit test for the version fallback."
+}
