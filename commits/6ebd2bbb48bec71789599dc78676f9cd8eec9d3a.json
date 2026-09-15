@@ -5,32 +5,28 @@
   "commit_sha": "6ebd2bbb48bec71789599dc78676f9cd8eec9d3a",
   "committed_at": "2026-09-11T19:38:14Z",
   "evidence": {
-    "api_compatibility": "No API compatibility impact. The changes are entirely within the test suite (test/server_llm.py, test/utils/capabilities.py, test/utils/test_models.py). No exported APIs, CLI contracts, config formats, or persistence formats are affected.",
-    "documentation": "No documentation impact. The PR author correctly checked 'Documentation is not affected by this change' in the PR template. The changes are confined to test infrastructure and model configuration constants.",
-    "manual_release_testing": "No manual release testing required. This is a CI/test infrastructure change with no user-facing behavior modifications. The test model configuration lives in test/utils/capabilities.py and test/utils/test_models.py, which are not shipped artifacts.",
-    "post_approval_commits": "One commit was added after the first (and only) approval at 2026-09-11T17:33:34Z: be5dd36 '[test] Pin the tool-calling model to a 4096 context' authored by @jeremyfowers on 2026-09-11T18:25:37Z. This commit adds load_model(model, ctx_size=TOOL_CALLING_CTX_SIZE) calls to test_012 and test_013, and introduces the TOOL_CALLING_CTX_SIZE=4096 constant in test_models.py. The change does not add new behavior; it prevents CI runner OOM kills by loading the 4096-context test model instead of letting Qwen3-4B auto-tune to its 256k context (which would consume ~36 GB of KV cache on 48 GB ROCm runners). This is a reasonable fix discovered during CI testing that remains within the spirit, scope, and risk profile of the approved PR. The reviewer did not see this final commit.",
-    "review": "PR #3550 received an APPROVED review from @ramkrishna2910 at 2026-09-11T17:33:34Z on commit e375e3d (the 3rd of 4 commits). @ramkrishna2910 is a maintainer with subject areas including 'new backends, new modalities, vLLM, whisper, stable diffusion, smart router and orchestration, cloud API integration, external partnerships, NPU.' For the llamacpp and FLM backends specifically, @superm1 (subject areas: 'ROCm, linux packaging, system info, security, Docker, containers, llamacpp, NPU, FastFlowLM') would be the more directly relevant SME, but did not review. The PR author self-reviewed per the PR checklist. No inline review comments were filed.",
-    "security": "No security concerns. The PR only modifies test configuration and test execution. It adds a load_model() call to pre-load test models before running tool-call assertions, which is a standard test pattern. No supply-chain changes, credential handling, network calls, or code execution paths are affected.",
-    "tests": "No new tests were added. The PR re-enables existing test_012 (chat completions with tool calls) and test_013 (streaming chat completions with tool calls) for the llamacpp and FLM backends, which had been disabled. The changes flip tool_calls and tool_calls_streaming capability flags from False to True in test/utils/capabilities.py for both backends, and introduce a 'tool_calling' model type that falls back to the 'llm' model for backends that don't define one. The existing test suite ran successfully for all backends (llamacpp, flm, omni, ryzenai, whisper, etc.) in the merge-group checks. No evidence of inappropriate test weakening or deletion."
+    "api_compatibility": "No breaking changes. The PR does not modify any user-facing API, contract, or shipped behavior. The only changes are to test model resolution in the test utilities. The PR checklist explicitly states 'This PR does not introduce breaking changes.'",
+    "documentation": "No documentation affected. The PR only modifies test configuration. No API docs, user docs, or release notes changes are needed.",
+    "manual_release_testing": "This commit touches only test configuration and test code — no user-facing API, CLI, GUI, or shipped behavior changes. No manual release testing is needed.",
+    "post_approval_commits": "One commit (be5dd36) was added after the sole approval at 17:33:34Z — the commit lands at 18:25:37Z, titled '[test] Pin the tool-calling model to a 4096 context'. It adds an explicit context-size pin for the Qwen3 tool-calling model to prevent the runner from OOMing on 48 GB ROCm CI hardware when the model auto-tunes to 256k context. This is a reasonable, scoped follow-up (pre-loads model before the test request with a health-check assertion), not a behavioral change. It did not get re-approved. No test weakening or API change.",
+    "review": "One substantive approval from @ramkrishna2910 (MEMBER) on commit e375e3d at 2026-09-11T17:33:34Z. @ramkrishna2910's subject areas include new backends and NPU, relevant to the llamacpp and FLM test changes. @jeremyfowers maintains CI and llamacpp explicitly. An automated Codex review also completed without findings. No inline review comments were filed. The approval was substantive and the reviewer covers the affected backend domains.",
+    "security": "No security concerns. The change adds test model names and constants, pre-loads a model for health-check in test code, and flips test capability flags. No credential handling, network calls, code execution paths, or supply-chain changes are introduced.",
+    "tests": "All CI checks passed — C++ Server Build, Test, and Release (60+ jobs, all SUCCESS), CodeQL (all languages SUCCESS), Docs And Style, Routing Schema, Server Download Registry, and the inference backend tests all completed successfully. The change modifies test config in test/server_llm.py, test/utils/capabilities.py, and test/utils/test_models.py. Tests 012 and 013 (chat completions with tool calls and streaming) are newly exercised for llamacpp and FLM backends. No existing tests were weakened or deleted."
   },
-  "generation_seconds": 163.6,
-  "maintainer_todos": [
-    {
-      "text": "Confirm that @ramkrishna2910 was aware of the post-approval commit (be5dd36) that adds load_model() calls with context size pinning to prevent CI runner OOM kills."
-    }
-  ],
+  "generation_seconds": 121.8,
+  "maintainer_todos": [],
   "merge_date": "2026-09-11T21:28:08Z",
   "pr_number": 3550,
   "range_start": "v11.9.0",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-09-15T17:50:19+00:00",
+  "reviewed_at": "2026-09-15T22:49:45+00:00",
   "reviewers": [
     "@ramkrishna2910"
   ],
   "sha": "6ebd2bbb48bec71789599dc78676f9cd8eec9d3a",
   "shout_outs": [],
   "subject": "ci: enable tool calling testing for llamacpp and FLM  (#3550)",
-  "summary": "Re-enables tool calling tests (test_012 and test_013) for llamacpp and FLM backends by introducing a dedicated tool_calling test model and pinning context sizes to prevent CI runner OOM kills.",
-  "verdict": "Needs Attention",
-  "verdict_reason": "All CI checks passed and the review was substantive, but one commit pinning context sizes was added after approval without renewed review, and the reviewer lacked explicit ci/test subject matter expertise per contribute.md."
+  "summary": "Enables tool-calling tests for the llamacpp and FLM backends by adding dedicated tool_calling model configuration and pre-loading models with a constrained context size to avoid OOM on CI runners.",
+  "verdict": "Clean",
+  "verdict_reason": "Small, focused test-only change with clear reasoning, successful CI, and a substantive approval covering the affected backends."
 }
