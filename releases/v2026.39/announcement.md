@@ -1,35 +1,36 @@
 ## Lemonade v2026.39
 
-@everyone this one's got some real quality-of-life improvements, a few new features you've been asking for, and a big shake-up to how we version builds — let's dive in.
+@everyone a proper week for you — a bundled API docs system, wildcard origins, image editing, and prompt-cache continuity across cloud hops, plus the new versioning scheme that makes release candidates accessible to everyone.
 
 ### Breaking Changes
 
-- Version format changed from X.Y.Z (e.g. 11.9.0) to YYYY.WW.N (e.g. 2026.39.0); scripts or CI pipelines parsing `--version` output or the server startup log need to match the new date-part format.
-- CMake configure time now requires Python 3 (`find_package(Python3)`); the build will fail on systems without a Python 3 interpreter available at configure time.
-- Windows installer product version (`Product.wxs.in`) now derives from the date-part of the version rather than `PROJECT_VERSION`; installer version numbering will differ from the prior release format.
+- We've switched to a `YYYY.WW.N` version scheme instead of the old `X.Y.Z` — make sure any pinned versions are updated to the new format.
+- `GET /models` and `GET /pull/variants` return an empty string for `registry_source` when no source is set, instead of falling back to `huggingface`.
+- `GET /docs` now returns a JSON 404; the API reference lives at `GET /v1/docs`.
+- FLM downloads now respect your `default_model_source` setting — models without an explicit source fall back to your configured default instead of always using HuggingFace.
 
-### Wildcard origins for local dev and homelabs
+### API docs, for real now
 
-@abn added wildcard port matching (`:*`) and subdomain matching (`*.domain`) to the `allowed_origins` configuration, so your frontend and backend can talk without reconfiguring every time a dev server switches ports. Big thanks @abn for the feature and the clean-up to the docs!
+@anditherobot brought in a proper API documentation system that serves a JSON index and per-page reference at `GET /v1/docs` — no more SPA fallback. Unversioned `/docs` returns a JSON 404 instead.
 
-### Image editing and variations in TheNoise
+### Wildcard origins for local dev
 
-@bitgamma implemented `/images/edit` in TheNoise for image editing and variations, bumped the backend to 0.7.1, and expanded supported ROCm GPU families. Now you can create variations or edit images directly without leaving the flow.
+You can now use `*:port` and `*.domain` patterns in `allowed_origins` so your local dev and homelab setups keep working when frontend servers switch ports or domains. Thanks @abn!
 
-### Bundled API docs and an MCP tool
+### Image editing lands in TheNoise
 
-@anditherobot added a full API documentation system served at `GET /v1/docs` (JSON index) and `GET /v1/docs/{page}` (markdown), plus a `lemonade_docs` MCP tool for programmatic access. The unversioned `/docs` route now returns a JSON 404 instead of falling through to the SPA — use the new endpoints above.
+@bitgamma has brought /images/edit to the API with TheNoise 0.7.1, along with expanded AMD ROCm GPU support. You can't optimize what you can't measure, and this is one more tool for your editing belt.
 
-### Soft-idle preserves your prompt cache
+### Prompt-cache continuity across cloud hops
 
-@meghsat and I have put a fresh coat of paint on soft-idle: it no longer erases llama.cpp KV cache slots, so resumed conversations start from the existing cache instead of re-prefilling. Huge quality-of-life win when you're juggling context windows.
+@SlawomirNowaczyk and @abn have set up session headers like `x-session-id` to be relayed verbatim through Lemonade, so your prompt-cache continuity survives a cloud hop intact.
 
 ### Additional Improvements
 
-- CI infrastructure stabilized for macOS and Windows by @jeremyfowers, and the unstable Linux Distro Builds CI job has been retired.
-- Session continuity headers (like `x-opencode-session` or `x-session-id`) are now relaying verbatim to cloud providers for prompt-cache continuity across the Lemonade hop, by @SlawomirNowaczyk with help from @abn.
-- Mixed AMD/NVIDIA GPU memory routing for context auto-tuning fixed by @popey, so you no longer risk the wrong GPU's memory getting picked on hybrid systems.
-- Incompatible Hugging Face repos (media models, missing architectures) are now filtered before download, by @popey.
-- A prerelease artifacts channel is live for Windows, Fedora, Debian, and macOS — try candidates via prerelease builds under `candidate-v<version>` tags, by @jeremyfowers.
+- A fix for the routing policy by @Bekhouche with @fl0rianr keeps unrelated rules from being dropped on hardware-filtered classifiers, and @popey added pre-download architecture checks that filter out incompatible Hugging Face repos before the download starts.
+- @GabrielReusRodriguez has added `auto_evict` and `auto_evict_threshold_pct` default config values — VRAM pressure-based eviction without you having to think about it.
+- @meghsat removes the soft-idle `downsize` override that was destroying prompt caches instead of freeing VRAM for llama.cpp.
+- @Yigtwxx fixes empty SSE streams from being reported as successful completions, and @AaronStGeorge adds Meta-Llama-3.1-8B to the HRX-qualified models with a backend bump.
+- The new Python-based dynamic versioning system by @superm1 with @fl0rianr, weekly release branches and candidate artifact publishing by myself, and @zaneni6 with @ZaneNi bumping the FLM backend to v1.0.5.
 
-Full release notes at https://github.com/lemonade-sdk/lemonade/releases. Let me know what you think!
+Full release notes are on [the GitHub releases page](https://github.com/lemonade-sdk/lemonade/releases) — take a look and let me know what you think!
