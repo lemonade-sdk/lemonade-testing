@@ -1,0 +1,37 @@
+{
+  "author": "@superm1",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "4275fd2014528860d397b41849b01aff28120372",
+  "committed_at": "2026-09-09T19:38:12Z",
+  "evidence": {
+    "api_compatibility": "No API compatibility impact. The vendored model-viewer.min.js is unchanged; only a SHA-256 sidecar file and CI workflow are added, plus README documentation.",
+    "documentation": "README.md (src/app/src/renderer/vendor/) is rewritten with comprehensive integrity documentation: the hash chain (npm tarball integrity → extracted-file SHA-256), both hashes listed, the npm registry metadata link, and a full hash-preserving update procedure. CI workflow comment explicitly calls the sidecar check a \"drift guard\" rather than an SRI replacement, correctly stating its limitation.",
+    "manual_release_testing": "Not applicable. The PR does not change user-visible behavior — the vendored JS file itself is unchanged (the verified 4.3.1 artifact already produces the existing SHA-256). It adds a CI drift-guard and documents an update procedure. No CLI, GUI, or API changes warrant release-critical manual testing.",
+    "post_approval_commits": "No commits were added after the first or latest approval (2026-09-09T19:12:11Z). The three PR commits were authored between 2026-07-14 and 2026-08-17, all well before approval. Merged 2026-09-10T00:14:06Z, ~5 hours after final approval.",
+    "review": "PR #2709 was authored by @superm1 and reviewed by @fl0rianr (maintainer with subject-area expertise in GUI, CI, and LMX omni models — see docs/dev/contribute.md). @fl0rianr provided four reviews: a changes-requested review on 2026-07-15 blocking on the shadow regression caused by reverting to 4.3.0 instead of 4.3.1; a commented review on 2026-07-28 catching that the integrity hash format mismatch would reject even the correct tarball (with a suggested Python fix); a third commented review on 2026-08-16 noting the PR still didn't replace the file; and a final LGTM on 2026-09-09 after all issues were resolved. Review applied project philosophy around design for agility and user error as a bug by making the update process robust (fail-closed, mktemp -d).",
+    "security": "This is a positive security change. It addresses the fact that a vendored third-party bundle had no integrity verification, which could allow undetected tampering or corruption. The npm dist.integrity (SHA-512) is the upstream trust anchor, and the documented update process verifies it before extracting the file. A CI drift-guard SHA-256 check will fail on any unauthorized modification. No new security concerns introduced — the update script uses mktemp -d for isolation and is fail-closed with set -euo pipefail. The bundle is already the correct upstream 4.3.1 artifact.",
+    "tests": "The PR adds a new CI check (vendored-asset-integrity in .github/workflows/docs_and_style.yml) that runs `sha256sum -c model-viewer.min.js.sha256` to fail on any drift of the vendored bundle. All CI checks passed on the merge commit, including the new check (conclusion: SUCCESS). No existing tests were weakened or deleted. The README documents a hash-preserving update process with npm dist.integrity verification as the update-time test."
+  },
+  "generation_seconds": 152.1,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-10T00:14:06Z",
+  "pr_number": 2709,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T17:22:27+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "4275fd2014528860d397b41849b01aff28120372",
+  "shout_outs": [
+    {
+      "handle": "@fl0rianr",
+      "reason": "Identified the shadow mapping regression that the original pin was reverting and caught a format bug in the integrity verification script before it shipped."
+    }
+  ],
+  "subject": "fix(security): pin vendored model-viewer bundle to verified upstream (#2709)",
+  "summary": "Pins the vendored model-viewer.min.js bundle to the verified upstream npm artifact with an integrity hash chain and adds a CI drift-guard check.",
+  "verdict": "Clean",
+  "verdict_reason": "The bundle itself is unchanged because it was already the correct 4.3.1 artifact; this PR adds integrity verification and a safe update process with thorough reviewer scrutiny and all CI checks passing."
+}
