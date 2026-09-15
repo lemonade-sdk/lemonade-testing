@@ -5,40 +5,41 @@
   "commit_sha": "304d27f9c748e30a89595bb9737cbc9119141f68",
   "committed_at": "2026-09-10T17:58:46Z",
   "evidence": {
-    "api_compatibility": "No breaking changes. The new GET /v1/docs endpoint is purely additive. The fix for /docs returning 404 instead of falling through to the SPA is technically a behavior change, but it corrects an unintended fallback and aligns with the author's intent. Documentation in docs/api/lemonade.md covers both endpoints and the MCP tool.",
-    "documentation": "docs/api/lemonade.md was updated with endpoint docs for GET /v1/docs and GET /v1/docs/{page}. docs/api/mcp.md documents the new lemonade_docs MCP tool. docs/api/README.md was updated. The PR description includes a testing checklist and a scope statement. All documentation changes are within the affected feature area.",
-    "manual_release_testing": "The feature introduces new shipped HTTP endpoints (/v1/docs and /v1/docs/{page}) and a new MCP tool (lemonade_docs). Both should be verified by hand in a release candidate: (1) confirm GET /v1/docs returns the correct index with the running server version, (2) fetch at least one page to verify markdown content renders correctly, (3) confirm the unversioned /docs path returns 404 (not the SPA UI), and (4) test the lemonade_docs MCP tool with a standard MCP client. The C++ unit tests and Python integration tests provide strong automated coverage, but hand testing is recommended before the release.",
-    "post_approval_commits": "None. @jeremyfowers gave the sole approval at 2026-09-10T17:30:38Z and the PR merged at 2026-09-10T18:44:22Z with no commits added between approval and merge.",
-    "review": "PR #3347 was reviewed by @jeremyfowers (admin maintainer, subject area: new endpoints). He submitted inline comments on the stale BUILD_DOCS_SITE code, the /docs vs /v1/docs naming collision, and Windows path corruption. The author responded with commits that removed the stale feature, fixed the /docs path to return 404 instead of falling through to the SPA UI, repaired Windows paths, and cleaned up leftover mount wiring. All comments were addressed before merge.",
-    "security": "The path-resolution code in resolve_doc_path() uses fs::weakly_canonical plus explicit .. checks, and the C++ unit test verifies traversal rejection via encoded paths (%2e%2e) and relative escape attempts. The /docs endpoint does not execute code or access user files beyond the bundled docs/ directory. No network calls, credential handling, or supply-chain risk. The Python integration test also verifies URL-encoded traversal is rejected. No security concerns.",
-    "tests": "Adds a C++ unit test (test_cpp/test_docs_endpoint.cpp) that validates doc listing, title extraction, path confinement against directory traversal, and missing-directory edge cases. Adds Python integration tests (test/server_endpoints.py) covering the JSON index endpoint, all four API prefixes, individual page fetch, 404 for unknown pages, URL-encoded traversal rejection, POST rejection, and the unversioned /docs 404 behavior. All CI checks (C++ Server Build/Test/Release, stable-diffusion.cpp validation, llama.cpp validation) passed."
+    "api_compatibility": "This PR adds new API endpoints (GET /v1/docs, GET /v1/docs/{page}) and a new MCP tool (lemonade_docs). No existing API contracts change. However, the unversioned /docs subtree now returns a JSON 404 instead of falling through to the SPA web-app. Previously /docs/example could have been silently served by the SPA; now it will always return 404. This is a behavioral change for anyone relying on that fallback, but it is a deliberate fix for a UI leak (documented in inline review by @jeremyfowers) rather than an unintended break.",
+    "documentation": "API spec updated: docs/api/lemonade.md documents both new endpoints with parameters, example requests/responses, and on-disk file paths per platform. docs/api/mcp.md documents the new lemonade_docs tool. Inline comments in server.cpp explain the /docs route precedence and the quad-prefix design. The reviewer flagged Windows doc-path backslash formatting and stale code after BUILD_DOCS_SITE was removed; both were addressed in follow-up commits. The BUILD_DOBSITE cmake option (later dropped) was noted as needing developer-guide documentation — since it was removed in the final commit, that documentation concern is moot.",
+    "manual_release_testing": "CI runs the server-endpoint and C++ unit tests, which verify the HTTP endpoints exhaustively, but nothing demonstrates a human exercising the endpoints or the MCP tool by hand before merge. The MCP tool lemonade_docs — in particular — has no dedicated integration test beyond the HTTP-layer coverage; the tool itself is wired into the MCP request dispatcher but not exercised end-to-end. This is a user-facing surface (new endpoints + new MCP tool) that warrants manual verification before release.",
+    "post_approval_commits": "No commits were added after the first and latest approval at 2026-09-10T17:30:38Z. The 13 commits were all authored or landed before approval. Clean history.",
+    "review": "PR #3347 was approved by @jeremyfowers (admin maintainer, subject area: new endpoints). Review included substantive inline comments on Windows path backslash escaping (later fixed in commit b7af60a), the /v1/docs vs /docs naming concern, a stale-code comment after BUILD_DOCS_SITE was removed, and a note that BUILD_DOCS_SITE needs developer-guide documentation. No post-approval commits were added after the sole approval at 2026-09-10T17:30:38Z. The reviewer has explicit expertise for \"new endpoints\" per docs/dev/contribute.md.",
+    "security": "The path confinement logic in api_docs.cpp uses weakly_canonical + relative-path validation + explicit '..' part rejection, matching the approach used for web-app assets. Unit tests confirm traversal outside docs_dir is rejected (both literal and percent-encoded). Unknown pages and invalid paths return JSON 404, not file content. No credential handling, network calls, or code execution paths introduced.",
+    "tests": "Strong test coverage. C++ unit test (test/cpp/test_docs_endpoint.cpp) verifies: only .md files indexed, id/path format, title from H1 with fallback, byte sizes, sorted index, absent directory, .md suffix acceptance, unknown id rejection, and path-traversal rejection (both literal .. and embedded). Python server-endpoint tests verify: index returns 200 JSON with required fields, quad-prefix support (/v0, /v1, /api/v0, /api/v1) with url-prefix echoing, every advertised page fetches as 200 text/markdown, unknown pages and percent-encoded traversal return 404, POST /docs is rejected, and unversioned /docs and /docs/ return JSON 404 instead of falling through to SPA. No evidence of test weakening."
   },
-  "generation_seconds": 184.9,
+  "generation_seconds": 144.6,
   "maintainer_todos": [
     {
-      "text": "Manually test the new /v1/docs index endpoint and individual page fetch in a release candidate build."
+      "text": "Start a running Lemonade server, fetch GET /v1/docs and confirm the response is a JSON index listing at least api/README and api/lemonade with version, format, id, title, url, and bytes fields, and that the urls use the same prefix (/v1) that was used to request the index."
     },
     {
-      "text": "Verify the new lemonade_docs MCP tool works with a standard MCP client."
+      "text": "Fetch GET /v1/docs/api/lemonade from the running server and confirm the response is text/markdown starting with \"# Lemonade API\" and containing the documented endpoint table."
+    },
+    {
+      "text": "Confirm that GET /v0/docs, GET /api/v0/docs, and GET /api/v1/docs all return a 200 JSON index with urls matching the requesting prefix, and that GET /docs returns a JSON 404 with an error message pointing to /v1/docs."
+    },
+    {
+      "text": "Connect an MCP client to a running server, call the lemonade_docs tool with no arguments and confirm it returns a summary listing the bundled pages, then call lemonade_docs with page set to \"api/lemonade\" and confirm it returns the markdown content of that page."
     }
   ],
-  "merge_date": "2026-09-10T18:44:22Z",
+  "merge_date": "2026-09-10T17:58:46Z",
   "pr_number": 3347,
   "range_start": "v11.9.0",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-09-15T17:34:24+00:00",
+  "reviewed_at": "2026-09-15T22:33:57+00:00",
   "reviewers": [
     "@jeremyfowers"
   ],
   "sha": "304d27f9c748e30a89595bb9737cbc9119141f68",
-  "shout_outs": [
-    {
-      "handle": "@jeremyfowers",
-      "reason": "Caught stale code and comments from a removed feature, and flagged path-naming collision between /docs and /v1/docs, prompting the author to fix stale references, add proper 404 handling for the unversioned path, and include traversal-protection tests."
-    }
-  ],
+  "shout_outs": [],
   "subject": "feat(server): serve bundled API docs at /docs (#3347)",
-  "summary": "Serves the server's bundled API documentation as a machine-readable index at /v1/docs plus individual markdown pages, and exposes the same reference via a new MCP tool called lemonade_docs.",
+  "summary": "Adds a bundled API documentation system that serves reference pages at GET /v1/docs (JSON index) and GET /v1/docs/{page} (markdown), plus an MCP tool lemonade_docs, and returns JSON 404 for unversioned /docs instead of falling through to the SPA UI.",
   "verdict": "Needs Attention",
-  "verdict_reason": "The PR adds a well-scoped new feature with adequate tests and documentation, but the new HTTP endpoints (/v1/docs) and MCP tool should be verified by hand before release."
+  "verdict_reason": "The PR introduces new user-facing API endpoints and an MCP tool that should be manually verified before release, but CI tests all pass, review was substantive, and no risky post-approval commits were added."
 }
