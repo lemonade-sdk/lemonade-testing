@@ -1,33 +1,35 @@
-@everyone Happy Wednesday — this release is worth your time. I've reworked the entire release process so you can test prereleases before they ship, the llamacpp-hrx backend just got a big boost for AMD Strix Halo users, and I've been listening to your feedback about session continuity and local docs. Let's get into it.
+## Lemonade v2026.39
 
-## Breaking Changes
+@everyone this one's got some real quality-of-life improvements, a few new features you've been asking for, and a big shake-up to how we version builds — let's dive in.
 
-- The version format shifted from `X.Y.Z` to `YYYY.WW.N` (e.g. `2026.39.0`). If your tools, scripts, or build logs parse `--version` output, update them for the new format.
-- CMake configure now requires Python 3 — the build will fail without a Python 3 interpreter at configure time.
-- Windows installer product version now derives from the date-part of the version rather than `PROJECT_VERSION`, so installer versioning looks different than the prior release.
+### Breaking Changes
 
-## 🤖 Meta-Llama-3.1-8B on llamacpp-hrx
+- Version format changed from X.Y.Z (e.g. 11.9.0) to YYYY.WW.N (e.g. 2026.39.0); scripts or CI pipelines parsing `--version` output or the server startup log need to match the new date-part format.
+- CMake configure time now requires Python 3 (`find_package(Python3)`); the build will fail on systems without a Python 3 interpreter available at configure time.
+- Windows installer product version (`Product.wxs.in`) now derives from the date-part of the version rather than `PROJECT_VERSION`; installer version numbering will differ from the prior release format.
 
-@AaronStGeorge added Meta-Llama-3.1-8B as a new HRX-qualified model and bumped the HRX backend from b59 to b69 — AMD Strix Halo users can now run more models. @iswaryaalex also wired the HRX backend into the nightly benchmark pipeline so we keep regressions in check.
+### Wildcard origins for local dev and homelabs
 
-## 🌐 Wildcard CORS for local dev and homelab
+@abn added wildcard port matching (`:*`) and subdomain matching (`*.domain`) to the `allowed_origins` configuration, so your frontend and backend can talk without reconfiguring every time a dev server switches ports. Big thanks @abn for the feature and the clean-up to the docs!
 
-@abn added wildcard port (`:*`) and subdomain (`*.domain`) patterns to `allowed_origins`, so your local frontend servers can connect without updating config every time a port changes. @abn also restructured the entire "Allowed Origins" docs section to make it way more readable.
+### Image editing and variations in TheNoise
 
-## 🔗 Session continuity headers now relayed to cloud providers
+@bitgamma implemented `/images/edit` in TheNoise for image editing and variations, bumped the backend to 0.7.1, and expanded supported ROCm GPU families. Now you can create variations or edit images directly without leaving the flow.
 
-@jeremyfowers now forwards headers like `x-opencode-session` and `x-session-id` verbatim to cloud providers, so your prompt-cache persists seamlessly across connections. Shout-out to @abn for helping nail down the docs on which headers leak vs. stay local.
+### Bundled API docs and an MCP tool
 
-## 📖 API reference docs at `/v1/docs`
+@anditherobot added a full API documentation system served at `GET /v1/docs` (JSON index) and `GET /v1/docs/{page}` (markdown), plus a `lemonade_docs` MCP tool for programmatic access. The unversioned `/docs` route now returns a JSON 404 instead of falling through to the SPA — use the new endpoints above.
 
-@anditherobot shipped a full bundled API documentation system: GET `/v1/docs` gives you a JSON index, GET `/v1/docs/{page}` serves markdown pages, and there's an MCP tool `lemonade_docs` too. Old unversioned `/docs` now returns clean JSON 404 instead of falling through to the SPA.
+### Soft-idle preserves your prompt cache
 
-## Additional Improvements
+@meghsat and I have put a fresh coat of paint on soft-idle: it no longer erases llama.cpp KV cache slots, so resumed conversations start from the existing cache instead of re-prefilling. Huge quality-of-life win when you're juggling context windows.
 
-- @GabrielReusRodriguez added `auto_evict` and `auto_evict_threshold_pct` configuration defaults with matching docs.
-- @wariobot09 made the FLM backend resolve its download source from the server-wide `default_model_source` config (thanks @ZaneNi), and @meghsat preserved prompt cache by stopping `downsize()` from nuking llama.cpp KV cache slots on soft-idle.
-- Three fixes from @popey — better GPU memory selection on mixed AMD/NVIDIA systems, pre-download filtering of incompatible repos in `/pull/variants`, and a backend version bump for FLM NPU.
-- @superm1 rewrote the entire release CI pipeline (weekly candidate branches, prerelease artifacts as GitHub prereleases, Docker candidate tags) and pinned every self-hosted runner to X64 to prevent ARM runner surprises. @kenvandine and @superm1 also cleaned up snap builds and distro matrix workflows.
-- Various smaller wins: a docs integration guide for Interviewer AI by @antmikinka, image generation docs cleaned up by @bitgamma, the internal MCP agent reverts by @fl0rianr, and a fix from @noamsto for `gpt-oss-120b-mxfp-GGUF` loading.
+### Additional Improvements
 
-Catch the full release notes here: https://github.com/lemonade-sdk/lemonade/releases — let me know what you think!
+- CI infrastructure stabilized for macOS and Windows by @jeremyfowers, and the unstable Linux Distro Builds CI job has been retired.
+- Session continuity headers (like `x-opencode-session` or `x-session-id`) are now relaying verbatim to cloud providers for prompt-cache continuity across the Lemonade hop, by @SlawomirNowaczyk with help from @abn.
+- Mixed AMD/NVIDIA GPU memory routing for context auto-tuning fixed by @popey, so you no longer risk the wrong GPU's memory getting picked on hybrid systems.
+- Incompatible Hugging Face repos (media models, missing architectures) are now filtered before download, by @popey.
+- A prerelease artifacts channel is live for Windows, Fedora, Debian, and macOS — try candidates via prerelease builds under `candidate-v<version>` tags, by @jeremyfowers.
+
+Full release notes at https://github.com/lemonade-sdk/lemonade/releases. Let me know what you think!
