@@ -1,0 +1,49 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "4f22950d95e30a66d0e6a680c8fb09d82ffaf5b9",
+  "committed_at": "2026-09-10T13:56:37Z",
+  "evidence": {
+    "api_compatibility": "No API changes whatsoever. Only documentation files, GitHub templates, and mkdocs.yml were modified.",
+    "documentation": "This PR is itself a documentation overhaul. It adds two new docs (ai-content-policy.md, spec-driven-dev.md), updates contribute.md, AGENTS.md, documentation.md, working-groups/README.md, mkdocs.yml, and GitHub templates. The author cross-references all artifacts consistently and updated the PR template to include the AI content policy reminder. The deleted large-request-memory-benchmark.md was replaced with a pointer in docs/dev/README.md. mkdocs.yml was updated to include the new pages. All changes are internally consistent.",
+    "manual_release_testing": "Not applicable. This is a pure documentation/policy change with no user-visible code changes, CLI behavior changes, or GUI changes.",
+    "post_approval_commits": "The first approval came from @ramkrishna2910 at 2026-09-08T17:24:03Z. After that, 12 commits were pushed: addressing reviewer feedback, removing the 30-day auto-close note, reordering template sections, refining the AI policy goals, adding the in-situ review carve-out, fixing typos, restructuring headings, and adding a networking/security row to the code owners table. The first post-approval commit at 2026-09-08T18:07:05Z was addressed and re-approved by the first wave of reviewers. The final commit (d998489, adding @Geramy to code owners) was approved by @Geramy at 2026-09-09T16:44:48Z and @abn at 2026-09-10T01:15:57Z, so the latest approvals cover all post-approval changes. No commits were added after the latest approval. All post-approval commits were within the spirit and scope of the approved PR.",
+    "review": "PR #3521 received 9 substantive reviews from maintainers covering the full breadth of subject areas (CLI, GUI, networking, security, CI, packaging). The review quality was high: reviewers asked clarifying questions (e.g., @sofiageo on RFC process for UI changes), challenged framing (@superm1 on edge cases), and identified policy tensions (@kenvandine on AI review tool output). The author addressed all feedback inline. The project philosophy (design for agility, user error is a bug, human-centered discourse) is reflected throughout.",
+    "security": "No security-sensitive code changes. A minor addition of the word 'sweet' as an AI-agent canary was committed but then discussed in PR comments and ultimately not included in the approved merge — @jeremyfowers acknowledged the canary's self-defeating nature and removed it via discussion. The final merged content is clean of canary instructions.",
+    "tests": "This PR changes only documentation and policy files — no code, no tests, no configuration. No test changes are warranted or expected."
+  },
+  "generation_seconds": 210.7,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-10T14:42:51Z",
+  "pr_number": 3521,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T17:31:19+00:00",
+  "reviewers": [
+    "@ramkrishna2910",
+    "@fl0rianr",
+    "@bitgamma",
+    "@SlawomirNowaczyk",
+    "@danielholanda",
+    "@sofiageo",
+    "@Geramy",
+    "@kenvandine",
+    "@abn"
+  ],
+  "sha": "4f22950d95e30a66d0e6a680c8fb09d82ffaf5b9",
+  "shout_outs": [
+    {
+      "handle": "@bitgamma",
+      "reason": "Provided substantive feedback on AI code review expectations, warning about false-positives in automated reviews and driving the policy to explicitly require reviewers to filter and rewrite AI tool output in their own words."
+    },
+    {
+      "handle": "@kenvandine",
+      "reason": "Raised a critical tension about AI code review tools posting AI prose directly on PRs, which the author resolved with a specific carve-out exception for in-situ review agents."
+    }
+  ],
+  "subject": "policy: Overhaul the contribution guidelines (#3521)",
+  "summary": "End-to-end rewrite of the project contribution guidelines, adding a spec-driven development policy (RFC process), an AI content policy, updated AGENTS.md, and related template and documentation changes.",
+  "verdict": "Clean",
+  "verdict_reason": "Well-reviewed documentation overhaul with approvals from multiple subject-matter experts across CLI, GUI, networking, and security; all post-approval commits were incremental refinements that were re-approved before merge."
+}
