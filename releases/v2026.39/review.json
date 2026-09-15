@@ -1,34 +1,22 @@
 {
   "branch": "main",
   "breaking_changes": [
-    "The version scheme changed from M.m.p to YYYY.WW.N format; CMake version extraction moved to a Python-based git state derivation system, MSI installer versions are reformatted as YY.MM.PATCH, and the get-version action now outputs YYYY.WW.N instead of the static CMake VERSION."
+    "Version format changed from X.Y.Z (e.g., 11.9.0) to YYYY.WW.N (e.g., 2026.39.0); scripts or CI that parse --version output or the server startup log must be updated to match the new date-part scheme.",
+    "FLM model info registry_source in GET /pull/variants and GET /models responses is now an empty string for models without an explicit source instead of 'huggingface'; clients that assume the field always contains 'huggingface' or 'modelscope' will see '' and may misinterpret it.",
+    "The unversioned /docs route now returns a JSON 404 instead of falling through to the SPA web-app; anyone relying on /docs/example being silently served by the SPA will receive a 404."
   ],
   "bucket": "v2026.39",
   "candidate_issues": [],
   "checklist": [
     {
-      "author": "@superm1",
-      "commit": "c47aa2a491e8c8c6e07a895eaad88b27452f2bb2",
-      "platforms": [
-        "Windows",
-        "Snap",
-        "Docker",
-        "Fedora",
-        "Debian"
-      ],
-      "pr_number": 3539,
-      "priority": "P0",
-      "text": "Verify that all downstream consumers (Fedora, Debian, MSI, snap, containers) correctly handle the new YYYY.WW.N version format, especially the YYYY portion exceeding 255 which affects MSI version fields."
-    },
-    {
-      "author": "@jeremyfowers",
-      "commit": "658d5655967acbb0669278dae5d5f175ed795835",
+      "author": "@abn",
+      "commit": "6a5e307dcaa63fbca24c01f04033f6a8ea7fd0b4",
       "platforms": [
         "all"
       ],
-      "pr_number": 3579,
+      "pr_number": 3470,
       "priority": "P0",
-      "text": "Before using candidates for real release testing, verify the full candidate pipeline end-to-end: push a release-v* branch and confirm MSI signing is skipped, candidate-v* tag is created, artifacts publish correctly, and release notes display the unsigned-installer warning."
+      "text": "Start the Lemonade server with `LEMONADE_ALLOWED_ORIGINS=http://192.168.1.50:*` and confirm that a browser or HTTP client connecting from `http://192.168.1.50:3000`, `:8080`, and `:5173` all succeed, while a connection from `http://192.168.1.51:3000` is rejected."
     },
     {
       "author": "@abn",
@@ -37,8 +25,58 @@
         "all"
       ],
       "pr_number": 3470,
+      "priority": "P0",
+      "text": "Start the server with `LEMONADE_ALLOWED_ORIGINS=http://*.local:*` and confirm that connections from `http://dashboard.local:3000` and `http://dev.local:5173` are accepted, while `http://evil.local:3000` and `http://local:3000` are rejected."
+    },
+    {
+      "author": "@wariobot09",
+      "commit": "92037d872234285eba32b76318f297219d6b1f74",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 2841,
+      "priority": "P0",
+      "text": "Call GET /pull/variants on an FLM model whose registry_source is empty (the default) and confirm the response does not contain an empty source field or a serialization error."
+    },
+    {
+      "author": "@superm1",
+      "commit": "c47aa2a491e8c8c6e07a895eaad88b27452f2bb2",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3539,
+      "priority": "P0",
+      "text": "Run `lemonade-server --version` or check the server startup log and confirm the version is in the new YYYY.WW.N format (e.g., `2026.39.0`) rather than the old X.Y.Z format (e.g., `11.9.0`)."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "658d5655967acbb0669278dae5d5f175ed795835",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3579,
+      "priority": "P0",
+      "text": "Push a new commit to a release-v* branch and confirm the \"Create GitHub Release\" job publishes a prerelease under a candidate-v<version> tag with the expected artifacts and the \"Windows installers are not signed\" note in the release body."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "bfb9dd596804db83e3bdf94e9ab6d98338fd53e4",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3580,
+      "priority": "P0",
+      "text": "Trigger the Create Release Branch workflow (Actions > workflows > Create Release Branch > Run workflow) and confirm that release-v2026.39 (or the next upcoming week) is created from main and triggers the candidate build pipeline."
+    },
+    {
+      "author": "@noamsto",
+      "commit": "1f1b4825ef89d1c9eb74361183632b1932d4f762",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3496,
       "priority": "P1",
-      "text": "Verify whether the matches() method in origin_utils.h is a hot path; if called per request, consider static constexpr std::regex or precompilation to avoid repeated regex compilation overhead."
+      "text": "Run `lemonade load gpt-oss-120b-mxfp-GGUF` and confirm the model loads successfully with the correct 63 GB MXFP4 file (not the 1.5 GB EAGLE3 draft head)."
     },
     {
       "author": "@popey",
@@ -48,57 +86,7 @@
       ],
       "pr_number": 3198,
       "priority": "P1",
-      "text": "Confirm that the common-denominator allowlist is an intentional, documented policy and that false negatives for models only supported by newer backend pins (bailingmoe3, minimax-01, kimi-k3) are acceptable for this release."
-    },
-    {
-      "author": "@wariobot09",
-      "commit": "92037d872234285eba32b76318f297219d6b1f74",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 2841,
-      "priority": "P1",
-      "text": "Test the FLM download path with default_model_source set to modelscope to confirm --modelscope 1 reaches the flm binary in both load-time and explicit pull paths."
-    },
-    {
-      "author": "@wariobot09",
-      "commit": "92037d872234285eba32b76318f297219d6b1f74",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 2841,
-      "priority": "P1",
-      "text": "Confirm that JSON API responses for source/registry_source round-trip correctly through parse_remote_registry_source() / remote_registry_source_name() for empty and non-empty registry_source values."
-    },
-    {
-      "author": "@anditherobot",
-      "commit": "304d27f9c748e30a89595bb9737cbc9119141f68",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3347,
-      "priority": "P1",
-      "text": "Manually test the new /v1/docs index endpoint and individual page fetch in a release candidate build."
-    },
-    {
-      "author": "@anditherobot",
-      "commit": "304d27f9c748e30a89595bb9737cbc9119141f68",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3347,
-      "priority": "P1",
-      "text": "Verify the new lemonade_docs MCP tool works with a standard MCP client."
-    },
-    {
-      "author": "@superm1",
-      "commit": "fb6c133c034b7312588ba117e70a61dfd9d32c6b",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3553,
-      "priority": "P1",
-      "text": "Confirm the CI changes described in this doc (weekly release-branch workflow, prerelease publishing, Docker candidate tagging) are all merged and deployed before users rely on the updated release guide."
+      "text": "Start the Lemonade server, call GET /pull/variants?checkpoint=stduhpf/Krea-2-Turbo-GGUF, and confirm the response is HTTP 400 with an error mentioning 'does not declare a model architecture'."
     },
     {
       "author": "@popey",
@@ -107,8 +95,8 @@
         "all"
       ],
       "pr_number": 3198,
-      "priority": "P2",
-      "text": "Monitor HF API latency and 429 rates after merge, since the extra compatibility-metadata request is now scoped to generic fetch_repository() which touches all HF repository operations (not just /pull/variants)."
+      "priority": "P1",
+      "text": "Start the Lemonade server, call GET /pull/variants?checkpoint=TinyLlama/TinyLlama-1.1B-Chat-v1.0, and confirm the response returns variant objects with size_bytes > 0."
     },
     {
       "author": "@wariobot09",
@@ -117,104 +105,134 @@
         "all"
       ],
       "pr_number": 2841,
-      "priority": "P2",
-      "text": "Verify that the final refactor (bcfc5c9) was re-reviewed or re-approved after SlawomirNowaczyk's comments on asymmetric precedence; if not, confirm the fix addresses the concern before relying on it."
+      "priority": "P1",
+      "text": "Run lemonade pull qwen3-0.6b-FLM --source modelscope and confirm the server logs show the flm CLI invoked with --modelscope 1."
+    },
+    {
+      "author": "@wariobot09",
+      "commit": "92037d872234285eba32b76318f297219d6b1f74",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 2841,
+      "priority": "P1",
+      "text": "Set default_model_source=modelscope in the server config, then run lemonade pull qwen3-0.6b-FLM without --source and confirm it downloads from ModelScope (not HuggingFace)."
+    },
+    {
+      "author": "@anditherobot",
+      "commit": "304d27f9c748e30a89595bb9737cbc9119141f68",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3347,
+      "priority": "P1",
+      "text": "Start a running Lemonade server, fetch GET /v1/docs and confirm the response is a JSON index listing at least api/README and api/lemonade with version, format, id, title, url, and bytes fields, and that the urls use the same prefix (/v1) that was used to request the index."
+    },
+    {
+      "author": "@anditherobot",
+      "commit": "304d27f9c748e30a89595bb9737cbc9119141f68",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3347,
+      "priority": "P1",
+      "text": "Fetch GET /v1/docs/api/lemonade from the running server and confirm the response is text/markdown starting with \"# Lemonade API\" and containing the documented endpoint table."
+    },
+    {
+      "author": "@anditherobot",
+      "commit": "304d27f9c748e30a89595bb9737cbc9119141f68",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3347,
+      "priority": "P1",
+      "text": "Confirm that GET /v0/docs, GET /api/v0/docs, and GET /api/v1/docs all return a 200 JSON index with urls matching the requesting prefix, and that GET /docs returns a JSON 404 with an error message pointing to /v1/docs."
+    },
+    {
+      "author": "@anditherobot",
+      "commit": "304d27f9c748e30a89595bb9737cbc9119141f68",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3347,
+      "priority": "P1",
+      "text": "Connect an MCP client to a running server, call the lemonade_docs tool with no arguments and confirm it returns a summary listing the bundled pages, then call lemonade_docs with page set to \"api/lemonade\" and confirm it returns the markdown content of that page."
+    },
+    {
+      "author": "@SlawomirNowaczyk",
+      "commit": "8312c1a8dc67854d36c82b559b5d00a719ad0012",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3510,
+      "priority": "P1",
+      "text": "Start lemond with a cloud provider configured, send a curl request with a session header (e.g. -H 'x-opencode-session: test-abc'), and confirm the upstream provider receives the same session ID in its request headers."
+    },
+    {
+      "author": "@bitgamma",
+      "commit": "378622dcce2c4930f2b5ce91232cd079c4e79eff",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3494,
+      "priority": "P1",
+      "text": "Post a `/images/edit` request through the server with a valid model, prompt, and base64 image data, and confirm the endpoint returns b64_json in the response instead of an unsupported error."
     },
     {
       "author": "@jeremyfowers",
-      "commit": "6ebd2bbb48bec71789599dc78676f9cd8eec9d3a",
+      "commit": "6e2b5bd3dd7e0123e2947447847c3458c9b7db4b",
       "platforms": [
         "all"
       ],
-      "pr_number": 3550,
-      "priority": "P2",
-      "text": "Confirm that @ramkrishna2910 was aware of the post-approval commit (be5dd36) that adds load_model() calls with context size pinning to prevent CI runner OOM kills."
-    },
-    {
-      "author": "@meghsat",
-      "commit": "8b5a23b52755d08f3738d0dc1375357653e8f78a",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3565,
-      "priority": "P2",
-      "text": "Confirm that the backends-reference.md note about llama.cpp slot-erase behavior is useful in-context, since @bitgamma raised a valid out-of-context clarity concern."
-    },
-    {
-      "author": "@superm1",
-      "commit": "c47aa2a491e8c8c6e07a895eaad88b27452f2bb2",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3539,
-      "priority": "P2",
-      "text": "Document the new version handling scheme for maintainers and release engineers, including how to interpret YYYY.WW.N formats and use tools/release.py."
-    },
-    {
-      "author": "@superm1",
-      "commit": "c47aa2a491e8c8c6e07a895eaad88b27452f2bb2",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3539,
-      "priority": "P2",
-      "text": "Decide whether the non-deterministic versioning for bleeding-edge builds (where the same commit gets a different version number depending on the current date's release week) warrants a follow-up PR to anchor versions to commit date rather than build date."
+      "pr_number": 3588,
+      "priority": "P1",
+      "text": "Navigate to the Lemonade GitHub repo Releases page and confirm that any existing candidate-v* prereleases are listed as Pre-release (not as stable) while the latest stable release is marked as Latest."
     },
     {
       "author": "@jeremyfowers",
-      "commit": "658d5655967acbb0669278dae5d5f175ed795835",
+      "commit": "6e2b5bd3dd7e0123e2947447847c3458c9b7db4b",
       "platforms": [
         "all"
       ],
-      "pr_number": 3579,
+      "pr_number": 3588,
+      "priority": "P1",
+      "text": "Open https://lemonade-sdk.github.io/lemonade/ (or the homepage that serves docs/index.html) and confirm the carousel shows only stable releases, with no candidate-v* tag appearing as the current version."
+    },
+    {
+      "author": "@SlawomirNowaczyk",
+      "commit": "8312c1a8dc67854d36c82b559b5d00a719ad0012",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3510,
       "priority": "P2",
-      "text": "Verify the generate-release-notes action.yml: @superm1 suggested all three new inputs (tag, target_commit, ppa_channel) should be required, but the merged version kept defaults and uses env vars in the workflow instead. Confirm this design is intentional."
+      "text": "Send a GET /models request and confirm no session header is attached to that discovery call."
     },
     {
       "author": "@jeremyfowers",
-      "commit": "658d5655967acbb0669278dae5d5f175ed795835",
+      "commit": "421eabdf6f1061b15a6a960f216326cbbc7b4a42",
       "platforms": [
         "all"
       ],
-      "pr_number": 3579,
+      "pr_number": 3547,
       "priority": "P2",
-      "text": "Confirm AGENTS.md or any internal CI documentation is updated to reflect the new candidate-prerelease workflow and tag scheme."
-    },
-    {
-      "author": "@jeremyfowers",
-      "commit": "d7ddd1030ff4972c7447cf4fe71ae098a46be8e0",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3581,
-      "priority": "P2",
-      "text": "Verify the post-approval argparse commit (2da5cc7) does not change version.py behavior observed by the workflow and was within the spirit of the original review."
-    },
-    {
-      "author": "@jeremyfowers",
-      "commit": "d7ddd1030ff4972c7447cf4fe71ae098a46be8e0",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3581,
-      "priority": "P2",
-      "text": "Decide whether the bot-identified race condition (concurrent release-v* pushes overwriting the rolling candidate tag) needs a fix or is an acceptable residual risk."
+      "text": "Add --bind 127.0.0.1 to the python3 -m http.server 8080 commands in examples/README.md and examples/debate-arena.md, then confirm the examples serve only on localhost."
     }
   ],
-  "commits_reviewed": 38,
-  "commits_unreviewed": 2,
+  "commits_reviewed": 41,
+  "commits_unreviewed": 0,
   "evidence": {
-    "blockers": "Downstream package formats (Fedora, Debian, MSI, Snap, Docker) must be verified against the new YYYY.WW.N version scheme — the MSI version field cannot handle year > 255 without the YY.MM.PATCH reformatter. The new candidate pipeline (release-v* → candidate-v* tags, unsigned MSIs, prerelease publishing) has never been exercised end-to-end and must be validated before any real release-candidate testing.",
-    "breaking_changes": "The version scheme is the sole breaking change. All downstream consumers (Fedora, Debian, MSI, Snap, Docker, macOS) ship under this scheme and require platform-specific verification. MSI reformats to YY.MM.PATCH to avoid version field overflow. The get-version action output changed format, and CMake VERSION is now derived dynamically from git state.",
-    "coverage": "All 38 commit review(s) in the digest were used. The 19 to-dos from the continuity baseline were rated. Two commits in this range have no commit review and are not in the digest.",
-    "manual_testing": "New user-facing endpoints and features need human verification: /v1/docs index and page fetch, the lemonade_docs MCP tool with a standard client, the FLM download path with ModelScope as default source, and JSON round-trip of source/registry_source fields. The candidate pipeline should be exercised on a release-v* branch before being relied upon.",
-    "security": "No new security concerns observed in this release. The origin wildcard matching (6a5e307) maintains strict scheme enforcement and dot-boundary subdomain checks. The HF compatibility filter (6a60710) closes a download surface by rejecting incompatible repos. The MCP client revert (496bb24) removes an unshipped attack surface. No credential or supply-chain issues detected."
+    "blockers": "Three items block shipping: the new release candidate publishing pipeline (GitHub prereleases and branch creation) has never been exercised end-to-end, the version format change affects all clients and scripts that parse version output, and the FLM API response encoding changed in a way that could break dependent clients. The wildcard origin security feature must also be verified before shipping.",
+    "breaking_changes": "The version format shift (X.Y.Z → YYYY.WW.N) is a fundamental change to every artifact's identity string — CMake, MSI, Docker, and server output all emit the new format. Python3 is now a hard build dependency on Linux (added to CMake find_package, Dockerfile apt deps, and debian/control). The FLM API response for registry_source changed default from 'huggingface' to empty string, a subtle but real encoding shift. The unversioned /docs route now returns JSON 404 instead of SPA fallback, a deliberate fix for a UI leak.",
+    "coverage": "All 41 commits were reviewed by the commit review pipeline. 21 to-dos carry across from those reviews; every to-do is represented in this checklist with a priority.",
+    "manual_testing": "Human verification is needed for: (1) the new candidate release infrastructure — push to release-v* and confirm prereleases and Docker candidate tags are published correctly; (2) the wildcard origin matching — test that wildcard port and subdomain patterns behave securely; (3) the /pull/variants error path — confirm incompatible GGUF repos return 400 while valid ones return variants; (4) the new docs endpoints and MCP tool — exercise live and confirm correct responses; (5) the version format — confirm the new YYYY.WW.N output on the release candidate.",
+    "security": "Wildcard origin matching (:) and subdomain pattern (*.domain) is a new security-sensitive feature — subdomain spoofing via loose matching would be a real vulnerability. The new session header relay uses a strict well-known-only allowlist and deliberately excludes telemetry headers. The /pull/variants architecture filter prevents downloading incompatible repos. The example HTML server docs need --bind 127.0.0.1 to avoid accidentally exposing file trees on all interfaces."
   },
-  "generation_seconds": 98.3,
-  "head_sha": "2897f245f0a9bfadb367fbbf8f645d2358bc7407",
+  "generation_seconds": 118.5,
+  "head_sha": "e71baf23dae6aedd0f59d67a1be8f81e3369305c",
   "is_hotfix": false,
   "last_stable_tag": "",
   "range_start": "v11.9.0",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-09-15T20:56:36+00:00"
+  "reviewed_at": "2026-09-15T23:31:11+00:00"
 }
