@@ -7,6 +7,20 @@
   "candidate_issues": [],
   "checklist": [
     {
+      "author": "@superm1",
+      "commit": "c47aa2a491e8c8c6e07a895eaad88b27452f2bb2",
+      "platforms": [
+        "Windows",
+        "Snap",
+        "Docker",
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 3539,
+      "priority": "P0",
+      "text": "Verify that all downstream consumers (Fedora, Debian, MSI, snap, containers) correctly handle the new YYYY.WW.N version format, especially the YYYY portion exceeding 255 which affects MSI version fields."
+    },
+    {
       "author": "@jeremyfowers",
       "commit": "658d5655967acbb0669278dae5d5f175ed795835",
       "platforms": [
@@ -37,20 +51,10 @@
       "text": "Confirm that the common-denominator allowlist is an intentional, documented policy and that false negatives for models only supported by newer backend pins (bailingmoe3, minimax-01, kimi-k3) are acceptable for this release."
     },
     {
-      "author": "@popey",
-      "commit": "6a607106ce467849e9f64c17de9f249f2936a7a9",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3198,
-      "priority": "P1",
-      "text": "Monitor HF API latency and 429 rates after merge, since the extra compatibility-metadata request is now scoped to generic fetch_repository() which touches all HF repository operations (not just /pull/variants)."
-    },
-    {
       "author": "@wariobot09",
       "commit": "92037d872234285eba32b76318f297219d6b1f74",
       "platforms": [
-        "macOS"
+        "all"
       ],
       "pr_number": 2841,
       "priority": "P1",
@@ -88,26 +92,6 @@
     },
     {
       "author": "@superm1",
-      "commit": "c47aa2a491e8c8c6e07a895eaad88b27452f2bb2",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3539,
-      "priority": "P1",
-      "text": "Verify that all downstream consumers (Fedora, Debian, MSI, snap, containers) correctly handle the new YYYY.WW.N version format, especially the YYYY portion exceeding 255 which affects MSI version fields."
-    },
-    {
-      "author": "@jeremyfowers",
-      "commit": "658d5655967acbb0669278dae5d5f175ed795835",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3579,
-      "priority": "P1",
-      "text": "Verify the generate-release-notes action.yml: @superm1 suggested all three new inputs (tag, target_commit, ppa_channel) should be required, but the merged version kept defaults and uses env vars in the workflow instead. Confirm this design is intentional."
-    },
-    {
-      "author": "@superm1",
       "commit": "fb6c133c034b7312588ba117e70a61dfd9d32c6b",
       "platforms": [
         "all"
@@ -115,6 +99,16 @@
       "pr_number": 3553,
       "priority": "P1",
       "text": "Confirm the CI changes described in this doc (weekly release-branch workflow, prerelease publishing, Docker candidate tagging) are all merged and deployed before users rely on the updated release guide."
+    },
+    {
+      "author": "@popey",
+      "commit": "6a607106ce467849e9f64c17de9f249f2936a7a9",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3198,
+      "priority": "P2",
+      "text": "Monitor HF API latency and 429 rates after merge, since the extra compatibility-metadata request is now scoped to generic fetch_repository() which touches all HF repository operations (not just /pull/variants)."
     },
     {
       "author": "@wariobot09",
@@ -174,6 +168,16 @@
       ],
       "pr_number": 3579,
       "priority": "P2",
+      "text": "Verify the generate-release-notes action.yml: @superm1 suggested all three new inputs (tag, target_commit, ppa_channel) should be required, but the merged version kept defaults and uses env vars in the workflow instead. Confirm this design is intentional."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "658d5655967acbb0669278dae5d5f175ed795835",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3579,
+      "priority": "P2",
       "text": "Confirm AGENTS.md or any internal CI documentation is updated to reflect the new candidate-prerelease workflow and tag scheme."
     },
     {
@@ -200,19 +204,17 @@
   "commits_reviewed": 38,
   "commits_unreviewed": 2,
   "evidence": {
-    "blockers": "The candidate pipeline (658d565-2) is the only P0: it is a new shipping surface for release testing that has never been exercised end-to-end — without verifying MSI signing is skipped, candidate-v* tags are created, artifacts publish correctly, and release notes carry the unsigned-installer warning, we can't confidently build or test a release candidate. Downstream version-format handling (c47aa2a-3) is P1 — the YYYY>255 concern is real but the conversion code (YY.MM.PATCH) exists and needs verification, not a blocker.",
-    "breaking_changes": "The version scheme is the primary breaking change. The YYYY.WW.N format with potential YYYY exceeding 255 affects MSI version fields, CMake variable derivation, and downstream packaging. The release-notes and announcement steps surface each entry from this list.",
-    "coverage": "All 19 to-dos from the previous review have been rated. The digest contains 38 commits; 2 commits in this range have no commit review and are not in the digest.",
-    "manual_testing": "Two user-facing new surfaces need human verification: the /v1/docs endpoint and the lemonade_docs MCP tool (both P1). The FLM ModelScope download path (P1) requires a macOS NPU-capable runner. HF API monitoring (6a60710-2, P1) should be tracked after the candidate ships to catch 429s from the extra compatibility-metadata call.",
-    "security": "No new security concerns observed. The wildcard origin matching (6a5e307) has proper scheme enforcement. The GGUF architecture filter (6a60710) improves security by rejecting incompatible repositories. The MCP client revert (496bb24) reduces attack surface by removing an undocumented process-launch endpoint."
+    "blockers": "Downstream package formats (Fedora, Debian, MSI, Snap, Docker) must be verified against the new YYYY.WW.N version scheme — the MSI version field cannot handle year > 255 without the YY.MM.PATCH reformatter. The new candidate pipeline (release-v* → candidate-v* tags, unsigned MSIs, prerelease publishing) has never been exercised end-to-end and must be validated before any real release-candidate testing.",
+    "breaking_changes": "The version scheme is the sole breaking change. All downstream consumers (Fedora, Debian, MSI, Snap, Docker, macOS) ship under this scheme and require platform-specific verification. MSI reformats to YY.MM.PATCH to avoid version field overflow. The get-version action output changed format, and CMake VERSION is now derived dynamically from git state.",
+    "coverage": "All 38 commit review(s) in the digest were used. The 19 to-dos from the continuity baseline were rated. Two commits in this range have no commit review and are not in the digest.",
+    "manual_testing": "New user-facing endpoints and features need human verification: /v1/docs index and page fetch, the lemonade_docs MCP tool with a standard client, the FLM download path with ModelScope as default source, and JSON round-trip of source/registry_source fields. The candidate pipeline should be exercised on a release-v* branch before being relied upon.",
+    "security": "No new security concerns observed in this release. The origin wildcard matching (6a5e307) maintains strict scheme enforcement and dot-boundary subdomain checks. The HF compatibility filter (6a60710) closes a download surface by rejecting incompatible repos. The MCP client revert (496bb24) removes an unshipped attack surface. No credential or supply-chain issues detected."
   },
-  "generation_seconds": 242.5,
+  "generation_seconds": 98.3,
   "head_sha": "2897f245f0a9bfadb367fbbf8f645d2358bc7407",
   "is_hotfix": false,
   "last_stable_tag": "",
   "range_start": "v11.9.0",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-09-15T20:49:33+00:00",
-  "verdict": "Blocked",
-  "verdict_reason": "One item still blocks the release: the candidate pipeline hasn't been verified end-to-end so we can't confidently test the release candidate. Downstream consumers need confirmation they handle the new version format, but that doesn't hold up the build itself. The rest of the list is P1 or P2 work that should be checked before shipping."
+  "reviewed_at": "2026-09-15T20:56:36+00:00"
 }
