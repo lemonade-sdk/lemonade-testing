@@ -1,0 +1,35 @@
+{
+  "author": "@meghsat",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "8b5a23b52755d08f3738d0dc1375357653e8f78a",
+  "committed_at": "2026-09-14T05:03:30Z",
+  "evidence": {
+    "api_compatibility": "No breaking API changes. The change removes a private backend method override (LlamaCppServer::downsize()) that was already documented as a no-op for backends that cannot downsize. No schema, protocol, config, or CLI contract is affected. The author explicitly checked 'no breaking changes' and this is correct.",
+    "documentation": "Two docs files updated: (1) docs/dev/backends-reference.md adds a new '### llama.cpp (llamacpp)' section explaining the pinned runtime defaults, the no-op downsize, and why erase is non-functional; (2) docs/guide/configuration/multi-model.md updates the 'soft idle (downsize)' description to be backend-specific ('for llama.cpp it is a no-op that leaves the prompt cache intact'). Both changes support the issue's documented scope. One minor note: the backends-reference section was flagged by @bitgamma as potentially unclear out of context, but it is a reasonable reference for anyone reasoning about router-level behavior with llama.cpp.",
+    "manual_release_testing": "No manual release testing required. The change only affects behavior when auto_evict=true (not the default). Soft-idle downsize is an internal server detail with no new CLI commands, GUI changes, or user-visible API changes. The user-visible effect — a resumed conversation showing non-zero cache_tokens instead of zero — is a bug fix, not new behavior.",
+    "post_approval_commits": "Two commits arrived after the first approval from @pwilkin: (1) 'PR feedback: Removing the test script' by @meghsat (sha 30fd62745999, directly responding to @bitgamma's inline comment — within the spirit of the approved PR); (2) a merge of main that pulled in an unrelated SSE-streaming fix from #3448 (sha cdeeb28). @bitgamma re-approved on the merge commit. No behavioral changes from post-approval commits; the test removal was expected, and the main-merge diff added no llama.cpp downsize changes.",
+    "review": "PR was requested from three reviewers (ramkrishna2910, SlawomirNowaczyk, fl0rianr) but substantive review came from @pwilkin (llamacpp subject-matter expert per contribute.md) and @bitgamma (CLI/backends contributor). @bitgamma initially requested removal of a test and raised a documentation concern; the author addressed both. @pwilkin approved with 'much better scoped than the previous attempt' and 'after removing the test ... it should be fine' (approved 2026-09-13T17:10:24Z). @bitgamma gave final approval (APPROVED 2026-09-14T05:01:00Z) after the test removal and rebase. Subject-matter expertise was present: @pwilkin covers llamacpp.",
+    "security": "No security concern. The fix removes a network call (POST /slots/{id}?action=erase) that was already running locally to an upstream llama-server subprocess with no auth implications. Supply-chain impact is nil — the only files changed are C++ source, header, docs, and a test constant.",
+    "tests": "A test (test_downsize_preserves_prompt_cache) was added in the initial commit and removed in the second commit per @bitgamma's inline review ('testing that a no-op is a no-op seems redundant'). The only remaining test-file change is a constant addition (CACHE_TEST_CTX_SIZE = 1024). Empirical validation is thorough: the PR author isolated llama-server and demonstrated (1) erase frees zero VRAM, (2) erase destroys the host-recoverable prompt cache (cache_n drops to 0), and (3) --parallel 1 means the multi-slot cache scenario doesn't apply. No tests are weakened or deleted."
+  },
+  "generation_seconds": 177.1,
+  "maintainer_todos": [
+    "Confirm that the backends-reference.md note about llama.cpp slot-erase behavior is useful in-context, since @bitgamma raised a valid out-of-context clarity concern."
+  ],
+  "merge_date": "2026-09-14T05:59:32Z",
+  "pr_number": 3565,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T17:57:12+00:00",
+  "reviewers": [
+    "@pwilkin",
+    "@bitgamma"
+  ],
+  "sha": "8b5a23b52755d08f3738d0dc1375357653e8f78a",
+  "shout_outs": [],
+  "subject": "fix(server): stop erasing llama.cpp slots on soft-idle downsize #2961 (#3565)",
+  "summary": "Removes the LlamaCppServer::downsize() override (which called POST /slots/{id}?action=erase on every slot) so soft-idle downsize falls through to the base-class no-op, preserving the prompt cache instead of needlessly destroying it.",
+  "verdict": "Clean",
+  "verdict_reason": "Well-scoped regression fix backed by empirical evidence, reviewed by llama.cpp experts, with appropriate documentation updates and no post-approval behavioral changes."
+}
