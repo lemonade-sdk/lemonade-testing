@@ -7,57 +7,212 @@
   "candidate_issues": [],
   "checklist": [
     {
+      "author": "@popey",
+      "commit": "6a607106ce467849e9f64c17de9f249f2936a7a9",
       "platforms": [
         "all"
       ],
+      "pr_number": 3198,
       "priority": "P1",
-      "text": "Install or build packages on each platform and confirm the new YYYY.WW.N version format appears correctly in version outputs, MSI labels, and container tags (#3539, @superm1)."
+      "text": "Confirm that the common-denominator allowlist is an intentional, documented policy and that false negatives for models only supported by newer backend pins (bailingmoe3, minimax-01, kimi-k3) are acceptable for this release."
     },
     {
+      "author": "@popey",
+      "commit": "6a607106ce467849e9f64c17de9f249f2936a7a9",
       "platforms": [
         "all"
       ],
+      "pr_number": 3198,
       "priority": "P1",
-      "text": "Start the server, fetch GET /v1/docs to confirm the JSON index includes the running version, verify at least one individual page returns correct markdown, and test the lemonade_docs MCP tool with a standard MCP client (#3347, @anditherobot)."
+      "text": "Monitor HF API latency and 429 rates after merge, since the extra compatibility-metadata request is now scoped to generic fetch_repository() which touches all HF repository operations (not just /pull/variants)."
     },
     {
+      "author": "@wariobot09",
+      "commit": "92037d872234285eba32b76318f297219d6b1f74",
       "platforms": [
         "all"
       ],
+      "pr_number": 2841,
       "priority": "P1",
-      "text": "Push a release-v* branch and confirm MSI signing is skipped, a candidate-v* tag is created, artifacts publish correctly, and release notes display the unsigned-installer warning (#3579, @jeremyfowers)."
+      "text": "Test the FLM download path with default_model_source set to modelscope to confirm --modelscope 1 reaches the flm binary in both load-time and explicit pull paths."
     },
     {
+      "author": "@wariobot09",
+      "commit": "92037d872234285eba32b76318f297219d6b1f74",
       "platforms": [
         "all"
       ],
+      "pr_number": 2841,
       "priority": "P1",
-      "text": "Set default_model_source to modelscope and confirm --modelscope 1 reaches the flm binary in both load-time and explicit pull paths, then verify JSON API responses for registry_source round-trip correctly through parse_remote_registry_source() (#2841, @wariobot09)."
+      "text": "Confirm that JSON API responses for source/registry_source round-trip correctly through parse_remote_registry_source() / remote_registry_source_name() for empty and non-empty registry_source values."
     },
     {
+      "author": "@anditherobot",
+      "commit": "304d27f9c748e30a89595bb9737cbc9119141f68",
       "platforms": [
         "all"
       ],
+      "pr_number": 3347,
       "priority": "P1",
-      "text": "Confirm the common-denominator GGUF architecture allowlist is an intentional policy and that the extra HF metadata request does not cause excessive latency or 429 errors on /pull/variants for popular models (#3198, @popey)."
+      "text": "Manually test the new /v1/docs index endpoint and individual page fetch in a release candidate build."
+    },
+    {
+      "author": "@anditherobot",
+      "commit": "304d27f9c748e30a89595bb9737cbc9119141f68",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3347,
+      "priority": "P1",
+      "text": "Verify the new lemonade_docs MCP tool works with a standard MCP client."
+    },
+    {
+      "author": "@superm1",
+      "commit": "c47aa2a491e8c8c6e07a895eaad88b27452f2bb2",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3539,
+      "priority": "P1",
+      "text": "Verify that all downstream consumers (Fedora, Debian, MSI, snap, containers) correctly handle the new YYYY.WW.N version format, especially the YYYY portion exceeding 255 which affects MSI version fields."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "658d5655967acbb0669278dae5d5f175ed795835",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3579,
+      "priority": "P1",
+      "text": "Before using candidates for real release testing, verify the full candidate pipeline end-to-end: push a release-v* branch and confirm MSI signing is skipped, candidate-v* tag is created, artifacts publish correctly, and release notes display the unsigned-installer warning."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "d7ddd1030ff4972c7447cf4fe71ae098a46be8e0",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3581,
+      "priority": "P1",
+      "text": "Decide whether the bot-identified race condition (concurrent release-v* pushes overwriting the rolling candidate tag) needs a fix or is an acceptable residual risk."
+    },
+    {
+      "author": "@superm1",
+      "commit": "fb6c133c034b7312588ba117e70a61dfd9d32c6b",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3553,
+      "priority": "P1",
+      "text": "Confirm the CI changes described in this doc (weekly release-branch workflow, prerelease publishing, Docker candidate tagging) are all merged and deployed before users rely on the updated release guide."
+    },
+    {
+      "author": "@abn",
+      "commit": "6a5e307dcaa63fbca24c01f04033f6a8ea7fd0b4",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3470,
+      "priority": "P2",
+      "text": "Verify whether the matches() method in origin_utils.h is a hot path; if called per request, consider static constexpr std::regex or precompilation to avoid repeated regex compilation overhead."
+    },
+    {
+      "author": "@wariobot09",
+      "commit": "92037d872234285eba32b76318f297219d6b1f74",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 2841,
+      "priority": "P2",
+      "text": "Verify that the final refactor (bcfc5c9) was re-reviewed or re-approved after SlawomirNowaczyk's comments on asymmetric precedence; if not, confirm the fix addresses the concern before relying on it."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "6ebd2bbb48bec71789599dc78676f9cd8eec9d3a",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3550,
+      "priority": "P2",
+      "text": "Confirm that @ramkrishna2910 was aware of the post-approval commit (be5dd36) that adds load_model() calls with context size pinning to prevent CI runner OOM kills."
+    },
+    {
+      "author": "@meghsat",
+      "commit": "8b5a23b52755d08f3738d0dc1375357653e8f78a",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3565,
+      "priority": "P2",
+      "text": "Confirm that the backends-reference.md note about llama.cpp slot-erase behavior is useful in-context, since @bitgamma raised a valid out-of-context clarity concern."
+    },
+    {
+      "author": "@superm1",
+      "commit": "c47aa2a491e8c8c6e07a895eaad88b27452f2bb2",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3539,
+      "priority": "P2",
+      "text": "Document the new version handling scheme for maintainers and release engineers, including how to interpret YYYY.WW.N formats and use tools/release.py."
+    },
+    {
+      "author": "@superm1",
+      "commit": "c47aa2a491e8c8c6e07a895eaad88b27452f2bb2",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3539,
+      "priority": "P2",
+      "text": "Decide whether the non-deterministic versioning for bleeding-edge builds (where the same commit gets a different version number depending on the current date's release week) warrants a follow-up PR to anchor versions to commit date rather than build date."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "658d5655967acbb0669278dae5d5f175ed795835",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3579,
+      "priority": "P2",
+      "text": "Verify the generate-release-notes action.yml: @superm1 suggested all three new inputs (tag, target_commit, ppa_channel) should be required, but the merged version kept defaults and uses env vars in the workflow instead. Confirm this design is intentional."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "658d5655967acbb0669278dae5d5f175ed795835",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3579,
+      "priority": "P2",
+      "text": "Confirm AGENTS.md or any internal CI documentation is updated to reflect the new candidate-prerelease workflow and tag scheme."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "d7ddd1030ff4972c7447cf4fe71ae098a46be8e0",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3581,
+      "priority": "P2",
+      "text": "Verify the post-approval argparse commit (2da5cc7) does not change version.py behavior observed by the workflow and was within the spirit of the original review."
     }
   ],
   "commits_reviewed": 38,
-  "commits_unreviewed": 1,
+  "commits_unreviewed": 2,
   "evidence": {
-    "blockers": "Nothing blocks the release. Five P1 verifications remain: downstream version format, new API/MCP tool, candidate pipeline, FLM download path, and GGUF architecture filter allowlist.",
-    "breaking_changes": "The version scheme change affects all platform consumers: CMake projects using the get-version action will see YYYY.WW.N output, MSI installers will use YY.MM.PATCH labels, and package versions on Fedora/Debian/Ubuntu/Snap/Docker will use the new format. All downstream packaging pipelines have been updated in #3539 but need verification that they render the version correctly end-to-end.",
-    "coverage": "Reviewed 38 of 39 commits in the range; 1 commit (8d89896, #3565 re: backends-reference note) has no commit review. All items with unresolved to-dos from the prior review are carried forward with stable wording.",
-    "manual_testing": "The release adds a new version scheme touching every platform's packaging surface, a new HTTP endpoint and MCP tool, and new CI publishing behavior for candidates. These require human verification on the target platforms and with real MCP clients before shipping.",
-    "security": "Wildcard port and domain matching in origin validation (PR #3470) was flagged for regex compilation in the hot path, but the string-based subdomain matching is functionally secure and the concern is performance-only. The new /v1/docs endpoint enforces path confinement against directory traversal. No security regressions observed."
+    "blockers": "Ten P1 items requiring manual verification across five areas: the new YYYY.WW.N version scheme on all downstream consumers, the /v1/docs HTTP endpoint and lemonade_docs MCP tool, the candidate publishing pipeline end-to-end, the FLM download path with ModelScope integration, and the HF architecture filter affecting model downloads and API latency. No P0 blockers detected.",
+    "breaking_changes": "The version scheme shifted from M.m.p to YYYY.WW.N[~count.hash] with CMakeLists.txt no longer using a static VERSION declaration — it invokes python3 tools/version.py at configure time. The MSI installer now uses @LEMONADE_MSI_VERSION@ (YY.MM.PATCH) instead of @PROJECT_VERSION@, the Windows assembly manifest uses @LEMONADE_NUMERIC_VERSION@, and the get-version action output format changed to YYYY.WW.N.",
+    "coverage": "38 commits reviewed across the range; 2 commits in this range have no commit review and are not covered in this digest.",
+    "manual_testing": "Testers should verify: (1) the /v1/docs index endpoint returns a correct JSON index with the running version and individual pages fetch valid markdown, (2) the lemonade_docs MCP tool responds correctly with a standard MCP client, (3) the FLM download path with default_model_source=modelscope correctly passes --modelscope 1 to the flm binary in both load-time and explicit pull paths, (4) the candidate publishing pipeline creates unsigned MSI builds with candidate-v* tags and proper release notes on a release-v* branch, and (5) downstream consumers (MSI, Fedora, Debian, Snap, Docker) handle the new YYYY.WW.N version format correctly, particularly the YYYY field exceeding 255 in MSI version fields.",
+    "security": "No security concerns observed in the reviewed commits. The wildcard origin feature (6a5e307) maintained strict scheme enforcement. The revert of the internal MCP client (496bb24) removed an attack surface. The GGUF architecture filter (6a60710) improves security by rejecting incompatible repositories before download. No credential handling, supply-chain changes, or suspicious code patterns detected."
   },
-  "generation_seconds": 82.3,
-  "head_sha": "6e2b5bd3dd7e0123e2947447847c3458c9b7db4b",
+  "generation_seconds": 154.6,
+  "head_sha": "2897f245f0a9bfadb367fbbf8f645d2358bc7407",
   "is_hotfix": false,
   "last_stable_tag": "",
   "range_start": "v11.9.0",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-09-15T18:58:24+00:00",
+  "reviewed_at": "2026-09-15T20:32:45+00:00",
   "verdict": "Needs Attention",
   "verdict_reason": "Five manual verifications before shipping: the new version scheme on downstream packages, the /v1/docs API and MCP tool, the candidate publishing pipeline, the FLM download path with ModelScope, and the GGUF architecture filter — none are P0 blockers, but none can be skipped."
 }
