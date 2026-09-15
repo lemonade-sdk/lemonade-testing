@@ -5,28 +5,28 @@
   "commit_sha": "c75e865f8934e18bb3daee0ae8f591c7b5a4fd44",
   "committed_at": "2026-09-15T05:26:11Z",
   "evidence": {
-    "api_compatibility": "No API compatibility impact. The change touches only .github/workflows/launchpad-ppa.yml and .github/workflows/upload.yml. Internal workflow inputs (target, package_matrix) are not user-facing APIs.",
-    "documentation": "No documentation changes needed. The change does not affect end-user-facing behavior, CLI commands, API contracts, or shipped docs. The routing schema (main→bleeding-edge, release-v*→candidate, v* tags→stable) matches the PR description and is a release-internal workflow detail.",
-    "manual_release_testing": "This is a CI/CD configuration change only; it does not alter shipped binaries, CLI behavior, GUI, or documented user-facing APIs. No manual release testing is required. The routing logic (main→bleeding-edge, release-v*→candidate, v* tags→stable) can be verified by observing the actual PPA upload runs after a release branch push, but that is operational monitoring rather than a pre-release manual-test requirement.",
-    "post_approval_commits": "None. The sole commit (ac6cd30) was approved and merged without any further changes to the branch.",
-    "review": "PR #3529 was opened by @superm1 on 2026-09-09 and merged on 2026-09-15. It was a single-commit PR on branch superm1/candidate-instead-of-stable into main. @jeremyfowers (member, CI subject-area expert per contribute.md) approved with \"LGTM\" on 2026-09-11T18:13:09Z. The reviewer initially raised a clarification question about whether release branches should go to both stable and candidate; the author clarified the intended design in thread comments and the RFC #3522 context. An AI-assisted review (Claude) raised three observations — non-v tags silently stop publishing, candidate can end up behind stable in version-sort order, and PRs targeting release branches get no deb build — but none blocked the PR and the author adjusted accordingly.",
-    "security": "No security concerns. The changes are purely workflow routing logic: new upload-candidate job, adjusted conditions, and a refactored reusable workflow to carry the matrix from callers. No credential handling, network calls, code execution, or supply-chain changes were introduced beyond existing GPG-key signing and dput uploads already in upload.yml.",
-    "tests": "No automated test coverage specific to the PPA routing logic, which is expected since this is a CI workflow change with no executable application code surface. The Launchpad PPA workflow correctly ran in the merge queue, producing a successful \"Launchpad PPA builds\" check and all three upload jobs (Stable, Candidate, Bleeding Edge) skipped as expected on a merge-group run against main. No existing tests were weakened or deleted."
+    "api_compatibility": "No user-facing API compatibility concerns. The change modifies the GitHub Actions workflow trigger rules (adding release-v* to the push branches list) and restructures the upload workflow inputs (replacing `artifact` with `package_matrix`). These are internal CI changes with no impact on the Lemonade SDK CLI, API, or user configuration.",
+    "documentation": "The PR template states 'Documentation is not affected by this change.' The change is internal to GitHub Actions workflow files and does not alter user-facing behavior, CLI contracts, or documented release processes. The routing schema is self-documenting within the workflow conditions.",
+    "manual_release_testing": "Not applicable. This commit only changes GitHub Actions workflow routing logic; it does not alter user-facing behavior, CLI commands, API endpoints, or GUI. It would be validated naturally on the next release-v* branch push and tag event through the existing CI pipeline.",
+    "post_approval_commits": "None. The sole commit (ac6cd30a8dbeb66d80eaf32659248373d410d2e7) was already present at the time of the first and only approval on 2026-09-11. The PR was merged 4 days later via the merge queue on 2026-09-15 without further changes.",
+    "review": "PR #3529 was approved by @jeremyfowers with an LGTM on 2026-09-11T18:13:09Z. @jeremyfowers has CI listed as a subject area in docs/dev/contribute.md, so the review was performed by someone with relevant expertise. The PR body states it is a partial implementation of RFC #3522 and clearly lays out the three routing rules. There was a brief discussion thread where @jeremyfowers expressed initial confusion about stable vs. candidate behavior, but @superm1 clarified the deferred design (option 2 — direct upload to stable — is intentional and the candidate→stable promotion via Launchpad API copy is left for the RFC to decide). No inline comments or follow-up review requests were filed. There were no post-approval commits.",
+    "security": "No new external dependencies, no credential handling changes, no network calls to unknown endpoints. The `secrets: inherit` declarations on the new upload-candidate job mirror the existing pattern on upload-stable and upload-bleeding-edge. No code execution paths or auth changes were introduced.",
+    "tests": "No new application tests were added or needed — this is a pure CI/CD workflow change. The Routing Schema Tests check run passed, and the Launchpad PPA workflow check runs (Prepare matrix, Launchpad PPA builds) completed successfully on the merge-queue run. No tests were weakened or deleted."
   },
-  "generation_seconds": 134.9,
+  "generation_seconds": 115.1,
   "maintainer_todos": [],
   "merge_date": "2026-09-15T06:05:28Z",
   "pr_number": 3529,
   "range_start": "v11.9.0",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-09-15T18:02:18+00:00",
+  "reviewed_at": "2026-09-15T23:01:52+00:00",
   "reviewers": [
     "@jeremyfowers"
   ],
   "sha": "c75e865f8934e18bb3daee0ae8f591c7b5a4fd44",
   "shout_outs": [],
   "subject": "Route release branch commits to candidate PPA (#3529)",
-  "summary": "Routes release-v* branch commits to the candidate PPA, keeps main commits in bleeding-edge, and leaves v* tags to publish directly to stable, as a partial implementation of RFC #3522.",
+  "summary": "Routes release-v* branch commits to the candidate PPA, keeps main to bleeding-edge and v* tags to stable, and moves the distro matrix into the reusable upload workflow.",
   "verdict": "Clean",
-  "verdict_reason": "All CI checks passed, the change was approved by a reviewer with CI subject-matter expertise, and no post-approval commits were made."
+  "verdict_reason": "A well-scoped CI workflow change with approval from a reviewer who has CI subject-matter expertise, no post-approval commits, and all checks passing."
 }
