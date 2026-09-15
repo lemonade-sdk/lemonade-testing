@@ -1,0 +1,32 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "bfb9dd596804db83e3bdf94e9ab6d98338fd53e4",
+  "committed_at": "2026-09-15T15:23:51Z",
+  "evidence": {
+    "api_compatibility": "No user-facing API changes. tools/version.py gains a --release-branch CLI flag that is backward-compatible (default behavior unchanged). The internal release_branch_name() function is new. The release-v* branch naming scheme is an internal convention, not a public API contract.",
+    "documentation": "The PR references approved RFC #3522. The new workflow is self-documenting via inline comments. The argparse refactor gives --help for free. No user-facing docs, API specs, or release notes need updating for internal CI tooling.",
+    "manual_release_testing": "This is an internal CI/infrastructure change (scheduled workflow + CLI tool extension). It is not a user-facing feature and does not modify the release surface shipped to users. No manual release testing required beyond normal release-branch artifact validation when the cron job fires.",
+    "post_approval_commits": "One commit was added after approval: 2da5cc76a12b5b39862d66364287036a8d20d9ba ('ci: parse version.py arguments with argparse'). This directly implements @superm1's inline suggestion and remains within the spirit, scope, and risk profile of the approved PR. No new behavior or security changes introduced.",
+    "review": "PR #3580 was opened by @jeremyfowers as a draft and closed/merged by @superm1. @superm1 (MEMBER, CI subject-area expert per contribute.md) left inline feedback suggesting argparse over sys.argv scanning and commented on the release-v* push rules. @jeremyfowers responded positively and committed the argparse refactor. @superm1 approved at 2026-09-14T19:40:46Z. The @chatgpt-codex-connector[bot] automated review was informational only.",
+    "security": "The workflow uses a GitHub App token (stored as REPO secrets, not hardcoded) with permissions: {} (no excess permissions). The app must be on the release-v* branch push allowlist. No credentials, network calls, code execution, or supply-chain changes. Safe.",
+    "tests": "test/test_version.py adds ReleaseBranchNameTests with five test cases covering the Wednesday 19:00 UTC cutoff boundary, late-wednesday runs, ISO year rollover, and branch-week alignment with dev version. No existing tests weakened or deleted. All CI checks passed on merge (C++ Server Build, CodeQL, Container Build Tests, Docker Smoke Test, MCP Smoke Test, etc.)."
+  },
+  "generation_seconds": 135.1,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-15T16:06:39Z",
+  "pr_number": 3580,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T18:10:04+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "bfb9dd596804db83e3bdf94e9ab6d98338fd53e4",
+  "shout_outs": [],
+  "subject": "ci: create the weekly release branch on a schedule (#3580)",
+  "summary": "Adds a scheduled GitHub Actions workflow that creates weekly release-v<year>.<week> branches from main using a GitHub App token, plus argparse support and prerelease tagging for candidate builds.",
+  "verdict": "Clean",
+  "verdict_reason": "Well-scoped CI infrastructure change backed by RFC #3522, adequate unit tests, successful review by @superm1 with subject-matter expertise in CI, all checks passing, and post-approval commits that directly address reviewer feedback."
+}
