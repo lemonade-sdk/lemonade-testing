@@ -5,28 +5,28 @@
   "commit_sha": "0d17fbcba22d5dab107eebd3b95b853c86d569e0",
   "committed_at": "2026-09-09T16:27:31Z",
   "evidence": {
-    "api_compatibility": "No API changes. The diff is entirely to docs/api/openai.md. Model names and examples in the documentation were updated but the API contract itself was not changed.",
-    "documentation": "Documentation is the sole artifact and it was updated by this PR. Changes include: (1) removing \"This API uses stable-diff.cpp as the backend\" boilerplate from /generations, /edits, /variations, and /upscale; (2) removing a note about specific Stable Diffusion model availability on /generations; (3) updating performance note from \"GPU (Vulkan) is faster but may have compatibility issues\" to \"GPU (ROCm) is significantly faster\"; (4) refreshing model examples: model param now cites Krea-2-Turbo instead of SDXL-Turbo on /generations, and ESRGAN model param cites Remacri-4x-TheNoise instead of RealESRGAN-x4plus-anime on /upscale; (5) updating model description from \"Stable Diffusion model\" to \"diffusion model\". All changes are coherent and improve accuracy.",
-    "manual_release_testing": "Not applicable. This is a documentation-only change with no new CLI commands, GUI behavior, API endpoints, or user-visible functionality. The changes update model names (adding Krea-2-Turbo, Remacri-4x-TheNoise) and remove outdated backend references; no manual verification of shipped behavior is required.",
-    "post_approval_commits": "None. The PR contains a single commit (35755f1826b5e035d5804dd41f4340bef31a933d) authored 2026-08-26. No commits were added after @jeremyfowers' approval at 2026-09-09T15:56:38Z, and no re-approval was needed.",
-    "review": "PR #3358 was opened by @bitgamma on 2026-08-26 and closed (merged) on 2026-09-09. @jeremyfowers (admin maintainer) provided the sole substantive review, approving with \"LGTM, thanks!\" at 2026-09-09T15:56:38Z — one day after the commit. Per docs/dev/contribute.md, @jeremyfowers covers new endpoints, CLI, CI, and governance; while this PR is doc-only, an admin maintainer review is appropriate. There was one commit only (35755f1) and no inline review comments or discussion thread.",
-    "security": "No security concerns. The change is documentation-only, with no code, network calls, dependency updates, or credential handling.",
-    "tests": "Doc-only change — no code, no tests to add or weaken. The diff touches only docs/api/openai.md (8 insertions, 12 deletions). The PR body correctly notes \"Doc change only\" under Testing."
+    "api_compatibility": "No API changes whatsoever. The diff is exclusively documentation prose in docs/api/openai.md. No endpoints, parameters, schemas, protocols, or CLI contracts are modified. No breaking or incompatible changes.",
+    "documentation": "The PR itself is a documentation update. It correctly updates the image endpoint docs to remove the now-outdated attribution to stable-diffusion.cpp and refreshes model examples to reflect current offerings. The change is internally consistent across all four image endpoints (generations, edits, variations, upscale). The linked issue #3352 was referenced in the PR body. The doc change is the only change, and it is self-contained.",
+    "manual_release_testing": "The PR changes only prose in docs/api/openai.md — it updates model examples (e.g., Krea-2-Turbo replacing SDXL-Base-1.0, Remacri-4x-TheNoise replacing RealESRGAN-x4plus-anime), removes references to stable-diffusion.cpp as the backend, and updates a GPU performance note to say ROCm instead of Vulkan. None of these changes alter any user-reachable surface (endpoints, CLI flags, config defaults, or installed artifacts). No manual release testing is needed.",
+    "post_approval_commits": "The PR contains exactly one commit (35755f1826b5e035d5804dd41f4340bef31a933d) authored 2026-08-26T06:13:31Z. @jeremyfowers approved that exact commit at 2026-09-09T15:56:38Z. There are zero commits added after approval. Nothing to flag.",
+    "review": "PR #3358 was opened by @bitgamma and approved by @jeremyfowers (LGTM, thanks!) on 2026-09-09T15:56:38Z. @jeremyfowers is an admin maintainer whose subject areas include new endpoints, which provides some domain relevance even though documentation itself is not listed as a dedicated subject area. There were no inline review comments and no requested changes — the approval was the sole review. The PR checklist was completed: it targets one issue (#3352), the author self-reviewed the diff, no unrelated local changes were included, and AI-assisted contribution was disclaimed. No follow-up discussions or inline comments were left on the PR.",
+    "security": "No code changes, no network calls, no credential handling, no supply-chain impact. Zero security concerns.",
+    "tests": "This is a documentation-only change — only docs/api/openai.md is touched (8 additions, 12 deletions). No code paths, API endpoints, or build artifacts are modified. The CI 'Docs And Style' workflow (pre-commit, markdown-link-check, backend-docs-drift) all passed successfully. No tests are applicable."
   },
-  "generation_seconds": 122.7,
+  "generation_seconds": 122.5,
   "maintainer_todos": [],
   "merge_date": "2026-09-09T17:52:57Z",
   "pr_number": 3358,
   "range_start": "v11.9.0",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-09-15T17:02:33+00:00",
+  "reviewed_at": "2026-09-15T22:00:20+00:00",
   "reviewers": [
     "@jeremyfowers"
   ],
   "sha": "0d17fbcba22d5dab107eebd3b95b853c86d569e0",
   "shout_outs": [],
   "subject": "update image endpoints documentation (#3358)",
-  "summary": "Updates the OpenAI-compatible image endpoints documentation (generations, edits, variations, upscale) to remove outdated stable-diffusion.cpp backend references, refresh model examples, and correct performance notes.",
+  "summary": "Updates the image generation/editing/variations/upscale API documentation to remove stale references to stable-diffusion.cpp as the backend and refresh model examples.",
   "verdict": "Clean",
-  "verdict_reason": "A focused, low-risk documentation-only update approved by an admin maintainer with no post-approval churn and all checks passing."
+  "verdict_reason": "A focused, doc-only PR that removes stale backend references and refreshes model examples, approved by an admin maintainer with no post-approval changes and full CI pass."
 }
