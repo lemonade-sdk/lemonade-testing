@@ -1,0 +1,34 @@
+{
+  "author": "@Yigtwxx",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "2bd550624e32705af66464c0aaf4cc63a86dfffd",
+  "committed_at": "2026-09-13T04:25:33Z",
+  "evidence": {
+    "api_compatibility": "No API breaking changes. The SSE proxy's client-facing contract is unchanged — it already sent events. This fix ensures errors are now correctly reported for previously silent failures, which is the intended behavior for a bug fix. No schema, protocol, or documented behavior change.",
+    "documentation": "No documentation updates required. This is a bug fix for an internal proxy behavior, not a user-visible API or CLI change. The fix is already described in the PR body and commit messages.",
+    "manual_release_testing": "No CLI commands, API surface changes, or GUI changes. The change is a bug fix to existing streaming behavior. The only residual manual-test concern would be verifying that backends which previously produced silent 200 streams now emit framed error events rather than [DONE], but this is the intended behavior change and covered by tests.",
+    "post_approval_commits": "One commit was added after the first two approvals (@fl0rianr and @abn): 'refactor(server): parse SSE lines as name/value fields' (36e7917). This replaced literal-prefix matching with a generic parse_field() helper that splits on the first colon and drops the optional space, unifying the parser across forwarding and telemetry paths. @abn had already flagged the related raw-chunk parsing issue ('has_first_token still looks for \"data: \" with a space') in their original review, so the refactor addresses an approved nit rather than introducing new behavior. All tests pass under the new parser. @Geramy re-approved after the refactor; no other reviewer re-review occurred, but the change is a pure refactoring that does not alter control flow, error handling, or telemetry.",
+    "review": "PR #3448 received three substantive approvals: @fl0rianr (LGTM), @abn (detailed approval noting SSE semantics, chunk-fragmentation handling, and test coverage), and @Geramy (LGTM after requesting time to review the testing mechanisms). @abn and @Geramy both have relevant subject-area expertise per contribute.md (@abn: telemetry, http; @Geramy: sockets, tcp/ip, udp). The PR was labeled rfc:not-required and area::api.",
+    "security": "No security concerns. The change only affects error-path framing in the SSE proxy; no credential handling, network calls, or permission changes.",
+    "tests": "New file test/cpp/test_streaming_silent_stream.cpp (210 lines) covers: (1) five accepted stream shapes — LF, CRLF, bare CR, no space after colon, bare 'data' field; (2) four rejected shapes — empty stream, unframed backend error output, unterminated event, comment-only stream; (3) backend-sent [DONE] not duplicated; (4) process_sse_lines split-CRLF holdback. The @jeremyfowers inline comment questioned the +233 lines of testing; @Yigtwxx justified each case with a one-to-one mapping to a classification branch and noted five cases are regressions for defects found during the review round. The test suite is well-structured and justified."
+  },
+  "generation_seconds": 142.5,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-13T05:28:10Z",
+  "pr_number": 3448,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T17:54:14+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@abn",
+    "@Geramy"
+  ],
+  "sha": "2bd550624e32705af66464c0aaf4cc63a86dfffd",
+  "shout_outs": [],
+  "subject": "fix(server): report backend streams that end without any SSE event (#3448)",
+  "summary": "Fixes a bug where backend HTTP 200 streams that closed without emitting any SSE data events were reported as successful completions instead of errors, and corrects the SSE parser to handle all line terminators (LF, CRLF, CR), optional space after colon, and event-termination semantics accurately.",
+  "verdict": "Clean",
+  "verdict_reason": "The PR has thorough review from three maintainers including domain-expert reviewers (sockets/http), strong test coverage, and the post-approval refactor is a harmless cleanup aligned with earlier reviewer feedback."
+}
