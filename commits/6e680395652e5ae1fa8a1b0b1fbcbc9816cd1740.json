@@ -1,0 +1,32 @@
+{
+  "author": "@zaneni6",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "6e680395652e5ae1fa8a1b0b1fbcbc9816cd1740",
+  "committed_at": "2026-09-09T22:36:40Z",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The diff modifies only one line in backend_versions.json, changing \"v1.0.4\" to \"v1.0.5\" for flm.npu. This is an internal version pin consumed by the server download registry; no public API or protocol is affected.",
+    "documentation": "Not affected. The change is a version pin in a config file; no docs, API specs, or user-facing documentation require updates.",
+    "manual_release_testing": "Not required. This is a simple version number bump in a JSON config file with no code changes, no new CLI/GUI behavior, and no API contract changes. The author confirmed v1.0.4 only appears in this one file, so no checksums or generated docs needed updating.",
+    "post_approval_commits": "None. The PR contained one commit (315b08ea) and no commits were added after approval. The commit message matches the PR title.",
+    "review": "PR #3533 was approved by @superm1 (submitted 2026-09-09T22:13:26Z), who is listed in docs/dev/contribute.md as having subject matter expertise in NPU and FastFlowLM. The PR description was thorough, including a testing checklist and AI-assisted contribution disclosure. No inline review comments were requested. The PR had a single commit and no changes were introduced after approval.",
+    "security": "No concerns. Supply-chain impact is limited to updating which GitHub release asset the download resolver will fetch for the flm NPU backend, consistent with the project's existing backend version pinning pattern. The commit includes a Co-Authored-By: Claude Sonnet 5 attribution and the PR template AI-assisted contribution checkboxes were all checked with verification confirmation.",
+    "tests": "No new tests added, which is appropriate since this is a config-only version pin change in backend_versions.json with no code logic modified. All 50+ CI check runs passed successfully (C++ Server Build, Container Build Tests, Docker Smoke Test, C++ unit tests, MCP Smoke Test, Launchpad PPA, Docs And Style, etc.), providing strong indirect validation."
+  },
+  "generation_seconds": 100.4,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-10T02:12:26Z",
+  "pr_number": 3533,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T17:27:48+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "6e680395652e5ae1fa8a1b0b1fbcbc9816cd1740",
+  "shout_outs": [],
+  "subject": "Bump FastFlowLM (flm) NPU backend version to v1.0.5 (#3533)",
+  "summary": "Bumps the FastFlowLM (flm) NPU backend version from v1.0.4 to v1.0.5 in src/cpp/resources/backend_versions.json.",
+  "verdict": "Clean",
+  "verdict_reason": "This is a single-line config version pin change that passed all CI checks and received appropriate review from an NPU/FastFlowLM expert."
+}
