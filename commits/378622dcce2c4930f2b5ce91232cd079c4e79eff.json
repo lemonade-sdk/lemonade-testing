@@ -1,0 +1,32 @@
+{
+  "author": "@bitgamma",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "378622dcce2c4930f2b5ce91232cd079c4e79eff",
+  "committed_at": "2026-09-14T20:13:29Z",
+  "evidence": {
+    "api_compatibility": "The /images/edits endpoint now succeeds (returns generated images) instead of returning a 500 error with 'not supported'. This is a backward-compatible enhancement for API consumers that previously received errors. The model labels in server_models.json were updated to add 'edit' to the Flux-Klein-4B-TheNoise and Flux-Klein-9B-TheNoise model entries. The Anima model was intentionally excluded (author confirmed it is not editing-capable). This is not a breaking change.",
+    "documentation": "README.md backend support table was updated from 'Supported AMD ROCm iGPU families' to 'Supported AMD ROCm families'. docs/dev/backends-reference.md was updated to list all six ROCm GPU families (gfx103X, gfx110X, gfx1150, gfx1151, gfx1152, gfx120X) for thenoise. The PR author noted that additional documentation changes are in a separate PR (#3358). No API spec updates are required since the /images/edits endpoint already existed in the schema.",
+    "manual_release_testing": "The new /images/edit endpoint is a user-visible API change on TheNoise, and the backend now responds to an endpoint that previously returned 500. However, TheNoise is an experimental backend (README marks it as 'experimental') and the change is a small server.cpp addition following the existing request-forwarding pattern. The reviewer, who is an sd-cpp expert, validated the approach. No manual release testing is required for this release, given the experimental status of the backend and the small, well-scoped nature of the change.",
+    "post_approval_commits": "No commits were added after the first and only approval (2026-09-14T20:07:05Z). The branch was stable at approval and merged cleanly 46 minutes later at 2026-09-14T20:53:57Z. Six commits authored by @bitgamma are on the PR (2b8d2b7, 202f664, b9ecc78, 79d735f, 68019a5, 69cd7c2), none post-dating approval.",
+    "review": "PR #3494 was reviewed by @kenvandine, who maintains the 'snaps, linux, new backends, hardware vendor support, Nvidia CUDA, ARM' domain and is listed as having stable diffusion expertise. @jeremyfowers explicitly requested @kenvandine's review because he implemented the sdcpp image-editing feature. @kenvandine opened with two substantive questions: (1) whether new test coverage should be added for the edit path, and (2) why the Anima model was not also labeled 'edit'. @bitgamma explained that adding a heavy test would require multi-GB model downloads in CI (Klein 4B + Qwen 4B + Flux 2 VAE), and that Anima/Krea 2 models are intentionally not editing-capable. @kenvandine accepted both rationales ('Thanks, yeah let's not add that kind of overhead to CI. Thanks!') and submitted an APPROVE. No inline review comments were filed. The review conversation demonstrates domain-relevant expertise and sound judgment.",
+    "security": "The implementation follows the existing request-forwarding pattern used elsewhere in the server: it builds a JSON body, forwards it to the thenoise backend via forward_request('/edit', body), and checks for the expected b64_json response. No credential handling, network calls to external services, code execution, or supply-chain surface is introduced. The thenoise version was bumped from 0.4.1 to 0.7.1 in backend_versions.json, which is a routine dependency update under the maintainer's own project (lemonade-sdk/thenoise). No security concerns.",
+    "tests": "The PR deletes two tests from test/server_thenoise.py: test_013_image_edits_unsupported (which verified the /images/edits stub returned 500) and test_014_image_variations_unsupported (which verified /images/variations returned 500). No new tests are added for the /images/edits path. The PR author requested avoiding additional test coverage due to the large model download overhead in CI, and the reviewer accepted this trade-off. The existing test_012_multi_image test exercises the same server code path for image generation, and variations remain unsupported (stub), so the test deletion is scoped and justified. No tests were weakened or deleted inappropriately; the removal reflects actual feature completion rather than test erosion."
+  },
+  "generation_seconds": 169.9,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-14T20:53:57Z",
+  "pr_number": 3494,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T18:00:02+00:00",
+  "reviewers": [
+    "@kenvandine"
+  ],
+  "sha": "378622dcce2c4930f2b5ce91232cd079c4e79eff",
+  "shout_outs": [],
+  "subject": "implement `/images/edit` in TheNoise (#3494)",
+  "summary": "Implements the /images/edit endpoint for TheNoise backend (previously a stub), bumps TheNoise to v0.7.1, extends supported ROCm GPU families, and marks existing Flux-Klein-4B/TheNoise models as having edit capability.",
+  "verdict": "Clean",
+  "verdict_reason": "The PR was reviewed by a subject-matter expert in the sd-cpp/image-editing domain, all reviewer concerns were addressed through constructive discussion with no post-approval churn, and CI checks passed for all relevant pipelines."
+}
