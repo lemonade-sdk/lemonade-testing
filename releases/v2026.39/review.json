@@ -1,0 +1,85 @@
+{
+  "branch": "main",
+  "breaking_changes": [
+    "The version scheme changed from M.m.p to YYYY.WW.N format; CMake version extraction moved to a Python-based git state derivation system, MSI installer versions are reformatted as YY.MM.PATCH, and the get-version action now outputs YYYY.WW.N instead of the static CMake VERSION."
+  ],
+  "bucket": "v2026.39",
+  "candidate_issues": [],
+  "commits_reviewed": 38,
+  "commits_unreviewed": 0,
+  "evidence": {
+    "blockers": "No P0 blockers. Five P1 items require manual verification before shipping, centered on three areas: the new /v1/docs API endpoint, the candidate publishing pipeline, and downstream compatibility with the new version scheme.",
+    "breaking_changes": "The version scheme changed from M.m.p to YYYY.WW.N; CMake version extraction moved to a Python-based git state derivation system, MSI installer versions are reformatted as YY.MM.PATCH, and the get-version action now outputs YYYY.WW.N.",
+    "coverage": "Range v11.9.0 to fb6c133 covers 34 commits across 33 reviewed PRs with complete coverage; all CI checks passed. One additional commit (#3444) contains only a comment reword and test rename with no behavioral changes.",
+    "manual_testing": "Five manual verification tasks required: the new /v1/docs endpoint and MCP tool, the candidate pipeline end-to-end, FLM downloads with ModelScope source, HuggingFace compatibility filter behavior, and downstream version format handling across MSI, containers, and packaging.",
+    "security": "No security concerns observed across the release range. One change (#3498) removes an undocumented internal MCP endpoint, reducing attack surface."
+  },
+  "generation_seconds": 269.3,
+  "head_sha": "fb6c133c034b7312588ba117e70a61dfd9d32c6b",
+  "is_hotfix": false,
+  "last_stable_tag": "",
+  "prioritized_todos": [
+    {
+      "priority": "P1",
+      "text": "Manually test the new /v1/docs index endpoint and individual page fetch in a release candidate build, and verify the lemonade_docs MCP tool works with a standard MCP client (#3347, @anditherobot)."
+    },
+    {
+      "priority": "P1",
+      "text": "Verify all downstream consumers (Fedora, Debian, MSI, snap, containers) correctly handle the new YYYY.WW.N version format, especially the YY.MM.PATCH reformat for the Windows installer version fields (#3529, @superm1)."
+    },
+    {
+      "priority": "P1",
+      "text": "Verify the full candidate pipeline end-to-end: push a release-v* branch and confirm candidate-v* tags are created, artifacts publish correctly, MSI signing is skipped, release notes display the unsigned-installer warning, and the generate-release-notes action inputs design is intentional (#3579, @jeremyfowers; #3580, @jeremyfowers; #3581, @jeremyfowers)."
+    },
+    {
+      "priority": "P1",
+      "text": "Test the FLM download path with default_model_source set to modelscope to confirm --modelscope 1 reaches the flm binary in both load-time and explicit pull paths, and verify JSON API responses for registry_source correctly reflect empty values instead of the default 'huggingface' (#2841, @wariobot09)."
+    },
+    {
+      "priority": "P1",
+      "text": "Confirm that the GGUF architecture compatibility filter's common-denominator allowlist is an intentional policy and that false negatives for models only supported by newer backend pins (bailingmoe3, kimi-k3) are acceptable, and monitor HF API latency given the extra metadata request now scopes to all HuggingFace operations (#3198, @popey)."
+    }
+  ],
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T18:19:27+00:00",
+  "tester_plan": [
+    {
+      "changed": "The MSI installer version field was reformatted from the project version to YY.MM.PATCH, and candidate builds now produce unsigned MSIs with a SmartScreen warning.",
+      "exercise": "Install from the .exe, start the server, verify the reported version matches YYYY.WW.N, and exercise the /v1/docs endpoint and lemonade_docs MCP tool.",
+      "platform": "Windows"
+    },
+    {
+      "changed": "PPA routing changed to send main to bleeding-edge and release-v* branches to candidate; the new version format affects all PPA packages.",
+      "exercise": "Install from the PPA, start the server, and confirm the version reported by lemonade --version matches the YYYY.WW.N format.",
+      "platform": "Ubuntu PPA"
+    },
+    {
+      "changed": "nothing in this bucket touches snap-specific packaging, but all packages carry the new version format.",
+      "exercise": "Install from the Snap store, start the server, and pull one model to confirm baseline functionality.",
+      "platform": "Snap"
+    },
+    {
+      "changed": "The Docker pipeline now publishes rolling candidate and candidate-v<version> tags alongside latest and edge on release-v* branches.",
+      "exercise": "Pull the latest Docker image and hit /api/v1/health; if a candidate image is available, pull candidate-v* and verify tag semantics and the unsigned-installer warning in release notes.",
+      "platform": "Docker"
+    },
+    {
+      "changed": "nothing in this bucket touches macOS-specific packaging; all packages carry the new version format.",
+      "exercise": "Install from the macOS package, start the server, and pull one model to confirm baseline functionality.",
+      "platform": "macOS"
+    },
+    {
+      "changed": "RPM builds carry the new YYYY.WW.N version format from the Python-based version derivation system.",
+      "exercise": "Install the RPM, start the server, confirm the version matches YYYY.WW.N, and pull one model.",
+      "platform": "Fedora"
+    },
+    {
+      "changed": "The Debian build was fixed by PR #3186 (tsconfig moduleResolution rewrite) and carries the new version format.",
+      "exercise": "Install from the .deb package, start the server, and pull one model to confirm baseline functionality.",
+      "platform": "Debian"
+    }
+  ],
+  "verdict": "Needs Attention",
+  "verdict_reason": "Five manual verifications before shipping: the new /v1/docs API and MCP tool, the candidate publishing pipeline, downstream compatibility with the new version scheme, the FLM download path, and the GGUF architecture filter — none are P0 blockers, but none can be skipped."
+}
