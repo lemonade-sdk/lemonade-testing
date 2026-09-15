@@ -1,0 +1,32 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "2897f245f0a9bfadb367fbbf8f645d2358bc7407",
+  "committed_at": "2026-09-15T19:22:28Z",
+  "evidence": {
+    "api_compatibility": "No breaking change. tools/version.py is an internal build helper; its public contract is producing a version string that CMake consumes. The new fallback value YYYY.WW.0~0.nogit follows the same pattern as other generated versions and does not alter any API, CLI, config, or schema.",
+    "documentation": "The module-level docstring in tools/version.py was updated to document the fallback case. The new unit test serves as an executable example of the behavior.",
+    "manual_release_testing": "Not required. This change affects internal version computation only. CI already exercises this path: the docker-smoke-test workflow and the C++ server build workflow both run docker builds and pass, confirming the fallback works in practice. CI stamps .version before building, which still wins; the nogit fallback is the safety net for untagged trees with neither .git nor .version, an edge case that does not ship in the release.",
+    "post_approval_commits": "Only one commit exists in the PR (6c7d4065). @superm1 approved at 2026-09-15T14:14:19Z against commit 6f46caa15a3372aa3a5c6b8fe347077d618a3ae3 (the squashed PR commit). There are zero commits added after approval; the approved commit is the only commit.",
+    "review": "PR #3589 was reviewed and approved by @superm1 (MEMBER), whose subject area per contribute.md includes Docker and containers — directly relevant here. superm1 confirmed it was a real issue and noted that CI already does the same thing (stamps .version before building, see c47aa2a491e8c8c6e07a895eaad88b27452f2bb2). No inline review comments were filed. The author confirmed in a comment that a PR down the stack reproduces the failure and this branch resolves it.",
+    "security": "No security concerns. The new in_git_work_tree() helper only runs git rev-parse and falls back to False on failure. No network calls, credential handling, or code execution paths introduced.",
+    "tests": "A new test method test_without_git_falls_back_to_dated_placeholder was added to test/test_version.py. It creates a plain temporary directory (no git repo), calls version.get_version(), and asserts the returned string matches the expected YYYY.WW.0~0.nogit format. No existing tests were weakened or deleted."
+  },
+  "generation_seconds": 112.8,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-15T20:13:13Z",
+  "pr_number": 3589,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T23:26:57+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "2897f245f0a9bfadb367fbbf8f645d2358bc7407",
+  "shout_outs": [],
+  "subject": "tools/version.py: fall back to a dated placeholder outside a git work tree (#3589)",
+  "summary": "Falls back to a dated placeholder version string when version.py runs outside a git work tree (e.g., a plain docker build context), preventing CMake from aborting.",
+  "verdict": "Clean",
+  "verdict_reason": "Focused fix with subject-matter-approved review, adequate test coverage for the new code path, and no release surface impact."
+}
