@@ -6,10 +6,9 @@ announcement for each week's release.
 
 Dashboard: **<https://testing.lemonade-server.ai>**
 
-Lemonade's workflows write these files and push them here. There is no database; the files
-are the store.
-
 ## Layout
+
+Lemonade's workflows write the review and triage data here, so this git repo acts as a database.
 
 ```text
 commits/<sha>.json                    one merged commit, reviewed
