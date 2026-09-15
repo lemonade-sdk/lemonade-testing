@@ -1,0 +1,33 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "421eabdf6f1061b15a6a960f216326cbbc7b4a42",
+  "committed_at": "2026-09-11T17:59:19Z",
+  "evidence": {
+    "api_compatibility": "No API, CLI contract, schema, or behavioral change. Only documentation updates.",
+    "documentation": "This PR *is* a documentation change. It correctly addresses #3537 by replacing the broken `Open the HTML files directly in your browser` instruction with a working localhost-served approach, including a code block in examples/README.md and an updated step in examples/debate-arena.md. The linked issue was closed by this PR. No stale or misleading documentation was introduced.",
+    "manual_release_testing": "No new shipped behavior to test; this is purely documentation/instruction changes in examples/README.md and examples/debate-arena.md. Users following the new instructions will need a working Python installation, which is ubiquitous. Residual note: the Codex bot flagged that `python3 -m http.server` without `--bind 127.0.0.1` binds to all interfaces, potentially exposing the demo folder to the local network. For local-only demos this is low risk, but future iterations could tighten the binding.",
+    "post_approval_commits": "No commits were added after either approval. The branch contained a single commit and was merged cleanly.",
+    "review": "PR #3547 had two human approvals: @abn ('LGTM') at 2026-09-11T16:00:15Z and @superm1 (empty review, approved) at 2026-09-11T16:39:17Z. @abn's subject area includes 'http' and 'sandboxing', which is directly relevant to a change about HTTP serving and CORS/origin behavior. @superm1's subject area includes 'security'. Both approvals were for the final commit (e0e01c18f7). No substantive review comments were raised; Codex bot flagged that `python3 -m http.server` binds to all interfaces by default, but @superm1 acknowledged with a laugh comment and the PR author took no action — a minor concern for a convenience demo tool, not a blocker.",
+    "security": "No security regressions. The change actually improves UX around CORS/origin handling by giving users a known-good pattern. The one minor security note: the documentation does not specify `--bind 127.0.0.1` on the HTTP server command, which defaults to binding all interfaces. Given that this is a local-only demo tool in the examples folder, the risk is low.",
+    "tests": "All CI checks passed: Docs And Style (success), CodeQL (success), pre-commit (success), markdown-link-check (success), and all build/test workflows (success). No code changed — only two markdown files — so no new automated tests apply. The fix addresses an existing user-facing bug documented in #3537."
+  },
+  "generation_seconds": 130.2,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-11T20:07:15Z",
+  "pr_number": 3547,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T17:45:38+00:00",
+  "reviewers": [
+    "@abn",
+    "@superm1"
+  ],
+  "sha": "421eabdf6f1061b15a6a960f216326cbbc7b4a42",
+  "shout_outs": [],
+  "subject": "Serve example HTML demos over localhost instead of opening from disk (#3547)",
+  "summary": "Updates documentation for HTML example demos to recommend serving them over localhost via python3 -m http.server instead of opening from file://, which the server's default allowed_origins blocks.",
+  "verdict": "Clean",
+  "verdict_reason": "A focused, low-risk documentation-only fix for a documented UX issue, with appropriate approvals from reviewers with HTTP and security subject-matter expertise."
+}
