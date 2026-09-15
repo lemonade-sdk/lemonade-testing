@@ -8,13 +8,7 @@
   "checklist": [
     {
       "platforms": [
-        "Windows",
-        "Ubuntu PPA",
-        "Snap",
-        "Docker",
-        "macOS",
-        "Fedora",
-        "Debian"
+        "all"
       ],
       "priority": "P1",
       "text": "Install or build packages on each platform and confirm the new YYYY.WW.N version format appears correctly in version outputs, MSI labels, and container tags (#3539, @superm1)."
