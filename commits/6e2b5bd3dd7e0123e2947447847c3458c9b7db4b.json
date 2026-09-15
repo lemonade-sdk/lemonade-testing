@@ -1,0 +1,39 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "6e2b5bd3dd7e0123e2947447847c3458c9b7db4b",
+  "committed_at": "2026-09-15T18:03:14Z",
+  "evidence": {
+    "api_compatibility": "No user-facing API changes. The change to docs/index.html is a browser-side JavaScript filter addition that only affects which releases are displayed — it narrows the set rather than breaking any consumer contract. docs/dev/release.md and docs/guide/install/docker.md are documentation updates reflecting the new process.",
+    "documentation": "docs/dev/release.md was updated (85 additions, 111 deletions) to reflect the new release process including the scheduled branch creation, prerelease tagging, and Docker candidate tag publishing. docs/guide/install/docker.md adds 10 lines documenting the new candidate Docker tag. The PR title uses the docs/ conventional-commit prefix, consistent with the scope.",
+    "manual_release_testing": "No evidence that a human manually exercised the new release-branch workflow (create-release-branch.yml), the MSI signing + prerelease publishing (cpp_server_build_test_release.yml changes), or the candidate Docker tag publishing (build-and-push-container.yml). These are shipped CI workflows that change what artifacts are produced and where they land. The website change is visible in the homepage carousel and was not exercised by any visible end-to-end run.",
+    "post_approval_commits": "None. The sole approval at 13:46:59Z was for commit 5ff02bd (the final commit on the PR), and the branch contained no additional commits after that point. The branch was merged cleanly at 18:44:38Z with no merge conflicts or post-approval churn.",
+    "review": "PR #3588 received an APPROVED review from @superm1 (Mario Limonciello) at 2026-09-15T13:46:59Z, submitted 9 minutes after the last commit (5ff02bd, committed at 13:37:48). @superm1 is listed in docs/dev/contribute.md as an Admin maintainer with expertise in CI, Docker/containers, and Linux packaging — directly relevant subject-matter expertise for the release-branch CI changes. The PR body references RFC #3522 as approved. No inline review comments were filed; the review was a straightforward APPROVE. No commits were added after approval.",
+    "security": "No security concerns. The PR introduces MSI signing via SignPath (existing SignPath action, no new secrets or credential handling beyond standard CI artifacts). The release-v* branch push uses a GitHub App identity instead of GITHUB_TOKEN, which is a security improvement (principle of least privilege). No network calls, obfuscation, or suspicious blobs.",
+    "tests": "The PR adds test/test_version.py (26 lines of new tests) covering the argparse-driven version.py CLI. It also removes .github/workflows/test_release_notes.yml (45 lines) — a workflow file, not a test suite — as part of restructuring the CI. The website change in docs/index.html is a single boolean addition (!item.prerelease) and has no dedicated test, but the behavior is simple enough that unit coverage is not expected; manual verification on a deployed homepage is sufficient."
+  },
+  "generation_seconds": 118.0,
+  "maintainer_todos": [
+    {
+      "text": "Navigate to the Lemonade GitHub repo Releases page and confirm that any existing candidate-v* prereleases are listed as Pre-release (not as stable) while the latest stable release is marked as Latest."
+    },
+    {
+      "text": "Open https://lemonade-sdk.github.io/lemonade/ (or the homepage that serves docs/index.html) and confirm the carousel shows only stable releases, with no candidate-v* tag appearing as the current version."
+    }
+  ],
+  "merge_date": "2026-09-15T18:44:38Z",
+  "pr_number": 3588,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T23:25:04+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "6e2b5bd3dd7e0123e2947447847c3458c9b7db4b",
+  "shout_outs": [],
+  "subject": "docs(website): keep release candidates out of the homepage carousel (#3588)",
+  "summary": "The PR overhauls the release CI pipeline to publish release-candidate builds as GitHub prereleases (separating them from stable v* tags) and fixes the homepage carousel to exclude prereleases from the release list.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The PR merges significant CI and release-infrastructure changes alongside a website fix, and while it received a timely approval from an appropriate subject-matter expert, no evidence shows a human manually exercised the new release-branch workflow or verified the prerelease-publishing pipeline end-to-end."
+}
