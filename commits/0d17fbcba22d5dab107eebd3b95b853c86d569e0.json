@@ -1,0 +1,32 @@
+{
+  "author": "@bitgamma",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "0d17fbcba22d5dab107eebd3b95b853c86d569e0",
+  "committed_at": "2026-09-09T16:27:31Z",
+  "evidence": {
+    "api_compatibility": "No API changes. The diff is entirely to docs/api/openai.md. Model names and examples in the documentation were updated but the API contract itself was not changed.",
+    "documentation": "Documentation is the sole artifact and it was updated by this PR. Changes include: (1) removing \"This API uses stable-diff.cpp as the backend\" boilerplate from /generations, /edits, /variations, and /upscale; (2) removing a note about specific Stable Diffusion model availability on /generations; (3) updating performance note from \"GPU (Vulkan) is faster but may have compatibility issues\" to \"GPU (ROCm) is significantly faster\"; (4) refreshing model examples: model param now cites Krea-2-Turbo instead of SDXL-Turbo on /generations, and ESRGAN model param cites Remacri-4x-TheNoise instead of RealESRGAN-x4plus-anime on /upscale; (5) updating model description from \"Stable Diffusion model\" to \"diffusion model\". All changes are coherent and improve accuracy.",
+    "manual_release_testing": "Not applicable. This is a documentation-only change with no new CLI commands, GUI behavior, API endpoints, or user-visible functionality. The changes update model names (adding Krea-2-Turbo, Remacri-4x-TheNoise) and remove outdated backend references; no manual verification of shipped behavior is required.",
+    "post_approval_commits": "None. The PR contains a single commit (35755f1826b5e035d5804dd41f4340bef31a933d) authored 2026-08-26. No commits were added after @jeremyfowers' approval at 2026-09-09T15:56:38Z, and no re-approval was needed.",
+    "review": "PR #3358 was opened by @bitgamma on 2026-08-26 and closed (merged) on 2026-09-09. @jeremyfowers (admin maintainer) provided the sole substantive review, approving with \"LGTM, thanks!\" at 2026-09-09T15:56:38Z — one day after the commit. Per docs/dev/contribute.md, @jeremyfowers covers new endpoints, CLI, CI, and governance; while this PR is doc-only, an admin maintainer review is appropriate. There was one commit only (35755f1) and no inline review comments or discussion thread.",
+    "security": "No security concerns. The change is documentation-only, with no code, network calls, dependency updates, or credential handling.",
+    "tests": "Doc-only change — no code, no tests to add or weaken. The diff touches only docs/api/openai.md (8 insertions, 12 deletions). The PR body correctly notes \"Doc change only\" under Testing."
+  },
+  "generation_seconds": 122.7,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-09T17:52:57Z",
+  "pr_number": 3358,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T17:02:33+00:00",
+  "reviewers": [
+    "@jeremyfowers"
+  ],
+  "sha": "0d17fbcba22d5dab107eebd3b95b853c86d569e0",
+  "shout_outs": [],
+  "subject": "update image endpoints documentation (#3358)",
+  "summary": "Updates the OpenAI-compatible image endpoints documentation (generations, edits, variations, upscale) to remove outdated stable-diffusion.cpp backend references, refresh model examples, and correct performance notes.",
+  "verdict": "Clean",
+  "verdict_reason": "A focused, low-risk documentation-only update approved by an admin maintainer with no post-approval churn and all checks passing."
+}
