@@ -5,24 +5,28 @@
   "commit_sha": "6a607106ce467849e9f64c17de9f249f2936a7a9",
   "committed_at": "2026-09-09T19:10:12Z",
   "evidence": {
-    "api_compatibility": "New public functions added to headers (hf_variants.h: llamacpp_gguf_incompatibility; model_registry.h: registry_task_is_excluded, is_official_huggingface_endpoint, huggingface_repository_api_url, parse_huggingface_compatibility_metadata, fetch_huggingface_compatibility_metadata). These are additions, not breaking changes. The /pull/variants endpoint returns 400 for previously accepted incompatible repositories, which is a behavioral narrowing (bug fix) rather than an API contract break.",
-    "documentation": "PR body states no documentation change is required because this is an internal filter applied before model download. No user-facing surface changed. The generated allowlist header is self-documenting with its generation comment. No documentation gap detected.",
-    "manual_release_testing": "The /pull/variants API endpoint now rejects previously accepted Hugging Face repositories. The change does not add a new CLI command or user-visible GUI, but the API behavior change means it is prudent for maintainers to confirm that valid models (TinyLlama, Gemma 3 multimodal, Nomic embedding) still return positive variant sizes and that the reported incompatible checkpoint returns 400 before promoting this change.",
-    "post_approval_commits": "None. The branch was stable after the sixth commit and both approvals came after it.",
-    "review": "Two substantive approvals from reviewers with llamacpp subject-matter expertise (@pwilkin per contribute.md; @fl0rianr who conducted four iterative review rounds). The PR description accurately maps to the diff. Copilot autofix was accepted but did not introduce new behavior. No post-approval commits were added — the last commit (0f79b38, 2026-09-03T07:24:40Z) predates fl0rianr's first approval (2026-09-03T18:03:48Z) and pwilkin's approval (2026-09-03T19:46:55Z).",
-    "security": "The change improves security posture by preventing download of incompatible GGUF repositories before the pull. The new Python script (.github/scripts/update_llamacpp_architectures.py) fetches source code from upstream llama.cpp and ROCm releases via public GitHub APIs — no credential handling beyond standard GH_TOKEN. No supply-chain or obfuscation concerns.",
-    "tests": "Comprehensive: 100 lines of C++ unit tests in test/cpp/test_hf_variants.cpp covering valid metadata, unsupported architectures, missing architecture, malformed data, blank architecture, mirror permissiveness, and ModelScope isolation. 83 lines in test/cpp/test_model_registry.cpp covering official vs mirror error handling (429/5xx fail closed, non-200 on mirrors returns nullopt). One opt-in integration test (LEMONADE_INTEGRATION_TESTS=1) against the live Krea checkpoint. No evidence of inappropriate test weakening or deletion."
+    "api_compatibility": "No schema or contract changes. The behavioral change is that /pull/variants now throws std::invalid_argument (HTTP 400) for GGUF repos that pass filename detection but lack supported architecture metadata. This corrects a bug where incompatible repos were previously accepted. No new endpoints, flags, config options, or persisted state introduced.",
+    "documentation": "No user-facing surface changed — this is an internal filter applied before model download. No API spec, CLI contract, or user documentation update required. The PR correctly marked documentation as unaffected.",
+    "manual_release_testing": "The author reported manually testing the live endpoint during development, but no independent human exercise of the /pull/variants endpoint with live HuggingFace data is documented. The opt-in integration test covers the error path but requires LEMONADE_INTEGRATION_TESTS=1. The existing server test (test_033_pull_variants_valid_checkpoint_returns_variant_list) exercises the happy path end-to-end, confirming valid models still work. The error path — rejecting incompatible repos — needs verification by someone other than the author with the release installed.",
+    "post_approval_commits": "None. The merge commit (6a607106) is the tip of the PR branch. Last PR commit (0f79b384) was on 2026-09-03T07:24:40Z; first approval came 10h39m later. No post-approval churn.",
+    "review": "PR #3198 received substantive review from @fl0rianr (four rounds of comments) and @pwilkin (final approval). Both reviewers have llamacpp as a subject area per docs/dev/contribute.md. @fl0rianr caught the blobs=true + expand mutual-exclusion issue, a fail-open behavior on metadata errors, the fact that the generated architecture allowlist was based only on the CPU pin while other shipped pins support additional architectures, and the concern that the extra metadata fetch lived inside the generic repository discovery function. @pwilkin confirmed the design approach aligned with his vision. All concerns were addressed in follow-up commits before approval. First approval: 2026-09-03T18:03:48Z from @fl0rianr; second approval: 2026-09-03T19:46:55Z from @pwilkin. No commits were added after the latest approval.",
+    "security": "The commit adds an additional HTTP call to HuggingFace per GGUF repository validation. The new request uses the same HttpClient and auth_headers as existing HF calls. Fail-closed behavior on 429/5xx for official endpoints; metadata-unaware mirrors remain permissive for 400/404/405/422. No credential handling changes, code execution paths, or supply-chain risks. The new .github/scripts/update_llamacpp_architectures.py script fetches upstream llama-arch.cpp from ggml-org/llama.cpp over HTTPS with optional GH_TOKEN — standard build-time dependency fetching.",
+    "tests": "Added 100 lines in test/cpp/test_hf_variants.cpp covering valid GGUF, supported architectures (e.g. bailingmoe3), missing architecture, media task, unsupported architecture, malformed metadata, blank architecture, unavailable parsed metadata (for mirror compatibility), ModelScope unchanged, and unknown registry unchanged. Added 83 lines in test/cpp/test_model_registry.cpp covering official vs non-official endpoint detection, SHA-pinned compatibility URL, rate limit fail-close, server error fail-close, mirror behavior, malformed metadata, missing GGUF, wrong-shape response, and valid metadata parsing. Added 28 lines in test/server_endpoints.py as an opt-in integration test (LEMONADE_INTEGRATION_TESTS=1) that hits the live Krea endpoint and expects HTTP 400. All CI checks passed across build, test, lint, and packaging workflows."
   },
-  "generation_seconds": 154.9,
+  "generation_seconds": 161.9,
   "maintainer_todos": [
-    "Confirm that the common-denominator allowlist is an intentional, documented policy and that false negatives for models only supported by newer backend pins (bailingmoe3, minimax-01, kimi-k3) are acceptable for this release.",
-    "Monitor HF API latency and 429 rates after merge, since the extra compatibility-metadata request is now scoped to generic fetch_repository() which touches all HF repository operations (not just /pull/variants)."
+    {
+      "text": "Start the Lemonade server, call GET /pull/variants?checkpoint=stduhpf/Krea-2-Turbo-GGUF, and confirm the response is HTTP 400 with an error mentioning 'does not declare a model architecture'."
+    },
+    {
+      "text": "Start the Lemonade server, call GET /pull/variants?checkpoint=TinyLlama/TinyLlama-1.1B-Chat-v1.0, and confirm the response returns variant objects with size_bytes > 0."
+    }
   ],
   "merge_date": "2026-09-09T22:10:34Z",
   "pr_number": 3198,
   "range_start": "v11.9.0",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-09-15T17:14:13+00:00",
+  "reviewed_at": "2026-09-15T22:13:37+00:00",
   "reviewers": [
     "@fl0rianr",
     "@pwilkin"
@@ -30,7 +34,7 @@
   "sha": "6a607106ce467849e9f64c17de9f249f2936a7a9",
   "shout_outs": [],
   "subject": "Fix incompatible GGUF results in model search (#3198)",
-  "summary": "Fixes #3136 by adding a GGUF architecture compatibility filter to the /pull/variants endpoint so incompatible Hugging Face repositories (media tasks, missing architecture metadata, unsupported architectures) are rejected before download.",
+  "summary": "Adds parsed GGUF architecture metadata checks to /pull/variants so incompatible Hugging Face repositories (media models, missing architectures, unsupported architectures) are filtered before download.",
   "verdict": "Needs Attention",
-  "verdict_reason": "The generated architecture allowlist uses an intersection policy across all shipped llama.cpp pins (CPU, ROCm, nightly) which will cause legitimate models like bailingmoe3 and kimi-k3 to be rejected until every backend catches up, and the extra HF metadata request now runs inside generic HuggingFaceRegistry::fetch_repository() affecting all HF operations."
+  "verdict_reason": "The /pull/variants endpoint behavior changed — incompatible GGUF repos now return 400 instead of being accepted — but nothing shows a reviewer independently exercised the live error path before merging."
 }
