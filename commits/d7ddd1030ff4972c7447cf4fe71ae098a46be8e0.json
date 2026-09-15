@@ -1,0 +1,39 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "d7ddd1030ff4972c7447cf4fe71ae098a46be8e0",
+  "committed_at": "2026-09-15T16:09:10Z",
+  "evidence": {
+    "api_compatibility": "No user-facing API change. The Docker image tag behavior is new (adds 'candidate' and 'candidate-v<version>' tags alongside existing 'latest' and 'edge'), and this is documented in docs/guide/install/docker.md. Existing tags are unaffected.",
+    "documentation": "docs/guide/install/docker.md updated with a table describing the three rolling tags (latest, candidate, edge) and the immutable per-version tags. The change is consistent with the workflow behavior.",
+    "manual_release_testing": "The new 'candidate' rolling tag behavior on release-v* branches is user-facing Docker image behavior. Prior to the next release, verify that a push to the current release-v* branch produces an image tagged 'candidate' with the correct candidate-v<version> tag and that it does not overwrite the 'latest' tag. Also confirm the scheduled release-branch-creation workflow (part of the same PR series) functions end-to-end.",
+    "post_approval_commits": "One commit (2da5cc76, 'ci: parse version.py arguments with argparse') was added after the first and latest approval at 19:51:50Z (submitted at 19:59:00Z). It replaces an argv scan with argparse in tools/version.py in response to review feedback. It does not change version output, does not touch the workflow file, and stays within the PR scope; however it was merged without a renewed approval.",
+    "review": "PR approved by @superm1 on 2026-09-14T19:51:50Z. @superm1 has Docker/containers listed as a subject-area expertise, so subject-matter review is satisfied. One automated comment from @chatgpt-codex-connector[bot] flagged a race condition between concurrent builds on the rolling candidate tag; no human acknowledged or addressed this comment.",
+    "security": "Low risk. The workflow change adds release-v* as a trigger branch and introduces tag-naming logic; the existing docker/login-action, build-push-action, and signing pipeline are unchanged. No new secrets, credential flows, or external network calls are introduced. The workflow pushes as the GITHUB_TOKEN actor.",
+    "tests": "No tests added. The change is a CI workflow modification plus documentation update; test additions would normally not be expected for this type of change, but the workflow uses an inline python3 tools/version.py call whose correctness is assumed rather than verified."
+  },
+  "generation_seconds": 109.9,
+  "maintainer_todos": [
+    {
+      "text": "Verify the post-approval argparse commit (2da5cc7) does not change version.py behavior observed by the workflow and was within the spirit of the original review."
+    },
+    {
+      "text": "Decide whether the bot-identified race condition (concurrent release-v* pushes overwriting the rolling candidate tag) needs a fix or is an acceptable residual risk."
+    }
+  ],
+  "merge_date": "2026-09-15T16:48:38Z",
+  "pr_number": 3581,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T18:12:40+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "d7ddd1030ff4972c7447cf4fe71ae098a46be8e0",
+  "shout_outs": [],
+  "subject": "ci: publish release branch builds to the candidate Docker tag (#3581)",
+  "summary": "Publishes release-v* branch builds as a rolling 'candidate' Docker tag and an immutable 'candidate-v<version>' tag, and documents the new tag scheme.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "One commit (argparse refactor of tools/version.py) was added after @superm1's approval, and a bot review raised an unaddressed concern about potential stale candidate tag updates from concurrent builds."
+}
