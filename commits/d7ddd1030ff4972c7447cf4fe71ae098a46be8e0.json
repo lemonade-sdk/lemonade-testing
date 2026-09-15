@@ -5,28 +5,32 @@
   "commit_sha": "d7ddd1030ff4972c7447cf4fe71ae098a46be8e0",
   "committed_at": "2026-09-15T16:09:10Z",
   "evidence": {
-    "api_compatibility": "No API changes. The workflow change adds release-v* to the branches trigger list but those branches do not yet exist. tools/version.py gains a --release-branch flag via argparse but the existing internal callers (version.py invoked as a module) are unaffected. No breaking or changing API contracts.",
-    "documentation": "docs/guide/install/docker.md is updated with a table describing the three rolling tags (latest, candidate, edge) and the immutable versioned tags. This is accurate and complete — the PR includes both the workflow change and the corresponding documentation update.",
-    "manual_release_testing": "This is CI infrastructure and documentation only. No user-facing behavior changes, API endpoints, CLI commands, or shipped artifacts are introduced or altered. The Docker install docs add a table describing the candidate tag, but this is documentation of the existing workflow change, not a new user-facing feature. No manual release testing is required. Residual risk: when release-v* branches are first pushed, the candidate image publishing will activate for the first time; the merge-queue CI ran against main and confirmed the build workflow still passes with release-v* in the branch list.",
-    "post_approval_commits": "One commit was added after superm1's approval: tools/version.py refactored to use argparse instead of argv scanning. The commit message explicitly says this is in response to review feedback. The diff is minimal (add import, add ArgumentParser, replace sys.argv check with args.release_branch). It does not alter behavior, risk profile, or API/CLI contract. Not problematic — it is a direct response to reviewer guidance.",
-    "review": "superm1 approved with an empty body on 2026-09-14T19:51:50Z. superm1 is the maintainer with subject matter expertise in Docker and containers per docs/dev/contribute.md. The PR author notes they are no Docker expert, and superm1 is the appropriate SME to validate. An automated review from chatgpt-codex-connector[bot] flagged a potential race condition: concurrent release-v* branch pushes without a concurrency policy could leave the rolling candidate tag pointing at stale code. This was not addressed. The bot is not a human reviewer with subject matter expertise. A human reviewer should be aware of this edge case.",
-    "security": "No credential handling, network calls, code execution paths, or permission broadening changes. The GitHub App push for the release branch creator workflow (mentioned in the PR title/body) requires release-admin permissions on the repo, which is appropriate. No security concerns.",
-    "tests": "No unit tests for the workflow or version.py argparse change, which is appropriate: workflow files are integration-level constructs tested through CI runs, and argparse parsing is self-documenting and already covered by the existing call sites. All required CI checks passed (llama.cpp validate, stable-diffusion.cpp validate, vLLM validate, CodeQL, C++ unit tests, packaging builds). Many checks were skipped because they trigger only on tags or main — the workflow change adds release-v* but those branches do not exist yet. The checks that ran all succeeded."
+    "api_compatibility": "No public API is changed. The container image tag `candidate` is a new publication target; existing users of `latest`, `edge`, or `v<version>` tags are unaffected. The tools/version.py argparse change is an internal parsing refactor with no external contract.",
+    "documentation": "docs/guide/install/docker.md was updated with a table documenting the three rolling tags (latest, candidate, edge) and the versioned variant tags. The new `candidate` tag documentation is clear and complete. No guide or example is needed for this CI-only change.",
+    "manual_release_testing": "The PR introduces a new user-reachable artifact: the `candidate` Docker tag (ghcr.io/lemonade-sdk/lemonade-server:candidate) and the `candidate-v<version>` immutable tag. No evidence exists that a human pulled and exercised these tags before merge. The PR author self-identified as \"no docker expert\" and asked for the work to be checked. The to-do above is the concrete action to verify.",
+    "post_approval_commits": "One commit was added after @superm1's first and only approval (submitted at 2026-09-14T19:51:50Z): the argparse refactor of tools/version.py (sha 2da5cc76, committed 2026-09-14T19:59:00Z). The commit message states it was \"Review feedback\" to replace argv scanning with argparse. This is a minor code-quality improvement that changes the internal parsing logic but does not alter the external behavior, API, or security posture of the workflow. It is within the spirit of the approved PR and does not warrant re-approval, though the reviewer was not notified of the addition via a new review request.",
+    "review": "PR #3581 had one substantive human review from @superm1 (state: APPROVED, submitted 2026-09-14T19:51:50Z). @superm1 is the named maintainer with subject matter expertise in \"Docker, containers\" per docs/dev/contribute.md, so the review meets the expertise bar. The review body was empty; @jeremyfowers acknowledged in the PR description \"I'm no docker expert so please check the work here,\" which invites scrutiny that was delivered as a terse approval. A Codex bot review flagged a real race condition on the rolling `candidate` tag: when two pushes to a release-v* branch run concurrently without a `concurrency` policy, an older build can finish last and overwrite the tag with stale code. That comment was never addressed or resolved. The Codex bot (chatgpt-codex-connector[bot]) is automated, not a human reviewer.",
+    "security": "The changes add a new CI publication path (release-v* branches push to ghcr.io) and a scheduled branch-creation workflow. The scheduled workflow uses a GitHub App push (not GITHUB_TOKEN) to trigger candidate builds, which is a deliberate security boundary. No credential handling, supply-chain, or obfuscation concerns. The Codex-identified race condition (stale tag overwrite) is a correctness concern, not a security issue.",
+    "tests": "This is a CI/infrastructure change with no new user-facing code. There are no unit tests or integration tests; the CI validation workflows (llama.cpp, stable-diffusion.cpp, vLLM) all passed on the merge commit. No test weakening or deletion is present."
   },
-  "generation_seconds": 161.2,
-  "maintainer_todos": [],
+  "generation_seconds": 114.6,
+  "maintainer_todos": [
+    {
+      "text": "Pull ghcr.io/lemonade-sdk/lemonade-server:candidate on a machine and confirm the container starts and serves the same API version as the associated release-v branch."
+    }
+  ],
   "merge_date": "2026-09-15T16:48:38Z",
   "pr_number": 3581,
   "range_start": "v11.9.0",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-09-15T23:20:20+00:00",
+  "reviewed_at": "2026-09-15T23:48:21+00:00",
   "reviewers": [
     "@superm1"
   ],
   "sha": "d7ddd1030ff4972c7447cf4fe71ae098a46be8e0",
   "shout_outs": [],
   "subject": "ci: publish release branch builds to the candidate Docker tag (#3581)",
-  "summary": "Adds Docker candidate image publishing for release-v* branches, a scheduled workflow to create weekly release branches, and refactors tools/version.py to use argparse.",
-  "verdict": "Clean",
-  "verdict_reason": "Small, focused CI change with Docker/containers expertise on review, passing CI, and only a minor argparse refactor added after approval in direct response to feedback."
+  "summary": "Publishes release-v* branch builds to the candidate Docker tag and creates a weekly release branch on a schedule.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "An unaddressed concurrency race condition on the rolling candidate tag (flagged by the Codex bot review) and no evidence that a user pulling the candidate tag was exercised before merge."
 }
