@@ -5,25 +5,25 @@
   "commit_sha": "421eabdf6f1061b15a6a960f216326cbbc7b4a42",
   "committed_at": "2026-09-11T17:59:19Z",
   "evidence": {
-    "api_compatibility": "No API changes. Only two markdown files were touched. No schema, protocol, CLI contract, or persistence format was altered.",
-    "documentation": "The PR correctly documents the fix for #3537 by replacing 'open directly from disk' with 'serve over localhost'. The linked issue context (CORS rejection from Origin: null on file:// URLs) is accurate — lemond's default allowed_origins does block file:// origins. The only gap is the missing --bind 127.0.0.1 flag, noted above under Security.",
-    "manual_release_testing": "No manual release testing needed. The commit changes only markdown files under examples/ — no API, CLI, GUI, config, or installed artifact is affected.",
-    "post_approval_commits": "None. The PR contained one commit (e0e01c1) and no commits were added after either approval. The review timeline is clean.",
-    "review": "PR #3547 was approved by @abn (LGTM, submitted 2026-09-11T16:00:15Z) and @superm1 (approval, submitted 2026-09-11T16:39:17Z). @abn's subject area includes telemetry, sandboxing, and http; @superm1's includes security, linux packaging, and containers — both reviewers have relevant expertise. Codex (automated) raised a valid security concern in an inline comment noting that python3 -m http.server defaults to binding on all interfaces (not just localhost) per its --help docs, and suggested --bind 127.0.0.1. @superm1 reacted with a laugh emoji to Codex's 'keep the sweet workaround local' quote but neither reviewer requested the --bind fix nor re-reviewed after that comment. The PR was merged shortly after @superm1's approval with no renewed review of the security gap.",
-    "security": "The merged instructions say 'python3 -m http.server 8080' without --bind 127.0.0.1. Per python3 -m http.server --help, the default is to bind on all interfaces, so any user who runs the command in their Downloads or Desktop folder exposes every file in that directory to the network. The PR title says 'Serve example HTML demos over localhost' which sets an expectation of localhost-only exposure that the instructions do not fulfill. Both reviewers have security expertise (@superm1: 'security', @abn: 'sandboxing, http') yet the gap was not caught.",
-    "tests": "This PR changes only documentation files (examples/README.md, examples/debate-arena.md). No tests are expected for pure documentation changes, and no existing tests were weakened or deleted."
+    "api_compatibility": "No API changes. Only documentation files were modified. The change does not alter any server behavior, configuration schema, CLI contract, or persistence format.",
+    "documentation": "The change is itself a documentation fix, and it is well-scoped. It replaces incorrect instructions (open HTML files directly from disk) with correct ones (serve over localhost with explanation of why). Both affected files are in examples/ and the new instructions reference the exact HTML files users would want. The prose is clear and includes the specific localhost URLs users should open.",
+    "manual_release_testing": "No human exercised the updated documentation instructions end-to-end. The change directs users to a user-reachable surface (running python3 -m http.server in an examples directory and opening demo HTML pages in a browser). Nothing in the PR description, comments, or CI logs shows this path was tested with the live server. The documentation text is internally correct -- file:// does trigger Origin: null, which the server rejects -- but manual verification against the current build is warranted before shipping.",
+    "post_approval_commits": "No commits were added to the PR branch after the latest approval. Single commit e0e01c1, authored by Claude with co-authorship by the PR author, was approved at 16:00Z and 16:39Z and merged at 20:07Z. The merge commit 421eabdf is the squash/merge of that single commit.",
+    "review": "PR #3547 was authored by @jeremyfowers and approved by @abn (submitted at 2026-09-11T16:00:15Z with 'LGTM') and @superm1 (MEMBER, approved at 2026-09-11T16:39:17Z). @abn's subject area includes telemetry, sandboxing, and HTTP, making them a qualified reviewer for this change that addresses the server's allowed_origins behavior. @superm1 (MEMBER, subject area includes security, ROCm, linux packaging) also approved. There were no post-approval commits. Codex (automated bot) raised a valid inline comment suggesting adding --bind 127.0.0.1 to keep the HTTP server local and avoid exposing the filesystem to other network hosts; superm1 acknowledged the comment with a laugh emoji but the PR merged without addressing it. The security concern is mild (users typically run this in a terminal in a known folder), but it is a legitimate tightening that the reviewers did not pursue.",
+    "security": "Codex identified that python3 -m http.server binds to all interfaces by default, so running the command in an arbitrary folder could expose that folder's contents to the local network. The PR merged without adding --bind 127.0.0.1. The risk is low since users are expected to run this in a controlled examples directory in a terminal they control, but tightening the instruction would remove the exposure entirely. No other security concerns.",
+    "tests": "This is a documentation-only change (2 markdown files: examples/README.md and examples/debate-arena.md), so there are no code tests affected. All CI checks that ran for this PR passed, including Docs And Style, markdown-link-check, backend-docs-drift, and CodeQL across all languages. No tests were weakened or deleted."
   },
-  "generation_seconds": 127.0,
+  "generation_seconds": 143.6,
   "maintainer_todos": [
     {
-      "text": "Add --bind 127.0.0.1 to the python3 -m http.server 8080 commands in examples/README.md and examples/debate-arena.md, then confirm the examples serve only on localhost."
+      "text": "Start the Lemonade server, serve the HTML examples with python3 -m http.server 8080 from an examples directory, and confirm the demo pages load and communicate with the server as described."
     }
   ],
   "merge_date": "2026-09-11T20:07:15Z",
   "pr_number": 3547,
   "range_start": "v11.9.0",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-09-15T22:45:25+00:00",
+  "reviewed_at": "2026-09-15T23:40:23+00:00",
   "reviewers": [
     "@abn",
     "@superm1"
@@ -31,7 +31,7 @@
   "sha": "421eabdf6f1061b15a6a960f216326cbbc7b4a42",
   "shout_outs": [],
   "subject": "Serve example HTML demos over localhost instead of opening from disk (#3547)",
-  "summary": "Updates example documentation to tell users to serve HTML demo files over a local HTTP server instead of opening them via file://, fixing a CORS/origin rejection (#3537).",
+  "summary": "Updates two documentation files to instruct users to serve example HTML demos over a local HTTP server instead of opening them directly from disk, which the server's default allowed_origins policy rejects.",
   "verdict": "Needs Attention",
-  "verdict_reason": "The PR title promises localhost-only serving but the instructions use python3 -m http.server without --bind 127.0.0.1, so users following the docs would inadvertently expose their file tree on all network interfaces."
+  "verdict_reason": "All CI checks passed, two substantive approvals landed, but no evidence shows anyone manually verified the updated documentation instructions against the live server."
 }
