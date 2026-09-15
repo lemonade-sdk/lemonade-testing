@@ -5,33 +5,28 @@
   "commit_sha": "bc19325cc94c05800efa182fd3450530ac46e553",
   "committed_at": "2026-09-09T02:43:44Z",
   "evidence": {
-    "api_compatibility": "No API compatibility impact. The change is purely in src/web-app/BuildWebApp.cmake (19 insertions, 0 deletions), which rewrites staged tsconfig moduleResolution values for the system-build path. No shipped API, schema, protocol, or integration behavior is affected.",
-    "documentation": "No documentation changes needed. This is an internal build-system fix for packaging compatibility; it does not affect user-facing or developer-facing documentation.",
-    "manual_release_testing": "Not in release surface. This is a build-system change to the CMake staging logic for system-nodejs packaging; it does not alter shipped behavior, CLI, GUI, or API. The change only affects how staged tsconfig files are rewritten during the system-nodejs-modules build path, which is exercised internally by the packaging CI.",
-    "post_approval_commits": "No commits were added after the first (and only) approval from @fl0rianr at 2026-08-31T16:27:01Z. The PR had exactly two commits, both authored before approval.",
-    "review": "PR #3186 received four substantive review comments from @fl0rianr (COLLABORATOR/maintainer) over two weeks. Initial review raised concerns about outDir removal and module rewrite side-effects. Second review caught a real blocker (TS5110: module must be Node16 when moduleResolution is Node16), noting transpileOnly does not skip this validation. Third review confirmed all concerns addressed and distro matrix was green. Final review approved the mergeable state with no remaining blockers. @kenvandine was requested as reviewer but never reviewed.",
-    "security": "No security concerns. The change adds a CMake function that reads tsconfig JSON and does regex replacements on module/moduleResolution values. No credential handling, network calls, code execution, or supply-chain changes.",
-    "tests": "No new test files added, but the change is build-configuration only. Full CI green across 60+ checks including: Linux Distro Builds (Arch, openSUSE), C++ Server Build with .deb packaging (Debian 13 on x86_64 and ARM64), Fedora .rpm builds (43 and 44 on x86_64 and ARM64), Launchpad PPA builds (Ubuntu 24.04/25.10/26.04 on x86_64 and ARM64), container builds (amd64 and arm64), CodeQL analysis, app regression tests, pre-commit, markdown-link-check, and server endpoint/API tests. Debian-specific sbuild testing was also performed by the author."
+    "api_compatibility": "No API impact. The change does not touch any API surface — no exported functions, no config options, no CLI contracts, no persistence formats, no protocol changes. The only file modified is the CMake build script.",
+    "documentation": "No documentation changes needed. This is an internal build-system fix for a Debian FTBFS. The committed tsconfig files (the source of truth for editor/typecheck) remain on moduleResolution: bundler. The node16 rewrite only affects staged copies used by system-package builds.",
+    "manual_release_testing": "N/A. This is a pure build-system change to src/web-app/BuildWebApp.cmake — a CMake function that rewrites tsconfig files during staging. There is no user-visible surface: no CLI flags, no API changes, no GUI changes, no new behavior a user can directly exercise. CI and distro builds provide the necessary verification.",
+    "post_approval_commits": "None. The two PR commits (9487bf6 and 7d29cf4) were authored on 2026-08-27. The first approval was submitted on 2026-08-31T16:27:01Z. The commit is identical to the last PR commit — no post-approval churn.",
+    "review": "PR #3186 received three substantive review comments from @fl0rianr before final approval at 2026-08-31T16:27:01Z. Reviewer 1 flagged removing outDir and the module/moduleResolution combination potentially emitting CommonJS (first review). Reviewer 2 identified the TS5110 blocker — transpileOnly does not skip validation of module/moduleResolution consistency — and suggested rewriting moduleResolution to node16 only for TypeScript < 5.0. Reviewer 3 approved after the author pivoted to the final cmake-only approach with outDir restored, noting comfort because the node16 rewrite is isolated to staged system-package builds and the distro matrix was green. The reviewer has subject-area expertise: per docs/dev/contribute.md, @fl0rianr covers 'ci' among other areas. No commits were added after the first and only approval.",
+    "security": "No security concerns. The change reads and rewrites tsconfig.json files in a staging directory using CMake file(WRITE) with regex substitution. No network calls, credential handling, code execution, or supply-chain changes are introduced.",
+    "tests": "No standalone tests were added for the CMake function, which is appropriate given the change is build-system logic that gets exercised through the distro build matrix. CI coverage is extensive: all Linux distro builds pass (Arch, openSUSE), all Launchpad PPA builds pass (Ubuntu 24.04/25.10/26.04 on x86_64 and ARM64), Debian 13 packaging builds pass, and smoke tests on Debian 13 pass. The author also verified the fix in Debian via salsa (https://salsa.debian.org/debian/lemonade/-/pipelines/1152495) and linked the passing job."
   },
-  "generation_seconds": 136.1,
+  "generation_seconds": 140.2,
   "maintainer_todos": [],
   "merge_date": "2026-09-09T04:48:54Z",
   "pr_number": 3186,
   "range_start": "v11.9.0",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-09-15T16:51:38+00:00",
+  "reviewed_at": "2026-09-15T21:46:22+00:00",
   "reviewers": [
     "@fl0rianr"
   ],
   "sha": "bc19325cc94c05800efa182fd3450530ac46e553",
-  "shout_outs": [
-    {
-      "handle": "@fl0rianr",
-      "reason": "Provided four rounds of substantive review across two weeks, identified a real blocker (TS5110 module/moduleResolution incompatibility), validated the fix across the full distro matrix (Ubuntu 24.04/25.10/26.04 on both x86_64 and ARM64), and drove the solution to a clean resolution."
-    }
-  ],
+  "shout_outs": [],
   "subject": "Switch to bundler module resolution for tsconfig (#3186)",
-  "summary": "Adds a CMake function to rewrite staged tsconfig moduleResolution to node16 for system package builds, fixing a Debian FTBFS caused by TypeScript version incompatibility across distros.",
+  "summary": "Adds a CMake function that rewrites tsconfig moduleResolution to node16 when system nodejs modules are used, fixing a TypeScript 7.0 FTBFS in Debian.",
   "verdict": "Clean",
-  "verdict_reason": "Narrowly scoped build fix with comprehensive multi-distro CI coverage and thorough iterative review from a maintainer with CI subject-matter expertise."
+  "verdict_reason": "This is a focused 19-line build-system change with thorough iterative review, comprehensive distro CI coverage, and verified Debian build success."
 }
