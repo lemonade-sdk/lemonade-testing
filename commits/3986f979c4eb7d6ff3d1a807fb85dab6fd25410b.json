@@ -5,21 +5,21 @@
   "commit_sha": "3986f979c4eb7d6ff3d1a807fb85dab6fd25410b",
   "committed_at": "2026-09-09T15:29:22Z",
   "evidence": {
-    "api_compatibility": "No API changes. No schema, protocol, config, CLI contract, or persistence format modifications. The fix preserves all existing behavior for normal hosts and correctly falls back to on_error for unavailable classifiers, which was the intended behavior all along (the bug bypassed it).",
-    "documentation": "No documentation changes needed. The PR is labeled rfc:not-required and is scoped to a single bug fix. No user-facing behavior changes.",
-    "manual_release_testing": "None required — this is an internal refactor of ModelManager::build_cache() and validate_collection_request() with no user-visible behavior change, no API change, no CLI/GUI changes, and no shipped artifact changes.",
-    "post_approval_commits": "First approval was 2026-08-30T19:31:42Z (fl0rianr). Two commits were added after that: a merge of main (dc044af) and the final 'share one component resolver' commit (4bc3455). The final commit directly addressed SlawomirNowaczyk's CHANGES_REQUESTED concern about unifying the resolvers; SlawomirNowaczyk re-approved on 2026-09-06. No commits were added after the latest approval. The merge is routine. The final commit remains within the spirit and scope of the fix.",
-    "review": "PR #3414 received substantive review from @fl0rianr (smart-router maintainer) and @SlawomirNowaczyk (smart-router maintainer). fl0rianr opened three rounds of inline-adjacent comments identifying specific edge cases (post-filter bare-name aliases only, missing full precedence, missing builtin.<X> and input_aliases paths), then approved once all were resolved. SlawomirNowaczyk raised a CHANGES_REQUESTED around unifying the two hand-written resolvers to prevent future divergence, then approved after the final commit extracted a shared resolver function. Both reviewers have subject-matter expertise in smart router per docs/dev/contribute.md. The reviewer comments reflect the project philosophy of 'user error is a bug' — they caught cases where a user could lose routing entirely without visible cause.",
-    "security": "No security concerns. No supply-chain changes, credential handling, network calls, or permission broadening. The change is purely internal C++ refactoring of alias resolution and routing-policy parsing.",
-    "tests": "Three regression tests added to test_model_manager_collection_validation.cpp, each covering a different alias-form path (bare-name, canonical-in-components-bare-name-on-classifier, builtin.<X>). Tests assert the NPU-backed model was actually filtered (so they won't go vacuously green on NPU-capable CI runners). Tests also evaluate the parsed policy to confirm unrelated keyword rules still route while the filtered classifier's rule falls back via on_error. Author verified the bug existed by reverting the fix (0/1 passing), then restoring (1/1 passing). Full cpp-ci suite passed (66/66)."
+    "api_compatibility": "No breaking API change. The fix is internal to ModelManager::build_cache() routing-policy parsing. The new `allowed_origins` config field (visible in the diff) was part of the squash and is unrelated to this PR. No CLI contract, exported API, persistence format, or documented behavior changed.",
+    "documentation": "No documentation changes required. The behavior is an internal fix; the only user-visible surface is a new warning log message for degraded routing, which does not warrant doc updates.",
+    "manual_release_testing": "No dedicated manual to-do. The fix affects routing-cache resolution at startup for users who have router collections referencing classifiers on hardware-unavailable backends (e.g., ryzenai-llm on a non-NPU host). There is no CLI command, config option, or API endpoint that directly exercises this path; the behavior manifests only as a warning log from the affected router at startup. If the user has no router collection with such a classifier, the pre-filter snapshots are skipped entirely (the code checks for router collections first). The three regression tests with explicit hardware-filter premises cover the scenarios thoroughly.",
+    "post_approval_commits": "The final approval was from @SlawomirNowaczyk at 2026-09-06T16:19:56Z. All PR branch commits predate this: the last PR branch commit is 4bc34558 dated 2026-09-03T06:23:19+0300. This commit introduced the shared `make_routing_parse_options()` resolver and the `unavailable_components` logging, which @SlawomirNowaczyk approved. No commits were added after approval. The PR was squash-merged into main on 2026-09-09T16:32:59Z.",
+    "review": "Two reviewers with smart-router subject-matter expertise (per contribute.md: @fl0rianr and @SlawomirNowaczyk) conducted iterative reviews. @fl0rianr raised three edge cases across three rounds (Aug 28, Aug 28, Aug 29) — post-filter alias resolution, alias precedence mismatch, and missing builtin.<X> alias form — each addressed in a follow-up commit before final approval (Aug 30). @SlawomirNowaczyk suggested unifying the two routing-policy parse-site resolvers to prevent future drift (Aug 31, changes-requested); the author implemented this in commit 4bc34558 (Sep 3), and @SlawomirNowaczyk approved on Sep 6. No comments from the reviews were inline; all were on the PR body.",
+    "security": "No security concern. The diff touches routing policy resolution and model alias computation — no credential handling, network calls, permission broadening, or supply-chain changes. The commit message and code are consistent with a genuine bug fix.",
+    "tests": "Three new regression tests in test/cpp/test_model_manager_collection_validation.cpp: (1) canonical-id in components / bare-name on classifier, (2) bare-name in components / canonical-id on classifier, (3) builtin.<X> alias form using a real builtin. Each test asserts its hardware-filtered premise (!model_exists) before checking the policy, so tests won't go vacuously green on an NPU-capable CI. The tests also evaluate the parsed policy via RoutingPolicyEngine to confirm unrelated deterministic rules still route while the filtered classifier's rule falls back — not merely that parsing didn't abort."
   },
-  "generation_seconds": 131.4,
+  "generation_seconds": 231.5,
   "maintainer_todos": [],
   "merge_date": "2026-09-09T16:32:59Z",
   "pr_number": 3414,
   "range_start": "v11.9.0",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-09-15T16:58:28+00:00",
+  "reviewed_at": "2026-09-15T21:56:08+00:00",
   "reviewers": [
     "@fl0rianr",
     "@SlawomirNowaczyk"
@@ -28,15 +28,11 @@
   "shout_outs": [
     {
       "handle": "@fl0rianr",
-      "reason": "Identified three distinct edge cases across iterative reviews — post-filter bare-name aliases only, missing full alias precedence, and missing builtin.<X> + input_aliases paths — each of which caused Bekhouche to progressively extract a shared alias-algorithm function that eliminated the drift the original bug relied on."
-    },
-    {
-      "handle": "@SlawomirNowaczyk",
-      "reason": "Caught the root-cause asymmetry between two hand-written component resolvers that could silently diverge, then provided a concrete architectural suggestion to extract shared resolution logic; approved only after the PR unified the resolver into one function with distinct tiers."
+      "reason": "Identified three progressively deeper alias-resolution edge cases (bare-name alias, Registered/Imported/Builtin precedence, builtin.<X> prefix) across three comment rounds and iteratively guided the author to the correct shared-algorithm solution."
     }
   ],
   "subject": "fix(routing): don't drop the whole router policy over one hardware-filtered classifier (#3414)",
-  "summary": "Fixes a bug where a single hardware-filtered classifier (e.g. an NPU-backed model on a host without an NPU) caused the entire router policy to be silently dropped, by snapshotting model type and alias information before the hardware filter and using those pre-filter snapshots in the routing-policy resolver.",
+  "summary": "Fixes ModelManager::build_cache() so that a hardware-filtered classifier no longer drops the entire routing policy, instead allowing unrelated rules to survive via a pre-filter snapshot of model types and aliases.",
   "verdict": "Clean",
-  "verdict_reason": "A well-structured, iteratively reviewed fix that eliminates a real routing-policy drop bug, includes regression tests for multiple alias-form edge cases, and unifies previously duplicated resolver logic to prevent future drift."
+  "verdict_reason": "The fix addresses a real bug with thorough edge-case coverage (three regression tests with explicit hardware-filter premises), was iteratively reviewed by two smart-router experts, and no commits were added after the final approval."
 }
