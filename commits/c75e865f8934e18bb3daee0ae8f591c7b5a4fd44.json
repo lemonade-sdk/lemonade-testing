@@ -1,0 +1,32 @@
+{
+  "author": "@superm1",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "c75e865f8934e18bb3daee0ae8f591c7b5a4fd44",
+  "committed_at": "2026-09-15T05:26:11Z",
+  "evidence": {
+    "api_compatibility": "No API compatibility impact. The change touches only .github/workflows/launchpad-ppa.yml and .github/workflows/upload.yml. Internal workflow inputs (target, package_matrix) are not user-facing APIs.",
+    "documentation": "No documentation changes needed. The change does not affect end-user-facing behavior, CLI commands, API contracts, or shipped docs. The routing schema (main→bleeding-edge, release-v*→candidate, v* tags→stable) matches the PR description and is a release-internal workflow detail.",
+    "manual_release_testing": "This is a CI/CD configuration change only; it does not alter shipped binaries, CLI behavior, GUI, or documented user-facing APIs. No manual release testing is required. The routing logic (main→bleeding-edge, release-v*→candidate, v* tags→stable) can be verified by observing the actual PPA upload runs after a release branch push, but that is operational monitoring rather than a pre-release manual-test requirement.",
+    "post_approval_commits": "None. The sole commit (ac6cd30) was approved and merged without any further changes to the branch.",
+    "review": "PR #3529 was opened by @superm1 on 2026-09-09 and merged on 2026-09-15. It was a single-commit PR on branch superm1/candidate-instead-of-stable into main. @jeremyfowers (member, CI subject-area expert per contribute.md) approved with \"LGTM\" on 2026-09-11T18:13:09Z. The reviewer initially raised a clarification question about whether release branches should go to both stable and candidate; the author clarified the intended design in thread comments and the RFC #3522 context. An AI-assisted review (Claude) raised three observations — non-v tags silently stop publishing, candidate can end up behind stable in version-sort order, and PRs targeting release branches get no deb build — but none blocked the PR and the author adjusted accordingly.",
+    "security": "No security concerns. The changes are purely workflow routing logic: new upload-candidate job, adjusted conditions, and a refactored reusable workflow to carry the matrix from callers. No credential handling, network calls, code execution, or supply-chain changes were introduced beyond existing GPG-key signing and dput uploads already in upload.yml.",
+    "tests": "No automated test coverage specific to the PPA routing logic, which is expected since this is a CI workflow change with no executable application code surface. The Launchpad PPA workflow correctly ran in the merge queue, producing a successful \"Launchpad PPA builds\" check and all three upload jobs (Stable, Candidate, Bleeding Edge) skipped as expected on a merge-group run against main. No existing tests were weakened or deleted."
+  },
+  "generation_seconds": 134.9,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-15T06:05:28Z",
+  "pr_number": 3529,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-15T18:02:18+00:00",
+  "reviewers": [
+    "@jeremyfowers"
+  ],
+  "sha": "c75e865f8934e18bb3daee0ae8f591c7b5a4fd44",
+  "shout_outs": [],
+  "subject": "Route release branch commits to candidate PPA (#3529)",
+  "summary": "Routes release-v* branch commits to the candidate PPA, keeps main commits in bleeding-edge, and leaves v* tags to publish directly to stable, as a partial implementation of RFC #3522.",
+  "verdict": "Clean",
+  "verdict_reason": "All CI checks passed, the change was approved by a reviewer with CI subject-matter expertise, and no post-approval commits were made."
+}
