@@ -1,0 +1,46 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "8e3cbe66606bcccdc6cda2cede60756a8c417c86",
+  "committed_at": "2026-09-16T00:05:18+00:00",
+  "evidence": {
+    "api_compatibility": "No user-facing API changes. The `get-version` action gains a new output `release_branch` — additive only, no consumers will break if they ignore it. The release-notes workflow changes its source from a GitHub issue to a file in lemonade-testing, but the release job already depends on the `repo-manager-release` job succeeding, so missing notes now fail the build rather than shipping blanks. Release.md documentation is updated to match.",
+    "documentation": "docs/dev/release.md is comprehensively updated: removes references to three non-existent workflow-dispatch tools (cherry-pick, hotfix, revert), corrects the `candidate` label (was `release-candidate`), clarifies the two-tier P0/P1 checklist, moves repo-manager into its own section noting it is AI-assisted, and redirects all state references from GitHub issues to lemonade-testing files. docs/dev/self-hosted-runners.md is updated to remove the stale note about a `repo-manager` dedicated label that no longer exists.",
+    "manual_release_testing": "High surface area. The review workflow changes to per-commit parallel execution on self-hosted `stx-halo` runners, introduces a new `repo-manager` composite action that downloads and starts lemond (23GB model pull), and adds a `repo-manager-release` job that must succeed before release notes publish. A maintainer should verify both workflows trigger and complete correctly on a fresh push and a release build before the next candidate.",
+    "post_approval_commits": "None. All four commits (cce84fb, 45816a8, 48110ae, 78999ec) pre-date the first approval at 2026-09-15T23:14:19Z. The branch was clean after approval.",
+    "review": "Two substantive reviews by maintainers with CI expertise: @superm1 (first approval, 2026-09-15T23:14:19Z) flagged that the manual setup in the composite action should become a cached OCI container; @kenvandine (latest approval, 2026-09-15T23:38:20Z) agreed caching is desirable but not blocking. No commits were added after either approval. The author explicitly removed AI-generated caching to meet a deadline — reviewers accepted this tradeoff. @superm1 is listed in contribute.md with subject areas including security, Docker, and containers; @kenvandine covers CI. Both reviews are reasonable and consistent with the project philosophy of Design for Agility.",
+    "security": "The composite action downloads three external binaries (gh CLI, repo-manager wheel, pi npm package) from official sources and starts a local model server (lemond). It uses a GitHub App token scoped to lemonade-testing only. Permissions are read-only for the main repo and `contents: read` for the state repo. The action writes to a per-runner temp directory (thrown away) except for the shared lemond cache in the runner service user's HOME. The lemond server binds to 127.0.0.1 only with `--no-broadcast`. No credentials, API keys, or network calls outside GitHub infrastructure. The removal of tool caching (to meet deadline) is a deliberate tradeoff that reduces attack surface from shared artifacts.",
+    "tests": "No unit tests or integration tests for the new composite action or workflow changes. This is a CI/infra PR where test coverage is unusual, but the new action downloads and runs four external tools (gh, repo-manager, pi, lemond) and starts a model server — a complex runtime environment with no automated validation. The author's inline comment confirms caching was suggested by the AI but deliberately removed to meet deadline."
+  },
+  "generation_seconds": 211.7,
+  "maintainer_todos": [
+    {
+      "text": "Verify the repo-manager composite action and workflows actually run end-to-end after merge before cutting a release; the CI surface changed substantially."
+    },
+    {
+      "text": "Check that the `lemond` 23GB model cache is reachable on the `stx-halo` runners used by the new workflow (the action locates it via passwd database rather than the runner's HOME, which is redirected in other jobs)."
+    },
+    {
+      "text": "Confirm the `release_branch` output from `get-version` action is correct for release tags; downstream jobs depend on it to key concurrency groups."
+    },
+    {
+      "text": "Track the follow-up work on containerization and tool caching that reviewers raised — not blocking but worth scheduling."
+    }
+  ],
+  "merge_date": "2026-09-16T00:05:18+00:00",
+  "pr_number": 3593,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-16T14:04:25+00:00",
+  "reviewers": [
+    "@superm1",
+    "@kenvandine"
+  ],
+  "sha": "8e3cbe66606bcccdc6cda2cede60756a8c417c86",
+  "shout_outs": [],
+  "subject": "ci: run repo-manager from the workflows, with its state in lemonade-testing (#3593)",
+  "summary": "Moves repo-manager into a reusable composite GitHub Action, rewrites the review workflow to run per-commit on main with parallel concurrency, adds a release-notes-checklist-announcement builder job to the release pipeline, and updates docs to reflect the new file-based state model in lemonade-testing.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "This is a major CI infrastructure rewrite introducing a new composite action, two workflow changes, and a new release-job dependency — all high-surface changes with no test coverage and reviewers noted important follow-up concerns about caching and containerization."
+}
