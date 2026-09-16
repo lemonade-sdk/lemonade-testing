@@ -1,0 +1,258 @@
+{
+  "branch": "release-v2026.39",
+  "breaking_changes": [
+    "Model version format changed from X.Y.Z (e.g. 11.9.0) to YYYY.WW.N (e.g. 2026.39.0) or YYYY.WW.0~<count>.<hash>; tools and scripts that parse --version output or compare version strings need updating.",
+    "The /models and /pull/variants API endpoints now serialize registry_source as an empty string instead of 'huggingface' for models without an explicit source override; clients that assume registry_source is always 'huggingface' or 'modelscope' will see '' and may misinterpret it.",
+    "The unversioned /docs endpoint subtree now returns a JSON 404 instead of falling through to the SPA web-app; anyone relying on that fallback will receive a 404."
+  ],
+  "bucket": "v2026.39",
+  "candidate_issues": [],
+  "checklist": [
+    {
+      "author": "@noamsto",
+      "commit": "1f1b4825ef89d1c9eb74361183632b1932d4f762",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3496,
+      "priority": "P0",
+      "text": "Run `lemonade load gpt-oss-120b-mxfp-GGUF` and confirm the model loads successfully with the correct 63 GB MXFP4 file (not the 1.5 GB EAGLE3 draft head)."
+    },
+    {
+      "author": "@wariobot09",
+      "commit": "92037d872234285eba32b76318f297219d6b1f74",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 2841,
+      "priority": "P0",
+      "text": "Call GET /pull/variants on an FLM model whose registry_source is empty (the default) and confirm the response does not contain an empty source field or a serialization error."
+    },
+    {
+      "author": "@superm1",
+      "commit": "c47aa2a491e8c8c6e07a895eaad88b27452f2bb2",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3539,
+      "priority": "P0",
+      "text": "Run `lemonade-server --version` or check the server startup log and confirm the version is in the new YYYY.WW.N format (e.g., `2026.39.0`) rather than the old X.Y.Z format (e.g., `11.9.0`)."
+    },
+    {
+      "author": "@abn",
+      "commit": "6a5e307dcaa63fbca24c01f04033f6a8ea7fd0b4",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3470,
+      "priority": "P1",
+      "text": "Start the Lemonade server with `LEMONADE_ALLOWED_ORIGINS=http://192.168.1.50:*` and confirm that a browser or HTTP client connecting from `http://192.168.1.50:3000`, `:8080`, and `:5173` all succeed, while a connection from `http://192.168.1.51:3000` is rejected."
+    },
+    {
+      "author": "@abn",
+      "commit": "6a5e307dcaa63fbca24c01f04033f6a8ea7fd0b4",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3470,
+      "priority": "P1",
+      "text": "Start the server with `LEMONADE_ALLOWED_ORIGINS=http://*.local:*` and confirm that connections from `http://dashboard.local:3000` and `http://dev.local:5173` are accepted, while `http://evil.local:3000` and `http://local:3000` are rejected."
+    },
+    {
+      "author": "@popey",
+      "commit": "6a607106ce467849e9f64c17de9f249f2936a7a9",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3198,
+      "priority": "P1",
+      "text": "Start the Lemonade server, call GET /pull/variants?checkpoint=stduhpf/Krea-2-Turbo-GGUF, and confirm the response is HTTP 400 with an error mentioning 'does not declare a model architecture'."
+    },
+    {
+      "author": "@popey",
+      "commit": "6a607106ce467849e9f64c17de9f249f2936a7a9",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3198,
+      "priority": "P1",
+      "text": "Start the Lemonade server, call GET /pull/variants?checkpoint=TinyLlama/TinyLlama-1.1B-Chat-v1.0, and confirm the response returns variant objects with size_bytes > 0."
+    },
+    {
+      "author": "@wariobot09",
+      "commit": "92037d872234285eba32b76318f297219d6b1f74",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 2841,
+      "priority": "P1",
+      "text": "Run lemonade pull qwen3-0.6b-FLM --source modelscope and confirm the server logs show the flm CLI invoked with --modelscope 1."
+    },
+    {
+      "author": "@wariobot09",
+      "commit": "92037d872234285eba32b76318f297219d6b1f74",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 2841,
+      "priority": "P1",
+      "text": "Set default_model_source=modelscope in the server config, then run lemonade pull qwen3-0.6b-FLM without --source and confirm it downloads from ModelScope (not HuggingFace)."
+    },
+    {
+      "author": "@anditherobot",
+      "commit": "304d27f9c748e30a89595bb9737cbc9119141f68",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3347,
+      "priority": "P1",
+      "text": "Start a running Lemonade server, fetch GET /v1/docs and confirm the response is a JSON index listing at least api/README and api/lemonade with version, format, id, title, url, and bytes fields, and that the urls use the same prefix (/v1) that was used to request the index."
+    },
+    {
+      "author": "@anditherobot",
+      "commit": "304d27f9c748e30a89595bb9737cbc9119141f68",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3347,
+      "priority": "P1",
+      "text": "Fetch GET /v1/docs/api/lemonade from the running server and confirm the response is text/markdown starting with \"# Lemonade API\" and containing the documented endpoint table."
+    },
+    {
+      "author": "@anditherobot",
+      "commit": "304d27f9c748e30a89595bb9737cbc9119141f68",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3347,
+      "priority": "P1",
+      "text": "Confirm that GET /v0/docs, GET /api/v0/docs, and GET /api/v1/docs all return a 200 JSON index with urls matching the requesting prefix, and that GET /docs returns a JSON 404 with an error message pointing to /v1/docs."
+    },
+    {
+      "author": "@anditherobot",
+      "commit": "304d27f9c748e30a89595bb9737cbc9119141f68",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3347,
+      "priority": "P1",
+      "text": "Connect an MCP client to a running server, call the lemonade_docs tool with no arguments and confirm it returns a summary listing the bundled pages, then call lemonade_docs with page set to \"api/lemonade\" and confirm it returns the markdown content of that page."
+    },
+    {
+      "author": "@SlawomirNowaczyk",
+      "commit": "8312c1a8dc67854d36c82b559b5d00a719ad0012",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3510,
+      "priority": "P1",
+      "text": "Start lemond with a cloud provider configured, send a curl request with a session header (e.g. -H 'x-opencode-session: test-abc'), and confirm the upstream provider receives the same session ID in its request headers."
+    },
+    {
+      "author": "@SlawomirNowaczyk",
+      "commit": "8312c1a8dc67854d36c82b559b5d00a719ad0012",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3510,
+      "priority": "P1",
+      "text": "Send a GET /models request and confirm no session header is attached to that discovery call."
+    },
+    {
+      "author": "@meghsat",
+      "commit": "8b5a23b52755d08f3738d0dc1375357653e8f78a",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3565,
+      "priority": "P1",
+      "text": "Start Lemonade with auto_evict enabled and a llama.cpp model, send a prompt, wait for the model to go soft-idle, then send a follow-up prompt and confirm the /stats endpoint reports non-zero cache_tokens (the prompt prefix was reused instead of re-prefilled)."
+    },
+    {
+      "author": "@bitgamma",
+      "commit": "378622dcce2c4930f2b5ce91232cd079c4e79eff",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3494,
+      "priority": "P1",
+      "text": "Post a `/images/edit` request through the server with a valid model, prompt, and base64 image data, and confirm the endpoint returns b64_json in the response instead of an unsupported error."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "658d5655967acbb0669278dae5d5f175ed795835",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3579,
+      "priority": "P1",
+      "text": "Push a new commit to a release-v* branch and confirm the \"Create GitHub Release\" job publishes a prerelease under a candidate-v<version> tag with the expected artifacts and the \"Windows installers are not signed\" note in the release body."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "bfb9dd596804db83e3bdf94e9ab6d98338fd53e4",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3580,
+      "priority": "P1",
+      "text": "Trigger the Create Release Branch workflow (Actions > workflows > Create Release Branch > Run workflow) and confirm that release-v2026.39 (or the next upcoming week) is created from main and triggers the candidate build pipeline."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "d7ddd1030ff4972c7447cf4fe71ae098a46be8e0",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3581,
+      "priority": "P1",
+      "text": "Pull ghcr.io/lemonade-sdk/lemonade-server:candidate on a machine and confirm the container starts and serves the same API version as the associated release-v branch."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "6e2b5bd3dd7e0123e2947447847c3458c9b7db4b",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3588,
+      "priority": "P1",
+      "text": "Navigate to the Lemonade GitHub repo Releases page and confirm that any existing candidate-v* prereleases are listed as Pre-release (not as stable) while the latest stable release is marked as Latest."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "421eabdf6f1061b15a6a960f216326cbbc7b4a42",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3547,
+      "priority": "P2",
+      "text": "Start the Lemonade server, serve the HTML examples with python3 -m http.server 8080 from an examples directory, and confirm the demo pages load and communicate with the server as described."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "6e2b5bd3dd7e0123e2947447847c3458c9b7db4b",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3588,
+      "priority": "P2",
+      "text": "Open https://lemonade-sdk.github.io/lemonade/ (or the homepage that serves docs/index.html) and confirm the carousel shows only stable releases, with no candidate-v* tag appearing as the current version."
+    }
+  ],
+  "commits_reviewed": 45,
+  "commits_unreviewed": 0,
+  "evidence": {
+    "blockers": "Two P0 items: the gpt-oss-120b model loading fix (1f1b482) must verify the correct 63 GB checkpoint is selected, and the registry_source API regression (92037d8-3) must confirm empty-string serialization does not break clients. The new version format (c47aa2a) is also P0 — testers must confirm the date-based version appears correctly in --version output and server logs. The candidate release path has never been exercised end-to-end; the release branch creation workflow and candidate Docker tag need manual validation before shipping.",
+    "breaking_changes": "Three user-facing breaking changes ship: the version format shift (X.Y.Z → YYYY.WW.N) affects CLI consumers and any tooling that parses versions; the registry_source empty-string serialization on /models and /pull/variants may break clients assuming a non-empty value; the unversioned /docs subtree now returns JSON 404 instead of SPA fallback. No migration path exists for the version format change — it is a deliberate break documented in the new release.md process. The registry_source change should be noted for clients that enumerate models and expect 'huggingface' as the default source.",
+    "coverage": "All 45 commits reviewed. The release spans PRs #2605 through #3600 covering model registry additions, backend version bumps, CI infrastructure overhauls, new API endpoints (docs, session relay, images/edit), security hardening (wildcard origins, vendored asset integrity), build system changes (pkg-config, dynamic versioning), and release process automation (prerelease publishing, candidate Docker tag, scheduled branch creation).",
+    "manual_testing": "This release needs verification of new user-reachable surfaces: (1) model loading for gpt-oss-120b-mxfp-GGUF, (2) wildcard origin matching on the allowed_origins config, (3) the new /v1/docs API endpoint and MCP lemonade_docs tool, (4) the /images/edit endpoint with real image data, (5) FLM download from ModelScope with both explicit --source and default config paths, (6) session header relay with a live cloud provider, (7) soft-idle prompt cache preservation with auto_evict enabled, (8) the release branch creation workflow triggered manually, (9) pulling and running the candidate Docker tag, (10) confirming candidate prereleases appear correctly on the GitHub Releases page.",
+    "security": "Security hardening in PR #2709 pins the vendored model-viewer bundle to a verified SHA-256 with a CI drift guard. PR #6a5e307 adds wildcard origin matching with strict dot-boundary subdomain enforcement, reviewed by a security maintainer. PR #496bb24 removes the previously undocumented /internal/mcp/* process-launching endpoints, improving security posture. PR #8312c1a uses a strict allowlist for session header relay and deliberately excludes telemetry headers. No other security-relevant concerns observed."
+  },
+  "generation_seconds": 176.0,
+  "head_sha": "c234adaa159cf4459c881e66a0eb9197db28539a",
+  "is_hotfix": false,
+  "last_stable_tag": "",
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-16T16:14:41+00:00"
+}
