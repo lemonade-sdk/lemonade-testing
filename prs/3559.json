@@ -1,0 +1,94 @@
+{
+  "author": "@pwilkin",
+  "base_ref": "main",
+  "claim": {
+    "breaking_declared": false,
+    "breaking_section": "- [ ] This PR introduces breaking changes.\n- [X] This PR does not introduce breaking changes.",
+    "fixes": [],
+    "kind": "none",
+    "rfc": 0,
+    "working_group": ""
+  },
+  "cover": {
+    "explanation": "The body claims a fix for issue #3558 and the only changed surface (index 0) is internal docs and test data, so no non-internal surface needs judgment. The base-branch docs (docs/guide/cli.md line 497 and docs/api/lemonade.md, 'For llamacpp, with --no-mmap saved') document llamacpp_args as a passthrough of llama.cpp flags and show --no-mmap in their examples, but the pinned llama.cpp build (b10723 in backend_versions.json) marks --no-mmap 'DEPRECATED in favor of --load-mode' and warns at runtime, so updating the examples and test fixtures to --load-mode none — which yields the identical load mode — delivers the documented behavior with the currently supported flag. No server or CLI code is touched, so this introduces no new capability and the no-breaking-changes claim holds.",
+    "kind": "fix",
+    "name": "",
+    "surfaces": []
+  },
+  "explanation": {
+    "body": "The title, body, and template claims describe what the diff does.",
+    "diff": "The diff only edits docs and tests: docs/api/lemonade.md, docs/api/openai.md, and docs/guide/cli.md now show --load-mode none in llamacpp_args examples, and test/cpp/test_custom_args.cpp, test/cpp/test_hrx_contract.cpp, test/cpp/test_recipe_arg_resolution.cpp, and test/server_endpoints.py use --load-mode none instead of the deprecated --no-mmap. No lemonade server or CLI code is touched (base-branch src/cpp never referenced either flag), so saved options and runtime behavior for existing installs are unchanged. The body accurately describes the change and its no-breaking-changes claim holds.",
+    "quality": "Checked docs/guide/cli.md, docs/api/lemonade.md, and docs/api/openai.md at the head SHA: the base branch had exactly nine --no-mmap references, all in those three pages, and a repo-wide case-insensitive grep of docs/ at head finds zero remaining mmap mentions, so no page is left untrue. The PR changes no source code; the changed tests (CustomArgsTest, RecipeArgResolutionTest, HrxContractTest via add_cpp_ci_test in CMakeLists.txt, and test/server_endpoints.py in cpp_server_build_test_release.yml) are pre-existing suites already wired into CI whose falsifiable assertions keep covering the untouched arg-resolution mechanism, so there is no behavioral surface that needs a new regression test.",
+    "reviewers": "jeremyfowers: wrote code this PR touches (blame relevance 215). superm1: maintains llamacpp.",
+    "scope": "The body claims a fix for issue #3558 and the only changed surface (index 0) is internal docs and test data, so no non-internal surface needs judgment. The base-branch docs (docs/guide/cli.md line 497 and docs/api/lemonade.md, 'For llamacpp, with --no-mmap saved') document llamacpp_args as a passthrough of llama.cpp flags and show --no-mmap in their examples, but the pinned llama.cpp build (b10723 in backend_versions.json) marks --no-mmap 'DEPRECATED in favor of --load-mode' and warns at runtime, so updating the examples and test fixtures to --load-mode none — which yields the identical load mode — delivers the documented behavior with the currently supported flag. No server or CLI code is touched, so this introduces no new capability and the no-breaking-changes claim holds."
+  },
+  "facts": {
+    "areas": [
+      "llamacpp"
+    ],
+    "body_mismatches": [],
+    "breaking_changes": [],
+    "explanation": "The diff only edits docs and tests: docs/api/lemonade.md, docs/api/openai.md, and docs/guide/cli.md now show --load-mode none in llamacpp_args examples, and test/cpp/test_custom_args.cpp, test/cpp/test_hrx_contract.cpp, test/cpp/test_recipe_arg_resolution.cpp, and test/server_endpoints.py use --load-mode none instead of the deprecated --no-mmap. No lemonade server or CLI code is touched (base-branch src/cpp never referenced either flag), so saved options and runtime behavior for existing installs are unchanged. The body accurately describes the change and its no-breaking-changes claim holds.",
+    "surfaces": [
+      {
+        "kind": "internal",
+        "was": "working",
+        "what": "docs examples and C++/Python tests replace llama.cpp's deprecated --no-mmap flag with --load-mode none in llamacpp_args examples and test data/assertions",
+        "where": "docs/guide/cli.md"
+      }
+    ]
+  },
+  "generation_seconds": 2156.1,
+  "head_sha": "367c71b39c6dda7925dc4f7d31220e0efc3b076b",
+  "is_draft": false,
+  "labels": [
+    "bug",
+    "engine::llamacpp"
+  ],
+  "outputs": {
+    "body_matches_diff": "yes",
+    "docs_and_tests": "ok",
+    "label": "rfc:not-required",
+    "scope": "fix",
+    "scope_display": "fix",
+    "scope_name": "",
+    "suggested_reviewers": [
+      "@jeremyfowers",
+      "@superm1"
+    ]
+  },
+  "pr_number": 3559,
+  "quality": {
+    "docs": {
+      "gaps": [],
+      "status": "ok"
+    },
+    "explanation": "Checked docs/guide/cli.md, docs/api/lemonade.md, and docs/api/openai.md at the head SHA: the base branch had exactly nine --no-mmap references, all in those three pages, and a repo-wide case-insensitive grep of docs/ at head finds zero remaining mmap mentions, so no page is left untrue. The PR changes no source code; the changed tests (CustomArgsTest, RecipeArgResolutionTest, HrxContractTest via add_cpp_ci_test in CMakeLists.txt, and test/server_endpoints.py in cpp_server_build_test_release.yml) are pre-existing suites already wired into CI whose falsifiable assertions keep covering the untouched arg-resolution mechanism, so there is no behavioral surface that needs a new regression test.",
+    "tests": {
+      "gaps": [],
+      "status": "n/a"
+    }
+  },
+  "replay_sha": "",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-16T12:57:27+00:00",
+  "reviewers": [
+    {
+      "basis": "code-author",
+      "detail": "wrote code this PR touches (blame relevance 215)",
+      "handle": "@jeremyfowers",
+      "in_maintainer_table": true
+    },
+    {
+      "basis": "area",
+      "detail": "llamacpp",
+      "handle": "@superm1",
+      "in_maintainer_table": true
+    }
+  ],
+  "state": "OPEN",
+  "title": "fix: change deprecated --no-mmap option to --load-mode none for llama.cpp",
+  "triage_version": "pr-triage-2026-09-10",
+  "uncovered_surfaces": [],
+  "url": "https://github.com/lemonade-sdk/lemonade/pull/3559"
+}
