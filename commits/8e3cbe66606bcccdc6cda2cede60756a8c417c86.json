@@ -1,0 +1,33 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "8e3cbe66606bcccdc6cda2cede60756a8c417c86",
+  "committed_at": "2026-09-16T00:05:18Z",
+  "evidence": {
+    "api_compatibility": "The get-version composite action gains a new output 'release_branch', but it is only consumed internally by cpp_server_build_test_release.yml. No external API, config format, CLI contract, or persistence format is changed.",
+    "documentation": "docs/dev/release.md was updated to describe the new repo-manager workflow (file-based state in lemonade-testing, new dashboard URL, release checklist/notes/announcement built by workflow), dropped references to three non-existent workflow-dispatch tools, corrected the tester-feedback label from 'release-candidate' to 'candidate', and clarified the checklist is two-tier (P0/P1). docs/dev/self-hosted-runners.md clarified the lemon-prod label guidance by removing the stale example about special-purpose runners. The release notes action was updated to read notes through the contents API instead of searching a GitHub issue.",
+    "manual_release_testing": "This PR changes zero user-facing surface. It modifies CI workflows, a composite action, and release-process documentation. It does not ship any artifacts, change any CLI/API, or alter any user-visible behavior. Nothing warrants manual release testing.",
+    "post_approval_commits": "No post-approval commits. The PR branch (4 commits on jfowers/repo-manager-v2) was squash-merged into main. All four commits predate the first approval. The squashed merge commit carries the combined message of all four.",
+    "review": "PR #3593 was approved by @superm1 (2026-09-15T23:14:19Z) and @kenvandine (2026-09-15T23:38:20Z). Both reviewers are listed in docs/dev/contribute.md as having CI/infrastructure expertise (@superm1: ROCm, containers; @kenvandine: linux, CI). @jeremyfowers (PR author and CI maintainer) opened the PR and replied to inline comments. No commits were added after the latest approval. @superm1 and @kenvandine both raised the same concerns about caching and containerization but explicitly chose not to block: @kenvandine wrote 'I wouldn't block on that, but let's look at those things sooner than later'.",
+    "security": "The new repo-manager composite action downloads tools from official sources (gh CLI from GitHub releases, repo-manager via pip from its GitHub repo, pi from npm, Lemonade from the project's releases) and uses a GitHub App with a private key secret to push state to lemonade-sdk/lemonade-testing. No obfuscated blobs, no arbitrary code execution, no credential leaks beyond standard GitHub Actions secrets usage.",
+    "tests": "No test files. The PR modifies GitHub Actions workflow YAMLs, a composite action definition, and documentation. There are no CI-specific test files in the repo to exercise workflow syntax. This is expected for a CI infrastructure change."
+  },
+  "generation_seconds": 237.2,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-16T00:45:25Z",
+  "pr_number": 3593,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-16T14:29:43+00:00",
+  "reviewers": [
+    "@superm1",
+    "@kenvandine"
+  ],
+  "sha": "8e3cbe66606bcccdc6cda2cede60756a8c417c86",
+  "shout_outs": [],
+  "subject": "ci: run repo-manager from the workflows, with its state in lemonade-testing (#3593)",
+  "summary": "Overhauls Lemonade's interaction with repo-manager: moves state to the lemonade-testing repo, runs review jobs from workflows via a new composite action, adds release-artifact building, and updates docs.",
+  "verdict": "Clean",
+  "verdict_reason": "The PR was reviewed by two maintainers with CI subject-matter expertise, approvals were submitted after the last commit, and there are no post-approval changes."
+}
