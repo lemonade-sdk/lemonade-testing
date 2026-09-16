@@ -1,0 +1,34 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "release-v2026.39",
+  "bucket": "v2026.39",
+  "commit_sha": "6ce82052b69c5ffd9157ed102b739d180cdc24a5",
+  "committed_at": "2026-09-16T12:48:25-04:00",
+  "evidence": {
+    "api_compatibility": "No user-facing API changes. The change is confined to an internal GitHub Actions composite action that pins a CI tool version.",
+    "documentation": "Not applicable — this is an internal CI version pin with no user-facing documentation to update.",
+    "manual_release_testing": "The change modifies an internal CI/CD version pin, not a user-facing artifact or behavior. However, because the version is fetched at runtime by CI workflows (installing the repo-manager package from the tagged release), the maintainer should confirm v1.0.3 is the intended upstream release before the candidate ships.",
+    "post_approval_commits": "N/A — no PR existed to approve, and the commit has a single parent (c234adaa) with no subsequent commits added to a branch after review.",
+    "review": "No pull request was opened for this commit; it was pushed directly to release-v2026.39. There are no reviews, no PR description, and no linked issues. Per docs/dev/contribute.md, PRs should have at least one reviewer with subject area expertise — none of that occurred here. @jeremyfowers is an admin maintainer with CI in his subject areas, so he has authority to merge, but the absence of a review still warrants flagging.",
+    "security": "The commit only changes a version string in an action.yml file. The updated version will cause CI to install a different commit of the repo-manager package from its git repository, which is a normal supply-chain update path already in use. No credential handling, network call changes, or execution path modifications beyond the version bump.",
+    "tests": "N/A — this is a single-line version string bump in a GitHub Actions composite action (action.yml). No code behavior changes and no tests are expected for a tooling version pin."
+  },
+  "generation_seconds": 124.3,
+  "maintainer_todos": [
+    {
+      "text": "Confirm v1.0.3 is the intended repo-manager release before proceeding with the release candidate."
+    }
+  ],
+  "merge_date": "2026-09-16T16:48:25Z",
+  "pr_number": null,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-16T16:52:53+00:00",
+  "reviewers": [],
+  "sha": "6ce82052b69c5ffd9157ed102b739d180cdc24a5",
+  "shout_outs": [],
+  "subject": "Update REPO_MANAGER_VERSION to v1.0.3",
+  "summary": "Bumps the pinned REPO_MANAGER_VERSION from v1.0.2 to v1.0.3 in the repo-manager GitHub Actions composite action.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The commit was merged directly to the release branch without a pull request or review."
+}
