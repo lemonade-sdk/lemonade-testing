@@ -1,0 +1,30 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "c234adaa159cf4459c881e66a0eb9197db28539a",
+  "committed_at": "2026-09-16T11:38:57-04:00",
+  "evidence": {
+    "api_compatibility": "No API compatibility impact. The change is an internal CI environment variable pin in a composite action YAML. It does not affect any exported API, config schema, CLI contract, persistence format, or documented user behavior.",
+    "documentation": "No documentation changes are warranted. This is an internal CI version pin; it does not alter user-facing behavior, API, CLI, or any public documentation.",
+    "manual_release_testing": "Not required. REPO_MANAGER_VERSION is an internal CI/CD pin used to select the repo-manager package installed on the self-hosted GitHub Actions runners. It is not a user-facing variable, command, endpoint, or documented behavior. The repo-manager tool itself is what is being updated, not something a tester exercises.",
+    "post_approval_commits": "Not applicable. There is no PR, so there are no approval gates and no post-approval commits to evaluate.",
+    "review": "No pull request was associated with this commit; it was a direct push to main. No review was performed. The change is a single-line version bump (v1.0.1 to v1.0.2) in .github/actions/repo-manager/action.yml, authored by @jeremyfowers, who is an admin maintainer and the listed subject-area expert for CI. For a trivial version pin bump on main by the owner, the absence of a PR is acceptable.",
+    "security": "No security concerns. The change only updates a version string used to pin a package installed via pip from the repo-manager repository's git tag. No credential handling, network paths, code execution, or permission changes are involved.",
+    "tests": "No tests are appropriate for a version string constant in a GitHub Actions composite action. The change will be exercised when the CI workflows (MCP Smoke Test, Server Download Registry Tests, Launchpad PPA) run on the next push; the Launchpad PPA check already completed with success."
+  },
+  "generation_seconds": 129.1,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-16T15:38:57Z",
+  "pr_number": null,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-16T15:42:53+00:00",
+  "reviewers": [],
+  "sha": "c234adaa159cf4459c881e66a0eb9197db28539a",
+  "shout_outs": [],
+  "subject": "Update REPO_MANAGER_VERSION to v1.0.2",
+  "summary": "Bumps the REPO_MANAGER_VERSION pin from v1.0.1 to v1.0.2 in the repo-manager GitHub Actions composite action.",
+  "verdict": "Clean",
+  "verdict_reason": "A trivial one-line version string bump in a CI config file, authored by the admin maintainer who owns CI subject-area expertise."
+}
