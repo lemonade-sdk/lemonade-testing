@@ -1,0 +1,101 @@
+{
+  "author": "@jeremyfowers",
+  "base_ref": "main",
+  "claim": {
+    "breaking_declared": false,
+    "breaking_section": "- [ ] This PR introduces breaking changes.\n- [x] This PR does not introduce breaking changes.",
+    "fixes": [],
+    "kind": "fix",
+    "rfc": 0,
+    "working_group": ""
+  },
+  "cover": {
+    "explanation": "This PR is a docs fix: the Limitations list in the base-branch docs/embeddable/backends.md contradicts the base-branch documentation, and the diff only aligns it with that documentation. The 'flm ... not available for packaging-time bundling on Linux' claim is stale because docs/guide/faq.md already states 'Today, NPU-only inference on Linux is available via FastFlowLM', and the blanket llamacpp:rocm claim is stale because docs/guide/configuration/llamacpp.md documents the default stable channel as shipping 'Common builds for supported architectures', with only the nightly channel using architecture-specific builds. The added blank line restores rendering of the list that was failing to render on the base branch, so every change is a fix and no working-group charter or RFC is required.",
+    "kind": "fix",
+    "name": "",
+    "surfaces": []
+  },
+  "explanation": {
+    "body": "The title, body, and template claims describe what the diff does.",
+    "diff": "The diff touches only docs/embeddable/backends.md: it removes the outdated claim that flm cannot be packaging-time bundled on Linux, rewrites the llamacpp:rocm entry so the limitation applies only when rocm_channel is nightly (stable is unaffected), and inserts a blank line before the list to fix rendering on zensical. The body's claims of two stale-limitation fixes plus one formatting fix match the diff exactly.",
+    "quality": "Opened docs/embeddable/backends.md at the head SHA and verified both corrections against the install code at the same SHA: fastflowlm_server.cpp ships a fastflowlm_<ver>_linux.tar.gz asset (dropped flm-on-Linux claim is stale), and llamacpp_server.cpp builds rocm-stable asset names without a GPU family but derives rocm-nightly names from SystemInfo::get_rocm_arch() at install time, matching the new rocm_channel wording; a docs-tree search found no sibling page repeating the dropped claims. Testing is n/a per testing.md's docs-only row — no testable surface, and the no-link-change diff has nothing for markdown-link-check to flag.",
+    "reviewers": "superm1: maintains fastflowlm, rocm. ramkrishna2910: wrote code this PR touches (blame relevance 7). pwilkin: wrote code this PR touches (blame relevance 4).",
+    "scope": "This PR is a docs fix: the Limitations list in the base-branch docs/embeddable/backends.md contradicts the base-branch documentation, and the diff only aligns it with that documentation. The 'flm ... not available for packaging-time bundling on Linux' claim is stale because docs/guide/faq.md already states 'Today, NPU-only inference on Linux is available via FastFlowLM', and the blanket llamacpp:rocm claim is stale because docs/guide/configuration/llamacpp.md documents the default stable channel as shipping 'Common builds for supported architectures', with only the nightly channel using architecture-specific builds. The added blank line restores rendering of the list that was failing to render on the base branch, so every change is a fix and no working-group charter or RFC is required."
+  },
+  "facts": {
+    "areas": [
+      "ROCm",
+      "FastFlowLM"
+    ],
+    "body_mismatches": [],
+    "breaking_changes": [],
+    "explanation": "The diff touches only docs/embeddable/backends.md: it removes the outdated claim that flm cannot be packaging-time bundled on Linux, rewrites the llamacpp:rocm entry so the limitation applies only when rocm_channel is nightly (stable is unaffected), and inserts a blank line before the list to fix rendering on zensical. The body's claims of two stale-limitation fixes plus one formatting fix match the diff exactly.",
+    "surfaces": [
+      {
+        "kind": "internal",
+        "was": "failing",
+        "what": "Updated the Limitations list in the embeddable backends guide: dropped the stale flm-on-Linux claim, replaced the blanket llamacpp:rocm claim with a note that only the nightly rocm_channel requires the packaging host to share the deployment GPU family, and added a blank line so the list renders",
+        "where": "docs/embeddable/backends.md"
+      }
+    ]
+  },
+  "generation_seconds": 1430.4,
+  "head_sha": "e8a7752c30758618c0db6e3054b77f512fb1e27c",
+  "is_draft": false,
+  "labels": [
+    "documentation"
+  ],
+  "outputs": {
+    "body_matches_diff": "yes",
+    "docs_and_tests": "ok",
+    "label": "rfc:not-required",
+    "scope": "fix",
+    "scope_display": "fix",
+    "scope_name": "",
+    "suggested_reviewers": [
+      "@superm1",
+      "@ramkrishna2910",
+      "@pwilkin"
+    ]
+  },
+  "pr_number": 3548,
+  "quality": {
+    "docs": {
+      "gaps": [],
+      "status": "ok"
+    },
+    "explanation": "Opened docs/embeddable/backends.md at the head SHA and verified both corrections against the install code at the same SHA: fastflowlm_server.cpp ships a fastflowlm_<ver>_linux.tar.gz asset (dropped flm-on-Linux claim is stale), and llamacpp_server.cpp builds rocm-stable asset names without a GPU family but derives rocm-nightly names from SystemInfo::get_rocm_arch() at install time, matching the new rocm_channel wording; a docs-tree search found no sibling page repeating the dropped claims. Testing is n/a per testing.md's docs-only row — no testable surface, and the no-link-change diff has nothing for markdown-link-check to flag.",
+    "tests": {
+      "gaps": [],
+      "status": "n/a"
+    }
+  },
+  "replay_sha": "",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-16T12:21:25+00:00",
+  "reviewers": [
+    {
+      "basis": "area",
+      "detail": "fastflowlm, rocm",
+      "handle": "@superm1",
+      "in_maintainer_table": true
+    },
+    {
+      "basis": "code-author",
+      "detail": "wrote code this PR touches (blame relevance 7)",
+      "handle": "@ramkrishna2910",
+      "in_maintainer_table": true
+    },
+    {
+      "basis": "code-author",
+      "detail": "wrote code this PR touches (blame relevance 4)",
+      "handle": "@pwilkin",
+      "in_maintainer_table": true
+    }
+  ],
+  "state": "OPEN",
+  "title": "docs(embeddable): update packaging-time bundling limitations",
+  "triage_version": "pr-triage-2026-09-10",
+  "uncovered_surfaces": [],
+  "url": "https://github.com/lemonade-sdk/lemonade/pull/3548"
+}
