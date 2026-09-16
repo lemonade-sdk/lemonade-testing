@@ -1,0 +1,32 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.40",
+  "commit_sha": "668576df47a7b984650cdf097636cee9978b029a",
+  "committed_at": "2026-09-16T17:18:17+00:00",
+  "evidence": {
+    "api_compatibility": "No API, CLI, config, or schema changes. The file modified is docs/embeddable/backends.md only.",
+    "documentation": "The PR itself is the documentation update. It corrects two stale limitation claims (flm now available on Linux, llamacpp:rocm stable channel is GPU-agnostic) and fixes a Python-Markdown formatting bug that caused bullets to render inline. The change is consistent with the project philosophy 'User Error is a Bug' — stale docs mislead embedders, and fixing them reduces user friction.",
+    "manual_release_testing": "No user-reachable surface affected. This is a documentation accuracy update to docs/embeddable/backends.md; there is no command, flag, endpoint, or GUI change to exercise.",
+    "post_approval_commits": "None. The PR contained two commits (9a04df2 and e8a7752), both authored on 2026-09-11, which is four days before the approval. No commits were added after the approval.",
+    "review": "Approved by @superm1 (admin maintainer; ROCm, llamacpp, and FastFlowLM are listed subject areas) on 2026-09-15T20:35:16Z. The PR is classified by the author as 'fixes something and does not need a WG/RFC' and is a one-file documentation-only change. An automated Codex review commented on the stable-channel claim but did not raise a blocking concern; no inline comments from reviewers required revision.",
+    "security": "No security concerns. Pure documentation update with no code, credential, network, or supply-chain changes.",
+    "tests": "Docs-only change; no code, no generated regions, and no tests are applicable. CI ran a full build pipeline with all checks passing (builds, linters, CodeQL, embeddable builds, tests)."
+  },
+  "generation_seconds": 152.2,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-16T18:03:19Z",
+  "pr_number": 3548,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-16T18:07:32+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "668576df47a7b984650cdf097636cee9978b029a",
+  "shout_outs": [],
+  "subject": "docs(embeddable): update packaging-time bundling limitations (#3548)",
+  "summary": "Updates the embeddable backends docs to reflect that FastFlowLM now supports packaging-time bundling on Linux and that only the llamacpp:rocm nightly channel — not the default stable channel — has per-GPU-family asset limitations.",
+  "verdict": "Clean",
+  "verdict_reason": "A narrow, accurate documentation fix reviewed by a maintainer with ROCm/llamacpp/FastFlowLM subject-matter expertise, with all CI passing and no post-approval churn."
+}
