@@ -1,0 +1,133 @@
+{
+  "author": "@noamsto",
+  "base_ref": "main",
+  "claim": {
+    "breaking_declared": null,
+    "breaking_section": "",
+    "fixes": [
+      3114
+    ],
+    "kind": "fix",
+    "rfc": 0,
+    "working_group": ""
+  },
+  "cover": {
+    "explanation": "The PR checks the fix box and closes #3114, but #3114 ('Add Ornith-1.0 to the models catalogue') is a feature request for a model the catalogue never contained, and no base-branch doc states that Ornith belongs in server_models.json. Both entries are was: absent, so only a working-group charter item or an RFC could cover them; no working group's charter names adding models to the catalogue, and no RFC is linked. Under the spec-driven development policy this needs an RFC (or a ratified charter item) to land.",
+    "kind": "fix",
+    "name": "",
+    "surfaces": [
+      {
+        "by": "no document on the base branch names an Ornith-1.5-9B-GGUF catalogue entry (grep of main finds no 'ornith'); the only statement of intent is issue #3114, which is a feature request to add Ornith to the catalogue, and a new entry (was: absent) cannot be covered by a linked issue",
+        "covered": false,
+        "index": 0
+      },
+      {
+        "by": "no document on the base branch names an Ornith-1.5-35B-A3B-GGUF catalogue entry (grep of main finds no 'ornith'); issue #3114 asks for a model that the catalogue never had, so it requests a capability rather than evidence of broken behavior",
+        "covered": false,
+        "index": 1
+      }
+    ]
+  },
+  "explanation": {
+    "body": "The body does not match the diff: the body presents this as a fix (#3114) but the diff changes scope, surface area, or experience.",
+    "diff": "The diff appends two new catalogue entries, Ornith-1.5-9B-GGUF and Ornith-1.5-35B-A3B-GGUF, to the llamacpp block of src/cpp/resources/server_models.json, using only pre-existing schema fields (checkpoint, mmproj, recipe, labels, size); no other files are touched. The body matches the diff exactly on names, checkpoints, sizes, and labels, and it discloses up front that it ships 1.5 rather than the 1.0 requested in #3114 and why only these two variants are included. Nothing on the base branch is renamed, re-defaulted, or re-formatted.",
+    "quality": "Docs: the model catalogue's user-facing page (docs/models.html) is generated at runtime from src/cpp/resources/server_models.json by docs/assets/models.js, so the new entries document themselves; I checked docs/embeddable/models.md (describes the built-in list generically, still true) and docs/dev/model-registries.md (provider contract, not per-model), and no page lists models by name, so no edit is owed. Tests: this is a data-table row addition, and the mechanism's existing test test/cpp/test_backend_mode_contract.cpp iterates every server_models.json entry asserting label/deployment-mode/recipe contracts; it is declared via add_cpp_ci_test in CMakeLists.txt so it runs in the cpp-ci CTest label on this PR and can fail on a malformed entry, and no test references the new models in test/utils/test_models.py or capabilities.py (existing llamacpp recipe, no new backend), so no suite wiring is owed.",
+    "reviewers": "bitgamma: maintains new models. pwilkin: maintains llamacpp. sawansri: maintains new models.",
+    "scope": "The PR checks the fix box and closes #3114, but #3114 ('Add Ornith-1.0 to the models catalogue') is a feature request for a model the catalogue never contained, and no base-branch doc states that Ornith belongs in server_models.json. Both entries are was: absent, so only a working-group charter item or an RFC could cover them; no working group's charter names adding models to the catalogue, and no RFC is linked. Under the spec-driven development policy this needs an RFC (or a ratified charter item) to land. Not covered: Ornith-1.5-9B-GGUF catalogue entry (ornith-ai/Ornith-1.5-9B-GGUF:Q4_K_M, BF16 mmproj, llamacpp… (config-key); Ornith-1.5-35B-A3B-GGUF catalogue entry (ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q4_K_M, BF16 mmproj, llamacpp… (config-key)."
+  },
+  "facts": {
+    "areas": [
+      "new models",
+      "llamacpp"
+    ],
+    "body_mismatches": [],
+    "breaking_changes": [],
+    "explanation": "The diff appends two new catalogue entries, Ornith-1.5-9B-GGUF and Ornith-1.5-35B-A3B-GGUF, to the llamacpp block of src/cpp/resources/server_models.json, using only pre-existing schema fields (checkpoint, mmproj, recipe, labels, size); no other files are touched. The body matches the diff exactly on names, checkpoints, sizes, and labels, and it discloses up front that it ships 1.5 rather than the 1.0 requested in #3114 and why only these two variants are included. Nothing on the base branch is renamed, re-defaulted, or re-formatted.",
+    "surfaces": [
+      {
+        "kind": "config-key",
+        "was": "absent",
+        "what": "Ornith-1.5-9B-GGUF catalogue entry (ornith-ai/Ornith-1.5-9B-GGUF:Q4_K_M, BF16 mmproj, llamacpp, chat/coding/reasoning/tool-calling/vision, 6.7 GB)",
+        "where": "src/cpp/resources/server_models.json"
+      },
+      {
+        "kind": "config-key",
+        "was": "absent",
+        "what": "Ornith-1.5-35B-A3B-GGUF catalogue entry (ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q4_K_M, BF16 mmproj, llamacpp, chat/coding/reasoning/tool-calling/vision, 22.6 GB)",
+        "where": "src/cpp/resources/server_models.json"
+      }
+    ]
+  },
+  "generation_seconds": 1176.9,
+  "head_sha": "b167ca0f975dad82173f8ea07af705ac6ba9106d",
+  "is_draft": false,
+  "labels": [
+    "enhancement"
+  ],
+  "outputs": {
+    "body_matches_diff": "no",
+    "docs_and_tests": "ok",
+    "label": "rfc:required",
+    "scope": "needs-rfc",
+    "scope_display": "needs-rfc",
+    "scope_name": "",
+    "suggested_reviewers": [
+      "@bitgamma",
+      "@pwilkin",
+      "@sawansri"
+    ]
+  },
+  "pr_number": 3564,
+  "quality": {
+    "docs": {
+      "gaps": [],
+      "status": "ok"
+    },
+    "explanation": "Docs: the model catalogue's user-facing page (docs/models.html) is generated at runtime from src/cpp/resources/server_models.json by docs/assets/models.js, so the new entries document themselves; I checked docs/embeddable/models.md (describes the built-in list generically, still true) and docs/dev/model-registries.md (provider contract, not per-model), and no page lists models by name, so no edit is owed. Tests: this is a data-table row addition, and the mechanism's existing test test/cpp/test_backend_mode_contract.cpp iterates every server_models.json entry asserting label/deployment-mode/recipe contracts; it is declared via add_cpp_ci_test in CMakeLists.txt so it runs in the cpp-ci CTest label on this PR and can fail on a malformed entry, and no test references the new models in test/utils/test_models.py or capabilities.py (existing llamacpp recipe, no new backend), so no suite wiring is owed.",
+    "tests": {
+      "gaps": [],
+      "status": "ok"
+    }
+  },
+  "replay_sha": "",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-16T13:17:06+00:00",
+  "reviewers": [
+    {
+      "basis": "area",
+      "detail": "new models",
+      "handle": "@bitgamma",
+      "in_maintainer_table": true
+    },
+    {
+      "basis": "area",
+      "detail": "llamacpp",
+      "handle": "@pwilkin",
+      "in_maintainer_table": true
+    },
+    {
+      "basis": "area",
+      "detail": "new models",
+      "handle": "@sawansri",
+      "in_maintainer_table": true
+    }
+  ],
+  "state": "OPEN",
+  "title": "feat(models): add Ornith 1.5 9B and 35B A3B to the catalogue",
+  "triage_version": "pr-triage-2026-09-10",
+  "uncovered_surfaces": [
+    {
+      "kind": "config-key",
+      "was": "absent",
+      "what": "Ornith-1.5-9B-GGUF catalogue entry (ornith-ai/Ornith-1.5-9B-GGUF:Q4_K_M, BF16 mmproj, llamacpp, chat/coding/reasoning/tool-calling/vision, 6.7 GB)",
+      "where": "src/cpp/resources/server_models.json"
+    },
+    {
+      "kind": "config-key",
+      "was": "absent",
+      "what": "Ornith-1.5-35B-A3B-GGUF catalogue entry (ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q4_K_M, BF16 mmproj, llamacpp, chat/coding/reasoning/tool-calling/vision, 22.6 GB)",
+      "where": "src/cpp/resources/server_models.json"
+    }
+  ],
+  "url": "https://github.com/lemonade-sdk/lemonade/pull/3564"
+}
