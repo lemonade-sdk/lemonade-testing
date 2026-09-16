@@ -1,0 +1,32 @@
+{
+  "author": "@github-actions[bot]",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "a1c8e7bef8d6291c257cf79bffcb8a73dd1f4477",
+  "committed_at": "2026-09-16T13:29:45Z",
+  "evidence": {
+    "api_compatibility": "No API change. Only the backend_versions.json configuration file was modified. Version pin format and schema are unchanged. Consumers upgrading will get new llama.cpp backend binaries; no configuration migration or breaking change.",
+    "documentation": "No documentation changes needed. The update is transparent to users — new backend binaries are automatically downloaded when they update Lemonade. The backend_versions.json file is an internal configuration artifact already documented in its own comments.",
+    "manual_release_testing": "N/A. This is a purely automated backend-pin update with no code changes. The 48-model validation run in the PR description exercises every affected backend (vulkan, rocm-stable, rocm-nightly) end-to-end. All CI checks passed including the C++ Server Build, Test, and Release workflow. No user-visible behavior change beyond new backend binaries being downloaded.",
+    "post_approval_commits": "None. The PR contains a single commit (1799b34fd4c83170bf48d132b863eac7aa272dd8) authored by github-actions[bot]. No commits were added after the approval at 13:29:40Z. The merge commit (a1c8e7be) is the squashed result on the merge-queue branch.",
+    "review": "PR #3512 was opened by github-actions[bot] as an auto-update for llama.cpp backends. @jeremyfowers approved on 2026-09-16T13:29:40Z. Per docs/dev/contribute.md, @jeremyfowers is an admin maintainer with subject-area expertise in llamacpp, ci, and new backends — the right reviewer for this change. One substantive approval with no inline comments or review comments on the PR. No post-approval commits were added.",
+    "security": "No security concerns. The update changes only version strings in a JSON config file. The validate_llamacpp workflow confirms release assets were present and checksums are maintained in backend_versions.json for all other dependencies. This is a routine dependency bump.",
+    "tests": "No code was changed — only version pins in src/cpp/resources/backend_versions.json were updated. The PR description includes an exhaustive validate_llamacpp workflow run with 48 model+backend tests across vulkan (17), rocm-stable (13), and rocm-nightly (13). All 48 tests PASSED, covering reasoning, math, and multimodal models. This is the project's standard automated validation for llama.cpp upgrades, providing strong evidence the new versions are functional."
+  },
+  "generation_seconds": 103.9,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-16T14:13:56Z",
+  "pr_number": 3512,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-16T14:31:28+00:00",
+  "reviewers": [
+    "@jeremyfowers"
+  ],
+  "sha": "a1c8e7bef8d6291c257cf79bffcb8a73dd1f4477",
+  "shout_outs": [],
+  "subject": "Update llama.cpp to b10825, rocm-stable to b10820, rocm-nightly to b1324 (#3512)",
+  "summary": "Automated update of llama.cpp backend version pins across six backends (vulkan, cpu, metal to b10825; rocm-stable, cuda to b10820; rocm-nightly to b1324).",
+  "verdict": "Clean",
+  "verdict_reason": "Automated backend-pin update with sole reviewer @jeremyfowers having explicit llamacpp and CI expertise, all CI green, and extensive model validation passed by the validate_llamacpp workflow."
+}
