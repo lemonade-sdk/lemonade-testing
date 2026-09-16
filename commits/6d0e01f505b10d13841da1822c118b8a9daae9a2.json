@@ -1,0 +1,36 @@
+{
+  "author": "@apollo-2006",
+  "branch": "main",
+  "bucket": "v2026.40",
+  "commit_sha": "6d0e01f505b10d13841da1822c118b8a9daae9a2",
+  "committed_at": "2026-09-16T18:45:23+00:00",
+  "evidence": {
+    "api_compatibility": "New field GPUInfo::display_name is added (empty by default). The /api/v1/system-info JSON name field will change value for AMD GPUs — from raw codes like \"120001\" to marketing names like \"AMD Radeon RX 9070 XT (gfx1201)\". This is a visible contract change. Consumers that parse the name field for numeric versions may break. The family field is unchanged (still the ISA code), preserving ROCm backend selection. If this behavior change is considered significant, it should be noted in release notes. No other API endpoints or CLI contracts are affected.",
+    "documentation": "No documentation changes needed. The PR author checked the \"Documentation is not affected\" box. The change is internal to the system-info API; no user-facing CLI commands, config options, or guides are modified.",
+    "manual_release_testing": "The /api/v1/system-info endpoint (AMD GPU section) changed behavior: name field now prefers display_name over the raw ISA. The reviewer did not exercise this on an AMD GPU. The PR author claims it works on an RX 9070 XT, but no independent human verification exists. A human with an AMD GPU should run curl on /api/v1/system-info and confirm the marketing name appears correctly before release. On non-AMD or older-ROCm systems the old numeric name will still appear — that is the intended fallback and not a concern.",
+    "post_approval_commits": "No commits were added after approval. The PR contains a single commit (a898a58). First and latest approvals both occurred at 2026-09-16T17:56:04Z. The merge happened at 2026-09-16T19:27:03Z via a merge-queue workflow with no intervening PR commits.",
+    "review": "PR #3601 received one approval from @superm1, a maintainer with subject-matter expertise in ROCm, Linux, and system info (per docs/dev/contribute.md). The review consisted of a single approving comment: \"This is great! It actually dovetails really well into what I did for libdrm too where it falls back to /proc/cpuinfo directly.\" plus a link to a libdrm commit. This is a positive signal that an ROCm/Linux expert reviewed the change, but the review was high-level — no inline comments, no substantive critique of the code path. The reviewer did not demonstrate hands-on testing on an AMD GPU. The PR author @apollo-2006 self-tested on an RX 9070 XT (gfx1201) on Arch Linux and reported correct output, but that evidence was provided by the author, not independently verified by the reviewer.",
+    "security": "No security concerns. The new query_amdgpu_marketing_name() opens a device node under /dev/dri with O_RDWR, calls amdgpu_device_initialize and amdgpu_get_marketing_name from libdrm, then deinitializes and closes. All errors return an empty string and the function is called on the hot path only when enumerating GPUs. No credential handling, network calls, or privilege escalation.",
+    "tests": "New tests added in test/cpp/test_system_info_helpers.cpp: five unit tests for gpu_display_name() covering (1) marketing name plus ISA, (2) no marketing name, (3) unrecognized ISA, (4) driver reports ISA as marketing name (no doubling), and (5) neither half available. All existing SystemInfoHelpersTest cases remain unchanged. The PR author reports ctest -L cpp-ci passed 72/72 (5 new + 67 existing). CI includes C++ unit tests which passed. The new function is well-tested in isolation; no end-to-end test drives the actual GPU path on real hardware."
+  },
+  "generation_seconds": 173.5,
+  "maintainer_todos": [
+    {
+      "text": "Start the Lemonade server on a Linux machine with an AMD GPU, run curl on /api/v1/system-info, and confirm that amd_gpu entries show a human-readable marketing name (e.g. \"AMD Radeon RX 9070 XT (gfx1201)\") instead of a raw numeric version like \"120001\", while the family field remains the ISA code."
+    }
+  ],
+  "merge_date": "2026-09-16T19:27:03Z",
+  "pr_number": 3601,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-16T19:31:48+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "6d0e01f505b10d13841da1822c118b8a9daae9a2",
+  "shout_outs": [],
+  "subject": "Report the AMD GPU marketing name on Linux (#3601)",
+  "summary": "On Linux, replaces the raw gfx_target_version in the system-info API's AMD GPU name field with the human-readable marketing name from libdrm, while keeping the ISA in the internal name field for ROCm arch lookups.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "An AMD/Linux expert reviewed and approved the PR, but the reviewer gave only a high-level thumbs-up with no hands-on validation on an AMD GPU, so a human needs to exercise the system-info endpoint before release."
+}
