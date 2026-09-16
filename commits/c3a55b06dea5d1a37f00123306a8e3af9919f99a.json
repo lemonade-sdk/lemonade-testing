@@ -1,0 +1,32 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.39",
+  "commit_sha": "c3a55b06dea5d1a37f00123306a8e3af9919f99a",
+  "committed_at": "2026-09-16T14:29:46+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking API changes. The modified files are a GitHub Actions cron workflow, internal Python tooling (tools/version.py), internal tests, and developer-facing documentation (docs/dev/release.md). No user-facing API, CLI contract, or persistence format is affected.",
+    "documentation": "docs/dev/release.md was updated in the same PR to reflect the new \"cutoff time\" language and the 16:00 UTC schedule. All mentions of \"Wednesday 19:00 UTC\" were replaced with references to \"the cutoff time\" (pointing to the single source of truth). The update is consistent with the code changes.",
+    "manual_release_testing": "Not applicable. The change only touches internal release-branch-cut logic, a cron schedule, and documentation. It does not introduce new CLI commands, GUI behavior, or user-facing features that need release-critical manual verification.",
+    "post_approval_commits": "None. The PR contains a single commit (sha 1678835f) authored at 2026-09-16T13:27:20Z, which predates the approval at 14:00:42Z. No commits were added after approval.",
+    "review": "One approval from @superm1 (submitted 2026-09-16T14:00:42Z). @superm1 covers linux packaging, security, Docker, and containers—closely aligned with CI/release infrastructure. The PR body clearly explains the DRY goal, the time shift to 16:00 UTC, and the new consistency test. No inline comments or requested changes were filed; the diff is self-contained and easy to follow.",
+    "security": "No security concerns. The change is a pure refactoring: replacing repeated literal hour/weekday values with module-level constants, shifting one cron time, updating docs, and adding a consistency test. No supply-chain dependencies, credential handling, network calls, or code execution paths are introduced.",
+    "tests": "Existing test times in test/test_version.py were updated from 19:00 UTC to 16:00 UTC to match the new cutoff. A new CutoffTests class adds test_workflow_cron_matches_the_cutoff, which parses the cron expression from the workflow YAML and asserts it agrees with CUTOFF_HOUR and CUTOFF_WEEKDAY. No existing tests were weakened, deleted, or skipped."
+  },
+  "generation_seconds": 137.4,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-16T15:13:49Z",
+  "pr_number": 3600,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-16T15:17:51+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "c3a55b06dea5d1a37f00123306a8e3af9919f99a",
+  "shout_outs": [],
+  "subject": "Define the release cutoff once in tools/version.py and move it to 16:00 UTC (#3600)",
+  "summary": "Consolidates the weekly release cutoff into single constants (CUTOFF_WEEKDAY, CUTOFF_HOUR) in tools/version.py, changes the cutoff from 19:00 to 16:00 UTC Wednesday, and adds a test verifying the cron schedule matches the Python constants.",
+  "verdict": "Clean",
+  "verdict_reason": "A focused, low-risk refactor that eliminates duplicated cutoff-time constants across four files, updates documentation in lockstep, and adds a regression test—reviewed, tested, and all CI checks passed with no post-approval commits."
+}
