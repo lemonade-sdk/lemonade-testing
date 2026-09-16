@@ -1,0 +1,109 @@
+{
+  "author": "@Bekhouche",
+  "base_ref": "main",
+  "claim": {
+    "breaking_declared": null,
+    "breaking_section": "None. The new constructor parameter is optional and defaults to empty, and the\ngateway behaves exactly as before when it is not supplied.",
+    "fixes": [
+      3434
+    ],
+    "kind": "fix",
+    "rfc": 0,
+    "working_group": ""
+  },
+  "cover": {
+    "explanation": "This is a fix covered by the base-branch contract, not a new capability. docs/guide/configuration/custom-models.md promises that an alias resolves 'in any API request' without qualifying which surfaces count, and POST /mcp is an API request whose tools already accept a `model` argument; making the gateway honor that promise for lemonade_chat, lemonade_transcribe_audio, lemonade_generate_image, and lemonade_omni is delivering documented behavior. The facts pass confirms the old path failed (was: failing) and the issue's quote of line 341 matches main, so no RFC or charter is required.",
+    "kind": "fix",
+    "name": "",
+    "surfaces": [
+      {
+        "by": "docs/guide/configuration/custom-models.md:341 on main: 'When an alias is specified in any API request (e.g., `/v1/chat/completions`, `/v1/embeddings`, `/v1/load`) or CLI command, Lemonade resolves the alias to its underlying target model ID'; the base-branch MCP tools already take a `model` argument (facts pass: was: failing, symbols already present in base-branch source), so issue #3434 documenting the 'Model not found' deviation is sufficient evidence",
+        "covered": true,
+        "index": 0
+      }
+    ]
+  },
+  "explanation": {
+    "body": "The title, body, and template claims describe what the diff does.",
+    "diff": "The diff injects an optional ResolveAliasFn callback into McpServer (mcp_server.h/.cpp), wires it to Server::resolve_alias_target at the single construction site in server.cpp, and applies it in the explicit-model-argument branch of resolve_model_for_tool plus the inline equivalent in tool_omni, so MCP tool calls resolve aliases the way the REST endpoints do. It adds one test (test_031_chat_tool_resolves_a_model_alias) in test/server_mcp.py; no new routes, tools, flags, or config appear, and the lead flagging lemonade_chat as a possibly new tool is a false positive — it is an existing tool the test merely calls. The body matches the diff on every checkable point, including the scope list, the passthrough default for non-alias names, and the untouched Anthropic path.",
+    "quality": "Checked docs/guide/configuration/custom-models.md, which already documents that an alias resolves in any API request, and docs/api/mcp.md, which makes no claim the fix contradicts — the change makes the existing wording true for MCP, so no doc edit is owed. The new numbered regression test_031_chat_tool_resolves_a_model_alias lives in test/server_mcp.py, the suite testing.md assigns to the MCP gateway, and is run by the 'Test mcp' step in cpp_server_build_test_release.yml (plus the mcp-smoke-test.yml path filter). It asserts isError is false, which fails on pre-fix code where the unresolved alias returns 'Model not found', and it cleans up the alias via addCleanup.",
+    "reviewers": "siavashhub: wrote code this PR touches (blame relevance 179). jeremyfowers: wrote code this PR touches (blame relevance 18). abn: wrote code this PR touches (blame relevance 18).",
+    "scope": "This is a fix covered by the base-branch contract, not a new capability. docs/guide/configuration/custom-models.md promises that an alias resolves 'in any API request' without qualifying which surfaces count, and POST /mcp is an API request whose tools already accept a `model` argument; making the gateway honor that promise for lemonade_chat, lemonade_transcribe_audio, lemonade_generate_image, and lemonade_omni is delivering documented behavior. The facts pass confirms the old path failed (was: failing) and the issue's quote of line 341 matches main, so no RFC or charter is required."
+  },
+  "facts": {
+    "areas": [
+      "MCP"
+    ],
+    "body_mismatches": [],
+    "breaking_changes": [],
+    "explanation": "The diff injects an optional ResolveAliasFn callback into McpServer (mcp_server.h/.cpp), wires it to Server::resolve_alias_target at the single construction site in server.cpp, and applies it in the explicit-model-argument branch of resolve_model_for_tool plus the inline equivalent in tool_omni, so MCP tool calls resolve aliases the way the REST endpoints do. It adds one test (test_031_chat_tool_resolves_a_model_alias) in test/server_mcp.py; no new routes, tools, flags, or config appear, and the lead flagging lemonade_chat as a possibly new tool is a false positive — it is an existing tool the test merely calls. The body matches the diff on every checkable point, including the scope list, the passthrough default for non-alias names, and the untouched Anthropic path.",
+    "surfaces": [
+      {
+        "kind": "endpoint-behavior",
+        "was": "failing",
+        "what": "MCP tool calls (lemonade_chat, lemonade_transcribe_audio, lemonade_generate_image, lemonade_omni) now resolve a registered model alias passed as the `model` argument instead of failing with \"Model not found\" [already present in base-branch source: lemonade_chat, lemonade_transcribe_audio, lemonade_generate_image, lemonade_omni, model]",
+        "where": "src/cpp/server/mcp_server.cpp"
+      }
+    ]
+  },
+  "generation_seconds": 1139.5,
+  "head_sha": "b4a9c4c364039b564cc3bd357b3341733d2fccb3",
+  "is_draft": false,
+  "labels": [
+    "bug",
+    "enhancement"
+  ],
+  "outputs": {
+    "body_matches_diff": "yes",
+    "docs_and_tests": "ok",
+    "label": "rfc:not-required",
+    "scope": "fix",
+    "scope_display": "fix",
+    "scope_name": "",
+    "suggested_reviewers": [
+      "@siavashhub",
+      "@jeremyfowers",
+      "@abn"
+    ]
+  },
+  "pr_number": 3536,
+  "quality": {
+    "docs": {
+      "gaps": [],
+      "status": "ok"
+    },
+    "explanation": "Checked docs/guide/configuration/custom-models.md, which already documents that an alias resolves in any API request, and docs/api/mcp.md, which makes no claim the fix contradicts — the change makes the existing wording true for MCP, so no doc edit is owed. The new numbered regression test_031_chat_tool_resolves_a_model_alias lives in test/server_mcp.py, the suite testing.md assigns to the MCP gateway, and is run by the 'Test mcp' step in cpp_server_build_test_release.yml (plus the mcp-smoke-test.yml path filter). It asserts isError is false, which fails on pre-fix code where the unresolved alias returns 'Model not found', and it cleans up the alias via addCleanup.",
+    "tests": {
+      "gaps": [],
+      "status": "ok"
+    }
+  },
+  "replay_sha": "",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-16T11:57:22+00:00",
+  "reviewers": [
+    {
+      "basis": "code-author",
+      "detail": "wrote code this PR touches (blame relevance 179)",
+      "handle": "@siavashhub",
+      "in_maintainer_table": true
+    },
+    {
+      "basis": "code-author",
+      "detail": "wrote code this PR touches (blame relevance 18)",
+      "handle": "@jeremyfowers",
+      "in_maintainer_table": true
+    },
+    {
+      "basis": "code-author",
+      "detail": "wrote code this PR touches (blame relevance 18)",
+      "handle": "@abn",
+      "in_maintainer_table": true
+    }
+  ],
+  "state": "OPEN",
+  "title": "fix(mcp): resolve model aliases in gateway tool calls",
+  "triage_version": "pr-triage-2026-09-10",
+  "uncovered_surfaces": [],
+  "url": "https://github.com/lemonade-sdk/lemonade/pull/3536"
+}
