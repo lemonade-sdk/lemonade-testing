@@ -1,39 +1,13 @@
 {
   "branch": "main",
   "breaking_changes": [
-    "Version format changed from X.Y.Z (e.g. 11.9.0) to YYYY.WW.N (e.g. 2026.39.0); any scripts, config, or automation that parse the version string must be updated to the new format.",
-    "GET /pull/variants now returns HTTP 400 for GGUF repositories that lack supported architecture metadata instead of accepting them; callers expecting the endpoint to succeed for any GGUF filename will receive an error.",
-    "ModelInfo.registry_source in GET /models and GET /pull/variants responses now defaults to empty string instead of 'huggingface'; any client that assumes the source field is always 'huggingface' or 'modelscope' will see '' and may misinterpret it.",
-    "Backend SSE streams returning HTTP 200 without any data events are now reported as 502 errors instead of being silently treated as successful empty completions; clients that previously accepted empty-but-successful completions will now see error events.",
-    "The undocumented /internal/mcp/* admin endpoints introduced in a prior release have been reverted; users who began using them will see 404s.",
-    "The unstable Linux Distro Builds CI job (Arch + openSUSE containers) has been removed; its status is no longer a merge gate."
+    "Version format changed from X.Y.Z (e.g., 11.9.0) to YYYY.WW.N (e.g., 2026.39.0); any tool or script parsing the version string must be updated.",
+    "Model registry field registry_source now defaults to empty string instead of 'huggingface' in GET /pull/variants and GET /models responses; clients assuming a non-empty value may misinterpret the source.",
+    "The unversioned /docs endpoint now returns JSON 404 instead of falling through to the SPA web-app; any reliance on that fallback is removed."
   ],
   "bucket": "v2026.39",
   "candidate_issues": [],
   "checklist": [
-    {
-      "author": "@jeremyfowers",
-      "commit": "658d5655967acbb0669278dae5d5f175ed795835",
-      "platforms": [
-        "Windows",
-        "macOS",
-        "Fedora",
-        "Debian"
-      ],
-      "pr_number": 3579,
-      "priority": "P0",
-      "text": "Push a new commit to a release-v* branch and confirm the \"Create GitHub Release\" job publishes a prerelease under a candidate-v<version> tag with the expected artifacts and the \"Windows installers are not signed\" note in the release body."
-    },
-    {
-      "author": "@jeremyfowers",
-      "commit": "6e2b5bd3dd7e0123e2947447847c3458c9b7db4b",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3588,
-      "priority": "P0",
-      "text": "Navigate to the Lemonade GitHub repo Releases page and confirm that any existing candidate-v* prereleases are listed as Pre-release (not as stable) while the latest stable release is marked as Latest."
-    },
     {
       "author": "@noamsto",
       "commit": "1f1b4825ef89d1c9eb74361183632b1932d4f762",
@@ -41,7 +15,7 @@
         "all"
       ],
       "pr_number": 3496,
-      "priority": "P1",
+      "priority": "P0",
       "text": "Run `lemonade load gpt-oss-120b-mxfp-GGUF` and confirm the model loads successfully with the correct 63 GB MXFP4 file (not the 1.5 GB EAGLE3 draft head)."
     },
     {
@@ -73,6 +47,16 @@
       "pr_number": 3198,
       "priority": "P1",
       "text": "Start the Lemonade server, call GET /pull/variants?checkpoint=stduhpf/Krea-2-Turbo-GGUF, and confirm the response is HTTP 400 with an error mentioning 'does not declare a model architecture'."
+    },
+    {
+      "author": "@popey",
+      "commit": "6a607106ce467849e9f64c17de9f249f2936a7a9",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3198,
+      "priority": "P1",
+      "text": "Start the Lemonade server, call GET /pull/variants?checkpoint=TinyLlama/TinyLlama-1.1B-Chat-v1.0, and confirm the response returns variant objects with size_bytes > 0."
     },
     {
       "author": "@wariobot09",
@@ -112,16 +96,6 @@
       ],
       "pr_number": 3347,
       "priority": "P1",
-      "text": "Start a running Lemonade server, fetch GET /v1/docs and confirm the response is a JSON index listing at least api/README and api/lemonade with version, format, id, title, url, and bytes fields, and that the urls use the same prefix (/v1) that was used to request the index."
-    },
-    {
-      "author": "@anditherobot",
-      "commit": "304d27f9c748e30a89595bb9737cbc9119141f68",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3347,
-      "priority": "P1",
       "text": "Connect an MCP client to a running server, call the lemonade_docs tool with no arguments and confirm it returns a summary listing the bundled pages, then call lemonade_docs with page set to \"api/lemonade\" and confirm it returns the markdown content of that page."
     },
     {
@@ -133,6 +107,16 @@
       "pr_number": 3510,
       "priority": "P1",
       "text": "Start lemond with a cloud provider configured, send a curl request with a session header (e.g. -H 'x-opencode-session: test-abc'), and confirm the upstream provider receives the same session ID in its request headers."
+    },
+    {
+      "author": "@SlawomirNowaczyk",
+      "commit": "8312c1a8dc67854d36c82b559b5d00a719ad0012",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3510,
+      "priority": "P1",
+      "text": "Send a GET /models request and confirm no session header is attached to that discovery call."
     },
     {
       "author": "@meghsat",
@@ -148,7 +132,11 @@
       "author": "@bitgamma",
       "commit": "378622dcce2c4930f2b5ce91232cd079c4e79eff",
       "platforms": [
-        "all"
+        "Ubuntu PPA",
+        "Snap",
+        "Docker",
+        "Fedora",
+        "Debian"
       ],
       "pr_number": 3494,
       "priority": "P1",
@@ -166,33 +154,37 @@
     },
     {
       "author": "@jeremyfowers",
-      "commit": "bfb9dd596804db83e3bdf94e9ab6d98338fd53e4",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3580,
-      "priority": "P1",
-      "text": "Trigger the Create Release Branch workflow (Actions > workflows > Create Release Branch > Run workflow) and confirm that release-v2026.39 (or the next upcoming week) is created from main and triggers the candidate build pipeline."
-    },
-    {
-      "author": "@jeremyfowers",
       "commit": "d7ddd1030ff4972c7447cf4fe71ae098a46be8e0",
       "platforms": [
-        "all"
+        "Ubuntu PPA",
+        "Snap",
+        "Docker",
+        "Fedora",
+        "Debian"
       ],
       "pr_number": 3581,
       "priority": "P1",
       "text": "Pull ghcr.io/lemonade-sdk/lemonade-server:candidate on a machine and confirm the container starts and serves the same API version as the associated release-v branch."
     },
     {
-      "author": "@popey",
-      "commit": "6a607106ce467849e9f64c17de9f249f2936a7a9",
+      "author": "@jeremyfowers",
+      "commit": "6e2b5bd3dd7e0123e2947447847c3458c9b7db4b",
       "platforms": [
         "all"
       ],
-      "pr_number": 3198,
+      "pr_number": 3588,
+      "priority": "P1",
+      "text": "Navigate to the Lemonade GitHub repo Releases page and confirm that any existing candidate-v* prereleases are listed as Pre-release (not as stable) while the latest stable release is marked as Latest."
+    },
+    {
+      "author": "@anditherobot",
+      "commit": "304d27f9c748e30a89595bb9737cbc9119141f68",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3347,
       "priority": "P2",
-      "text": "Start the Lemonade server, call GET /pull/variants?checkpoint=TinyLlama/TinyLlama-1.1B-Chat-v1.0, and confirm the response returns variant objects with size_bytes > 0."
+      "text": "Start a running Lemonade server, fetch GET /v1/docs and confirm the response is a JSON index listing at least api/README and api/lemonade with version, format, id, title, url, and bytes fields, and that the urls use the same prefix (/v1) that was used to request the index."
     },
     {
       "author": "@anditherobot",
@@ -215,16 +207,6 @@
       "text": "Confirm that GET /v0/docs, GET /api/v0/docs, and GET /api/v1/docs all return a 200 JSON index with urls matching the requesting prefix, and that GET /docs returns a JSON 404 with an error message pointing to /v1/docs."
     },
     {
-      "author": "@SlawomirNowaczyk",
-      "commit": "8312c1a8dc67854d36c82b559b5d00a719ad0012",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3510,
-      "priority": "P2",
-      "text": "Send a GET /models request and confirm no session header is attached to that discovery call."
-    },
-    {
       "author": "@jeremyfowers",
       "commit": "421eabdf6f1061b15a6a960f216326cbbc7b4a42",
       "platforms": [
@@ -233,6 +215,26 @@
       "pr_number": 3547,
       "priority": "P2",
       "text": "Start the Lemonade server, serve the HTML examples with python3 -m http.server 8080 from an examples directory, and confirm the demo pages load and communicate with the server as described."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "658d5655967acbb0669278dae5d5f175ed795835",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3579,
+      "priority": "P2",
+      "text": "Push a new commit to a release-v* branch and confirm the \"Create GitHub Release\" job publishes a prerelease under a candidate-v<version> tag with the expected artifacts and the \"Windows installers are not signed\" note in the release body."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "bfb9dd596804db83e3bdf94e9ab6d98338fd53e4",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3580,
+      "priority": "P2",
+      "text": "Trigger the Create Release Branch workflow (Actions > workflows > Create Release Branch > Run workflow) and confirm that release-v2026.39 (or the next upcoming week) is created from main and triggers the candidate build pipeline."
     },
     {
       "author": "@jeremyfowers",
@@ -245,20 +247,20 @@
       "text": "Open https://lemonade-sdk.github.io/lemonade/ (or the homepage that serves docs/index.html) and confirm the carousel shows only stable releases, with no candidate-v* tag appearing as the current version."
     }
   ],
-  "commits_reviewed": 41,
-  "commits_unreviewed": 2,
+  "commits_reviewed": 43,
+  "commits_unreviewed": 0,
   "evidence": {
-    "blockers": "The candidate release publishing workflow and prerelease classification on GitHub must be verified before shipping — without this, Windows/Fedora/Debian/macOS users may not be able to find or install release candidates, and candidates could appear as stable releases. The new version format must be confirmed in a built artifact. The FLM ModelScope download path and the empty registry_source API encoding need manual verification before the release ships.",
-    "breaking_changes": "The version format shift (X.Y.Z to YYYY.WW.N) is a breaking change to any consumer of the version string — it appears in the server startup log, MSI installer metadata, server manifest, and is consumed by CMake at build time. The /pull/variants endpoint now rejects incompatible GGUF repos with HTTP 400, which callers may have depended on. The registry_source API encoding change from 'huggingface' to empty string for unpinned downloads may break clients. The SSE empty-stream fix changes error reporting behavior silently. The MCP client feature was removed entirely.",
-    "coverage": "41 commit reviews cover the reviewed range; 2 commits have no review and are not in the digest.",
-    "manual_testing": "New infrastructure: the weekly release-branch creation workflow, the candidate prerelease publishing pipeline, and the candidate Docker tag have never been exercised end-to-end in production. The new version format must be seen in a real build artifact. The wildcard-origin feature, session-header relay to cloud providers, the /v1/docs API endpoint, the MCP lemonade_docs tool, the FLM ModelScope download path, the soft-idle cache resume for llama.cpp, and the /images/edit endpoint are all user-facing surfaces with no evidence of human exercise before merge.",
-    "security": "Wildcard port and subdomain origin matching was reviewed by a security maintainer with strict dot-boundary enforcement. Session-header relay uses a well-known-only allowlist and excludes telemetry headers. The vendored model-viewer bundle has a CI drift guard and documented secure update process. The /v1/docs endpoint guards against path traversal. No new credential handling or supply-chain concerns observed."
+    "blockers": "The new candidate release pipeline (weekly branch creation, prerelease publishing, candidate Docker tag) has never been exercised end-to-end in production — a human must trigger the full path to confirm artifacts land correctly. The version format change replaces CMake static versioning with a Python-based dynamic system that adds a hard Python3 build dependency. The FLM ModelScope download path has only unit test coverage. The wildcard origin feature and image edit endpoint are new user-reachable surfaces without independent manual verification.",
+    "breaking_changes": "The version format shift from semantic X.Y.Z to YYYY.WW.N is the most visible breaking change, affecting any consumer that parses --version output or build metadata. The registry_source empty-string default is a subtle API encoding change that affects all consumers of GET /models and GET /pull/variants for FLM models. The unversioned /docs JSON 404 replaces an undocumented SPA fallback — a deliberate fix rather than an unintended break, but it changes behavior for anyone who reached that path.",
+    "coverage": "The range v11.9.0 to a1c8e7be covers 43 commits across the full release. CI passed on all checked commits, with automated coverage including C++ unit tests, server endpoint tests, distro packaging builds, validation workflows for llama.cpp/vLLM/sd-cpp, and CodeQL. The items marked for manual testing were not exercised end-to-end by a human before merge; they cover new features or behavior changes where CI unit tests alone did not demonstrate the complete user path.",
+    "manual_testing": "New feature paths that need human verification: wildcard port and subdomain CORS matching against the live server, /pull/variants filter exercising both the new error path and the retained happy path, MCP lemonade_docs tool end-to-end with an MCP client, session header relay through a real cloud provider, prompt cache preservation on soft-idle transition with auto_evict enabled, /images/edit endpoint on ROCm hardware with real image data, version string format in the release binary, the full candidate release pipeline (branch creation → prerelease publish → Docker candidate tag → GitHub release page display).",
+    "security": "No security issues observed. The wildcard origin feature was reviewed by a security-area maintainer with strict dot-boundary subdomain enforcement and documented security warnings for universal wildcards. The session header relay uses a strict well-known-only allowlist with cross-request isolation via thread-local storage and discovery endpoint exemption. The vendored model-viewer bundle pinning with SHA-256 drift guard reduces supply-chain risk. No credential handling changes, obfuscation, or suspicious code paths were introduced."
   },
-  "generation_seconds": 140.0,
+  "generation_seconds": 173.0,
   "head_sha": "a1c8e7bef8d6291c257cf79bffcb8a73dd1f4477",
   "is_hotfix": false,
   "last_stable_tag": "",
   "range_start": "v11.9.0",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-09-16T14:24:54+00:00"
+  "reviewed_at": "2026-09-16T14:34:22+00:00"
 }
