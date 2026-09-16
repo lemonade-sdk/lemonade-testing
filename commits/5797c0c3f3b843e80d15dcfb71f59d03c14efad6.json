@@ -1,0 +1,32 @@
+{
+  "author": "@bong-water-water-bong",
+  "branch": "main",
+  "bucket": "v2026.40",
+  "commit_sha": "5797c0c3f3b843e80d15dcfb71f59d03c14efad6",
+  "committed_at": "2026-09-16T19:59:21+00:00",
+  "evidence": {
+    "api_compatibility": "No API compatibility impact. The change is entirely internal to the server-side model-size filter. It does not modify the system_info schema, any HTTP/REST endpoint, CLI flags, config keys, or the OpenAI-compatible API contract. The log message 'Largest memory pool' is unchanged. The only effect is that the numeric value reported for APU devices will now reflect the GTT pool instead of the VRAM carve-out — a behavior correction, not a breaking change.",
+    "documentation": "No documentation changes are needed. The PR is labeled rfc:not-required (bug fix only). The server log message 'Largest memory pool' is unchanged in format. No API spec, config reference, or user-facing doc is affected. The PR description's extensive root-cause analysis and test results are appropriate for the PR itself but do not need to be extracted into external docs.",
+    "manual_release_testing": "This commit changes server behavior on AMD APUs (integrated GPUs). On affected hardware, streaming models with resident sizes between the VRAM carve-out (~1–4 GB) and the GTT pool (~100–120 GB) will now be correctly reported as available instead of rejected with 'largest memory pool is only 1.0 GB'. A tester with APU hardware should start the server and confirm that a streaming model (e.g., one with min_resident_gb between 4 and 100) is listed as available and that the log shows the largest memory pool in GB matching the GTT pool, not the carve-out. Without APU hardware, no user-reachable surface can be tested; the fix is a correction that only manifests on integrated AMD GPUs.",
+    "post_approval_commits": "Commit de5c75b (\"fix(server): ignore non-device system info entries\") by @superm1 was authored on 2026-09-16T19:30:41Z and added after superm1's own approval on 2026-09-11T04:22:50Z. The patch introduces two changes: (1) a guard `if (!dev.is_object()) continue;` to skip non-device system_info entries (defensive, harmless), and (2) a change from `if (dev.value(\"integrated\", true))` to `if (dev_type == \"amd_gpu\" && dev.value(\"integrated\", true))`. The latter narrows the Largest behavior to amd_gpu devices only — conservative but not reviewed post-approval. The commit message claims it ignores non-device entries, which is the justification for the first change; the dev_type guard appears to be an unannounced behavioral modification.",
+    "review": "PR #3502 was authored by @bong-water-water-bong and reviewed by @superm1 (Mario Limonciello), who is the documented AMD/ROCm expert and system-info maintainer per docs/dev/contribute.md. The review was substantive: superm1 spotted a logic issue in the default value (changing `dev.value(\"integrated\", false)` to `true`), called out a slop comment, and requested a changes-requested before approving. The PR author addressed both comments. The review applied the project philosophy of \"User Error is a Bug\" — the fix corrects a silent misclassification that blocked users on real APU hardware. However, after approving on 2026-09-11T04:22:50Z at commit 2ca3af5e5657a78b12b3d465665e52b8353307b2, superm1 pushed a third commit (de5c75b7db62d67786f119d5d00ed38265a44299) that changed the condition from `if (dev.value(\"integrated\", true))` to `if (dev_type == \"amd_gpu\" && dev.value(\"integrated\", true))`. This adds a type guard that restricts the Largest behavior to amd_gpu devices only, which is a meaningful logic change that should have been re-reviewed. The commit is co-authored by the original author, suggesting collaboration, but there is no evidence of renewed approval.",
+    "security": "No security concerns. The change reads fields already present in system_info JSON (dev_type, integrated, virtual_mem_gb) that the server already trusts. It does not introduce new code execution paths, network calls, credential handling, or permission broadening. The dev.is_object() guard is defensive — it prevents a potential json::operator[] crash on malformed data, which is a correctness improvement.",
+    "tests": "No new unit or integration tests were added for the APU GTT path. The existing tests in test/cpp/test_recipe_hiding.cpp exercise filter_models_by_backend with a tiny device but do not test the integrated-device memory-pool selection or the dev.is_object() guard. The PR author performed thorough real-hardware testing on a Strix Halo (gfx1151, Ryzen AI MAX+ 395) with live server A/B/C comparisons — baseline (broken), workaround (enable_dgpu_gtt=true), and the fix (default config) — showing the model correctly loads and serves with 32 GB running in GTT. This is excellent evidence that the fix works on the target hardware, but it is not a substitute for automated regression coverage of this code path."
+  },
+  "generation_seconds": 226.8,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-16T20:39:42Z",
+  "pr_number": 3502,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-16T20:45:19+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "5797c0c3f3b843e80d15dcfb71f59d03c14efad6",
+  "shout_outs": [],
+  "subject": "fix(server): size streaming models against APU GTT pool, not VRAM carve-out (#3377) (#3502)",
+  "summary": "Fix server model-size filter to size streaming models against the APU GTT pool instead of the fixed VRAM carve-out, enabling streaming models on AMD integrated GPUs.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "A meaningful logic change (adding a dev_type guard to the integrated-device check) was introduced by the reviewer after his own approval, without renewed review."
+}
