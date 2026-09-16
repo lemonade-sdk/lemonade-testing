@@ -1,0 +1,30 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.40",
+  "commit_sha": "955e84ae0e5dd0db62d274aaaf1d2e15891ba0a5",
+  "committed_at": "2026-09-16T12:42:13-04:00",
+  "evidence": {
+    "api_compatibility": "No API changes. The version string is an internal variable set in a GitHub Actions workflow. No schema, protocol, config, CLI contract, exported API, or documented user behavior is affected.",
+    "documentation": "No documentation changes required. This is an internal tool version bump that does not affect user-facing documentation, API docs, or behavior guides.",
+    "manual_release_testing": "This commit does not introduce user-reachable behavior. It changes an internal tool version string consumed by the repo-manager GitHub Action, which is an infrastructure concern, not a user-facing feature. No manual release testing needed.",
+    "post_approval_commits": "Not applicable — no PR, no approval, no post-approval commits. This is a standalone direct push.",
+    "review": "No pull request was associated with this commit — it was a direct push to main. No review occurred. This is consistent with the project's pattern of version bump pushes (the previous bump, c234adaa, also went direct to main). The change is a single character-level edit (v1.0.2 → v1.0.3) in .github/actions/repo-manager/action.yml, so the risk of unintended side effects is minimal.",
+    "security": "No security concerns. This is a version number bump in a static YAML input. No new dependencies, credential handling, network calls, code execution paths, or permission changes. The file modified (.github/actions/repo-manager/action.yml) is a workflow input, not a script with executable logic.",
+    "tests": "No tests added or changed. Not expected for a version string update in a GitHub Actions input — there is no testable behavior being added or altered. The repo-manager workflow itself runs as a CI check (currently in_progress), which serves as the integration guard."
+  },
+  "generation_seconds": 89.9,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-16T16:42:13Z",
+  "pr_number": null,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-16T16:45:29+00:00",
+  "reviewers": [],
+  "sha": "955e84ae0e5dd0db62d274aaaf1d2e15891ba0a5",
+  "shout_outs": [],
+  "subject": "Update REPO_MANAGER_VERSION to v1.0.3",
+  "summary": "Direct push to main bumping REPO_MANAGER_VERSION from v1.0.2 to v1.0.3 in the repo-manager GitHub Action.",
+  "verdict": "Clean",
+  "verdict_reason": "A single-line version string update in a GitHub Actions workflow file with no user-facing behavior change."
+}
