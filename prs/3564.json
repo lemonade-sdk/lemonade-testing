@@ -12,17 +12,17 @@
     "working_group": ""
   },
   "cover": {
-    "explanation": "The PR checks the fix box and closes #3114, but #3114 ('Add Ornith-1.0 to the models catalogue') is a feature request for a model the catalogue never contained, and no base-branch doc states that Ornith belongs in server_models.json. Both entries are was: absent, so only a working-group charter item or an RFC could cover them; no working group's charter names adding models to the catalogue, and no RFC is linked. Under the spec-driven development policy this needs an RFC (or a ratified charter item) to land.",
+    "explanation": "The body claims the fix checkbox, but both surfaces are brand-new catalogue entries (was: absent) and nothing on the base branch — docs, API reference, schema, or tests — states that these Ornith 1.5 models should be present, so no existing contract is being delivered. The closing reference #3114 is a feature request (and for Ornith 1.0, not the 1.5 shipped here), which cannot establish intent, and no working-group charter names model-catalogue additions (Auto-Tune is hardware performance parameters, Cross-Vendor is per-platform backend support), with no RFC linked. Neither surface is covered.",
     "kind": "fix",
     "name": "",
     "surfaces": [
       {
-        "by": "no document on the base branch names an Ornith-1.5-9B-GGUF catalogue entry (grep of main finds no 'ornith'); the only statement of intent is issue #3114, which is a feature request to add Ornith to the catalogue, and a new entry (was: absent) cannot be covered by a linked issue",
+        "by": "no base-branch document states this model belongs in the catalogue: I searched main's docs, API reference, and server_models.json and found no mention of Ornith anywhere; the entry is new (was: absent), and the linked issue #3114 is a feature request asking for Ornith 1.0, which is never a source of intended behavior",
         "covered": false,
         "index": 0
       },
       {
-        "by": "no document on the base branch names an Ornith-1.5-35B-A3B-GGUF catalogue entry (grep of main finds no 'ornith'); issue #3114 asks for a model that the catalogue never had, so it requests a capability rather than evidence of broken behavior",
+        "by": "no base-branch document states this model belongs in the catalogue: I searched main's docs, API reference, and server_models.json and found no mention of Ornith anywhere; the entry is new (was: absent), and the linked issue #3114 is a feature request asking for Ornith 1.0, which is never a source of intended behavior",
         "covered": false,
         "index": 1
       }
@@ -30,10 +30,10 @@
   },
   "explanation": {
     "body": "The body does not match the diff: the body presents this as a fix (#3114) but the diff changes scope, surface area, or experience.",
-    "diff": "The diff appends two new catalogue entries, Ornith-1.5-9B-GGUF and Ornith-1.5-35B-A3B-GGUF, to the llamacpp block of src/cpp/resources/server_models.json, using only pre-existing schema fields (checkpoint, mmproj, recipe, labels, size); no other files are touched. The body matches the diff exactly on names, checkpoints, sizes, and labels, and it discloses up front that it ships 1.5 rather than the 1.0 requested in #3114 and why only these two variants are included. Nothing on the base branch is renamed, re-defaulted, or re-formatted.",
-    "quality": "Docs: the model catalogue's user-facing page (docs/models.html) is generated at runtime from src/cpp/resources/server_models.json by docs/assets/models.js, so the new entries document themselves; I checked docs/embeddable/models.md (describes the built-in list generically, still true) and docs/dev/model-registries.md (provider contract, not per-model), and no page lists models by name, so no edit is owed. Tests: this is a data-table row addition, and the mechanism's existing test test/cpp/test_backend_mode_contract.cpp iterates every server_models.json entry asserting label/deployment-mode/recipe contracts; it is declared via add_cpp_ci_test in CMakeLists.txt so it runs in the cpp-ci CTest label on this PR and can fail on a malformed entry, and no test references the new models in test/utils/test_models.py or capabilities.py (existing llamacpp recipe, no new backend), so no suite wiring is owed.",
+    "diff": "The diff appends two suggested, multimodal Ornith 1.5 entries (9B dense and 35B A3B MoE, both Q4_K_M vendor GGUF with BF16 projectors) to the end of the llamacpp block of `src/cpp/resources/server_models.json`; no other file is touched. The body matches the diff exactly, including placement, labels, sizes, and `suggested: true`, and it explicitly discloses that issue #3114 asked for Ornith 1.0 while the PR ships the current 1.5 release because 1.0's GGUF embeds the #2674 chat-template bug.",
+    "quality": "Checked docs/models.html with docs/assets/models.js (the models page fetches server_models.json from the latest release tag at runtime, and its only generated block covers recipes, which this PR does not add), plus docs/embeddable/models.md and docs/guide/configuration/custom-models.md; no static per-model listing exists that the new entries would require an edit to. For tests, the change is a model-registry data row, which testing.md covers via the mechanism's existing suites and live CI (scheduled validate_llamacpp.yml, server_download_registry.yml with test/server_gfx_topology.py), and no test in test/utils/test_models.py or capabilities.py references the affected models, so no suite update is owed.",
     "reviewers": "bitgamma: maintains new models. pwilkin: maintains llamacpp. sawansri: maintains new models.",
-    "scope": "The PR checks the fix box and closes #3114, but #3114 ('Add Ornith-1.0 to the models catalogue') is a feature request for a model the catalogue never contained, and no base-branch doc states that Ornith belongs in server_models.json. Both entries are was: absent, so only a working-group charter item or an RFC could cover them; no working group's charter names adding models to the catalogue, and no RFC is linked. Under the spec-driven development policy this needs an RFC (or a ratified charter item) to land. Not covered: Ornith-1.5-9B-GGUF catalogue entry (ornith-ai/Ornith-1.5-9B-GGUF:Q4_K_M, BF16 mmproj, llamacpp… (config-key); Ornith-1.5-35B-A3B-GGUF catalogue entry (ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q4_K_M, BF16 mmproj, llamacpp… (config-key)."
+    "scope": "The body claims the fix checkbox, but both surfaces are brand-new catalogue entries (was: absent) and nothing on the base branch — docs, API reference, schema, or tests — states that these Ornith 1.5 models should be present, so no existing contract is being delivered. The closing reference #3114 is a feature request (and for Ornith 1.0, not the 1.5 shipped here), which cannot establish intent, and no working-group charter names model-catalogue additions (Auto-Tune is hardware performance parameters, Cross-Vendor is per-platform backend support), with no RFC linked. Neither surface is covered. Not covered: New catalogue entry `Ornith-1.5-9B-GGUF` (ornith-ai Q4_K_M, BF16 mmproj, suggested… (config-key); New catalogue entry `Ornith-1.5-35B-A3B-GGUF` (ornith-ai Q4_K_M, BF16 mmproj, suggested… (config-key)."
   },
   "facts": {
     "areas": [
@@ -42,24 +42,24 @@
     ],
     "body_mismatches": [],
     "breaking_changes": [],
-    "explanation": "The diff appends two new catalogue entries, Ornith-1.5-9B-GGUF and Ornith-1.5-35B-A3B-GGUF, to the llamacpp block of src/cpp/resources/server_models.json, using only pre-existing schema fields (checkpoint, mmproj, recipe, labels, size); no other files are touched. The body matches the diff exactly on names, checkpoints, sizes, and labels, and it discloses up front that it ships 1.5 rather than the 1.0 requested in #3114 and why only these two variants are included. Nothing on the base branch is renamed, re-defaulted, or re-formatted.",
+    "explanation": "The diff appends two suggested, multimodal Ornith 1.5 entries (9B dense and 35B A3B MoE, both Q4_K_M vendor GGUF with BF16 projectors) to the end of the llamacpp block of `src/cpp/resources/server_models.json`; no other file is touched. The body matches the diff exactly, including placement, labels, sizes, and `suggested: true`, and it explicitly discloses that issue #3114 asked for Ornith 1.0 while the PR ships the current 1.5 release because 1.0's GGUF embeds the #2674 chat-template bug.",
     "surfaces": [
       {
         "kind": "config-key",
         "was": "absent",
-        "what": "Ornith-1.5-9B-GGUF catalogue entry (ornith-ai/Ornith-1.5-9B-GGUF:Q4_K_M, BF16 mmproj, llamacpp, chat/coding/reasoning/tool-calling/vision, 6.7 GB)",
+        "what": "New catalogue entry `Ornith-1.5-9B-GGUF` (ornith-ai Q4_K_M, BF16 mmproj, suggested, chat/coding/reasoning/tool-calling/vision) added to the llamacpp block of the model catalogue",
         "where": "src/cpp/resources/server_models.json"
       },
       {
         "kind": "config-key",
         "was": "absent",
-        "what": "Ornith-1.5-35B-A3B-GGUF catalogue entry (ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q4_K_M, BF16 mmproj, llamacpp, chat/coding/reasoning/tool-calling/vision, 22.6 GB)",
+        "what": "New catalogue entry `Ornith-1.5-35B-A3B-GGUF` (ornith-ai Q4_K_M, BF16 mmproj, suggested, chat/coding/reasoning/tool-calling/vision) added to the llamacpp block of the model catalogue",
         "where": "src/cpp/resources/server_models.json"
       }
     ]
   },
-  "generation_seconds": 1176.9,
-  "head_sha": "b167ca0f975dad82173f8ea07af705ac6ba9106d",
+  "generation_seconds": 1414.0,
+  "head_sha": "11e673ff96fff498fda280c01307265779705e5f",
   "is_draft": false,
   "labels": [
     "enhancement"
@@ -83,7 +83,7 @@
       "gaps": [],
       "status": "ok"
     },
-    "explanation": "Docs: the model catalogue's user-facing page (docs/models.html) is generated at runtime from src/cpp/resources/server_models.json by docs/assets/models.js, so the new entries document themselves; I checked docs/embeddable/models.md (describes the built-in list generically, still true) and docs/dev/model-registries.md (provider contract, not per-model), and no page lists models by name, so no edit is owed. Tests: this is a data-table row addition, and the mechanism's existing test test/cpp/test_backend_mode_contract.cpp iterates every server_models.json entry asserting label/deployment-mode/recipe contracts; it is declared via add_cpp_ci_test in CMakeLists.txt so it runs in the cpp-ci CTest label on this PR and can fail on a malformed entry, and no test references the new models in test/utils/test_models.py or capabilities.py (existing llamacpp recipe, no new backend), so no suite wiring is owed.",
+    "explanation": "Checked docs/models.html with docs/assets/models.js (the models page fetches server_models.json from the latest release tag at runtime, and its only generated block covers recipes, which this PR does not add), plus docs/embeddable/models.md and docs/guide/configuration/custom-models.md; no static per-model listing exists that the new entries would require an edit to. For tests, the change is a model-registry data row, which testing.md covers via the mechanism's existing suites and live CI (scheduled validate_llamacpp.yml, server_download_registry.yml with test/server_gfx_topology.py), and no test in test/utils/test_models.py or capabilities.py references the affected models, so no suite update is owed.",
     "tests": {
       "gaps": [],
       "status": "ok"
@@ -91,7 +91,7 @@
   },
   "replay_sha": "",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-09-16T13:17:06+00:00",
+  "reviewed_at": "2026-09-17T00:13:14+00:00",
   "reviewers": [
     {
       "basis": "area",
@@ -119,13 +119,13 @@
     {
       "kind": "config-key",
       "was": "absent",
-      "what": "Ornith-1.5-9B-GGUF catalogue entry (ornith-ai/Ornith-1.5-9B-GGUF:Q4_K_M, BF16 mmproj, llamacpp, chat/coding/reasoning/tool-calling/vision, 6.7 GB)",
+      "what": "New catalogue entry `Ornith-1.5-9B-GGUF` (ornith-ai Q4_K_M, BF16 mmproj, suggested, chat/coding/reasoning/tool-calling/vision) added to the llamacpp block of the model catalogue",
       "where": "src/cpp/resources/server_models.json"
     },
     {
       "kind": "config-key",
       "was": "absent",
-      "what": "Ornith-1.5-35B-A3B-GGUF catalogue entry (ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q4_K_M, BF16 mmproj, llamacpp, chat/coding/reasoning/tool-calling/vision, 22.6 GB)",
+      "what": "New catalogue entry `Ornith-1.5-35B-A3B-GGUF` (ornith-ai Q4_K_M, BF16 mmproj, suggested, chat/coding/reasoning/tool-calling/vision) added to the llamacpp block of the model catalogue",
       "where": "src/cpp/resources/server_models.json"
     }
   ],
