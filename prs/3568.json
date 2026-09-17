@@ -1,0 +1,121 @@
+{
+  "author": "@abn",
+  "base_ref": "main",
+  "claim": {
+    "breaking_declared": false,
+    "breaking_section": "- [ ] This PR introduces breaking changes.\n- [x] This PR does not introduce breaking changes.",
+    "fixes": [],
+    "kind": "fix",
+    "rfc": 0,
+    "working_group": ""
+  },
+  "cover": {
+    "explanation": "The PR claims the fix box, and the one judged surface stands on that claim: the base branch already treats max_output_tokens/max_completion_tokens as part of the OpenAI-compatible contract (documented in docs/api/openai.md as available parameters, mirrored and clamped in src/cpp/server/utils/json_utils.cpp and the routing policy), so exposing a provider-reported completion cap on GET /v1/models completes the existing contract on the cloud-model path rather than adding a capability. The field is new to the /v1/models response, but the base-branch source note outranks the docs and supplies the statement of intent, so no issue or RFC is required.",
+    "kind": "fix",
+    "name": "",
+    "surfaces": [
+      {
+        "by": "Base-branch source already reads and stores these fields, per the facts-pass note '[already present in base-branch source: max_output_tokens, max_completion_tokens]': docs/api/openai.md documents `max_completion_tokens` as an available OpenAI-compat parameter ('An upper bound for the number of tokens that can be generated for a completion') and `max_output_tokens` likewise, and the base server already handles them (src/cpp/server/utils/json_utils.cpp: 'OpenAI compatibility: mirror max_completion_tokens to legacy max_tokens'; routing_policy.h: 'The caller's requested output-length ceiling (OpenAI max_tokens / max_completion_tokens), when present. This is a ceiling...'). Surfacing a provider-reported cap on GET /v1/models is making an already-read value work on one more path, which is a fix by the existing contract.",
+        "covered": true,
+        "index": 0
+      }
+    ]
+  },
+  "explanation": {
+    "body": "The body does not match the diff: the body ticks 'fixes something' but the diff changes scope, surface area, or experience.",
+    "diff": "The diff adds CloudServer::parse_cloud_limits (src/cpp/server/backends/cloud/cloud_server.cpp) so cloud model discovery reads context and completion limits from top-level, top_provider, and per_request_limits fields with int/float/string casting, keeps the discovered max_context_window across cache rebuilds via an early return in populate_model_metadata (src/cpp/server/model_manager.cpp), and serializes new max_output_tokens/max_completion_tokens fields on GET /v1/models (src/cpp/server/server.cpp). The body matches the diff on every checkable claim, including the prior top-level-integer-only parsing behavior, the test file names, and the doc updates; the only changed pre-existing test assertion in test/server_endpoints.py preserves its original existence check while adding assertions for the new fields.",
+    "quality": "Checked docs/api/openai.md (GET /v1/models field list) and docs/guide/configuration/cloud.md (How discovery works) at the head SHA; both document the new max_output_tokens/max_completion_tokens fields and the extended cloud limit discovery, and no other doc page enumerates these model fields. For tests, verified the extended test/cpp/test_cloud_discovery_policy.cpp cases are wired via add_cpp_ci_test(CI ON) and that test/server_endpoints.py runs in cpp_server_build_test_release.yml; the new exact-value and rebuild-preservation assertions fail on base code, which never emitted the output caps and wiped max_context_window on cloud rebuild.",
+    "reviewers": "jeremyfowers: wrote code this PR touches (blame relevance 255). ramkrishna2910: maintains cloud api integration. popey: wrote code this PR touches (blame relevance 3).",
+    "scope": "The PR claims the fix box, and the one judged surface stands on that claim: the base branch already treats max_output_tokens/max_completion_tokens as part of the OpenAI-compatible contract (documented in docs/api/openai.md as available parameters, mirrored and clamped in src/cpp/server/utils/json_utils.cpp and the routing policy), so exposing a provider-reported completion cap on GET /v1/models completes the existing contract on the cloud-model path rather than adding a capability. The field is new to the /v1/models response, but the base-branch source note outranks the docs and supplies the statement of intent, so no issue or RFC is required. Not covered: GET /v1/models now returns `max_output_tokens` (with alias `max_completion_tokens`) for cloud models when a provider… (endpoint-args)."
+  },
+  "facts": {
+    "areas": [
+      "cloud API integration",
+      "http"
+    ],
+    "body_mismatches": [],
+    "breaking_changes": [],
+    "explanation": "The diff adds CloudServer::parse_cloud_limits (src/cpp/server/backends/cloud/cloud_server.cpp) so cloud model discovery reads context and completion limits from top-level, top_provider, and per_request_limits fields with int/float/string casting, keeps the discovered max_context_window across cache rebuilds via an early return in populate_model_metadata (src/cpp/server/model_manager.cpp), and serializes new max_output_tokens/max_completion_tokens fields on GET /v1/models (src/cpp/server/server.cpp). The body matches the diff on every checkable claim, including the prior top-level-integer-only parsing behavior, the test file names, and the doc updates; the only changed pre-existing test assertion in test/server_endpoints.py preserves its original existence check while adding assertions for the new fields.",
+    "surfaces": [
+      {
+        "kind": "endpoint-args",
+        "was": "absent",
+        "what": "GET /v1/models now returns `max_output_tokens` (with alias `max_completion_tokens`) for cloud models when a provider reports a completion cap [already present in base-branch source: max_output_tokens, max_completion_tokens]",
+        "where": "src/cpp/server/server.cpp"
+      },
+      {
+        "kind": "internal",
+        "what": "cloud discovery parses nested provider token limits (top_provider, per_request_limits, string/float values) and cache rebuilds no longer wipe them, so `context_length`/`max_context_window` are now populated for cloud models, with matching edits to the two existing doc pages and shipping tests",
+        "where": "src/cpp/server/backends/cloud/cloud_server.cpp"
+      }
+    ]
+  },
+  "generation_seconds": 2482.9,
+  "head_sha": "1db1d36617e4b3630810ac6e5c5daaf3d9a0af13",
+  "is_draft": false,
+  "labels": [
+    "documentation",
+    "enhancement",
+    "area::api"
+  ],
+  "outputs": {
+    "body_matches_diff": "no",
+    "docs_and_tests": "ok",
+    "label": "rfc:required",
+    "scope": "needs-rfc",
+    "scope_display": "needs-rfc",
+    "scope_name": "",
+    "suggested_reviewers": [
+      "@jeremyfowers",
+      "@ramkrishna2910",
+      "@popey"
+    ]
+  },
+  "pr_number": 3568,
+  "quality": {
+    "docs": {
+      "gaps": [],
+      "status": "ok"
+    },
+    "explanation": "Checked docs/api/openai.md (GET /v1/models field list) and docs/guide/configuration/cloud.md (How discovery works) at the head SHA; both document the new max_output_tokens/max_completion_tokens fields and the extended cloud limit discovery, and no other doc page enumerates these model fields. For tests, verified the extended test/cpp/test_cloud_discovery_policy.cpp cases are wired via add_cpp_ci_test(CI ON) and that test/server_endpoints.py runs in cpp_server_build_test_release.yml; the new exact-value and rebuild-preservation assertions fail on base code, which never emitted the output caps and wiped max_context_window on cloud rebuild.",
+    "tests": {
+      "gaps": [],
+      "status": "ok"
+    }
+  },
+  "replay_sha": "",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-17T02:09:29+00:00",
+  "reviewers": [
+    {
+      "basis": "code-author",
+      "detail": "wrote code this PR touches (blame relevance 255)",
+      "handle": "@jeremyfowers",
+      "in_maintainer_table": true
+    },
+    {
+      "basis": "area",
+      "detail": "cloud api integration",
+      "handle": "@ramkrishna2910",
+      "in_maintainer_table": true
+    },
+    {
+      "basis": "code-author",
+      "detail": "wrote code this PR touches (blame relevance 3)",
+      "handle": "@popey",
+      "in_maintainer_table": false
+    }
+  ],
+  "state": "OPEN",
+  "title": "feat(server): parse and propagate cloud model token limits",
+  "triage_version": "pr-triage-2026-09-10",
+  "uncovered_surfaces": [
+    {
+      "kind": "endpoint-args",
+      "was": "absent",
+      "what": "GET /v1/models now returns `max_output_tokens` (with alias `max_completion_tokens`) for cloud models when a provider reports a completion cap [already present in base-branch source: max_output_tokens, max_completion_tokens]",
+      "where": "src/cpp/server/server.cpp"
+    }
+  ],
+  "url": "https://github.com/lemonade-sdk/lemonade/pull/3568"
+}
