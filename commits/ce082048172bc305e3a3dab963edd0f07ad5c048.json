@@ -1,0 +1,46 @@
+{
+  "author": "@atirna",
+  "branch": "main",
+  "bucket": "v2026.40",
+  "commit_sha": "ce082048172bc305e3a3dab963edd0f07ad5c048",
+  "committed_at": "2026-09-17T06:36:24+00:00",
+  "evidence": {
+    "api_compatibility": "This commit introduces a behavioral breaking change to the POST /v1/images/upscale endpoint. Previously the endpoint accepted any model and dispatched by recipe. It now rejects models lacking the 'upscaling' label with a 400 error before any model download or backend dispatch. Users with models not labeled 'upscaling' will see their upscaling requests fail with 'invalid_request_error'. This is labeled as 'enhancement' and 'area::api' in the PR but the PR author checked 'no breaking changes' — this appears to be a labeling oversight.",
+    "documentation": "The PR author marked 'Documentation is not affected by this change.' The behavioral change to the upscaling endpoint (requiring a model label) should ideally be reflected in the API documentation or release notes, but no documentation files were touched by the commit.",
+    "manual_release_testing": "The POST /v1/images/upscale endpoint is a user-reachable API surface whose behavior has changed: it now requires the 'upscaling' model label before dispatching to a backend. No evidence shows a human exercised the full path with a real model through the server. CI confirms the code compiles and unit tests pass, but CI does not drive a real upscale request against a running server. This warrants manual release testing (see To-Do list).",
+    "post_approval_commits": "No commits were added after the final approval. The second commit (e9bc0c2f, 'keep the upscale_via_cli name') was the response to the review comment and was approved on. The commit history is clean.",
+    "review": "PR #3511 was reviewed by @bitgamma, a maintainer with subject-matter expertise in thenoise and new backends per docs/dev/contribute.md. The review cycle was constructive: @bitgamma first requested changes on a naming nit (the interface method name should be `upscale_via_cli` to document the non-retained server), and @atirna renamed the method in a dedicated follow-up commit. @bitgamma then re-approved after confirming it worked with both backends. The review applied the project philosophy of designing for agility and user error as a bug by making the dispatch mechanism more robust.",
+    "security": "No security concerns identified. The change adds a model label check before dispatch, which is a reasonable validation step. No credential handling, network calls to untrusted endpoints, or code execution paths are introduced beyond the existing subprocess-based upscaling.",
+    "tests": "The PR updates the backend mode contract test (test/cpp/test_backend_mode_contract.cpp) to include CAP_UPSCALE in kNonModeCapabilities and adds an assertion that sd-cpp and thenoise recipes claim the CAP_UPSCALE capability. The author reports 66 cpp-ci tests passing locally. All CI checks (C++ unit tests, CMake build, backend-docs-drift, routing schema tests, app-regression-tests, pre-commit, and all platform-specific builds) passed on the merge group. No tests weaken or delete existing behavior."
+  },
+  "generation_seconds": 140.3,
+  "maintainer_todos": [
+    {
+      "surface": "POST /v1/images/upscale",
+      "text": "Send a POST /v1/images/upscale request with a model that does not carry the 'upscaling' label and confirm the response is a 400 error with the message 'Upscale model is not labeled upscaling'."
+    },
+    {
+      "surface": "POST /v1/images/upscale",
+      "text": "Send a POST /v1/images/upscale request with a model that does carry the 'upscaling' label and confirm the upscale completes successfully through the expected backend."
+    }
+  ],
+  "merge_date": "2026-09-17T07:17:39Z",
+  "pr_number": 3511,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-17T07:21:40+00:00",
+  "reviewers": [
+    "@bitgamma"
+  ],
+  "sha": "ce082048172bc305e3a3dab963edd0f07ad5c048",
+  "shout_outs": [
+    {
+      "handle": "@bitgamma",
+      "reason": "Performed hands-on testing with both TheNoise and stable-diffusion.cpp backends and confirmed the change works end-to-end, which goes well beyond ordinary review."
+    }
+  ],
+  "subject": "fix: dispatch image upscaling through backend capabilities (#3511)",
+  "summary": "Adds an IUpscaleServer capability interface and dispatches the image upscaling endpoint through it, adding a required 'upscaling' model label check instead of selecting backends by recipe.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The upscaling endpoint now rejects any model without the 'upscaling' label, which is a behavioral change to a user-visible API surface that should be manually verified before release."
+}
