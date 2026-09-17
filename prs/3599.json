@@ -1,0 +1,136 @@
+{
+  "author": "@kpoineal",
+  "base_ref": "GUI3_squashed",
+  "claim": {
+    "breaking_declared": false,
+    "breaking_section": "- [ ] This PR introduces breaking changes.\n- [x] This PR does not introduce breaking changes.",
+    "fixes": [],
+    "kind": "none",
+    "rfc": 0,
+    "working_group": ""
+  },
+  "cover": {
+    "explanation": "The body claims no cover (no RFC linked, no fix claimed; #3571 is only 'related to'), so the working-group path applies. The new GUI3 end-user guide (was: absent) plainly belongs to the GUI App group's goal 'Users can explore local AI in a delightful built‑in GUI.', but that group has no charter file, so no ratified roadmap item covers it and the lead (@kponiel) should be asked. Surface 1 is internal and not judged here.",
+    "kind": "working-group",
+    "name": "GUI App",
+    "surfaces": [
+      {
+        "by": "GUI App working-group goal in the table of working groups (docs/dev/working-groups/README.md): 'Users can explore local AI in a delightful built‑in GUI.' The group has no charter file, so there is no Scope or Roadmap item to quote; the new GUI3 end-user guide page, its mkdocs nav entry, and the Getting Started link plainly fall under that goal.",
+        "covered": true,
+        "index": 0
+      }
+    ]
+  },
+  "explanation": {
+    "body": "The title, body, and template claims describe what the diff does.",
+    "diff": "Docs-only change: adds a 411-line GUI3 beta end-user guide (docs/guide/gui3.md) covering navigation, models, Chat, Effective Settings, backends, Monitor, Settings, downloads, and remote-server behavior, registers it in the mkdocs nav (mkdocs.yml) and links it from docs/guide/README.md, and rewrites architecture and build sections of docs/dev/app.md. No code, config, or behavior changes; the base branch had no GUI guide page, so the new page and nav entry are genuinely new. The body's summary and its claim that the diff contains only these four files match the actual diff exactly.",
+    "quality": "I opened the new docs/guide/gui3.md plus its nav entry, the guide/README.md link, the updated docs/dev/app.md, and peer pages docs/guide/configuration/custom-models.md, docs/dev/web-ui.md, docs/api/lemonade.md, and docs/dev/getting-started.md, and verified all local links, anchors, screenshot URLs, and the build/server claims against the code at the head SHA. The new guide itself is correctly wired and accurate, but three pages still carry pre-GUI3 descriptions this PR's own content makes false: a dead custom-Omni test section in app.md, old menu-bar steps in custom-models.md, and a stale renderer path in web-ui.md. Tests are n/a for a docs-only PR; only the markdown link check applies, which the PR reports passing. Docs to do: Update the custom Omni test section in docs/dev/app.md to the current GUI3 flow and scripts. Docs to do: Rewrite the desktop-app Omni registration steps in docs/guide/configuration/custom-models.md for GUI3. Docs to do: Fix the shared renderer path claim in docs/dev/web-ui.md to src/app/src.",
+    "reviewers": "kponiel: leads the GUI App working group. jeremyfowers: wrote code this PR touches (blame relevance 53). fl0rianr: maintains gui.",
+    "scope": "The body claims no cover (no RFC linked, no fix claimed; #3571 is only 'related to'), so the working-group path applies. The new GUI3 end-user guide (was: absent) plainly belongs to the GUI App group's goal 'Users can explore local AI in a delightful built‑in GUI.', but that group has no charter file, so no ratified roadmap item covers it and the lead (@kponiel) should be asked. Surface 1 is internal and not judged here. Not covered: New GUI3 app end-user guide page with its mkdocs.yml nav entry and a link from the Getting Started page (docs-structure). The GUI App working group has no charter under docs/dev/working-groups, so its scope cannot be checked; the label is rfc:required until a charter is committed."
+  },
+  "facts": {
+    "areas": [
+      "GUI",
+      "app"
+    ],
+    "body_mismatches": [],
+    "breaking_changes": [],
+    "explanation": "Docs-only change: adds a 411-line GUI3 beta end-user guide (docs/guide/gui3.md) covering navigation, models, Chat, Effective Settings, backends, Monitor, Settings, downloads, and remote-server behavior, registers it in the mkdocs nav (mkdocs.yml) and links it from docs/guide/README.md, and rewrites architecture and build sections of docs/dev/app.md. No code, config, or behavior changes; the base branch had no GUI guide page, so the new page and nav entry are genuinely new. The body's summary and its claim that the diff contains only these four files match the actual diff exactly.",
+    "surfaces": [
+      {
+        "kind": "docs-structure",
+        "was": "absent",
+        "what": "New GUI3 app end-user guide page with its mkdocs.yml nav entry and a link from the Getting Started page",
+        "where": "docs/guide/gui3.md"
+      },
+      {
+        "kind": "internal",
+        "was": "working",
+        "what": "Content updates to the existing developer app doc: GUI3 guide link, per-client vs server-owned state wording, and a CMake 'Building locally' section replacing npm build steps",
+        "where": "docs/dev/app.md"
+      }
+    ]
+  },
+  "generation_seconds": 2744.2,
+  "head_sha": "da2ce989a21583821a7f3ab43d566a500d72f2ab",
+  "is_draft": false,
+  "labels": [
+    "documentation"
+  ],
+  "outputs": {
+    "body_matches_diff": "yes",
+    "docs_and_tests": "gaps",
+    "label": "rfc:required",
+    "scope": "no-charter",
+    "scope_display": "no-charter (GUI App)",
+    "scope_name": "GUI App",
+    "suggested_reviewers": [
+      "@kponiel",
+      "@jeremyfowers",
+      "@fl0rianr"
+    ]
+  },
+  "pr_number": 3599,
+  "quality": {
+    "docs": {
+      "gaps": [
+        {
+          "action": "Update the custom Omni test section in docs/dev/app.md to the current GUI3 flow and scripts",
+          "what": "The 'Testing custom Omni Models' section left untouched in docs/dev/app.md references a nonexistent `npm run test:custom-collections` script, a deleted file (src/app/src/renderer/utils/customCollections.ts), and a 'File > New Omni Model' menu bar that the GUI3 app no longer has",
+          "where": "docs/dev/app.md"
+        },
+        {
+          "action": "Rewrite the desktop-app Omni registration steps in docs/guide/configuration/custom-models.md for GUI3",
+          "what": "custom-models.md still tells users to register an Omni model from the desktop app menu bar (File > New Omni Model > Manually/From JSON), a UI that no longer exists; the new gui3.md in this PR documents the real flow (Open custom models toolbar action with in-editor Import/Export)",
+          "where": "docs/guide/configuration/custom-models.md"
+        },
+        {
+          "action": "Fix the shared renderer path claim in docs/dev/web-ui.md to src/app/src",
+          "what": "web-ui.md claims both builds share '55+ React files under src/app/src/renderer/', but the sources now live directly in src/app/src/ (only 4 legacy files remain under renderer/), contradicting the corrected app.md tree this PR introduces",
+          "where": "docs/dev/web-ui.md"
+        }
+      ],
+      "status": "gaps"
+    },
+    "explanation": "I opened the new docs/guide/gui3.md plus its nav entry, the guide/README.md link, the updated docs/dev/app.md, and peer pages docs/guide/configuration/custom-models.md, docs/dev/web-ui.md, docs/api/lemonade.md, and docs/dev/getting-started.md, and verified all local links, anchors, screenshot URLs, and the build/server claims against the code at the head SHA. The new guide itself is correctly wired and accurate, but three pages still carry pre-GUI3 descriptions this PR's own content makes false: a dead custom-Omni test section in app.md, old menu-bar steps in custom-models.md, and a stale renderer path in web-ui.md. Tests are n/a for a docs-only PR; only the markdown link check applies, which the PR reports passing.",
+    "tests": {
+      "gaps": [],
+      "status": "n/a"
+    }
+  },
+  "replay_sha": "",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-17T04:16:25+00:00",
+  "reviewers": [
+    {
+      "basis": "wg-lead",
+      "detail": "GUI App",
+      "handle": "@kponiel",
+      "in_maintainer_table": false
+    },
+    {
+      "basis": "code-author",
+      "detail": "wrote code this PR touches (blame relevance 53)",
+      "handle": "@jeremyfowers",
+      "in_maintainer_table": true
+    },
+    {
+      "basis": "area",
+      "detail": "gui",
+      "handle": "@fl0rianr",
+      "in_maintainer_table": true
+    }
+  ],
+  "state": "OPEN",
+  "title": "docs(gui3): add beta end-user guidance",
+  "triage_version": "pr-triage-2026-09-10",
+  "uncovered_surfaces": [
+    {
+      "kind": "docs-structure",
+      "was": "absent",
+      "what": "New GUI3 app end-user guide page with its mkdocs.yml nav entry and a link from the Getting Started page",
+      "where": "docs/guide/gui3.md"
+    }
+  ],
+  "url": "https://github.com/lemonade-sdk/lemonade/pull/3599"
+}
