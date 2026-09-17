@@ -1,0 +1,32 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.40",
+  "commit_sha": "c453af9bd82fed1de8f9539636fd8f4f41caf4bd",
+  "committed_at": "2026-09-17T15:46:12+00:00",
+  "evidence": {
+    "api_compatibility": "No API impact. The change is confined to .github/workflows/cpp_server_build_test_release.yml and only alters when inference backend jobs execute within the CI pipeline.",
+    "documentation": "No documentation updates needed. This is an internal CI optimization with no user-facing behavior change.",
+    "manual_release_testing": "This is a CI-only change that affects internal build infrastructure. It does not ship any user-visible artifact, CLI command, API endpoint, or GUI behavior. No manual release testing is required.",
+    "post_approval_commits": "None. The single commit (f748f4fff4746f1b1fbb775ff465ae9f548b0d32) predates the approval by @superm1 at 2026-09-16T19:34:18Z. No commits were added after approval.",
+    "review": "PR #3604 was reviewed and approved by @superm1, a subject-matter expert in CI and Linux packaging per docs/dev/contribute.md. The approval review included a tangential comment about adding cherry-pick line checks on release branches; the author redirected that discussion to a separate issue. The review was substantive and appropriate for the change.",
+    "security": "No security concerns. The change adds a benign branch-matching condition to skip expensive build jobs. No credential handling, network calls, code execution, or dependency changes.",
+    "tests": "No new feature code; this is a workflow condition change (3 lines added). The change is verified by CI running on the merge group, where all checks passed: C++ Server Build/Test/Release (including the modified workflow, inference backend jobs correctly ran on main), CodeQL, Docs And Style, Launchpad PPA, and all validation workflows. The condition logic is self-evident — adding a branch prefix check is functionally correct by inspection."
+  },
+  "generation_seconds": 141.1,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-17T17:10:29Z",
+  "pr_number": 3604,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-17T17:14:36+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "c453af9bd82fed1de8f9539636fd8f4f41caf4bd",
+  "shout_outs": [],
+  "subject": "Don't run inference backend jobs on release branch builds (#3604)",
+  "summary": "Skips inference backend build/test jobs in the release workflow when triggered from release-v branches.",
+  "verdict": "Clean",
+  "verdict_reason": "A minimal, well-scoped CI fix with proper reviewer expertise, passing all checks, and no user-visible surface requiring release testing."
+}
