@@ -1,0 +1,167 @@
+{
+  "author": "@falabellamichael",
+  "base_ref": "main",
+  "claim": {
+    "breaking_declared": false,
+    "breaking_section": "- [ ] This PR introduces breaking changes.\n- [x] This PR does not introduce breaking changes.",
+    "fixes": [],
+    "kind": "fix",
+    "rfc": 0,
+    "working_group": ""
+  },
+  "cover": {
+    "explanation": "The fix framing holds for the routing surfaces: the base OpenAI compatibility contract (docs/api/openai.md) already documents POST /v1/images/generations as a supported endpoint and maps the image label to image endpoints only, and the base branch failed on both image requests to cloud image models and chat requests forwarded to a provider that does not serve them, so forwarding the former and answering the latter with the already-present unsupported_operation error delivers the stated contract. What the fix claim does not cover is surface 0: listing cloud image models in /v1/models with the image label is new surface area the base explicitly designed out (base cloud guide: discovery 'filters the results to chat-capable models'; base source: 'Chat-only by design'), and no ratified charter item or RFC names discovering and labeling cloud image models. The Cloud Hybrid working group's goal (routing between local and cloud models) is the closest fit, but it has no charter file yet, so that surface needs a charter item or an RFC before it is covered.",
+    "kind": "fix",
+    "name": "",
+    "surfaces": [
+      {
+        "by": "Looked in the base-branch docs and found the opposite stated: the base cloud guide (docs/guide/configuration/cloud.md) says discovery 'filters the results to chat-capable models', the base /v1/models contract in docs/api/openai.md says cloud models 'accept the standard chat-completions / completions requests below', and the base source (cloud_server.cpp, discover_models) notes 'Chat-only by design; embeddings/audio/reranking/image belong in sibling backends with diverging wire formats'. A was: absent surface is new and can only be covered by a charter item or RFC; no RFC is linked and no charter item names cloud image-model discovery and labeling (the nearest, Cross-Vendor's 'Image generation and editing via stable-diffusion.cpp', covers the local stable-diffusion.cpp backend, not cloud discovery, and the Cloud Hybrid group has no charter file).",
+        "covered": false,
+        "index": 0
+      },
+      {
+        "by": "The base-branch docs/api/openai.md endpoint table lists 'POST /v1/images/generations | Image Generation | prompt -> image' as a fully-available endpoint of the OpenAI-compatible API, and the base branch was failing on this request for cloud image models (was: failing — the model was discoverable in the catalog but the base case-sensitively mislabeled it as chat and had no image path); turning that failure into the documented endpoint's right answer is a fix under the existing contract.",
+        "covered": true,
+        "index": 1
+      },
+      {
+        "by": "The base-branch source already emits ErrorType::UNSUPPORTED_OPERATION on the cloud chat paths (CloudServer::wire_format_error(), and the SSE unsupported_operation wire-format-mismatch error in the streaming path), and the base docs/api/openai.md model-label contract says 'Every model names exactly one deployment mode, and a model is never given two labels that name different modes' with the image label mapped to '/images/generations, /images/edits, /images/variations'; chat requests to these models were failing on base (was: failing), so answering them with the local unsupported-operation error is the existing contract's clean error.",
+        "covered": true,
+        "index": 2
+      }
+    ]
+  },
+  "explanation": {
+    "body": "The body does not match the diff: undisclosed breaking change: A cloud model whose catalog entry declares an image type or image capability alongside supports_chat=true is reclassified from chat to image: it is relabeled in /v1/models and its chat requests now return a local unsupported error instead of being forwarded to the provider. undisclosed breaking change: The pre-existing backend-mode contract assertion is loosened so the cloud recipe may claim the image modality while declaring chat. the body ticks 'fixes something' but the diff changes scope, surface area, or experience.",
+    "diff": "The diff extends the chat-only cloud backend to serve image generation: discover_models() in src/cpp/server/backends/cloud/cloud_server.cpp now classifies image models (explicit image metadata plus case-insensitive id patterns, openai wire format only) and labels them image, CloudServer implements IImageServer to forward /v1/images/generations upstream with the provider's credentials, and chat/completion paths reject image models; the cloud guide in docs/guide/configuration/cloud.md gains an Image generation section and new tests are registered in CMakeLists.txt. The body's fix framing matches the diff, since base case-sensitively missed Flux-2-Klein-9B-GGUF and advertised it as chat. The one unmentioned wrinkle is discovery precedence: an entry with an image type or capability plus supports_chat=true was a working chat model on base but now errors locally, and the backend-mode contract assertion was loosened to match.",
+    "quality": "Checked docs/guide/configuration/cloud.md (the PR adds an Image generation section and fixes its chat-only discovery/troubleshooting wording), plus docs/api/openai.md, docs/api/lemonade.md, docs/guide/cli.md, docs/guide/concepts.md, and the generated docs/dev/backends-reference.md, which omits cloud entirely and needs no regeneration; only the /v1/models cloud paragraph in docs/api/openai.md is left untrue. On tests, CloudImagesTest is registered with add_cpp_ci_test(CloudImagesTest CI ON ...) under the standard if(BUILD_TESTING AND EXISTS ...) guard so cpp-ci runs it, and its discovery-count/label, upstream-id-rewrite, chat-blocked, and credential-gating assertions (plus the new cloud rows in BackendModeContractTest, already registered) all fail on pre-fix code. Docs to do: State in docs/api/openai.md that cloud image models take /v1/images/generations, not chat.",
+    "reviewers": "jeremyfowers: code owner for new endpoints, new backends, breaking changes. ramkrishna2910: maintains cloud api integration, smart router and orchestration, stable diffusion. eddierichter-amd: maintains smart router.",
+    "scope": "The fix framing holds for the routing surfaces: the base OpenAI compatibility contract (docs/api/openai.md) already documents POST /v1/images/generations as a supported endpoint and maps the image label to image endpoints only, and the base branch failed on both image requests to cloud image models and chat requests forwarded to a provider that does not serve them, so forwarding the former and answering the latter with the already-present unsupported_operation error delivers the stated contract. What the fix claim does not cover is surface 0: listing cloud image models in /v1/models with the image label is new surface area the base explicitly designed out (base cloud guide: discovery 'filters the results to chat-capable models'; base source: 'Chat-only by design'), and no ratified charter item or RFC names discovering and labeling cloud image models. The Cloud Hybrid working group's goal (routing between local and cloud models) is the closest fit, but it has no charter file yet, so that surface needs a charter item or an RFC before it is covered. Not covered: Cloud image models are now discovered and listed in /v1/models with the image label, from explicit image metadata and… (endpoint-behavior)."
+  },
+  "facts": {
+    "areas": [
+      "cloud API integration",
+      "smart router and orchestration",
+      "stable diffusion"
+    ],
+    "body_mismatches": [],
+    "breaking_changes": [
+      {
+        "disclosed": false,
+        "migration": "none",
+        "what": "A cloud model whose catalog entry declares an image type or image capability alongside supports_chat=true is reclassified from chat to image: it is relabeled in /v1/models and its chat requests now return a local unsupported error instead of being forwarded to the provider",
+        "where": "src/cpp/server/backends/cloud/cloud_server.cpp"
+      },
+      {
+        "disclosed": false,
+        "migration": "none",
+        "what": "The pre-existing backend-mode contract assertion is loosened so the cloud recipe may claim the image modality while declaring chat",
+        "where": "test/cpp/test_backend_mode_contract.cpp"
+      }
+    ],
+    "explanation": "The diff extends the chat-only cloud backend to serve image generation: discover_models() in src/cpp/server/backends/cloud/cloud_server.cpp now classifies image models (explicit image metadata plus case-insensitive id patterns, openai wire format only) and labels them image, CloudServer implements IImageServer to forward /v1/images/generations upstream with the provider's credentials, and chat/completion paths reject image models; the cloud guide in docs/guide/configuration/cloud.md gains an Image generation section and new tests are registered in CMakeLists.txt. The body's fix framing matches the diff, since base case-sensitively missed Flux-2-Klein-9B-GGUF and advertised it as chat. The one unmentioned wrinkle is discovery precedence: an entry with an image type or capability plus supports_chat=true was a working chat model on base but now errors locally, and the backend-mode contract assertion was loosened to match.",
+    "surfaces": [
+      {
+        "kind": "endpoint-behavior",
+        "was": "absent",
+        "what": "Cloud image models are now discovered and listed in /v1/models with the image label, from explicit image metadata and case-insensitive id patterns (openai wire format only)",
+        "where": "src/cpp/server/backends/cloud/cloud_server.cpp"
+      },
+      {
+        "kind": "endpoint-behavior",
+        "was": "failing",
+        "what": "POST /v1/images/generations on a cloud image model rewrites model to the upstream id and forwards to the provider's /images/generations using the provider's resolved credentials",
+        "where": "src/cpp/server/backends/cloud/cloud_server.cpp"
+      },
+      {
+        "kind": "endpoint-behavior",
+        "was": "failing",
+        "what": "chat/completions and completions on a cloud image model now return a local unsupported-operation error (SSE unsupported_operation when streaming) instead of forwarding to the provider's chat endpoint [already present in base-branch source: unsupported_operation]",
+        "where": "src/cpp/server/backends/cloud/cloud_server.cpp"
+      },
+      {
+        "kind": "internal",
+        "what": "New Image generation section plus updated discovery and troubleshooting text inside the existing cloud guide page",
+        "where": "docs/guide/configuration/cloud.md"
+      },
+      {
+        "kind": "internal",
+        "what": "New CloudImagesTest with mock-provider discovery/routing/auth coverage, its CMake CI registration, and cloud image/chat/mixed cases added to the backend-mode contract test",
+        "where": "test/cpp/test_cloud_images.cpp"
+      }
+    ]
+  },
+  "generation_seconds": 4490.7,
+  "head_sha": "d902d01e1437f959300dba42319ce15d5764896d",
+  "is_draft": false,
+  "labels": [
+    "enhancement",
+    "area::api"
+  ],
+  "outputs": {
+    "body_matches_diff": "no",
+    "docs_and_tests": "gaps",
+    "label": "rfc:required",
+    "scope": "needs-rfc",
+    "scope_display": "needs-rfc",
+    "scope_name": "",
+    "suggested_reviewers": [
+      "@jeremyfowers",
+      "@ramkrishna2910",
+      "@eddierichter-amd"
+    ]
+  },
+  "pr_number": 3566,
+  "quality": {
+    "docs": {
+      "gaps": [
+        {
+          "action": "State in docs/api/openai.md that cloud image models take /v1/images/generations, not chat",
+          "what": "The GET /v1/models section still says cloud-routed models \"accept the standard chat-completions / completions requests below\", but this PR's discovered cloud image models appear in that same listing and reject chat-shaped requests in favor of /v1/images/generations",
+          "where": "docs/api/openai.md"
+        }
+      ],
+      "status": "gaps"
+    },
+    "explanation": "Checked docs/guide/configuration/cloud.md (the PR adds an Image generation section and fixes its chat-only discovery/troubleshooting wording), plus docs/api/openai.md, docs/api/lemonade.md, docs/guide/cli.md, docs/guide/concepts.md, and the generated docs/dev/backends-reference.md, which omits cloud entirely and needs no regeneration; only the /v1/models cloud paragraph in docs/api/openai.md is left untrue. On tests, CloudImagesTest is registered with add_cpp_ci_test(CloudImagesTest CI ON ...) under the standard if(BUILD_TESTING AND EXISTS ...) guard so cpp-ci runs it, and its discovery-count/label, upstream-id-rewrite, chat-blocked, and credential-gating assertions (plus the new cloud rows in BackendModeContractTest, already registered) all fail on pre-fix code.",
+    "tests": {
+      "gaps": [],
+      "status": "ok"
+    }
+  },
+  "replay_sha": "",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-17T01:28:05+00:00",
+  "reviewers": [
+    {
+      "basis": "code-owner",
+      "detail": "new endpoints, new backends, breaking changes",
+      "handle": "@jeremyfowers",
+      "in_maintainer_table": true
+    },
+    {
+      "basis": "area",
+      "detail": "cloud api integration, smart router and orchestration, stable diffusion",
+      "handle": "@ramkrishna2910",
+      "in_maintainer_table": true
+    },
+    {
+      "basis": "area",
+      "detail": "smart router",
+      "handle": "@eddierichter-amd",
+      "in_maintainer_table": true
+    }
+  ],
+  "state": "OPEN",
+  "title": "Fix cloud image generation routing",
+  "triage_version": "pr-triage-2026-09-10",
+  "uncovered_surfaces": [
+    {
+      "kind": "endpoint-behavior",
+      "was": "absent",
+      "what": "Cloud image models are now discovered and listed in /v1/models with the image label, from explicit image metadata and case-insensitive id patterns (openai wire format only)",
+      "where": "src/cpp/server/backends/cloud/cloud_server.cpp"
+    }
+  ],
+  "url": "https://github.com/lemonade-sdk/lemonade/pull/3566"
+}
