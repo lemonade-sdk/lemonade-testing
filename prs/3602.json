@@ -1,0 +1,153 @@
+{
+  "author": "@kpoineal",
+  "base_ref": "GUI3_squashed",
+  "claim": {
+    "breaking_declared": false,
+    "breaking_section": "- [ ] This PR introduces breaking changes.\n- [x] This PR does not introduce breaking changes.",
+    "fixes": [],
+    "kind": "none",
+    "rfc": 0,
+    "working_group": ""
+  },
+  "cover": {
+    "explanation": "All three surfaces are GUI3 localization, which plainly belongs to the GUI App working group's goal ('Users can explore local AI in a delightful built-in GUI'), but that group has no charter file — only a table row in docs/dev/working-groups/README.md — so there is no ratified item naming a locale, a language selector, or localized app descriptions. No RFC is linked and no base-branch documentation promises localization, so nothing covers the change as it stands. Naming the group is what lets lead @kponiel be asked whether this is inside the group's intent.",
+    "kind": "working-group",
+    "name": "GUI App",
+    "surfaces": [
+      {
+        "by": "no charter file exists for the GUI App working group — it is only a row in docs/dev/working-groups/README.md with the goal 'Users can explore local AI in a delightful built-in GUI' — and a goal statement alone covers nothing; no RFC is linked and no base-branch doc (e.g. docs/dev/web-ui.md) states that the GUI should be localized",
+        "covered": false,
+        "index": 0
+      },
+      {
+        "by": "no charter file exists for the GUI App working group, so no ratified charter item names localized marketplace app descriptions; no RFC is linked and no base-branch doc states the Apps view should carry translated descriptions",
+        "covered": false,
+        "index": 1
+      },
+      {
+        "by": "no charter file exists for the GUI App working group, and no base-branch doc or charter item says the view crash screen's text should change with locale, so turning its view name into a translated string is a new behavior with no statement of intent; no RFC is linked",
+        "covered": false,
+        "index": 2
+      }
+    ]
+  },
+  "explanation": {
+    "body": "The body does not match the diff: Add Simplified Chinese localization across GUI3, including shared navigation, chat, models, backends, monitoring… — actually: The shared view crash screen (ViewErrorBoundary in App.tsx: 'Something went wrong in …' / 'Try again') and the 'Loading downloads' Suspense label remain….",
+    "diff": "Adds a new i18n module (src/app/src/i18n.tsx) with a ~700-key zh-CN dictionary, a Language selector in the Settings server section (ConnectView.tsx), and browser-language auto-detection, and wraps user-visible strings and aria-labels across the GUI3 views with t(); it also ships hardcoded Simplified Chinese marketplace app descriptions in AppsView.tsx, CJK font fallbacks in tokens.css, and a lemonade_locale browser-storage key that the clear-local-data path now removes. The body's claims match the diff, with one gap: the shared view crash screen is only half-wired — its view name is now translated but the screen's own text stays English and two of its dictionary keys are never used. No server, CLI, config, or API changes, and the ticked 'no breaking changes' box holds.",
+    "quality": "Checked docs/dev/app.md, docs/dev/web-ui.md, and the docs/guide tree on the base branch: no page owns GUI3 feature documentation (the guide covers CLI/server topics and the dev pages are build-architecture docs that stay true), so the new Language selector and zh-CN strings have no doc home to update. The PR ships no test and nothing in src/app/tests or test/app references locale; the Playwright specs run by the test-gui-playwright job in cpp_server_build_test_release.yml (features.spec.ts, a11y.spec.ts) exercise the changed views only in en-US through t(), so they catch i18n plumbing breakage but not a broken or emptied Chinese locale. Tests to do: Add src/app/tests/i18n.spec.ts selecting zh-CN and asserting translated nav labels render.",
+    "reviewers": "kponiel: leads the GUI App working group. fl0rianr: maintains gui.",
+    "scope": "All three surfaces are GUI3 localization, which plainly belongs to the GUI App working group's goal ('Users can explore local AI in a delightful built-in GUI'), but that group has no charter file — only a table row in docs/dev/working-groups/README.md — so there is no ratified item naming a locale, a language selector, or localized app descriptions. No RFC is linked and no base-branch documentation promises localization, so nothing covers the change as it stands. Naming the group is what lets lead @kponiel be asked whether this is inside the group's intent. Not covered: Simplified Chinese (zh-CN) locale for the GUI3 UI, auto-detected from the browser language and switchable via a new… (gui); Simplified Chinese descriptions for marketplace apps, sourced from a client-side map keyed by app id in the Apps view (gui); View crash screen now embeds the translated view name, so its text changes with locale and switching languages clears a… (gui). The GUI App working group has no charter under docs/dev/working-groups, so its scope cannot be checked; the label is rfc:required until a charter is committed."
+  },
+  "facts": {
+    "areas": [
+      "GUI",
+      "a11y"
+    ],
+    "body_mismatches": [
+      {
+        "actual": "The shared view crash screen (ViewErrorBoundary in App.tsx: 'Something went wrong in …' / 'Try again') and the 'Loading downloads' Suspense label remain hardcoded English even though the boundary's view-name prop now goes through t(), and the crash-screen translation keys added in i18n.tsx are unused",
+        "claim": "Add Simplified Chinese localization across GUI3, including shared navigation, chat, models, backends, monitoring, downloads, MCP, accessibility labels"
+      }
+    ],
+    "breaking_changes": [],
+    "explanation": "Adds a new i18n module (src/app/src/i18n.tsx) with a ~700-key zh-CN dictionary, a Language selector in the Settings server section (ConnectView.tsx), and browser-language auto-detection, and wraps user-visible strings and aria-labels across the GUI3 views with t(); it also ships hardcoded Simplified Chinese marketplace app descriptions in AppsView.tsx, CJK font fallbacks in tokens.css, and a lemonade_locale browser-storage key that the clear-local-data path now removes. The body's claims match the diff, with one gap: the shared view crash screen is only half-wired — its view name is now translated but the screen's own text stays English and two of its dictionary keys are never used. No server, CLI, config, or API changes, and the ticked 'no breaking changes' box holds.",
+    "surfaces": [
+      {
+        "kind": "gui",
+        "was": "absent",
+        "what": "Simplified Chinese (zh-CN) locale for the GUI3 UI, auto-detected from the browser language and switchable via a new Language selector in Settings, applied across navigation, chat, models, backends, apps, monitor, downloads, MCP, and aria-labels",
+        "where": "src/app/src/i18n.tsx"
+      },
+      {
+        "kind": "gui",
+        "was": "absent",
+        "what": "Simplified Chinese descriptions for marketplace apps, sourced from a client-side map keyed by app id in the Apps view",
+        "where": "src/app/src/components/AppsView.tsx"
+      },
+      {
+        "kind": "gui",
+        "was": "working",
+        "what": "View crash screen now embeds the translated view name, so its text changes with locale and switching languages clears a displayed view error",
+        "where": "src/app/src/App.tsx"
+      }
+    ]
+  },
+  "generation_seconds": 4645.3,
+  "head_sha": "846d1d9cd46c2ab9468fee7d1385b673600cf771",
+  "is_draft": false,
+  "labels": [
+    "web ui",
+    "app"
+  ],
+  "outputs": {
+    "body_matches_diff": "no",
+    "docs_and_tests": "gaps",
+    "label": "rfc:required",
+    "scope": "no-charter",
+    "scope_display": "no-charter (GUI App)",
+    "scope_name": "GUI App",
+    "suggested_reviewers": [
+      "@kponiel",
+      "@fl0rianr"
+    ]
+  },
+  "pr_number": 3602,
+  "quality": {
+    "docs": {
+      "gaps": [],
+      "status": "ok"
+    },
+    "explanation": "Checked docs/dev/app.md, docs/dev/web-ui.md, and the docs/guide tree on the base branch: no page owns GUI3 feature documentation (the guide covers CLI/server topics and the dev pages are build-architecture docs that stay true), so the new Language selector and zh-CN strings have no doc home to update. The PR ships no test and nothing in src/app/tests or test/app references locale; the Playwright specs run by the test-gui-playwright job in cpp_server_build_test_release.yml (features.spec.ts, a11y.spec.ts) exercise the changed views only in en-US through t(), so they catch i18n plumbing breakage but not a broken or emptied Chinese locale.",
+    "tests": {
+      "gaps": [
+        {
+          "action": "Add src/app/tests/i18n.spec.ts selecting zh-CN and asserting translated nav labels render.",
+          "what": "No test covers the new zh-CN locale: nothing in CI sets a non-English locale, exercises the Settings Language selector, or asserts any translation, so dropping the ZH_CN map or the selector wiring would leave CI green",
+          "where": "src/app/tests/"
+        }
+      ],
+      "status": "gaps"
+    }
+  },
+  "replay_sha": "",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-17T05:33:51+00:00",
+  "reviewers": [
+    {
+      "basis": "wg-lead",
+      "detail": "GUI App",
+      "handle": "@kponiel",
+      "in_maintainer_table": false
+    },
+    {
+      "basis": "area",
+      "detail": "gui",
+      "handle": "@fl0rianr",
+      "in_maintainer_table": true
+    }
+  ],
+  "state": "OPEN",
+  "title": "feat(gui): add Simplified Chinese localization",
+  "triage_version": "pr-triage-2026-09-10",
+  "uncovered_surfaces": [
+    {
+      "kind": "gui",
+      "was": "absent",
+      "what": "Simplified Chinese (zh-CN) locale for the GUI3 UI, auto-detected from the browser language and switchable via a new Language selector in Settings, applied across navigation, chat, models, backends, apps, monitor, downloads, MCP, and aria-labels",
+      "where": "src/app/src/i18n.tsx"
+    },
+    {
+      "kind": "gui",
+      "was": "absent",
+      "what": "Simplified Chinese descriptions for marketplace apps, sourced from a client-side map keyed by app id in the Apps view",
+      "where": "src/app/src/components/AppsView.tsx"
+    },
+    {
+      "kind": "gui",
+      "was": "working",
+      "what": "View crash screen now embeds the translated view name, so its text changes with locale and switching languages clears a displayed view error",
+      "where": "src/app/src/App.tsx"
+    }
+  ],
+  "url": "https://github.com/lemonade-sdk/lemonade/pull/3602"
+}
