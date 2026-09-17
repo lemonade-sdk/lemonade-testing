@@ -1,0 +1,115 @@
+{
+  "author": "@lambadalambda",
+  "base_ref": "main",
+  "claim": {
+    "breaking_declared": false,
+    "breaking_section": "- [ ] This PR introduces breaking changes.\n- [x] This PR does not introduce breaking changes.",
+    "fixes": [
+      3573
+    ],
+    "kind": "fix",
+    "rfc": 0,
+    "working_group": ""
+  },
+  "cover": {
+    "explanation": "The PR claims a plain fix (bug label, 'fixes something and does not need a WG/RFC'), and the base-branch docs state the intended behavior it restores: the cloud configuration guide says discovery captures the context window from the provider's context_length and runs at every cache build, so the post-load reset to 32768 with max_context_window dropped is a deviation, not intended behavior. The backend guide's statement that ctx_size is opt-in via uses_ctx_size covers skipping ctx_size auto-injection for cloud backends. Issue #3573 supplies evidence of the deviation; no working-group charter or RFC is needed.",
+    "kind": "fix",
+    "name": "",
+    "surfaces": [
+      {
+        "by": "base-branch docs/guide/configuration/cloud.md, 'How discovery works': '- **Context window** — from `context_length`, when reported.' and 'Discovery runs at every cache build (server startup, install, auth)' — the provider-discovered context window is what a discovered cloud model's metadata is supposed to carry, so resetting it to the local 32768 fallback after load contradicts the documented contract; and base-branch docs/dev/adding-a-backend.md: 'ctx_size is opt-in via `uses_ctx_size`' — covering the part that stops auto-injecting ctx_size at load for backends that don't declare it. The facts pass flagged the surface 'was: failing' with context_length, max_context_window, ctx_size, and uses_ctx_size already present in base-branch source, i.e. a fix by the existing contract.",
+        "covered": true,
+        "index": 0
+      }
+    ]
+  },
+  "explanation": {
+    "body": "The title, body, and template claims describe what the diff does.",
+    "diff": "The diff fixes #3573 in two places: populate_model_metadata in src/cpp/server/model_manager.cpp stops zeroing max_context_window for dynamic-models backends (cloud) so the provider's discovery value survives cache rebuilds, and Router::load_model in src/cpp/server/router.cpp skips ctx_size auto-tuning for backends whose descriptor lacks uses_ctx_size, so the 32768 memory-fallback no longer overwrites cloud context or leaks into loaded recipe_options. test/server_endpoints.py extends the mock provider to advertise context_length and asserts the 262144 value before and after chat/load plus no ctx_size in /health, which is the regression the body describes. The body matches the diff; the behavior change is a fix restoring the provider-advertised value, so no breaking changes are introduced.",
+    "quality": "Checked docs/api/openai.md, docs/api/lemonade.md, and docs/guide/configuration/cloud.md: cloud.md already documents the provider context_length mapping the fix restores, but openai.md's max_context_window field note omits cloud models and is now untrue. The regression extends test/server_endpoints.py (test_012d_cloud_install_then_auth_then_chat) with exact-value assertions verified to fail on main, and the full suite runs in the endpoint jobs of cpp_server_build_test_release.yml on Linux and Windows. Docs to do: Add cloud models to the max_context_window field note in docs/api/openai.md.",
+    "reviewers": "jeremyfowers: wrote code this PR touches (blame relevance 426). ramkrishna2910: maintains cloud api integration, smart router and orchestration. eddierichter-amd: maintains smart router.",
+    "scope": "The PR claims a plain fix (bug label, 'fixes something and does not need a WG/RFC'), and the base-branch docs state the intended behavior it restores: the cloud configuration guide says discovery captures the context window from the provider's context_length and runs at every cache build, so the post-load reset to 32768 with max_context_window dropped is a deviation, not intended behavior. The backend guide's statement that ctx_size is opt-in via uses_ctx_size covers skipping ctx_size auto-injection for cloud backends. Issue #3573 supplies evidence of the deviation; no working-group charter or RFC is needed."
+  },
+  "facts": {
+    "areas": [
+      "cloud API integration",
+      "smart router and orchestration"
+    ],
+    "body_mismatches": [],
+    "breaking_changes": [],
+    "explanation": "The diff fixes #3573 in two places: populate_model_metadata in src/cpp/server/model_manager.cpp stops zeroing max_context_window for dynamic-models backends (cloud) so the provider's discovery value survives cache rebuilds, and Router::load_model in src/cpp/server/router.cpp skips ctx_size auto-tuning for backends whose descriptor lacks uses_ctx_size, so the 32768 memory-fallback no longer overwrites cloud context or leaks into loaded recipe_options. test/server_endpoints.py extends the mock provider to advertise context_length and asserts the 262144 value before and after chat/load plus no ctx_size in /health, which is the regression the body describes. The body matches the diff; the behavior change is a fix restoring the provider-advertised value, so no breaking changes are introduced.",
+    "surfaces": [
+      {
+        "kind": "endpoint-behavior",
+        "was": "failing",
+        "what": "Cloud model context metadata is preserved after load: /models and /health keep reporting the provider-discovered context_length/max_context_window instead of resetting to the local auto-tune fallback (32768, with max_context_window dropped), and ctx_size is no longer auto-injected at load for backends not declaring uses_ctx_size [already present in base-branch source: context_length, max_context_window, ctx_size, uses_ctx_size]",
+        "where": "src/cpp/server/model_manager.cpp"
+      }
+    ]
+  },
+  "generation_seconds": 2783.3,
+  "head_sha": "922ac95d6f2112ef56e825ae0afead2ea5e2a00e",
+  "is_draft": false,
+  "labels": [
+    "bug"
+  ],
+  "outputs": {
+    "body_matches_diff": "yes",
+    "docs_and_tests": "gaps",
+    "label": "rfc:not-required",
+    "scope": "fix",
+    "scope_display": "fix",
+    "scope_name": "",
+    "suggested_reviewers": [
+      "@jeremyfowers",
+      "@ramkrishna2910",
+      "@eddierichter-amd"
+    ]
+  },
+  "pr_number": 3575,
+  "quality": {
+    "docs": {
+      "gaps": [
+        {
+          "action": "Add cloud models to the max_context_window field note in docs/api/openai.md",
+          "what": "/models reference says max_context_window is populated only for downloaded GGUF/llama.cpp and FLM models (\"local static metadata\"), but this PR makes cloud models report it too, from provider discovery",
+          "where": "docs/api/openai.md"
+        }
+      ],
+      "status": "gaps"
+    },
+    "explanation": "Checked docs/api/openai.md, docs/api/lemonade.md, and docs/guide/configuration/cloud.md: cloud.md already documents the provider context_length mapping the fix restores, but openai.md's max_context_window field note omits cloud models and is now untrue. The regression extends test/server_endpoints.py (test_012d_cloud_install_then_auth_then_chat) with exact-value assertions verified to fail on main, and the full suite runs in the endpoint jobs of cpp_server_build_test_release.yml on Linux and Windows.",
+    "tests": {
+      "gaps": [],
+      "status": "ok"
+    }
+  },
+  "replay_sha": "",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-17T02:55:54+00:00",
+  "reviewers": [
+    {
+      "basis": "code-author",
+      "detail": "wrote code this PR touches (blame relevance 426)",
+      "handle": "@jeremyfowers",
+      "in_maintainer_table": true
+    },
+    {
+      "basis": "area",
+      "detail": "cloud api integration, smart router and orchestration",
+      "handle": "@ramkrishna2910",
+      "in_maintainer_table": true
+    },
+    {
+      "basis": "area",
+      "detail": "smart router",
+      "handle": "@eddierichter-amd",
+      "in_maintainer_table": true
+    }
+  ],
+  "state": "OPEN",
+  "title": "fix(server): preserve cloud context after load",
+  "triage_version": "pr-triage-2026-09-10",
+  "uncovered_surfaces": [],
+  "url": "https://github.com/lemonade-sdk/lemonade/pull/3575"
+}
