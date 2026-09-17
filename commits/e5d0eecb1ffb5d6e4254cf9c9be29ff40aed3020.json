@@ -1,0 +1,36 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.40",
+  "commit_sha": "e5d0eecb1ffb5d6e4254cf9c9be29ff40aed3020",
+  "committed_at": "2026-09-17T17:37:11+00:00",
+  "evidence": {
+    "api_compatibility": "Breaking change: openmoss configs with backend: rocm or rocm_bin no longer resolve. The BackendDescriptor::support list in openmoss.h had the rocm row removed, bin_variants trimmed to ['vulkan', 'cuda'], rocm version pin and asset checksums dropped from backend_versions.json, rocm_bin removed from defaults.json, and the TheRock loader-path branch in openmoss_server.cpp dead-code was removed. The PR acknowledges this and documents the migration.",
+    "documentation": "README.md support table, docs/dev/backends-reference.md backend matrix and capabilities table, docs/guide/configuration/README.md config example, and generated regions were all updated. The PR author notes 'Generated regions regenerated from the descriptor; no generated region hand-edited.' All user-facing docs reflect the removal.",
+    "manual_release_testing": "This commit removes a user-reachable configuration path: openmoss configs with backend: rocm or rocm_bin overrides no longer resolve. The PR describes a migration (use vulkan or cuda, or backend: auto). The PR is intentionally temporary ('merge this PR asap...revert this PR and apply the fix'). No evidence shows a human exercised the Vulkan-only openmoss path end-to-end on a ROCm-capable system. The residual risk is that a user on AMD hardware with OpenMOSS now has to switch backend and re-download the binary — the Vulkan and CUDA code paths remain untouched, but nobody demonstrated the post-merge configuration resolves cleanly on a real machine.",
+    "post_approval_commits": "None. There is exactly one commit (a590a205e0ebad53c31dcc2076aac4cc4a37c044) and the approval was cast against that same commit. No churn between approval and merge.",
+    "review": "PR approved by @pwilkin (subject-matter expert for OpenMOSS per contribute.md) at 17:26:30Z, about 18 minutes after the PR was opened and 27 minutes before merge. @pwilkin responded 'Wow, this is stupid :O yeah, by all means, let's do the hotfix' confirming he understands the rationale. No inline review comments were posted beyond the approval. The PR is explicitly framed as a stop-gap hotfix with a plan to revert once a real fix lands, which @pwilkin acknowledged.",
+    "security": "No security concerns. The change removes dead code and unused download assets (ROCM checksums in backend_versions.json). No network calls, credential handling, or supply-chain surface was added or modified beyond removing the ROCm binary pins.",
+    "tests": "CI passed across all workflows (C++ build, docker-smoke-test, CodeQL, MCP smoke test, server download registry, etc.). The two OpenMOSS audio-generation CI jobs had their backends trimmed from 'vulkan rocm' to 'vulkan' — appropriate for the change. The test/utils/capabilities.py file was updated to remove rocm from the openmoss backend list. No existing tests were weakened, deleted, or inappropriately skipped."
+  },
+  "generation_seconds": 149.6,
+  "maintainer_todos": [
+    {
+      "text": "Start the server with an OpenMOSS config and confirm that selecting backend \"vulkan\" or \"cuda\" works correctly, since the ROCm path no longer exists."
+    }
+  ],
+  "merge_date": "2026-09-17T18:35:06Z",
+  "pr_number": 3615,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-17T18:39:19+00:00",
+  "reviewers": [
+    "@pwilkin"
+  ],
+  "sha": "e5d0eecb1ffb5d6e4254cf9c9be29ff40aed3020",
+  "shout_outs": [],
+  "subject": "Remove OpenMOSS ROCm support on all operating systems (#3615)",
+  "summary": "Removes ROCm backend support for OpenMOSS (TTS and audio generation) on Windows and Linux because ROCm builds run ~40x slower than Vulkan on the same hardware, and marks the change as a hotfix pending a real fix.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "This is a hotfix merge with clear expert review from @pwilkin (OpenMOSS subject-matter expert per contribute.md), but it is a deliberate breaking change that temporarily removes user-facing ROCm support and explicitly acknowledges a real fix is still pending."
+}
