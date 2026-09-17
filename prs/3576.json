@@ -1,0 +1,116 @@
+{
+  "author": "@lambadalambda",
+  "base_ref": "main",
+  "claim": {
+    "breaking_declared": false,
+    "breaking_section": "- [ ] This PR introduces breaking changes.\n- [x] This PR does not introduce breaking changes.",
+    "fixes": [
+      3574
+    ],
+    "kind": "fix",
+    "rfc": 0,
+    "working_group": ""
+  },
+  "cover": {
+    "explanation": "This is a bug fix that restores the documented contract for context_length: docs/api/openai.md on main defines the field as the number of tokens the model can handle in one request, but the base branch reports the raw aggregate ctx_size, which overstates per-request capacity when llama.cpp runs multiple non-unified slots (per issue #3574). The PR's per-slot computation (ctx_size / --parallel, --kv-unified-per-slot cap, GGUF training-context cap, and the same semantics for the auto-context fallback) turns the already-present field into the right answer, so no RFC or working-group charter is required.",
+    "kind": "fix",
+    "name": "",
+    "surfaces": [
+      {
+        "by": "docs/api/openai.md on the base branch (models list/retrieve field descriptions, line 1045): 'context_length - Number of tokens the model can handle in one request. Uses the loaded value when the model is running and the configured ctx_size otherwise (omitted when neither is known).' The base branch already reports this field from ctx_size (already present in base-branch source) but copies the raw aggregate value, which contradicts the per-request semantics under --parallel/--no-kv-unified, as documented by the failure in issue #3574 (surface marked was: failing); deriving per-slot capacity from that same ctx_size, capped by --kv-unified-per-slot and the GGUF training context, and applying the same semantics to the auto-context fallback makes the endpoints deliver what the docs already promise.",
+        "covered": true,
+        "index": 0
+      }
+    ]
+  },
+  "explanation": {
+    "body": "The title, body, and template claims describe what the diff does.",
+    "diff": "The diff adds backends::llamacpp::per_request_context_length (src/cpp/server/backends/llamacpp/llamacpp_server.cpp) and routes llamacpp models through it in Server::resolve_context_length (src/cpp/server/server.cpp), so context_length now reflects per-request slot capacity: non-unified KV is divided by --parallel, unified KV is capped by --kv-unified-per-slot, and everything is capped by the GGUF max context window; the auto-context fallback gets the same slot semantics. test/server_endpoints.py adds test_006aa covering these cases. The body matches the diff: it fixes #3574's aggregate-KV reporting, changes no names, defaults, or formats, and touches no docs.",
+    "quality": "Checked docs/api/openai.md (the model list field reference that documents context_length), docs/api/lemonade.md, and docs/guide/configuration/llamacpp.md: only openai.md describes the field, and its 'loaded value / configured ctx_size' wording is now untrue for llamacpp, whose loaded and configured paths both run through the new per-slot partitioning. For tests, test_006aa_context_length_accounts_for_llamacpp_slots ships in test/server_endpoints.py, which the Test endpoints steps of cpp_server_build_test_release.yml run on Ubuntu, Windows, macOS, and the arm64 matrix, and it asserts exact partitioned values (4096/2048/16384 vs raw 8192/32768 pre-fix) that the PR body confirms failed on main. Docs to do: Add a note on per-slot ctx_size partitioning for llamacpp to the context_length field in docs/api/openai.md.",
+    "reviewers": "jeremyfowers: wrote code this PR touches (blame relevance 182). abn: maintains http. pwilkin: maintains llamacpp.",
+    "scope": "This is a bug fix that restores the documented contract for context_length: docs/api/openai.md on main defines the field as the number of tokens the model can handle in one request, but the base branch reports the raw aggregate ctx_size, which overstates per-request capacity when llama.cpp runs multiple non-unified slots (per issue #3574). The PR's per-slot computation (ctx_size / --parallel, --kv-unified-per-slot cap, GGUF training-context cap, and the same semantics for the auto-context fallback) turns the already-present field into the right answer, so no RFC or working-group charter is required."
+  },
+  "facts": {
+    "areas": [
+      "llamacpp",
+      "http"
+    ],
+    "body_mismatches": [],
+    "breaking_changes": [],
+    "explanation": "The diff adds backends::llamacpp::per_request_context_length (src/cpp/server/backends/llamacpp/llamacpp_server.cpp) and routes llamacpp models through it in Server::resolve_context_length (src/cpp/server/server.cpp), so context_length now reflects per-request slot capacity: non-unified KV is divided by --parallel, unified KV is capped by --kv-unified-per-slot, and everything is capped by the GGUF max context window; the auto-context fallback gets the same slot semantics. test/server_endpoints.py adds test_006aa covering these cases. The body matches the diff: it fixes #3574's aggregate-KV reporting, changes no names, defaults, or formats, and touches no docs.",
+    "surfaces": [
+      {
+        "kind": "endpoint-behavior",
+        "was": "failing",
+        "what": "context_length on the models list/retrieve endpoints reports per-slot llama.cpp capacity (ctx_size partitioned across non-unified --parallel slots, capped by --kv-unified-per-slot and the GGUF training context) instead of the raw aggregate ctx_size, including for the auto-context fallback [already present in base-branch source: context_length, ctx_size]",
+        "where": "src/cpp/server/server.cpp"
+      }
+    ]
+  },
+  "generation_seconds": 1165.7,
+  "head_sha": "ef9b67fcdac1091755dd3c271553f260eeb2445c",
+  "is_draft": false,
+  "labels": [
+    "bug",
+    "engine::llamacpp"
+  ],
+  "outputs": {
+    "body_matches_diff": "yes",
+    "docs_and_tests": "gaps",
+    "label": "rfc:not-required",
+    "scope": "fix",
+    "scope_display": "fix",
+    "scope_name": "",
+    "suggested_reviewers": [
+      "@jeremyfowers",
+      "@abn",
+      "@pwilkin"
+    ]
+  },
+  "pr_number": 3576,
+  "quality": {
+    "docs": {
+      "gaps": [
+        {
+          "action": "Add a note on per-slot ctx_size partitioning for llamacpp to the context_length field in docs/api/openai.md",
+          "what": "The context_length field description says it uses the loaded value or the configured ctx_size, but for llamacpp it now reports the per-slot partitioned capacity (e.g. 4096 for ctx_size 8192 with --parallel 2 --no-kv-unified)",
+          "where": "docs/api/openai.md"
+        }
+      ],
+      "status": "gaps"
+    },
+    "explanation": "Checked docs/api/openai.md (the model list field reference that documents context_length), docs/api/lemonade.md, and docs/guide/configuration/llamacpp.md: only openai.md describes the field, and its 'loaded value / configured ctx_size' wording is now untrue for llamacpp, whose loaded and configured paths both run through the new per-slot partitioning. For tests, test_006aa_context_length_accounts_for_llamacpp_slots ships in test/server_endpoints.py, which the Test endpoints steps of cpp_server_build_test_release.yml run on Ubuntu, Windows, macOS, and the arm64 matrix, and it asserts exact partitioned values (4096/2048/16384 vs raw 8192/32768 pre-fix) that the PR body confirms failed on main.",
+    "tests": {
+      "gaps": [],
+      "status": "ok"
+    }
+  },
+  "replay_sha": "",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-17T03:15:21+00:00",
+  "reviewers": [
+    {
+      "basis": "code-author",
+      "detail": "wrote code this PR touches (blame relevance 182)",
+      "handle": "@jeremyfowers",
+      "in_maintainer_table": true
+    },
+    {
+      "basis": "area",
+      "detail": "http",
+      "handle": "@abn",
+      "in_maintainer_table": true
+    },
+    {
+      "basis": "area",
+      "detail": "llamacpp",
+      "handle": "@pwilkin",
+      "in_maintainer_table": true
+    }
+  ],
+  "state": "OPEN",
+  "title": "fix(server): report per-slot llama context",
+  "triage_version": "pr-triage-2026-09-10",
+  "uncovered_surfaces": [],
+  "url": "https://github.com/lemonade-sdk/lemonade/pull/3576"
+}
