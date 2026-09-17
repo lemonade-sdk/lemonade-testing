@@ -1,0 +1,32 @@
+{
+  "author": "@noamsto",
+  "branch": "main",
+  "bucket": "v2026.40",
+  "commit_sha": "63f8cc61f6a201036bbddfcf6b82e6529e4fbe98",
+  "committed_at": "2026-09-17T15:44:47+00:00",
+  "evidence": {
+    "api_compatibility": "No API changes. This is a data-only addition to a JSON catalogue file. No schema, protocol, config contract, or behavior was modified. The `suggested: true` flag is a client-side visibility hint that does not break any existing API.",
+    "documentation": "The PR body serves as inline documentation with a comparison table, rationale for version choice (1.5 over 1.0 to avoid #2674 chat-template bug), explanation of excluded models (31B dense, 397B MoE, FP8/NVFP4/MLX), and detailed testing notes. No external docs were updated, which is appropriate for a catalogue-only change.",
+    "manual_release_testing": "Both model entries are new user-reachable additions marked `suggested: true` so they appear in Lemonade clients. @jeremyfowers tested them locally before approval, and @noamsto tested them on AMD hardware before merging. No evidence of a manual release-candidate exercise of the full client flow, but the change is a harmless JSON append — no code, no config, no behavior change — so the risk is negligible.",
+    "post_approval_commits": "No commits were added after the latest approval (2026-09-16T23:48:38Z). One commit (11e673ff, \"mark Ornith 1.5 entries as suggested\") was added after the first approval, but it directly implements the reviewer's own requested change — adding `suggested: true` — and was followed by a re-approval. This is normal review workflow, not problematic churn.",
+    "review": "PR #3564 was opened by @noamsto and reviewed by @jeremyfowers (admin maintainer, subject areas include new endpoints, backends, large features, CI). Review flow: (1) @jeremyfowers APPROVED at 2026-09-16T15:32:57Z after locally pulling and loading the models — \"Pulled and loaded the models locally. Thanks for the contribution @noamsto!\" (2) @jeremyfowers then requested changes at 2026-09-16T15:50:44Z: \"Please apply `suggested: true` so that the models will show up in people's lemonade clients :)\" (3) @noamsto pushed a fixup commit adding `suggested: true` to both entries, and @jeremyfowers re-approved at 2026-09-16T23:48:38Z. @noamsto also linked issue #2674 in a comment to document the chat-template rationale for choosing 1.5 over 1.0. The PR body includes detailed testing notes (local RYZEN AI MAX+ 395 hardware, /v1/responses, /v1/chat/completions with images, tool call round-trips, thinking output).",
+    "security": "No security concerns. The commit only appends two model entries to a JSON catalogue. The checkpoint references point to `ornith-ai/Ornith-1.5-*-GGUF` HuggingFace repos, which follow the same pattern as all existing entries. No credential handling, network calls, code execution paths, or dependency changes.",
+    "tests": "The change is purely data — two new model entries added to src/cpp/resources/server_models.json (28 lines, no deletions). No source code was modified. All CI checks passed on the merge queue: C++ build + tests, Docker smoke tests, container builds (amd64 + arm64), docs-and-style, MCP smoke tests, and packaging builds. The PR author reported hands-on testing on RYZEN AI MAX+ 395 (gfx1151) with llama.cpp 10621, exercising both models through `/v1/responses` and `/v1/chat/completions` with images. No unit tests were expected since this is a JSON catalogue change; the existing server download registry tests validate the schema."
+  },
+  "generation_seconds": 146.8,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-17T16:28:42Z",
+  "pr_number": 3564,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-17T16:32:50+00:00",
+  "reviewers": [
+    "@jeremyfowers"
+  ],
+  "sha": "63f8cc61f6a201036bbddfcf6b82e6529e4fbe98",
+  "shout_outs": [],
+  "subject": "feat(models): add Ornith 1.5 9B and 35B A3B to the catalogue (#3564)",
+  "summary": "Adds two new Ornith 1.5 model entries (9B GGUF and 35B-A3B GGUF) to server_models.json with vision, chat, coding, reasoning, and tool-calling labels.",
+  "verdict": "Clean",
+  "verdict_reason": "A well-scoped data-only change reviewed by an admin maintainer who tested locally, with all CI checks passing and no post-approval behavior changes."
+}
