@@ -1,0 +1,107 @@
+{
+  "author": "@jeremyfowers",
+  "base_ref": "main",
+  "claim": {
+    "breaking_declared": null,
+    "breaking_section": "",
+    "fixes": [
+      3603
+    ],
+    "kind": "fix",
+    "rfc": 0,
+    "working_group": ""
+  },
+  "cover": {
+    "explanation": "The PR claims a fix, but the base branch never states that release candidate builds skip the self-hosted inference jobs; the workflow gates explicitly run them on release-v* pushes, and the closest text (the gate comment on rig capacity and testing.md's merge-queue policy) covers only the signing and PR paths. The change implements issue #3603's proposal to cut 20-30 minutes from the candidate critical path, and a linked issue cannot establish intent. The Enterprise Grade charter names no such item; its closest CI bullet ('Increased filtering, so that fewer runners are invoked when narrow changes are introduced.') addresses change-scoped filtering during development, not release-branch job scheduling.",
+    "kind": "fix",
+    "name": "",
+    "surfaces": [
+      {
+        "by": "no base-branch document states that the inference jobs are skipped on release-v* builds: the base if: gates in .github/workflows/cpp_server_build_test_release.yml run them on release-v* pushes (excluding only tag pushes and the signing paths), the adjacent comment states only 'Skip inference tests when signing is enabled (tag pushes or manual workflow_dispatch)' and 'Self-hosted rig capacity is the binding constraint, so the merge queue runs these instead of PR pushes', and docs/dev/release.md and docs/dev/testing.md describe the candidate and merge-queue process without excluding these jobs from candidate builds; the exclusion is issue #3603's proposal, and a linked issue is never the source of intent",
+        "covered": false,
+        "index": 0
+      }
+    ]
+  },
+  "explanation": {
+    "body": "The body does not match the diff: the body presents this as a fix (#3603) but the diff changes scope, surface area, or experience.",
+    "diff": "The diff adds one line to each of three `if:` gates in .github/workflows/cpp_server_build_test_release.yml so the Windows .exe inference, Linux .deb inference, and watchdog lifecycle test jobs do not run on `refs/heads/release-v*` branches, which are release candidate builds published as prereleases under candidate-v<version>. That matches issue #3603's proposal to drop these ~20-30 minute self-hosted jobs from the release critical path, and the 'Closes #3603' reference is accurate. No product code, defaults, or user-facing behavior changes.",
+    "quality": "The PR only adds a release-v* ref exclusion to three `if:` conditions in .github/workflows/cpp_server_build_test_release.yml, so it has no user-facing surface and no testable code path; per the guides, CI-only changes are n/a for both. I checked the two pages that own this behavior, docs/dev/release.md (describes release-v* branch candidate builds but says nothing about which CI jobs run on them) and docs/dev/testing.md's \"What defers to the merge queue\" section (documents the Inference backend tests group's PR-push/merge-queue deferral but is scoped to PR pushes, not release branches), and neither claim is made untrue by the change.",
+    "reviewers": "bong-water-water-bong: wrote code this PR touches (blame relevance 18). fl0rianr: maintains ci.",
+    "scope": "The PR claims a fix, but the base branch never states that release candidate builds skip the self-hosted inference jobs; the workflow gates explicitly run them on release-v* pushes, and the closest text (the gate comment on rig capacity and testing.md's merge-queue policy) covers only the signing and PR paths. The change implements issue #3603's proposal to cut 20-30 minutes from the candidate critical path, and a linked issue cannot establish intent. The Enterprise Grade charter names no such item; its closest CI bullet ('Increased filtering, so that fewer runners are invoked when narrow changes are introduced.') addresses change-scoped filtering during development, not release-branch job scheduling. Not covered: The three self-hosted inference test jobs (test-exe-inference, test-deb-inference, test-watchdog-lifecycle-linux) are… (ci-infra)."
+  },
+  "facts": {
+    "areas": [
+      "ci"
+    ],
+    "body_mismatches": [],
+    "breaking_changes": [],
+    "explanation": "The diff adds one line to each of three `if:` gates in .github/workflows/cpp_server_build_test_release.yml so the Windows .exe inference, Linux .deb inference, and watchdog lifecycle test jobs do not run on `refs/heads/release-v*` branches, which are release candidate builds published as prereleases under candidate-v<version>. That matches issue #3603's proposal to drop these ~20-30 minute self-hosted jobs from the release critical path, and the 'Closes #3603' reference is accurate. No product code, defaults, or user-facing behavior changes.",
+    "surfaces": [
+      {
+        "kind": "ci-infra",
+        "what": "The three self-hosted inference test jobs (test-exe-inference, test-deb-inference, test-watchdog-lifecycle-linux) are now skipped when the build ref is a release-v* branch, i.e. release candidate / prerelease builds",
+        "where": ".github/workflows/cpp_server_build_test_release.yml"
+      }
+    ]
+  },
+  "generation_seconds": 2063.3,
+  "head_sha": "f748f4fff4746f1b1fbb775ff465ae9f548b0d32",
+  "is_draft": false,
+  "labels": [
+    "documentation",
+    "area::ci"
+  ],
+  "outputs": {
+    "body_matches_diff": "no",
+    "docs_and_tests": "ok",
+    "label": "rfc:required",
+    "scope": "needs-rfc",
+    "scope_display": "needs-rfc",
+    "scope_name": "",
+    "suggested_reviewers": [
+      "@bong-water-water-bong",
+      "@fl0rianr"
+    ]
+  },
+  "pr_number": 3604,
+  "quality": {
+    "docs": {
+      "gaps": [],
+      "status": "n/a"
+    },
+    "explanation": "The PR only adds a release-v* ref exclusion to three `if:` conditions in .github/workflows/cpp_server_build_test_release.yml, so it has no user-facing surface and no testable code path; per the guides, CI-only changes are n/a for both. I checked the two pages that own this behavior, docs/dev/release.md (describes release-v* branch candidate builds but says nothing about which CI jobs run on them) and docs/dev/testing.md's \"What defers to the merge queue\" section (documents the Inference backend tests group's PR-push/merge-queue deferral but is scoped to PR pushes, not release branches), and neither claim is made untrue by the change.",
+    "tests": {
+      "gaps": [],
+      "status": "n/a"
+    }
+  },
+  "replay_sha": "",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-17T06:08:20+00:00",
+  "reviewers": [
+    {
+      "basis": "code-author",
+      "detail": "wrote code this PR touches (blame relevance 18)",
+      "handle": "@bong-water-water-bong",
+      "in_maintainer_table": false
+    },
+    {
+      "basis": "area",
+      "detail": "ci",
+      "handle": "@fl0rianr",
+      "in_maintainer_table": true
+    }
+  ],
+  "state": "OPEN",
+  "title": "Don't run inference backend jobs on release branch builds",
+  "triage_version": "pr-triage-2026-09-10",
+  "uncovered_surfaces": [
+    {
+      "kind": "ci-infra",
+      "what": "The three self-hosted inference test jobs (test-exe-inference, test-deb-inference, test-watchdog-lifecycle-linux) are now skipped when the build ref is a release-v* branch, i.e. release candidate / prerelease builds",
+      "where": ".github/workflows/cpp_server_build_test_release.yml"
+    }
+  ],
+  "url": "https://github.com/lemonade-sdk/lemonade/pull/3604"
+}
