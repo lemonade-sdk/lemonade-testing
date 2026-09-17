@@ -1,0 +1,32 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.40",
+  "commit_sha": "1c2f67f1888968bc0d8527e05e37dc714c0719b0",
+  "committed_at": "2026-09-17T17:01:35+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking API changes. The /v1/models endpoint (which was the victim of the 4-second latency spike) now returns faster. The only behavioral shift is that manual edits to user_models.json no longer take effect until lemond restarts, which the PR notes was always the implied lifecycle — there was no public contract promising live-reload of that file.",
+    "documentation": "docs/guide/configuration/custom-models.md was updated to clarify that editing user_models.json requires a restart of lemond. This is an important documentation improvement that aligns the docs with actual behavior. The change is minimal and correct.",
+    "manual_release_testing": "No to-do: the change removes an undocumented, untested feature (hand-editing user_models.json and having it take effect without restart). No user is expected to exercise this path. The documentation update (adding the restart note to custom-models.md) reflects existing lifecycle expectations — the file's documented workflow has always implied a restart for changes. This is a behavior clarification, not a new user-facing feature.",
+    "post_approval_commits": "None. Both PR commits (30d4e40 and fe1e8de) predate the first approval at 16:54:44Z. The PR was merged clean with no post-approval churn.",
+    "review": "PR #3613 received one approval from @fl0rianr (COLLABORATOR) at 2026-09-17T16:54:44Z with 'Agree, let's drop it. LGTM.' Per docs/dev/contribute.md, reviewers with subject area expertise in smart router, CI, and backends are appropriate for server-side model caching changes. The review was substantive — the reviewer understood the rationale and approved. No inline comments or follow-up discussion were needed. There were no commits after approval (first and latest approval are identical at 2026-09-17T16:54:44Z, and no commits were added after that time).",
+    "security": "No security concerns. The removal eliminates a file read from disk on every lookup miss, which actually reduces the attack surface slightly. No credential handling, network calls, or code execution changes are involved.",
+    "tests": "The change removes 85 lines (the entire refresh_user_models_from_disk_for_lookup implementation, its declaration, and all call sites in get_model_info, model_exists, model_exists_unfiltered, and get_model_info_unfiltered). No new tests were added, which is appropriate since this is a removal of internal behavior with no new features. The existing C++ unit tests, server download registry tests, and endpoint tests all passed, confirming that normal model lookup and existence checks still work correctly without the fallback reload."
+  },
+  "generation_seconds": 152.9,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-17T17:53:34Z",
+  "pr_number": 3613,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-17T17:58:01+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "1c2f67f1888968bc0d8527e05e37dc714c0719b0",
+  "shout_outs": [],
+  "subject": "fix(server): drop the lookup-miss registry reload (#3613)",
+  "summary": "Removes the on-demand registry reload from disk on model-lookup misses, a feature that caused severe latency regressions on /v1/models with no justified use case, and documents that editing user_models.json requires a restart.",
+  "verdict": "Clean",
+  "verdict_reason": "A well-documented, low-risk removal of dead cache-reload code with a significant performance win, thoroughly reviewed with all CI checks passing and no post-approval churn."
+}
