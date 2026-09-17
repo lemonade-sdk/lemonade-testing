@@ -1,0 +1,107 @@
+{
+  "author": "@superm1",
+  "base_ref": "main",
+  "claim": {
+    "breaking_declared": false,
+    "breaking_section": "- [ ] This PR introduces breaking changes.\n- [x] This PR does not introduce breaking changes.",
+    "fixes": [],
+    "kind": "fix",
+    "rfc": 0,
+    "working_group": ""
+  },
+  "cover": {
+    "explanation": "The PR claims a fix and the claim holds: the base-branch docs describe the Tauri desktop app as providing 'a native desktop experience for managing models and chatting with LLMs running on lemond', but the base-branch user-agent check sent every Android-looking UA — including the Linux desktop app's WebKitGTK UA — to the Play store. Making the desktop shell skip the store redirect while leaving mobile browser redirects unchanged delivers the documented behavior, and issue #3577 is only evidence that the behavior had broken.",
+    "kind": "fix",
+    "name": "",
+    "surfaces": [
+      {
+        "by": "docs/dev/app.md (Overview) on the base branch: 'This app provides a native desktop experience for managing models and chatting with LLMs running on `lemond`.' The base-branch renderer entry (src/app/src/renderer/index.tsx) unconditionally redirected any /android/i user agent to the Google Play store, and the desktop app's WebKitGTK webview UA carries an Android compatibility token, so the documented desktop experience failed on Linux; skipping the redirect inside Tauri while leaving mobile browser redirects unchanged delivers the documented behavior. Linked issue #3577 is evidence of the deviation, not the source of intent.",
+        "covered": true,
+        "index": 0
+      }
+    ]
+  },
+  "explanation": {
+    "body": "The title, body, and template claims describe what the diff does.",
+    "diff": "The diff moves the inline mobile-user-agent redirect out of src/app/src/renderer/index.tsx into a new getMobileStoreUrl utility in src/app/src/renderer/utils/mobileStoreRedirect.ts, which returns null when running inside Tauri so the desktop shell (whose WebKitGTK UA contains a 'like Android 4.4' token) no longer bounces to the Play store; isTauri is exported from tauriShim.ts and a regression test is added in test/app/app-regression/mobileStoreRedirect.test.cjs. The body's claim of 'a special case for Tauri to avoid redirects' matches the diff exactly, and the 'no breaking changes' box is correct.",
+    "quality": "I checked the base docs tree (guide/, dev/, integrations/) for a page owning the mobile store redirect behavior; none exists and the fix adds no flag, endpoint, config key, or backend, so no doc edit is owed. The new regression test test/app/app-regression/mobileStoreRedirect.test.cjs is auto-discovered by test/app/run-app-regression-tests.cjs and runs in the docs_and_style.yml app-regression-tests job on every pull_request, with npm ci providing the typescript it compiles against. Its Tauri-desktop case asserts the post-fix null result for the WebKitGTK Android-token user agent, so it fails if the redirect regression returns.",
+    "reviewers": "kpoineal: code owner for Lemonade App GUI. bong-water-water-bong: wrote code this PR touches (blame relevance 22). fl0rianr: maintains gui.",
+    "scope": "The PR claims a fix and the claim holds: the base-branch docs describe the Tauri desktop app as providing 'a native desktop experience for managing models and chatting with LLMs running on lemond', but the base-branch user-agent check sent every Android-looking UA — including the Linux desktop app's WebKitGTK UA — to the Play store. Making the desktop shell skip the store redirect while leaving mobile browser redirects unchanged delivers the documented behavior, and issue #3577 is only evidence that the behavior had broken."
+  },
+  "facts": {
+    "areas": [
+      "app",
+      "GUI"
+    ],
+    "body_mismatches": [],
+    "breaking_changes": [],
+    "explanation": "The diff moves the inline mobile-user-agent redirect out of src/app/src/renderer/index.tsx into a new getMobileStoreUrl utility in src/app/src/renderer/utils/mobileStoreRedirect.ts, which returns null when running inside Tauri so the desktop shell (whose WebKitGTK UA contains a 'like Android 4.4' token) no longer bounces to the Play store; isTauri is exported from tauriShim.ts and a regression test is added in test/app/app-regression/mobileStoreRedirect.test.cjs. The body's claim of 'a special case for Tauri to avoid redirects' matches the diff exactly, and the 'no breaking changes' box is correct.",
+    "surfaces": [
+      {
+        "kind": "gui",
+        "was": "failing",
+        "what": "Desktop app no longer redirects to the Google Play store when the Tauri/WebKitGTK user agent carries an Android compatibility token; mobile browser redirects are unchanged",
+        "where": "src/app/src/renderer/index.tsx"
+      }
+    ]
+  },
+  "generation_seconds": 921.0,
+  "head_sha": "c39810902acdce0acc0352b06eda619deda0e393",
+  "is_draft": false,
+  "labels": [
+    "app"
+  ],
+  "outputs": {
+    "body_matches_diff": "yes",
+    "docs_and_tests": "ok",
+    "label": "rfc:not-required",
+    "scope": "fix",
+    "scope_display": "fix",
+    "scope_name": "",
+    "suggested_reviewers": [
+      "@kpoineal",
+      "@bong-water-water-bong",
+      "@fl0rianr"
+    ]
+  },
+  "pr_number": 3578,
+  "quality": {
+    "docs": {
+      "gaps": [],
+      "status": "n/a"
+    },
+    "explanation": "I checked the base docs tree (guide/, dev/, integrations/) for a page owning the mobile store redirect behavior; none exists and the fix adds no flag, endpoint, config key, or backend, so no doc edit is owed. The new regression test test/app/app-regression/mobileStoreRedirect.test.cjs is auto-discovered by test/app/run-app-regression-tests.cjs and runs in the docs_and_style.yml app-regression-tests job on every pull_request, with npm ci providing the typescript it compiles against. Its Tauri-desktop case asserts the post-fix null result for the WebKitGTK Android-token user agent, so it fails if the redirect regression returns.",
+    "tests": {
+      "gaps": [],
+      "status": "ok"
+    }
+  },
+  "replay_sha": "",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-17T03:30:44+00:00",
+  "reviewers": [
+    {
+      "basis": "code-owner",
+      "detail": "Lemonade App GUI",
+      "handle": "@kpoineal",
+      "in_maintainer_table": true
+    },
+    {
+      "basis": "code-author",
+      "detail": "wrote code this PR touches (blame relevance 22)",
+      "handle": "@bong-water-water-bong",
+      "in_maintainer_table": false
+    },
+    {
+      "basis": "area",
+      "detail": "gui",
+      "handle": "@fl0rianr",
+      "in_maintainer_table": true
+    }
+  ],
+  "state": "OPEN",
+  "title": "fix(app): skip mobile redirect in desktop shell",
+  "triage_version": "pr-triage-2026-09-10",
+  "uncovered_surfaces": [],
+  "url": "https://github.com/lemonade-sdk/lemonade/pull/3578"
+}
