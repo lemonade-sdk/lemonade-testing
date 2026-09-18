@@ -1,0 +1,36 @@
+{
+  "author": "@abn",
+  "branch": "main",
+  "bucket": "v2026.40",
+  "commit_sha": "e8000b458d7748fe54f0af13ad2baca8bf782a46",
+  "committed_at": "2026-09-18T00:10:14+00:00",
+  "evidence": {
+    "api_compatibility": "Two new optional integer fields (max_output_tokens and max_completion_tokens) are added to the GET /v1/models response for cloud models. This is an additive change and does not remove, rename, or change the type of any existing field. Clients that do not recognize the new fields will simply ignore them. No breaking change.",
+    "documentation": "docs/api/openai.md updated to document max_output_tokens and max_completion_tokens fields on GET /v1/models response. docs/guide/configuration/cloud.md updated to document completion limit discovery under the discovery workflow section. Both changes are consistent with the code.",
+    "manual_release_testing": "This PR changes the GET /v1/models API response for cloud models by adding two new optional fields: max_output_tokens and max_completion_tokens. Neither is tested end-to-end by CI since it requires a live cloud provider connection. No evidence a human exercised this path with a real or mock cloud provider in a release-like environment. One manual release test is required (see Maintainer To-Do).",
+    "post_approval_commits": "No commits were added after the first and only approval. The single merge commit (faf4842ef5) predates the approval, and the merge group commit (e8000b45) is the squashed merge of that single commit.",
+    "review": "PR was reviewed by @fl0rianr across three substantive review rounds. The reviewer identified two real issues: (1) max_context_window was lost during build_cache() because populate_model_metadata() resets it to 0 for cloud models, and (2) the per_request_limits parsing did not match the actual OpenRouter schema (which uses completion_tokens rather than context_length). @fl0rianr also suggested stricter numeric parsing for out-of-range values. The author addressed all three concerns with a guard in model_manager.cpp for cloud models, correct per_request_limits capping via std::min, and float overflow bounds checking before int64_t casting. The reviewer approved ('LGTM now') at 2026-09-17T23:30:38Z on the final commit. Note: cloud API integration is under @ramkrishna2910's subject-matter expertise per docs/dev/contribute.md; @fl0rianr's expertise is in LMX omni models, GUI, CI, and smart router. The review was still thorough and technically sound.",
+    "security": "No security concerns. The change adds parsing of numeric fields from provider JSON and surfaces them; no credential handling, network calls, code execution, or permission changes. Float values are bounded before int64_t casting, preventing overflow. Malformed strings with trailing junk or negative values are rejected.",
+    "tests": "Added 90 lines of C++ unit tests in test/cpp/test_cloud_discovery_policy.cpp covering: nested provider structures (top_provider), fallback key precedence across multiple field names, string-encoded integer parsing, float overflow rejection, bare/minimal payloads, and malformed string rejection (trailing junk, negative values). Added 107 lines of Python integration tests: updated EndpointTests.test_012d_cloud_install_then_auth_then_chat to assert max_output_tokens and max_completion_tokens on GET /v1/models, and added test_012w_cloud_startup_preserves_discovered_limits which starts an isolated lemond process with a configured cloud provider and verifies the initial cache build preserves discovered token limits. The author reports 72/72 cpp-ci tests passed. CI confirms C++ unit tests, server endpoints (ubuntu-24.04-arm), and docker-smoke-test all passed. No evidence of test weakening or deletion."
+  },
+  "generation_seconds": 139.0,
+  "maintainer_todos": [
+    {
+      "text": "Start lemond with a configured cloud provider and API key, call GET /v1/models, and confirm the discovered cloud model entry includes max_output_tokens and max_completion_tokens integer fields with non-zero values."
+    }
+  ],
+  "merge_date": "2026-09-18T00:49:07Z",
+  "pr_number": 3568,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-18T00:53:04+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "e8000b458d7748fe54f0af13ad2baca8bf782a46",
+  "shout_outs": [],
+  "subject": "feat(server): parse and propagate cloud model token limits (#3568)",
+  "summary": "Parse context window and completion token limits from cloud provider model metadata and surface them on the /v1/models API response.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The /v1/models API adds two new response fields (max_output_tokens, max_completion_tokens) for cloud models that should be manually verified with a configured cloud provider before release, but no human has exercised this path."
+}
