@@ -1,0 +1,33 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.40",
+  "commit_sha": "ef3ed5456436ff36088d358d4c985f2a9a1c6de7",
+  "committed_at": "2026-09-19T09:43:57+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking API changes. MCP tool names, input schemas, and call contracts are preserved. The refactor moves from a hard-coded dispatch chain to a declarative registry but maintains identical runtime behavior. The MCP protocol (tools/list, tools/call) surface is unchanged. The generated MCP documentation (docs/api/mcp.md) is now auto-generated from the live registry, but the rendered content is equivalent to the previous version.",
+    "documentation": "docs/api/mcp.md is now generated from the live /mcp tools/list response via the new gen_mcp_boilerplate.py script. A CI check (gen_mcp_boilerplate.py --check) in docs_and_style.yml enforces docs-in-sync with runtime. All five tool descriptions, schemas, and return contracts are captured. Shared tool behavior (model selection, reasoning, sandbox, omni collections) is documented in the rendered text above the generated block. The MCP smoke test workflow was updated to include mcp_tool.h in its trigger paths.",
+    "manual_release_testing": "This commit is a structural refactor only — tool names, schemas, and call behavior remain unchanged. No new user-facing surface is introduced. The MCP smoke tests in CI exercise the tools/list and tools/call paths through real MCP protocol calls. While no human explicitly exercised a release candidate before merge, the refactoring preserves the existing tool contract and the existing smoke tests cover the same runtime paths. Residual risk: behavior drift in the large mcp_server.cpp restructure (481 deletions, ~400 additions), but the test coverage and review caught the one behavioral gap (null handling) before merge. No to-do required for a release candidate without new user-visible surface.",
+    "post_approval_commits": "One commit (811e7228) was added after @jeremyfowers' first approval (2026-09-18T21:45:52Z), fixing the null model validation bug identified in his review. This was a focused schema validation fix with an accompanying regression test. No commits were added after @anditherobot's latest approval (2026-09-19T04:49:54Z). The post-approval change stayed within the spirit of the approved PR and did not add new behavior.",
+    "review": "PR #3619 received substantive review from @jeremyfowers (MEMBER, subject matter expertise in MCP, omni models, and CI) and @anditherobot. @jeremyfowers left extensive inline comments across the diff (tool contract validation, description columns, error handling in the boilerplate generator, the null model situation bug) and performed a hands-on integration test — generating an image via MCP and then generating an HTML page displaying it. @anditherobot reviewed the final fix and verified the null handling in a live MCP CLI session. The PR explicitly states it introduces no new MCP tools or behavior, only structural reorganization.",
+    "security": "No new security concerns introduced. The sandboxed disk writes for image generation and omni artifacts (LEMONADE_MCP_IMAGE_DIR, path escape rejection via .. and symlinks) existed before this PR and remain unchanged. No credential handling, network calls, or permission changes. The new mcp_tool.h JSON-Schema validator is a pure local validation utility with no external dependencies.",
+    "tests": "New test file test/server_mcp.py (529 lines) includes comprehensive schema validation tests (rejecting value below minimum, duplicate tool names, non-collection model rejection for omni) and a targeted regression test for the null-optional-argument fix (test_021c). The CI includes mcp-smoke-test.yml which exercises all 5 MCP tools through both a native CMake build and a Docker image build. CI status for the merge commit: all workflows passed (C++ Server Build/Test/Release, MCP Smoke Test, docs_and_style including the new MCP docs-drift check, validate_vllm, validate_sdcpp)."
+  },
+  "generation_seconds": 214.7,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-19T10:27:46Z",
+  "pr_number": 3619,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-19T10:39:42+00:00",
+  "reviewers": [
+    "@jeremyfowers",
+    "@anditherobot"
+  ],
+  "sha": "ef3ed5456436ff36088d358d4c985f2a9a1c6de7",
+  "shout_outs": [],
+  "subject": "refactor(mcp): make tool definitions declarative (#3619)",
+  "summary": "Refactor the existing MCP tools onto a declarative tool registry that co-locates each tool's name, description, input schema, annotations, and handler, drives both tools/list and tools/call from the same registry, and generates the MCP tool reference from a live tools/list response.",
+  "verdict": "Clean",
+  "verdict_reason": "A well-scoped structural refactor with thorough reviewer involvement, adequate testing including a post-approval regression, and no breaking changes."
+}
