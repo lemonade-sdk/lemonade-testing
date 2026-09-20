@@ -1,0 +1,32 @@
+{
+  "author": "@zaneni6",
+  "branch": "main",
+  "bucket": "v2026.40",
+  "commit_sha": "d4e140776fc64e26b8c698a6fde673be017f5197",
+  "committed_at": "2026-09-20T02:10:35+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The change only updates a version string in backend_versions.json; no schema, protocol, config contract, CLI/API behavior, or persistence format is altered.",
+    "documentation": "No documentation changes required for a backend version pin. The backend_versions.json file is an internal resource; no user-facing docs, API specs, or guides are affected.",
+    "manual_release_testing": "Not required. This is a trivial version number change in a configuration JSON file that controls which upstream backend binary is downloaded at runtime. Automated CI build and drift-validation checks cover correctness, and the subject-matter expert reviewed it.",
+    "post_approval_commits": "None. The PR contained exactly one commit, which was the commit that received approval. The branch was not modified after approval.",
+    "review": "PR #3623 was approved by @superm1 on 2026-09-20T01:45:12Z. @superm1 is listed in docs/dev/contribute.md with FastFlowLM and NPU as subject areas, providing relevant expertise. No inline review comments were made; the PR is a one-line JSON edit.",
+    "security": "No concerns. This is a version number bump in a JSON config file — no network calls, credential handling, code execution paths, or supply-chain surface changes are introduced.",
+    "tests": "CI backend-docs-drift check passed. All build, smoke test, and validation workflows (C++ build, MCP smoke test, container builds on amd64/arm64, Docker smoke test) completed with SUCCESS. No new tests are expected for a version pin change."
+  },
+  "generation_seconds": 134.6,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-20T03:26:12Z",
+  "pr_number": 3623,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-20T03:30:08+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "d4e140776fc64e26b8c698a6fde673be017f5197",
+  "shout_outs": [],
+  "subject": "chore(backends): bump FastFlowLM to v1.0.6 (#3623)",
+  "summary": "Bump the pinned FastFlowLM (flm) NPU backend version from v1.0.5 to v1.0.6 in backend_versions.json.",
+  "verdict": "Clean",
+  "verdict_reason": "A single-line version pin approved by the maintainer with FastFlowLM/NPU expertise, with all CI checks passing and no post-approval changes."
+}
