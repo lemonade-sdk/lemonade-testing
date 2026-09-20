@@ -1,0 +1,37 @@
+{
+  "author": "@mashan555",
+  "branch": "main",
+  "bucket": "v2026.40",
+  "commit_sha": "d3481a80e816bb98492be45c5f01013b807433f6",
+  "committed_at": "2026-09-20T05:23:41+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The change is additive: `lemonade launch` gains a new agent `junie` that follows the same contract (model, api-key, agent-args) as existing agents. The `SUPPORTED_AGENTS` list and help text are extended. No existing behavior is modified.",
+    "documentation": "A new 117-line integration guide at docs/integrations/junie.md covers prerequisites, both launch flows, --agent-args, how the profile works, and switching models. docs/guide/cli.md is updated to list `junie` in the agent table, the supported-agents line, and an example. mkdocs.yml adds the page to the navigation. All changes are consistent with the RFC #3608 referenced in the PR body.",
+    "manual_release_testing": "The PR author verified the flow on macOS with Junie 26.9.14: loaded a model, ran `junie --model custom:lemonade`, and confirmed the profile was accepted and answered prompts. However, the PR explicitly notes 'A check on a native Windows machine would still be useful' — this is a real user-facing surface (Windows install path, .bat shim, Windows profile path) with no evidence of manual exercise on that platform.",
+    "post_approval_commits": "No commits were added after the first approval or after the latest approval. The commit tree is clean.",
+    "review": "Two approvals were submitted on the same merge commit (58976204) by @superm1 (2026-09-20T01:46:57Z) and @bitgamma (2026-09-20T05:19:08Z). Both review bodies are empty; there are no inline review comments. @sawansri (agents, tui, cli, launch subject-matter area) and @jeremyfowers (new CLI commands subject-matter area) were requested as reviewers but did not review or comment. The reviewers @superm1 (security, linux packaging) and @bitgamma (cli, recipes, benchmarking) have some relevant area expertise but the absence of substantive review comments is notable. No commits were added after approval.",
+    "security": "The code writes a JSON profile file to the user's Junie directory using atomic write (temp file + rename), consistent with the existing opencode and pi profile writers. The profile uses the default `apiKey: lemonade` when no key is provided, matching other agents. No network calls, credential leakage, or supply-chain surface introduced. The only external URL is the Junie install script referenced in documentation, which is user-visible and pre-existing in that documentation.",
+    "tests": "Six new Python tests (test_122 through test_127) in test/server_cli2.py cover: fake binary execution with --model custom:lemonade, profile file creation and contents, --api-key propagation, $JUNIE_HOME redirection, preservation of user-authored profiles, and Windows .bat shim detection. The Windows-only test (test_127) was skipped on macOS. Tests use stub binaries so they do not exercise a real Junie installation."
+  },
+  "generation_seconds": 176.8,
+  "maintainer_todos": [
+    {
+      "text": "Run `lemonade launch junie --model <any-loaded-model>` on a native Windows machine (with a real or stub junie.bat) and confirm the generated `~/.junie/models/lemonade.json` contains the correct baseUrl, apiKey, and displayName fields."
+    }
+  ],
+  "merge_date": "2026-09-20T06:01:49Z",
+  "pr_number": 3621,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-20T06:06:26+00:00",
+  "reviewers": [
+    "@superm1",
+    "@bitgamma"
+  ],
+  "sha": "d3481a80e816bb98492be45c5f01013b807433f6",
+  "shout_outs": [],
+  "subject": "feat(cli): add junie as a supported launch agent (#3621)",
+  "summary": "Adds Junie by JetBrains as a supported launch agent via `lemonade launch junie`, with profile generation, integration docs, and CLI tests.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The PR received two approvals with empty bodies and no inline comments, and while the implementation is sound and well-tested against stubs, there is no evidence of manual end-to-end testing on the primary target platform (Windows) where Junie integration will be most relevant."
+}
