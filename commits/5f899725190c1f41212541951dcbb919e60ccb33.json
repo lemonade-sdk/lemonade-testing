@@ -1,0 +1,36 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.40",
+  "commit_sha": "5f899725190c1f41212541951dcbb919e60ccb33",
+  "committed_at": "2026-09-20T01:49:19+00:00",
+  "evidence": {
+    "api_compatibility": "This is a dependency version bump with no changes to any exported API, CLI contract, config schema, or documented behavior. cpp-httplib v0.51.0 is a drop-in replacement for v0.47.0. No breaking changes.",
+    "documentation": "No documentation is affected by the single-line CMakeLists.txt change. The PR description mentioned updating embeddable build docs for LEMONADE_PORTABLE_BUILD, but that change is not present in this merged PR.",
+    "manual_release_testing": "No evidence that a human exercised the resulting artifact in its target environment. The CI builds against system libraries on Linux distros and verifies with readelf that portable artifacts do not depend on system copies of runtime dependencies, but this does not demonstrate that the built binary actually runs on Arch Linux with mbedTLS 4. The updated artifact is a shipped binary users install, so manual verification is warranted.",
+    "post_approval_commits": "The PR had one approval from @sofiageo at 2026-09-09T18:00:47Z. After that, the PR branch was updated on 2026-09-18 (10 days later) with a single commit (c46349d) containing the cpp-httplib version bump. No re-approval was obtained for the post-approval change. The diff after approval is the same one-line update (v0.47.0 → v0.51.0 in CMakeLists.txt), which is within the spirit and scope of the original PR description, so this is low risk but technically lacks renewed review.",
+    "review": "PR #3188 was reviewed by @sofiageo (subject-matter expert in linux packaging per contribute.md), who approved with the comment: 'It looks to fine me, and it compiles fine in Arch Linux. I just don't have an easy way to test other distros or the CI locally.' Three other reviewers were requested (@kenvandine, @ramkrishna2910, @jeremyfowers) but none submitted reviews. @superm1 left five inline comments questioning broader architectural decisions (LEMONADE_PORTABLE_BUILD design, setup.sh scope, portable build strategy), but these comments targeted a larger scope of changes that were not present in the merged diff.",
+    "security": "Updating cpp-httplib from v0.47.0 to v0.51.0 is a routine upstream dependency bump from a well-known, open-source project (yhirose/cpp-httplib). The bundled revision itself is unchanged; the only effect is that cpp-httplib's internal mbedTLS handling now supports mbedTLS 4. No supply-chain concerns, credential changes, or new execution paths introduced.",
+    "tests": "No new tests were added, which is appropriate for a single-line dependency version bump. The cpp-httplib upstream release notes confirm v0.51.0 adds mbedTLS 4 compatibility. CI on the merge group passed all workflows: Validate New llama.cpp Release (success), Validate New vLLM Release (success), Validate New stable-diffusion.cpp Release (success), and C++ Server Build, Test, and Release (success). The existing test suite exercises the build and smoke paths."
+  },
+  "generation_seconds": 235.7,
+  "maintainer_todos": [
+    {
+      "text": "Run the Lemonade server artifact built from this merge on Arch Linux and confirm it starts and accepts API calls without mbedTLS linking errors."
+    }
+  ],
+  "merge_date": "2026-09-20T02:35:40Z",
+  "pr_number": 3188,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-20T02:46:36+00:00",
+  "reviewers": [
+    "@sofiageo"
+  ],
+  "sha": "5f899725190c1f41212541951dcbb919e60ccb33",
+  "shout_outs": [],
+  "subject": "fix: support mbedTLS 4 on Arch Linux (#3188)",
+  "summary": "Updates bundled cpp-httplib from v0.47.0 to v0.51.0 to add mbedTLS 4 support for Arch Linux compatibility.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The single-line dependency bump was adequately reviewed and passes CI, but the updated artifact is a user-visible change that should be manually exercised on Arch Linux before release."
+}
