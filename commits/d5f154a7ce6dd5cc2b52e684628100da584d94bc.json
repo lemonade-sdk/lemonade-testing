@@ -1,0 +1,37 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.40",
+  "commit_sha": "d5f154a7ce6dd5cc2b52e684628100da584d94bc",
+  "committed_at": "2026-09-20T17:31:19+00:00",
+  "evidence": {
+    "api_compatibility": "This is a breaking change for Windows users who had backend: rocm configured for sd-cpp. The descriptor in sdcpp.h now lists rocm as Linux-only, the Windows asset filename is dropped from sdcpp_server.cpp, and the runtime now throws SystemInfo::get_unsupported_backend_error on Windows. Linux users are unaffected. The PR description marks this as a breaking change and documents migration to vulkan or backend: auto. The README.md and docs/dev/backends-reference.md are updated. CI validates the backend-docs-drift consistency.",
+    "documentation": "README.md ROCm support row updated from \"Windows, Linux\" to \"Linux\". docs/dev/backends-reference.md ROCm row updated from \"linux, windows\" to \"linux\". The PR's documentation checklist is marked done. The backend-docs-drift CI check passed, confirming the generated docs match the source-of-truth descriptor.",
+    "manual_release_testing": "The change modifies user-visible behavior on Windows: a user with sd-cpp:rocm in their config will now receive a clear error instead of silently slow inference. The CI no longer tests ROCm on Windows (by design), and no human has exercised this error path on a Windows build. A manual test on Windows with backend: rocm is recommended to confirm the error message is clear. Linux ROCm behavior is unchanged and was tested by CI.",
+    "post_approval_commits": "After the latest approval (2026-09-18T18:14:54Z), @superm1 added one commit (79269c4, 2026-09-20T17:00:50Z) that removes the ROCm validation leg from validate_sdcpp.yml on Windows. This commit is trivially within the scope of the approved PR — it is a CI housekeeping step that removes a test for a feature being removed. It does not change API, behavior, security, or risk profile. No re-approval was obtained, but the change is cosmetic to CI config only and did not alter the approved substance.",
+    "review": "PR #3616 received two substantive approvals: @superm1 (ROCm subject-matter expert per contribute.md) on 2026-09-17 and @ramkrishna2910 (stable-diffusion subject-matter expert) on 2026-09-18. Both approvals align with the project's guideline that PRs should have at least one reviewer with subject-matter expertise. No inline review comments were filed. The PR description includes measured performance data proving Windows ROCm delivers no acceleration and is sometimes slower than CPU, with a migration path to vulkan or auto.",
+    "security": "No security concerns. The change removes code paths (Windows ROCm asset loading and CI validation). No new credentials, network calls, code execution paths, permissions, or telemetry are introduced.",
+    "tests": "All CI checks passed on merge: CodeQL (c-cpp, python, rust, javascript-typescript), container build (amd64 + arm64), docker-smoke-test, docs-and-style (backend-docs-drift, vendored-asset-integrity, markdown-link-check, pre-commit), server download registry, C++ unit tests, Tauri compile-checks (linux + windows), embeddable builds (Linux, Linux ARM64, Windows, macOS), packaging (deb, RPM, PPA), and endpoint tests. The ROCm CI leg on Windows was correctly removed. No tests were weakened or deleted for features kept working; Linux ROCm remains tested."
+  },
+  "generation_seconds": 166.0,
+  "maintainer_todos": [
+    {
+      "text": "On a Windows machine, set sd-cpp backend to rocm in the config and confirm the server returns a clear unsupported-backend error rather than silently running inference at CPU speed."
+    }
+  ],
+  "merge_date": "2026-09-20T18:11:52Z",
+  "pr_number": 3616,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-20T18:16:27+00:00",
+  "reviewers": [
+    "@superm1",
+    "@ramkrishna2910"
+  ],
+  "sha": "d5f154a7ce6dd5cc2b52e684628100da584d94bc",
+  "shout_outs": [],
+  "subject": "Remove sd-cpp ROCm support on Windows (#3616)",
+  "summary": "Removes sd-cpp ROCm support on Windows where the backend ran at CPU speed without any acceleration, narrowing it to Linux-only, and updates CI and documentation accordingly.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "A user-visible behavior change on Windows (sd-cpp ROCm now errors instead of silently running at CPU speed) has not been manually exercised before release."
+}
