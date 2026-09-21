@@ -1,0 +1,32 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.40",
+  "commit_sha": "f86359b9ef3a62b3b3db7b64bf0bcab81497a340",
+  "committed_at": "2026-09-21T21:00:57+00:00",
+  "evidence": {
+    "api_compatibility": "No API changes. Only CI workflow YAML (docs_and_style.yml), a deleted config file (mlc_config.json), and four markdown files with corrected anchor references were touched.",
+    "documentation": "Four anchor links were corrected: docs/api/lemonade.md, docs/api/openai.md, docs/dev/lemonade-omni.md all point to the updated heading #share-a-collection-export-import-and-model-registries, and docs/dev/testing.md now references the Lychee check. Additionally, docs/guide/configuration/vllm.md had an em dash removed from a heading to resolve a cross-renderer anchor mismatch. All changes are accurate and improve link integrity.",
+    "manual_release_testing": "This is a CI configuration and documentation-only change. There is no user-facing surface (no API, CLI, GUI, config default, or artifact change). No manual release testing needed.",
+    "post_approval_commits": "One commit (cec6b81) was added after the first approval. It is a direct response to @fl0rianr's review comment, updating docs/dev/testing.md to reference the Lychee check instead of markdown-link-check. This is a one-line docs fix within the scope of the approved PR; no new behavior, no risk change. Zero commits added after the latest approval.",
+    "review": "PR #3632 was approved by @fl0rianr who has CI listed as a subject-area expertise (docs/dev/contribute.md maintainer table). Two approval reviews were submitted: first at 2026-09-21T20:28:53Z on commit 636dba4 with an LGTM plus a nit about docs/dev/testing.md still referencing markdown-link-check, and second at 2026-09-21T20:43:15Z after the follow-up commit addressed the nit. No inline comments or unresolved threads.",
+    "security": "No security concerns. The change removes the Node.js dependency (markdown-link-check npm package) from the CI pipeline and replaces it with the lychee GitHub Action. No credential handling, network calls to unknown endpoints, or code execution paths are introduced.",
+    "tests": "No functional tests required for a CI-tool replacement and doc-link fix. The PR author verified the change against main before merging: lychee --include-fragments was run on the codebase and found exactly the three broken anchors. The CI job itself (Docs And Style → markdown-link-check, now lychee) passed green."
+  },
+  "generation_seconds": 133.6,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-21T21:40:53Z",
+  "pr_number": 3632,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-21T21:44:53+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "f86359b9ef3a62b3b3db7b64bf0bcab81497a340",
+  "shout_outs": [],
+  "subject": "ci(docs): check heading anchors by replacing markdown-link-check with lychee (#3632)",
+  "summary": "Replaces the markdown-link-check CI tool with lychee to catch broken heading-fragment anchors, and fixes four orphaned anchor links found by the new tool.",
+  "verdict": "Clean",
+  "verdict_reason": "Well-scoped CI/docs improvement with appropriate review coverage, all checks passing, and no user-facing surface."
+}
