@@ -8,6 +8,4 @@
 
 ## Breaking Changes
 
-- Model version format changed from `X.Y.Z` to `YYYY.WW.N` or `YYYY.WW.0~<count>.<hash>`; tools and scripts that parse `--version` output or compare version strings must be updated.
-- The `/models` and `/pull/variants` endpoints now serialize `registry_source` as an empty string for models without an explicit source override, instead of `'huggingface'`; clients that assume the field is always set to a registry name will need to handle empty values.
-- The unversioned `/docs` endpoint subtree now returns a JSON `404` instead of falling through to the SPA web app; any client relying on that fallback will receive a 404 response.
+- Version format changed from `X.Y.Z` to `YYYY.WW.N` or `YYYY.WW.0~<count>.<hash>`; tools and scripts that parse `--version` output or compare version strings must be updated.
