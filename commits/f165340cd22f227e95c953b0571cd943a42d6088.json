@@ -1,0 +1,32 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.40",
+  "commit_sha": "f165340cd22f227e95c953b0571cd943a42d6088",
+  "committed_at": "2026-09-21T15:28:54+00:00",
+  "evidence": {
+    "api_compatibility": "No API, CLI, config, or integration changes. Only markdown files and mkdocs.yml were modified. No breaking changes whatsoever.",
+    "documentation": "The PR is documentation itself. It creates three focused install pages, a Linux distribution chooser page, and updates the install README to a simple platform-table format. mkdocs.yml nav is updated to reflect the new structure. The README.md install links are updated to point at the new stable pages instead of bare release download URLs. The change is internally consistent and self-documenting.",
+    "manual_release_testing": "The PR adds three new documentation pages (windows.md, linux.md, macos.md) and restructures the install overview. The PR author validated by building docs with Zensical and verifying internal links. CI markdown-link-check passed. No human browsed the rendered lemonade-server.ai install pages. Residual risk is negligible — broken links or formatting issues would be caught by existing CI. No to-do required for release.",
+    "post_approval_commits": "None. First and latest approval both occurred at 2026-09-17T17:38:43Z on commit 742da29b. No commits were added after approval. The final merge commit f165340 was created by GitHub on merge; it contains no new changes beyond the approved tree.",
+    "review": "PR #2923 was reviewed and approved by @jeremyfowers (MEMBER), whose subject-area expertise per contribute.md includes website and governance. He asked for justification upfront (comment 2026-08-07), received a detailed answer explaining the fix of a broken migration notice (lemonade-server.ai/install_options.html redirecting badly), approved on 2026-09-17T17:38:43Z, and merged on 2026-09-21T16:03:21Z. One inline suggestion to restructure the Linux page as sub-bullets instead of a separate doc was raised but author declined to change; this is a harmless design preference that did not block the PR.",
+    "security": "No security concerns. The changes add local markdown files with internal links to GitHub releases and update mkdocs.yml navigation. No credential handling, network calls, code execution paths, or dependency changes.",
+    "tests": "This is a pure documentation PR with no code changes. All CI checks passed: Docs And Style (app-regression-tests, markdown-link-check, vendored-asset-integrity), CodeQL, Server Download Registry Tests, and all other workflows returned success or appropriately skipped (build/release workflows that only trigger on non-doc-only branches). The markdown-link-check CI specifically validates the new links in the install pages."
+  },
+  "generation_seconds": 174.4,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-21T16:03:21Z",
+  "pr_number": 2923,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-21T16:08:03+00:00",
+  "reviewers": [
+    "@jeremyfowers"
+  ],
+  "sha": "f165340cd22f227e95c953b0571cd943a42d6088",
+  "shout_outs": [],
+  "subject": "docs: add stable platform install pages (#2923)",
+  "summary": "Adds stable platform install pages for Windows, Linux, and macOS, replacing broken redirect links with dedicated documentation pages, and updates the README and mkdocs navigation to reference them.",
+  "verdict": "Clean",
+  "verdict_reason": "Pure documentation change with appropriate review coverage, all CI checks passed, and no post-approval modifications."
+}
