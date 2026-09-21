@@ -4,9 +4,7 @@
 
 ### Breaking Changes
 
-- Model versions now use `2026.39.0` (year-week-number) instead of `11.9.0`; scripts or tools that parse `--version` output need a quick update.
-- The `/models` and `/pull/variants` API serializes `registry_source` as `""` for models without a source override (not `"huggingface"`); clients assuming it's always set need to handle the empty case.
-- The unversioned `/docs` path subtree now returns a JSON `404` — the old fallback to the SPA web app is gone.
+- Versions now use `2026.39.0` (year-week-number) instead of `11.9.0`.
 
 ### 🎨 Image editing on AMD 🎨
 
