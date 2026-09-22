@@ -1,0 +1,32 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.40",
+  "commit_sha": "25a73abf22c5472d225d4b02016b42015061908f",
+  "committed_at": "2026-09-21T23:59:33+00:00",
+  "evidence": {
+    "api_compatibility": "No API changes. Only markdown content was modified: internal anchor links in four docs were updated to match new headings in custom-models.md. No schema, protocol, config, CLI contract, exported API, or persistence format changed.",
+    "documentation": "The guide's structure was improved: a new intro table summarizes the three ways to add a model; vague headings like \"Choose a Workflow\" were replaced with topic-specific names (\"Pull a Model\", \"Pull by Hugging Face or ModelScope Checkpoint\", etc.); an orphaned \"Overview\" section was renamed for what it holds and moved to sit above the sections it introduces; sharing a collection was promoted to its own section. Internal links in docs/api/lemonade.md, docs/api/openai.md, docs/dev/app.md, and docs/dev/lemonade-omni.md were updated to match. The PR description clearly states the rationale and this work's place in a larger stack.",
+    "manual_release_testing": "Not applicable — the change renames section headings and reorders existing content; no code, CLI, API, GUI, config, or installed artifact is modified. The cross-references in four other docs were updated to match the new headings, preserving link integrity, which was confirmed by the markdown-link-check CI step passing.",
+    "post_approval_commits": "None. The single PR commit (6b6e5ee) was approved before merge; no commits were added after @fl0rianr's approval.",
+    "review": "PR #3640 had one approval from @fl0rianr (LGTM, submitted 2026-09-21T21:01:20Z). The PR is part of a stacked PR series (stack #3641, position 2 of 8). The PR author @jeremyfowers is the repo admin with subject-area responsibility for many areas; documentation is a cross-cutting concern without a dedicated owner in the maintainers table, making @fl0rianr's review reasonable as a collaborator. No inline review comments were filed.",
+    "security": "No security concerns. The change touches only documentation files. No code, credentials, network calls, or execution paths were modified.",
+    "tests": "No tests apply — the change is purely documentation (5 markdown files, 92 insertions, 82 deletions, all in docs/). CI passed: CodeQL (all languages), Docs And Style (pre-commit, markdown-link-check, vendored-asset-integrity, backend-docs-drift, app-regression-tests), and all build/test/release workflows succeeded. Skipped checks are expected for a documentation-only PR (e.g., release artifact builds, backend validation workflows)."
+  },
+  "generation_seconds": 163.7,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-22T00:41:12Z",
+  "pr_number": 3640,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-22T00:45:47+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "25a73abf22c5472d225d4b02016b42015061908f",
+  "shout_outs": [],
+  "subject": "docs(models): name the custom model guide's sections after their topics (#3640)",
+  "summary": "Restructures the custom-models documentation guide by renaming section headings to match their actual topics, reordering sections for correct hierarchy, adding an introductory table, and updating internal links in four other documents.",
+  "verdict": "Clean",
+  "verdict_reason": "This is a documentation-only restructuring with no behavioral changes, reviewed and approved, all CI checks passed, and no post-approval commits."
+}
