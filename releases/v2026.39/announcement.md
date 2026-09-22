@@ -5,7 +5,8 @@
 ### Breaking Changes
 
 - Versions now use `2026.39.0` (year-week-number) instead of `11.9.0`.
-- Upgraded to llama.cpp b10825, which no longer supports `--no-mmap`. If you have `llamacpp-args` with that set, you will need to unset it.
+
+> Heads up: llama.cpp b10875, which Lemonade will upgrade to in a future release, no longer supports `--no-mmap`. If you have `llamacpp-args` with that set, you should adopt the new `--load-mode` arg now to avoid a breaking change problem later.
 
 ### 🎨 Image editing on AMD 🎨
 
