@@ -6,6 +6,8 @@
 
 - Versions now use `2026.39.0` (year-week-number) instead of `11.9.0`.
 
+> Heads up: llama.cpp b10875, which Lemonade will upgrade to in a future release, no longer supports `--no-mmap`. If you have `llamacpp-args` with that set, you should adopt the new `--load-mode` arg now to avoid a breaking change problem later.
+
 ### 🎨 Image editing on AMD 🎨
 
 `@bitgamma` implemented `/images/edit` in thenoise 0.7.1 and expanded supported AMD ROCm GPU families — the endpoint is live and ready to use.
