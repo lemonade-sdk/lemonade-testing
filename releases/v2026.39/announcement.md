@@ -5,6 +5,7 @@
 ### Breaking Changes
 
 - Versions now use `2026.39.0` (year-week-number) instead of `11.9.0`.
+- Upgraded to llama.cpp b11064, which no longer supports `--no-mmap`. If you have `llamacpp-args` with that set, you will need to unset it.
 
 ### 🎨 Image editing on AMD 🎨
 
