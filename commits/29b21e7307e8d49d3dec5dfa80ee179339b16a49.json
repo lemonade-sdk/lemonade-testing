@@ -1,0 +1,32 @@
+{
+  "author": "@superm1",
+  "branch": "main",
+  "bucket": "v2026.40",
+  "commit_sha": "29b21e7307e8d49d3dec5dfa80ee179339b16a49",
+  "committed_at": "2026-09-22T21:30:24+00:00",
+  "evidence": {
+    "api_compatibility": "No API changes. The diff touches only .github/workflows/launchpad-ppa.yml and creates .github/actions/start-lemond-service/action.yml. No exported APIs, schemas, CLI contracts, or config formats are modified.",
+    "documentation": "No user-facing documentation is affected. The PR body is thorough, describing the test flow, the composite action's design, coverage scope (resolute only), and the conditional behavior depending on the current stable PPA layout. The PR author also used AI tools and self-certified understanding and correctness.",
+    "manual_release_testing": "Not applicable. This PR changes only CI infrastructure (a new composite action and a workflow job). It does not add or modify any user-reachable surface: no API endpoints, CLI commands, GUI elements, config defaults, or installed artifacts.",
+    "post_approval_commits": "None. The PR contains one commit (sha 4cbf516c) and the sole approval was submitted against that exact commit. No commits were added after approval.",
+    "review": "PR #3396 was reviewed by @jeremyfowers, an admin maintainer whose subject area per docs/dev/contribute.md includes 'ci'. He raised two inline concerns: (1) the 'skip gracefully' policy could silently skip testing on unreleased Ubuntu versions, and (2) the PR body claimed noble/questing coverage while the matrix only included resolute (26.04). The author addressed both; @jeremyfowers approved on 2026-09-21T14:28:17Z. The reviewer also noted they 'checked the logs myself', indicating hands-on validation.",
+    "security": "The new composite action uses `runuser -u lemonade` to launch the server as the service user and passes secrets (HF_TOKEN) via GitHub Actions expressions — both standard and expected patterns. The action parses systemd unit files with grep and safely no-ops missing directives (e.g., `|| true` on grep). No network calls to unknown endpoints, no credential handling outside of secrets, no code execution paths beyond what a real systemd service would do. No supply-chain risk.",
+    "tests": "The PR adds the upgrade-test job itself as an end-to-end integration test. It ran in the merge queue and initially failed (correctly flagging the FHS-split regression from #3394), then passed after the migration fix (#3393) landed. The test exercises the real apt upgrade path: install stable, set config, download model, upgrade via .deb, verify health + config + model persistence. There is no separate unit test for the new composite action; its correctness is validated through the workflow run itself."
+  },
+  "generation_seconds": 199.7,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-22T22:13:14Z",
+  "pr_number": 3396,
+  "range_start": "v11.9.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-22T22:18:25+00:00",
+  "reviewers": [
+    "@jeremyfowers"
+  ],
+  "sha": "29b21e7307e8d49d3dec5dfa80ee179339b16a49",
+  "shout_outs": [],
+  "subject": "ci: test PPA package upgrade path (config + model persistence) (#3396)",
+  "summary": "CI adds an upgrade-test job and a new systemd-emulation composite action to prevent undetected PPA package upgrade regressions.",
+  "verdict": "Clean",
+  "verdict_reason": "CI-only change that adds a valuable regression test, reviewed by a maintainer with CI subject-matter expertise, with no post-approval changes and no user-facing surface."
+}
