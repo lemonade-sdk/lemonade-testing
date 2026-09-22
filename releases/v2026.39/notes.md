@@ -9,4 +9,4 @@
 ## Breaking Changes
 
 - Version format changed from `X.Y.Z` to `YYYY.WW.N` or `YYYY.WW.0~<count>.<hash>`; tools and scripts that parse `--version` output or compare version strings must be updated.
-- Upgraded to llama.cpp b11064, which no longer supports `--no-mmap`. If you have `llamacpp-args` with that set, you will need to unset it.
+- Upgraded to llama.cpp b10825, which no longer supports `--no-mmap`. If you have `llamacpp-args` with that set, you will need to unset it.
