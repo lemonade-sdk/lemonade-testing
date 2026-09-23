@@ -1,0 +1,110 @@
+{
+  "branch": "release-v2026.40",
+  "breaking_changes": [
+    "The POST /v1/images/upscale endpoint now requires the 'upscaling' model label; models without it return a 400 error — label your model 'upscaling' to use the endpoint.",
+    "OpenMOSS backend 'rocm' and 'rocm_bin' removed on Windows and Linux; use backend: vulkan or backend: cuda instead.",
+    "sd-cpp ROCm removed on Windows; users with backend: rocm will get a clear unsupported error — switch to vulkan or backend: auto.",
+    "AMD GPU entries in GET /api/v1/system-info now show a marketing name (e.g. \"AMD Radeon RX 9070 XT (gfx1201)\") instead of a raw numeric code — parse the family field for the ISA code.",
+    "Editing user_models.json no longer takes effect without a lemond restart; the restart requirement was always the implied lifecycle and is now documented."
+  ],
+  "bucket": "v2026.40",
+  "candidate_issues": [],
+  "checklist": [
+    {
+      "author": "@apollo-2006",
+      "commit": "6d0e01f505b10d13841da1822c118b8a9daae9a2",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3601,
+      "priority": "P1",
+      "text": "Start the Lemonade server on a Linux machine with an AMD GPU, run curl on /api/v1/system-info, and confirm that amd_gpu entries show a human-readable marketing name (e.g. \"AMD Radeon RX 9070 XT (gfx1201)\") instead of a raw numeric version like \"120001\", while the family field remains the ISA code."
+    },
+    {
+      "author": "@atirna",
+      "commit": "ce082048172bc305e3a3dab963edd0f07ad5c048",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3511,
+      "priority": "P1",
+      "text": "Send a POST /v1/images/upscale request with a model that does not carry the 'upscaling' label and confirm the response is a 400 error with the message 'Upscale model is not labeled upscaling'."
+    },
+    {
+      "author": "@atirna",
+      "commit": "ce082048172bc305e3a3dab963edd0f07ad5c048",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3511,
+      "priority": "P1",
+      "text": "Send a POST /v1/images/upscale request with a model that does carry the 'upscaling' label and confirm the upscale completes successfully through the expected backend."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "e5d0eecb1ffb5d6e4254cf9c9be29ff40aed3020",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3615,
+      "priority": "P1",
+      "text": "Start the server with an OpenMOSS config and confirm that selecting backend \"vulkan\" or \"cuda\" works correctly, since the ROCm path no longer exists."
+    },
+    {
+      "author": "@mashan555",
+      "commit": "d3481a80e816bb98492be45c5f01013b807433f6",
+      "platforms": [
+        "Windows"
+      ],
+      "pr_number": 3621,
+      "priority": "P1",
+      "text": "Run `lemonade launch junie --model <any-loaded-model>` on a native Windows machine (with a real or stub junie.bat) and confirm the generated `~/.junie/models/lemonade.json` contains the correct baseUrl, apiKey, and displayName fields."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "d5f154a7ce6dd5cc2b52e684628100da584d94bc",
+      "platforms": [
+        "Windows"
+      ],
+      "pr_number": 3616,
+      "priority": "P1",
+      "text": "On a Windows machine, set sd-cpp backend to rocm in the config and confirm the server returns a clear unsupported-backend error rather than silently running inference at CPU speed."
+    },
+    {
+      "author": "@abn",
+      "commit": "e8000b458d7748fe54f0af13ad2baca8bf782a46",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3568,
+      "priority": "P2",
+      "text": "Start lemond with a configured cloud provider and API key, call GET /v1/models, and confirm the discovered cloud model entry includes max_output_tokens and max_completion_tokens integer fields with non-zero values."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "5f899725190c1f41212541951dcbb919e60ccb33",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3188,
+      "priority": "P2",
+      "text": "Run the Lemonade server artifact built from this merge on Arch Linux and confirm it starts and accepts API calls without mbedTLS linking errors."
+    }
+  ],
+  "commits_reviewed": 18,
+  "commits_unreviewed": 0,
+  "evidence": {
+    "blockers": "A human with an AMD GPU on Linux must verify the new marketing-name display on /api/v1/system-info (6d0e01f). The upscaling endpoint's label enforcement and happy path need exercise (ce08204). The OpenMOSS Vulkan/CUDA fallback after ROCm removal should be tested on AMD hardware (e5d0eec). The Windows sd-cpp ROCm error path must be confirmed (d5f154a). Windows Junie profile generation needs native Windows validation (d3481a8).",
+    "breaking_changes": "Five user-facing breaking changes ship: upscaling label enforcement (ce08204), OpenMOSS ROCm removal (e5d0eec), sd-cpp Windows ROCm removal (d5f154a), AMD system-info name format change (6d0e01f), and user_models.json requiring restart (1c2f67f). Each has documented migration guidance.",
+    "coverage": "All 18 commits in the v2026.39.1..29b21e7 range were reviewed with CI passing. The review covers documentation fixes, model catalog additions, CI changes, dependency bumps, a structural MCP refactor, and several platform-specific backend behavior changes on AMD/ROCm.",
+    "manual_testing": "AMD GPU system-info on Linux (marketing name display). Upscaling endpoint with labeled and unlabeled models. OpenMOSS with Vulkan/CUDA backend on AMD hardware. Windows sd-cpp ROCm error message. Windows Junie profile generation. Cloud provider GET /v1/models token limit discovery.",
+    "security": "No security concerns observed across the release. The change set includes no new credential handling, no network calls to untrusted endpoints, no permission broadening, and no supply-chain risk beyond routine upstream dependency bumps."
+  },
+  "generation_seconds": 154.2,
+  "head_sha": "29b21e7307e8d49d3dec5dfa80ee179339b16a49",
+  "is_hotfix": false,
+  "last_stable_tag": "",
+  "range_start": "v2026.39.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-23T16:13:12+00:00"
+}
