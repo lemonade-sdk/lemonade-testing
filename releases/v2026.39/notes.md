@@ -1,6 +1,6 @@
 ## Headline
 
-- TheNoise updated to 0.7.1 with support for image editing and additional AMD GPUs.
+- TheNoise updated to 0.7.1 with support for image editing and additional AMD GPUs: gfx103X, gfx110X, and gfx120X.
 - `allowed_origins` now accepts `:*` wildcard ports and `*.domain` subdomain patterns for local development and homelab setups.
 - New `/v1/docs` endpoint serves browsable API reference documentation with a JSON index and individual markdown pages.
 - Configurable VRAM auto-eviction via `auto_evict` and `auto_evict_threshold_pct`, with prompt cache now preserved during soft-idle transitions.
