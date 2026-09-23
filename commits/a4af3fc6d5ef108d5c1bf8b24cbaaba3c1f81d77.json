@@ -1,0 +1,32 @@
+{
+  "author": "@superm1",
+  "branch": "main",
+  "bucket": "v2026.41",
+  "commit_sha": "a4af3fc6d5ef108d5c1bf8b24cbaaba3c1f81d77",
+  "committed_at": "2026-09-23T15:42:48+00:00",
+  "evidence": {
+    "api_compatibility": "No API, CLI, config format, or behavior changed. Pure documentation update.",
+    "documentation": "Both affected files are the authoritative macOS config path docs. README.md now shows both user and system paths. custom-models.md table now includes a row for 'macOS (user install)' alongside 'macOS (system install)'. Changes are consistent with each other and with the C++ source.",
+    "manual_release_testing": "Not applicable — no code, no behavior, no user-facing artifact changed. The change only updates text in docs/guide/configuration/README.md and docs/guide/configuration/custom-models.md to list an additional config path for macOS.",
+    "post_approval_commits": "No commits were added after approval. The PR contains a single commit; the approval and the commit are the only commit in the PR. The merge was performed via a merge_group queue with the same commit.",
+    "review": "PR #3467 was approved by @Geramy (MEMBER) on 2026-09-23T04:57:23Z. @Geramy has macOS, security, and sockets subject-matter expertise per docs/dev/contribute.md — appropriate for verifying macOS config path accuracy. The PR author @superm1 also has macOS and security expertise. Initial comments showed @Geramy wanted to 'look into this more' (2026-09-01), but returned to approve after a merge conflict was resolved (2026-09-23). No inline review comments were filed. The PR body references the source of truth (path_macos.cpp lines 93 and 101) and the author verified the paths against the actual C++ source.",
+    "security": "No security impact. The change only adds a config file path to documentation. Verified against path_macos.cpp source: non-root users resolve to $HOME/.config/lemonade (line 93) and root resolves to /Library/Application Support/lemonade/.config (line 101).",
+    "tests": "No code changed — only two markdown documentation files. No tests are applicable. CI workflows that are relevant (Docs And Style: pre-commit, markdown-link-check, app-regression-tests, backend-docs-drift, vendored-asset-integrity) all passed. Build and test workflows were correctly skipped because no code changed."
+  },
+  "generation_seconds": 134.9,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-23T16:18:35Z",
+  "pr_number": 3467,
+  "range_start": "v2026.39.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-23T16:22:46+00:00",
+  "reviewers": [
+    "@Geramy"
+  ],
+  "sha": "a4af3fc6d5ef108d5c1bf8b24cbaaba3c1f81d77",
+  "shout_outs": [],
+  "subject": "docs: Add missing macOS user install config path (#3467)",
+  "summary": "Adds the missing macOS user install config path (~/.config/lemonade) to the two configuration documentation files, which previously only showed the system/install-as-root path.",
+  "verdict": "Clean",
+  "verdict_reason": "Pure documentation fix that corrects an incomplete macOS config path in two docs files; approved by a reviewer with macOS and security subject-matter expertise, with all CI checks passing."
+}
