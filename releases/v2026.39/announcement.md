@@ -1,16 +1,16 @@
-## Lemonade v2026.39
+## Lemonade v2026.39.1
 
-@everyone Big release today — image editing lands on AMD GPUs, a browsable API reference, and you can now test prerelease builds before they hit stable.
+@everyone we're back to having weekly Lemonade releases! Today we're getting image editing in TheNoise, an awesome `/docs` endpoint and MCP tool, and the candidate testing system is fully in place.
 
 ### Breaking Changes
 
-- Versions now use `2026.39.0` (year-week-number) instead of `11.9.0`.
+- Versions now use `2026.39.1` (year-week-number) instead of `11.9.0`.
 
 > Heads up: llama.cpp b10875, which Lemonade will upgrade to in a future release, no longer supports `--no-mmap`. If you have `llamacpp-args` with that set, you should adopt the new `--load-mode` arg now to avoid a breaking change problem later.
 
-### 🎨 Image editing on AMD 🎨
+### Fast Image editing on AMD
 
-`@bitgamma` implemented `/images/edit` in thenoise 0.7.1 and expanded supported AMD ROCm GPU families — the endpoint is live and ready to use.
+`@bitgamma` implemented `/images/edit` in thenoise 0.7.1 and expanded AMD GPU support to include gfx103X, gfx110X, and gfx120X.
 
 ### `allowed_origins` now accepts wildcards
 
@@ -18,19 +18,21 @@
 
 ### Browsable API docs at `/v1/docs`
 
-`@anditherobot` built a bundled API docs system that serves a JSON index at `GET /v1/docs` and individual markdown reference pages at `GET /v1/docs/{page}` — plus an MCP tool so agents can fetch docs directly.
-
-### VRAM auto-eviction and prompt-cache preservation
-
-`@GabrielReusRodriguez` added `auto_evict` and `auto_evict_threshold_pct` for pressure-based VRAM cleanup, and `@meghsat` removed the soft-idle `downsize()` override that was erasing the prompt cache for nothing — they now stick around as you'd expect. Session headers relay to cloud providers (reviewed by `@abn`) keeps continuity working across the hop, too.
+`@anditherobot` built a bundled API docs system that serves a JSON index at `GET /v1/docs` and individual markdown reference pages at `GET /v1/docs/{page}`. Plus, an MCP tool so agents can fetch docs directly!
 
 ### 🚀 Prerelease builds are here!
 
-Try candidate releases early via GitHub prereleases (`candidate-v<version>` tags) or Docker's new `candidate` tag — the whole pipeline runs automatically every Wednesday. Thanks `@jeremyfowers`, `@superm1`, and `@kenvandine` for building it out.
+Try candidate releases early via GitHub prereleases (`candidate-v<version>` tags) or Docker's new `candidate` tag. The whole pipeline runs automatically every Wednesday and you can participate in the #release-candidates channel. Thanks `@superm1`, `@jeremyfowers`, and `@kenvandine` for building it out.
 
 ### Additional Improvements
 
-- Routing policy survives hardware filters (`@Bekhouche` with `@fl0rianr`), FLM backend respects `default_model_source` (`@wariobot09` with `@ZaneNi`), and CI merge flow got much friendlier (`@jeremyfowers`).
-- Backend version bumps across the board, new `Meta-Llama-3.1-8B` on HRX, and a handful of model-loading fixes.
+- `@GabrielReusRodriguez` added `auto_evict` and `auto_evict_threshold_pct` to `lemonade config` to help you configure pressure-based VRAM cleanup.
+- `@meghsat` and `@pwilkin` removed the soft-idle `downsize()` override that was erasing the prompt cache for nothing.
+- Routing policy survives hardware filters (`@Bekhouche` with `@fl0rianr`)
+- FLM backend respects `default_model_source` (`@superm1` with `@ZaneNi`)
+- CI merge flow got much friendlier (`@jeremyfowers`).
+- llamacpp-hrx updated with `Meta-Llama-3.1-8B` support by `@AaronStGeorge`.
+- FastFlowLM updated to v1.0.5 by `@ZaneNi`.
+- Nice fixes by `@popey`, `@noamsto`, `@jamespthomas`, and `@Yigtwxx`!
 
-Full release notes are over on [GitHub Releases](https://github.com/lemonade-sdk/lemonade/releases) — happy to answer any questions, and please let us know what you think!
+Full release notes are over on [GitHub Releases](https://github.com/lemonade-sdk/lemonade/releases)!
