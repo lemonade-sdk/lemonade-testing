@@ -1,0 +1,39 @@
+{
+  "author": "@abn",
+  "branch": "main",
+  "bucket": "v2026.41",
+  "commit_sha": "3b5ec50e55f7af27f15c68573de17dc099933a4f",
+  "committed_at": "2026-09-23T16:37:40+00:00",
+  "evidence": {
+    "api_compatibility": "TrayUI::fetch_server_state() return type changed from std::pair<bool, vector<LoadedModelInfo>> to std::optional<vector<LoadedModelInfo>>. This is an internal API change within the lemon_tray namespace; the function is private to the tray UI module and not part of the public server API or client contract. No breaking changes for external consumers. New CLI flags --spawn-server and --launch-app/--open on lemonade-tray are additive only. New --watchdog-fd flag on lemond is hidden (empty group in CLI parser) and only active when spawned by the tray.",
+    "documentation": "docs/dev/getting-started.md updated with a new section documenting lemonade-tray CLI options (--spawn-server, --watchdog-fd, --launch-app/--open, --silent) and the watchdog pipe contract. The change is additive and does not conflict with existing sections.",
+    "manual_release_testing": "This introduces user-visible surface: lemonade-tray --spawn-server, --launch-app/--open flags, and the lemond subprocess-spawning behavior with --watchdog-fd. The pipe-EOF watchdog contract is unit-tested in isolation, but no evidence shows a human exercised the end-to-end tray-to-lemond spawn flow on a real desktop. A tester should launch lemonade-tray with --spawn-server and verify the full lifecycle: lemond starts, tray connects, menu populates, and quitting the tray kills lemond without an orphan.",
+    "post_approval_commits": "The PR contained 2 commits: the refactor (363139e) on 2026-08-27 and the feature (14e13ce) on 2026-08-26, both before the first review by @Geramy on 2026-08-27. All inline review comments from @Geramy on 2026-09-11 were addressed within the existing second commit. No commits were added after any approval (first approval 2026-08-27, latest approval 2026-09-23).",
+    "review": "PR #3304 received substantive review from @Geramy (first approval 2026-08-27, re-review 2026-09-11) and @fl0rianr (approval 2026-08-28). @Geramy has subject-matter expertise in Mac, security, sockets, and TCP/IP per docs/dev/contribute.md; @fl0rianr has expertise in GUI and CI. @Geramy provided detailed inline feedback on catch semantics (replacing bare catch(...) with explicit std::exception handling), process-path discovery (prompting removal of hardcoded standard_paths in favor of sibling resolution), and signal handling design. The author addressed all inline comments. @sofiageo tested on Windows 11 and approved on 2026-09-20, noting an unrelated first-install GUI issue. @superm1 gave final approval on 2026-09-23.",
+    "security": "The watchdog pipe uses FD_CLOEXEC on the parent write end and posix_spawn_file_actions_addclose on the child side, preventing subprocess inheritance that would keep the pipe alive after tray death. The child's blocking read on the watchdog fd triggers SIGTERM on EOF — an atomic, kernel-guaranteed shutdown path. Signal handling uses a volatile sig_atomic_t flag polled by the refresh thread (async-signal-safe per POSIX). SIGPIPE is ignored. The subprocess is spawned via posix_spawnp with environ inherited; no code injection or argument reordering beyond --port alias normalization. No supply-chain changes, credential handling, or network calls introduced.",
+    "tests": "New test file test/test_tray_supervisor_watchdog.py (233 lines) with three POSIX-only unit tests: (1) lemond exits when the watchdog pipe write end is closed, (2) an inherited watchdog writer keeps lemond alive until released (confirming FD_CLOEXEC semantics), and (3) PATH-based lemond spawn and shutdown. The watchdog test runs in CI on both Ubuntu and macOS. C++ tests in test/cpp/test_cli_runtime_override.cpp verify --watchdog-fd parsing (66/66 pass)."
+  },
+  "generation_seconds": 413.2,
+  "maintainer_todos": [
+    {
+      "text": "On a Linux or macOS desktop without lemond running, launch lemonade-tray with --spawn-server and verify that lemond starts within 15 seconds, the tray menu populates, and quitting the tray causes lemond to terminate immediately without leaving an orphan process."
+    }
+  ],
+  "merge_date": "2026-09-23T17:27:19Z",
+  "pr_number": 3304,
+  "range_start": "v2026.39.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-23T17:35:56+00:00",
+  "reviewers": [
+    "@Geramy",
+    "@fl0rianr",
+    "@sofiageo",
+    "@superm1"
+  ],
+  "sha": "3b5ec50e55f7af27f15c68573de17dc099933a4f",
+  "shout_outs": [],
+  "subject": "feat(tray): add --spawn-server to natively supervise a local lemond (#3304)",
+  "summary": "Adds --spawn-server to lemonade-tray for natively spawning and supervising a local lemond on POSIX using posix_spawn and a pipe-EOF watchdog, plus refactors TrayUI::fetch_server_state to return std::optional.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The new --spawn-server flag and its subprocess-spawning behavior are user-visible but no evidence shows a human exercised the end-to-end tray-to-lemond spawn flow on a real desktop, so manual release testing is required before shipping."
+}
