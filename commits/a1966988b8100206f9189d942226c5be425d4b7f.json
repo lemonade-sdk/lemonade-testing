@@ -1,0 +1,32 @@
+{
+  "author": "@ramkrishna2910",
+  "branch": "main",
+  "bucket": "v2026.41",
+  "commit_sha": "a1966988b8100206f9189d942226c5be425d4b7f",
+  "committed_at": "2026-09-24T00:34:44+00:00",
+  "evidence": {
+    "api_compatibility": "No API changes. No code was modified. No schema, protocol, config contract, CLI command, or persistence format was altered. The mkdocs.yml site_url change is a documentation build configuration, not a runtime or API contract.",
+    "documentation": "The PR improves documentation quality. It adds a new 'Links' subsection to docs/dev/documentation.md establishing a convention: use relative Markdown paths with .md extensions for in-repo links, and use explicit GitHub URLs for repository-only files outside docs/. It fixes 16 files of broken or stale links. The PR description clearly explains the problem (pre-release website not yet deployed → 404s) and the solution (relative paths that follow the branch/tag, and correct /docs/ base for published docs).",
+    "manual_release_testing": "The README changes affect links visible to anyone viewing the repository on GitHub (installation links, integration links, build badges). The mkdocs.yml change alters the published docs base path from / to /docs/. A reviewer should verify: (1) the README links on GitHub resolve to the correct .md files in the repo; (2) the mkdocs site builds and serves at https://lemonade-server.ai/docs/ with all internal links resolving.",
+    "post_approval_commits": "All five PR commits were authored by @ramkrishna2910 and the sole approval from @Geramy was submitted at 2026-09-23T23:22:29Z after the final commit (sha 09971b00). No commits were added after approval — the branch was in a clean state at merge time.",
+    "review": "PR #3665 was reviewed and approved by @Geramy (MEMBER). The reviewer left one substantive inline comment on docs/dev/adding-a-backend.md noting that the relative path ../../AGENTS.md worked on GitHub but rendered as a 404 on the published website, which prompted the switch to an explicit GitHub URL — this is a concrete, correct catch. No other review comments were raised. Note: @Geramy's subject areas (from docs/dev/contribute.md) are sockets/tcpip/udp/named-pipes/mac/security/Nexus, not documentation; the documentation-focused maintainers are @superm1 and @sofiageo. For a routine documentation fix, however, this approval is sufficient.",
+    "security": "No security concerns. No credential handling, network calls, code execution paths, auth changes, or supply-chain modifications. The one new Python logic block in docs/update_readme_marketplace.py safely redirects stale lemonade-server.ai links to local integration docs or the integrations README index. All external URLs in the diff are valid documentation links.",
+    "tests": "This is a documentation-only change (16 markdown files, 1 HTML file, 1 Python helper script, 1 YAML config). All CI workflows ran on the merge commit. Build and C++ test suites were correctly SKIPPED. Docs-and-style checks (pre-commit, markdown-link-check, vendored-asset-integrity, backend-docs-drift) all passed. CodeQL analysis (C/C++, Python, JavaScript/TypeScript, Rust) passed. The mkdocs.yml change (site_url from https://lemonade-server.ai/ to https://lemonade-server.ai/docs/) is a configuration-level fix that does not have unit tests but is validated by the docs build pipeline."
+  },
+  "generation_seconds": 188.0,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-24T01:12:04Z",
+  "pr_number": 3665,
+  "range_start": "v2026.39.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-24T01:16:52+00:00",
+  "reviewers": [
+    "@Geramy"
+  ],
+  "sha": "a1966988b8100206f9189d942226c5be425d4b7f",
+  "shout_outs": [],
+  "subject": "Fix repository documentation links and published docs paths (#3665)",
+  "summary": "Fixes broken README links that returned 404 on the pre-release website by switching to relative repository paths and corrects the mkdocs published-docs base URL.",
+  "verdict": "Clean",
+  "verdict_reason": "A well-scoped documentation-only fix with a clear problem statement, a reviewer comment that surfaced a concrete rendering issue, all CI checks passing, no post-approval commits, and no API or security impact."
+}
