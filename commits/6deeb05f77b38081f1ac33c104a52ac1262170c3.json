@@ -1,0 +1,45 @@
+{
+  "author": "@Copilot",
+  "branch": "main",
+  "bucket": "v2026.41",
+  "commit_sha": "6deeb05f77b38081f1ac33c104a52ac1262170c3",
+  "committed_at": "2026-09-24T19:04:10+00:00",
+  "evidence": {
+    "api_compatibility": "Breaking CLI change: --no-sign flag is removed. Operators who previously ran the release tool with --no-sign will now get an unrecognized flag error. The migration path is documented in the PR and in docs/dev/release.md — they should omit the flag (it is now the default) or use --sign if they want a signed tag. This is a release-admin tool, not an end-user API, so impact is limited but must be noted in release notes.",
+    "documentation": "docs/dev/release.md was updated to reflect the new default (annotated unsigned tags) and the --sign opt-in syntax. The updated examples in the doc match the new CLI. Release process steps remain unchanged; only the tag creation detail shifted.",
+    "manual_release_testing": "The release tagging tool is a user-facing CLI used by release admins to promote candidates to stable. The PR changes the default tag type from signed to annotated and removes --no-sign in favor of --sign. CI runs do not exercise the release script (it is a local release operator tool), so there is no evidence a human ran the default path end-to-end. The dry-run flags should be verified as a release-critical check before the v2026.41 tag.",
+    "post_approval_commits": "No commits were added after either approval. The PR contains two commits (Initial plan by Copilot, Default release tags to unsigned by Copilot co-authored with superm1), and both approvals landed on the final commit f41046241a15daac1a6be13b52634c6e67715c51. The merge was clean with no post-approval churn.",
+    "review": "Two substantive approvals from @superm1 (approved 2026-09-23T16:28:01Z) and @jeremyfowers (approved 2026-09-24T19:04:05Z), both on commit f41046241a15daac1a6be13b52634c6e67715c51. @superm1 has subject area expertise in linux packaging, security, Docker, containers, llamacpp, NPU — directly relevant to the release script. @jeremyfowers has expertise in CI and governance. No inline review comments were left. Both reviewers are maintainers.",
+    "security": "No security concerns. The change reduces the default tag from signed to annotated, which is a relaxation of the prior default but is intentional — signing requires local GPG setup that many operators lack. The error message for failed signing now provides actionable guidance (\"Configure git tag signing or rerun without --sign\"). No credential handling, network calls, or supply-chain changes.",
+    "tests": "New test test_signed_tag_failure_explains_how_to_proceed (test/test_release.py) verifies the signed-tag failure path raises a RuntimeError with the actionable message. The existing test_create_release_tags_and_pushes was updated to remove the sign=False parameter. The test suite covers both the default (unsigned) and signed-tag failure paths for the release script logic. No evidence of test weakening or deletion."
+  },
+  "generation_seconds": 325.5,
+  "maintainer_todos": [
+    {
+      "text": "Run the release tagging tool in dry-run mode and confirm the output says 'would create and push annotated tag' rather than 'signed tag'."
+    },
+    {
+      "text": "Run the release tagging tool with the --sign flag in dry-run mode and confirm the output says 'would create and push signed tag'."
+    }
+  ],
+  "merge_date": "2026-09-24T19:48:11Z",
+  "pr_number": 3660,
+  "range_start": "v2026.39.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-24T19:55:19+00:00",
+  "reviewers": [
+    "@superm1",
+    "@jeremyfowers"
+  ],
+  "sha": "6deeb05f77b38081f1ac33c104a52ac1262170c3",
+  "shout_outs": [
+    {
+      "handle": "@superm1",
+      "reason": "Co-authored the solution and provided substantive review on first pass; subject area expertise in linux packaging, security, and llamacpp aligns with the release tool's domain."
+    }
+  ],
+  "subject": "Default release.py to unsigned tags (#3660)",
+  "summary": "Default the release tagging tool to create unsigned annotated tags instead of signed tags, with --sign as explicit opt-in, fixing an ambiguous git error when tag signing is not configured locally.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The release tool's CLI behavior changed (replacing --no-sign with --sign) but no evidence shows a human exercised the new default path end-to-end before merging."
+}
