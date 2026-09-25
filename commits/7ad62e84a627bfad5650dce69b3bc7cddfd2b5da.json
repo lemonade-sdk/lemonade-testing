@@ -1,0 +1,32 @@
+{
+  "author": "@superm1",
+  "branch": "main",
+  "bucket": "v2026.41",
+  "commit_sha": "7ad62e84a627bfad5650dce69b3bc7cddfd2b5da",
+  "committed_at": "2026-09-25T13:56:32+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking API changes. The `backend_versions.json` pins are internal configuration, not part of the public API contract. The URL changes in `backend_utils.cpp` are internal download paths. The `sdcpp_server.cpp` change simply removes a redundant repo override (CUDA already set it to the fork). No API, CLI, config, or persistence format changes. The PR author correctly marked 'does not introduce breaking changes'.",
+    "documentation": "The PR correctly documents that no documentation changes are needed. The workflow file `validate_sdcpp.yml` updates reference comments to say 'lemonade-sdk' instead of 'leejet', but these are internal CI comments, not user-facing docs. No API or user-facing behavior change requires doc updates.",
+    "manual_release_testing": "The CI test suite covers the stable-diffusion backend across installers (.deb, .exe) and all major platforms. The .deb and .exe inference tests for stable-diffusion validate the download-and-run path for this backend. No new test gaps are introduced by this change. The CI validation workflow 'Validate New stable-diffusion.cpp Release' also passed (SUCCESS for 'stable-diffusion.cpp validation').",
+    "post_approval_commits": "The last pre-approval commit is 695a6a6b (superm1, 'Use ROCm 10 tarball repository'). The approval was submitted at 04:31:19 UTC. The only subsequent commit is the merge commit 695a6a6b5460ac1b9a59a329db15701b3152d38f by @sreeram-11 at 05:00:34 UTC, which merges branch 'main' into the topic. This merge commit brings in the latest main changes (including unrelated PRs) but adds no new substantive code. It was re-approved by the reviewer who submitted the same APPROVED review on the merge commit, so the post-approval merge is clean and follows reviewer guidance.",
+    "review": "PR #3649 received an APPROVED review from @sreeram-11, a collaborator. The reviewer performed detailed end-to-end testing on Linux Strix Halo across all three in-scope ROCm backends (llamacpp rocm-stable, llamacpp rocm-nightly, sdcpp rocm), verifying: (1) the exact targeted binary for gfx1151 / ROCm 10.0 was downloaded, (2) inference completed successfully with no CPU fallback, and (3) GPU utilization spiked to ~100% during compute. No inline review comments were filed. The PR author @superm1 is listed in docs/dev/contribute.md as the ROCm maintainer, so the PR was authored by the subject-matter expert with ROCm knowledge. The project's guideline recommends at least one reviewer with subject-matter expertise; while the reviewer @sreeram-11 was not listed as a maintainer, their testing was highly substantive and the code owner @superm1 was the author, so the review bar was met.",
+    "security": "The URL changes move ROCm asset downloads from `repo.amd.com/rocm/` to `stable.repo.amd.com/rocm/` (python wheels: `/whl-next/`, tarballs: `/core/tarball/`). These are official AMD stable release mirrors — the old `repo.amd.com` is the general repository, while `stable.repo.amd.com` is the curated stable stream, which is a safer and more predictable endpoint. The stable-diffusion.cpp repo changes from `leejet/stable-diffusion.cpp` (upstream) to `lemonade-sdk/stable-diffusion.cpp` (own fork), which is a supply-chain-adjacent change but intentional: the project was blocked by upstream's ROCm 10.0 lag and chose to manage their own fork. The fork is under the same organization. No credential handling, code execution, or obfuscation concerns.",
+    "tests": "No new test files were added to this PR. However, the changes affect download URLs and backend version pins, which are exercised by the existing CI test matrix. The merge-group run (PR #3649) passed all relevant checks including: 'stable-diffusion.cpp validation' (SUCCESS), 'Test .exe - stable-diffusion' (SUCCESS), 'Test .deb - stable-diffusion' (SUCCESS), 'Test .deb - llamacpp-hrx' (SUCCESS), 'Test .deb - thenoise' (SUCCESS), 'Test .deb - audio-gen-thinksound/acestep/openmoss' (SUCCESS), and the full inference backend test suite (SUCCESS). The CI runs real backend installation and inference, providing meaningful coverage for the URL and version changes. No evidence of test weakening or deletion."
+  },
+  "generation_seconds": 229.1,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-25T14:40:19Z",
+  "pr_number": 3649,
+  "range_start": "v2026.39.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-25T14:45:51+00:00",
+  "reviewers": [
+    "@sreeram-11"
+  ],
+  "sha": "7ad62e84a627bfad5650dce69b3bc7cddfd2b5da",
+  "shout_outs": [],
+  "subject": "Move stable diffusion back to our fork and move to ROCm 10 (#3649)",
+  "summary": "Moves the stable-diffusion.cpp backend back to the lemonade-sdk fork (from upstream leejet) and bumps the ROCm runtime to version 10.0.",
+  "verdict": "Clean",
+  "verdict_reason": "A focused pin-and-URL update with thorough end-to-end review and full CI validation across all backends and platforms."
+}
