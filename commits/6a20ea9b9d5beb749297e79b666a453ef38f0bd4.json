@@ -1,0 +1,32 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.41",
+  "commit_sha": "6a20ea9b9d5beb749297e79b666a453ef38f0bd4",
+  "committed_at": "2026-09-25T22:20:00+00:00",
+  "evidence": {
+    "api_compatibility": "No API, CLI, or ABI changes. Only Markdown link text/URLs and one internal Python script's link-rewriting logic were modified. No breaking changes.",
+    "documentation": "The PR itself updates documentation (docs/dev/documentation.md link policy) to reflect the new exception for website-only pages. README and integrations README links are corrected. The PR body clearly explains both the link corrections and the rationale for reverting the marketplace script rewrite.",
+    "manual_release_testing": "Not required. The change touches README.md, docs/dev/documentation.md, docs/integrations/README.md, and a Python script. Links are validated by CI's markdown-link-check. No user-facing binary, API, CLI, GUI, or config change.",
+    "post_approval_commits": "None. All three PR commits (a582035, 5f6a871, a0e8db2) predate the approval at 22:19:53Z. The branch was unchanged between approval and merge.",
+    "review": "PR #3667 received one substantive approval from @ramkrishna2910 (admin maintainer) at 2026-09-25T22:19:53Z, before the merge at 2023:00:23Z. @ramkrishna2910's documented subject areas (new backends, vLLM, stable diffusion, smart router, NPU) don't include documentation specifically, but they are an admin maintainer and this is a small, low-risk doc fix. The PR body clearly explains the rationale and links to the follow-up (#3665) and the source fix (lemonade-sdk/marketplace#21). No inline review comments were filed.",
+    "security": "No security concerns. The script change removes link rewriting (fewer network calls, less URL manipulation). No credential handling, code execution paths, or supply-chain changes.",
+    "tests": "No feature or code tests needed — this is a documentation-only PR. CI includes `markdown-link-check`, `pre-commit`, `vendored-asset-integrity`, and `backend-docs-drift` (all passed), which cover the changed links and style rules."
+  },
+  "generation_seconds": 160.0,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-25T23:00:23Z",
+  "pr_number": 3667,
+  "range_start": "v2026.39.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-25T23:04:49+00:00",
+  "reviewers": [
+    "@ramkrishna2910"
+  ],
+  "sha": "6a20ea9b9d5beb749297e79b666a453ef38f0bd4",
+  "shout_outs": [],
+  "subject": "docs: link website-only pages to the website, revert marketplace link rewriting (#3667)",
+  "summary": "Corrects in-repo links for website-only pages (model browser, marketplace) to point to the live website and reverts spurious link rewriting in the README-generation script.",
+  "verdict": "Clean",
+  "verdict_reason": "Small, targeted documentation correction with clear scope, appropriate review, all CI checks passing, and no post-approval changes."
+}
