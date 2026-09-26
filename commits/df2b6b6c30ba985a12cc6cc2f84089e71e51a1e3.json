@@ -1,0 +1,32 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.41",
+  "commit_sha": "df2b6b6c30ba985a12cc6cc2f84089e71e51a1e3",
+  "committed_at": "2026-09-26T01:28:32+00:00",
+  "evidence": {
+    "api_compatibility": "No API changes. The change is internal to model availability filtering. No schema, protocol, config, CLI contract, or persistence format is affected.",
+    "documentation": "No documentation changes needed. This is a conservative error-prevention filter; it does not introduce new behavior or change documented model availability for supported configurations.",
+    "manual_release_testing": "This commit adds a model filter rule — it does not change user-facing behavior in the release surface. Users who previously could not run the model on <64 GB Windows will continue to be unable to (and now see a clear error message). Users on >=64 GB or non-Windows platforms are unaffected. No manual testing is required.",
+    "post_approval_commits": "Only one commit exists on the PR branch. The first and latest approval (2026-09-25T22:28:12Z) came after that commit; zero commits were added after approval.",
+    "review": "PR #3675 was authored by @jeremyfowers (member with backends/CI expertise) and reviewed by @iswaryaalex (member with NPU/FLM expertise). @iswaryaalex first commented with context about the downstream issue and future architectural suggestions for FLM, then submitted an LGTM approval. The PR had no requested reviewers and no inline comments; the review was a single-author substantive review by someone with FLM subject-matter expertise. All review guidelines were followed.",
+    "security": "No security concerns. The change adds a platform guard (#ifdef _WIN32) and a simple RAM comparison. No network calls, credential handling, code execution, or supply-chain changes.",
+    "tests": "This change modifies C++ filter logic in model_manager.cpp and adds no new tests. The change is a conservative RAM threshold filter that mirrors existing precedent (gpt-oss-20b-FLM, lines 3896-3904). No test weakening or deletion occurred. The existing C++ unit tests in CI passed successfully."
+  },
+  "generation_seconds": 144.9,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-26T02:09:10Z",
+  "pr_number": 3675,
+  "range_start": "v2026.39.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-26T02:13:18+00:00",
+  "reviewers": [
+    "@iswaryaalex"
+  ],
+  "sha": "df2b6b6c30ba985a12cc6cc2f84089e71e51a1e3",
+  "shout_outs": [],
+  "subject": "Filter qwen3.6-moe-35b-a3b-FLM on Windows systems under 64 GB RAM (#3675)",
+  "summary": "Adds a Windows-specific RAM filter for qwen3.6-moe-35b-a3b-FLM on systems with less than 64 GB RAM, mirroring an existing gpt-oss-20b-FLM rule.",
+  "verdict": "Clean",
+  "verdict_reason": "Small, well-scoped, conservative filter that mirrors existing precedent; reviewed by a maintainer with FLM/NPU subject-matter expertise and approved with no post-approval changes."
+}
