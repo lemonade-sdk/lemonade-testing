@@ -1,0 +1,32 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.41",
+  "commit_sha": "0fa21d8bc86abb45bbd8d9e847e69119e2c079da",
+  "committed_at": "2026-09-28T21:33:15+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The change does not touch any API, CLI, config schema, or user-facing contract.",
+    "documentation": "No documentation update needed. This is an internal version bump for a CI/CD tooling pin, not user-facing documentation.",
+    "manual_release_testing": "Not applicable. This commit only changes an internal tooling version string in .github/actions/repo-manager/action.yml. It does not ship a user-visible feature, API, CLI command, config option, or artifact. It does not change the release surface for v2026.41.",
+    "post_approval_commits": "No post-approval commits. The single commit (6e9ce8e39ef) was the only commit on the PR and was already present at the time of @kenvandine's approval.",
+    "review": "PR #3692 was opened by @jeremyfowers and approved by @kenvandine (MEMBER) with 'LGTM' at 2026-09-28T21:15:43Z. @ramkrishna2910 was requested as a reviewer but did not submit a review. The change is a single-line version bump in .github/actions/repo-manager/action.yml — trivial and self-contained. The PR body notes repo-manager v1.0.4 adds clearly-labeled AI-generated release notes and improved breaking-change detection, but the change itself touches no application code.",
+    "security": "No concerns. The change only updates a version string in a GitHub Actions YAML file. No supply-chain changes, credential handling, network calls, code execution paths, or obfuscation are introduced.",
+    "tests": "No new tests needed. This is a version pin change to a GitHub Actions metadata file; it does not affect application behavior, API contracts, or user-facing functionality."
+  },
+  "generation_seconds": 121.7,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-28T22:12:25Z",
+  "pr_number": 3692,
+  "range_start": "v2026.39.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-28T22:16:08+00:00",
+  "reviewers": [
+    "@kenvandine"
+  ],
+  "sha": "0fa21d8bc86abb45bbd8d9e847e69119e2c079da",
+  "shout_outs": [],
+  "subject": "Update REPO_MANAGER_VERSION to v1.0.4 (#3692)",
+  "summary": "Updates the REPO_MANAGER_VERSION pin in .github/actions/repo-manager/action.yml from v1.0.3 to v1.0.4.",
+  "verdict": "Clean",
+  "verdict_reason": "Trivial one-line version bump for an internal tooling config with an approval, passing CI, and no post-approval changes."
+}
