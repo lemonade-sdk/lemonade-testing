@@ -4,11 +4,7 @@
 
 ### Breaking Changes
 
-- `POST /v1/images/upscale` now requires the `upscaling` model label — models without it return a 400. Label your model `upscaling` to use the endpoint.
-- OpenMOSS `rocm` and `rocm_bin` backends have been removed on Windows and Linux — they ran ~40× slower than Vulkan. Use `backend: vulkan` or `backend: cuda` instead.
-- sd-cpp ROCm removed on Windows where it ran at CPU speed with no acceleration — switch to `backend: vulkan` or `backend: auto`.
-- AMD GPU entries in `GET /api/v1/system-info` now show a marketing name (e.g. "AMD Radeon RX 9070 XT (gfx1201)") instead of a raw numeric code — parse the `family` field for the ISA code.
-- Editing `user_models.json` no longer takes effect without a restart of `lemond` — the restart requirement was always implied and is now documented.
+- 'openmoss:rocm' and `sd-cpp:rocm` temporarily removed while we work on a couple of bugs.
 
 ### 🖥️ Streaming on AMD integrated GPUs
 
