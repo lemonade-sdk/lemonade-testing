@@ -1,0 +1,34 @@
+{
+  "author": "@abn",
+  "branch": "main",
+  "bucket": "v2026.41",
+  "commit_sha": "e9d0fc365a00430e9269105df37e0f4ed92c882f",
+  "committed_at": "2026-09-28T19:01:36+00:00",
+  "evidence": {
+    "api_compatibility": "The change modifies HttpClient::post and HttpClient::post_multipart internal signatures, replacing std::atomic<bool>* cancel_flag with const RequestCancelToken& cancel. This is an internal API change within the server codebase — no public SDK, CLI, or external HTTP API contract is affected. The cancellation response returns ErrorResponse with ErrorType::INVALID_REQUEST and message 'Request cancelled by client', which maps to HTTP 400. The documentation in docs/dev/router-policy.md claims HTTP 499, which is incorrect and should be corrected.",
+    "documentation": "docs/dev/router-policy.md was updated with a new 'Request Cancellation & Connection Robustness' section documenting socket progress interception, upstream transfer abort, and isolated disconnect handling. The claim that disconnects are recorded with HTTP 499 is inaccurate — get_http_status_from_error() maps ErrorType::INVALID_REQUEST to HTTP 400. The Invariant 14 update is consistent with the implementation. No user-facing release notes or changelog entry is visible in the diff.",
+    "manual_release_testing": "The change modifies non-streaming endpoint behavior (chat_completion, completion, responses) by aborting the upstream request when the client disconnects. This is a behavioral fix for an edge case (client disconnect during inference) rather than a new user-facing feature. The C++ test suite exercises the cancellation path deterministically with a mock backend. The Python integration test confirms server health recovery after a client drop. There is no end-to-end test that sends a non-streaming request and verifies the upstream backend actually terminates its computation when the client drops, but this scenario is inherently hard to test deterministically against a real model. The documented 499 status claim is inaccurate (actual is HTTP 400 via ErrorType::INVALID_REQUEST) — this documentation inaccuracy is the primary release concern and should be corrected before publishing.",
+    "post_approval_commits": "The PR consists of a single merge commit. There are zero commits after the first approval (2026-09-21T20:01:37Z) or after the latest approval (2026-09-28T19:00:18Z by @ramkrishna2910). No post-approval churn to flag.",
+    "review": "PR #2898 received three substantive reviews. @Geramy (subject-matter expert in sockets/tcp/ip per contribute.md) conducted a thorough multi-round review: restructured the internal types (RequestCancelContext → RequestCancelToken), proposed moving RequestCancelScope to a utility file, flagged that should_cancel/req_cancel duplication in handlers should use the new token type, and requested an exception type in the catch-all in the curl callback. @fl0rianr reviewed the networking implications and approved with a request for @Geramy's look. @ramkrishna2910 approved the Agents.md changes. All review feedback was addressed by the author. The author filed follow-up issue #3645 for the remaining architectural cleanup (threading the token end-to-end, removing the scope and thread-local). Scope was well-managed: the author explicitly removed direct slot cancellation, SSE heartbeats, and TCP keep-alive socket options from this PR, deferring them to separate issues (#3209, #3210). The PR passes CI with all checks (Docs And Style, Validate New llama.cpp Release, C++ Server Build Test and Release) succeeding on the merge-group build.",
+    "security": "No security concerns. The code adds a catch-all for C++ exceptions crossing the libcurl C callback boundary, with a safe-fail approach (returning 1 to abort the transfer). No new credential handling, network calls, code execution paths, or permission broadening. The RequestCancelToken is passed by const reference. No telemetry or obfuscation changes.",
+    "tests": "The PR adds two test files: test/cpp/test_request_cancellation.cpp (589 lines, 5 test functions) and test/server_cancellation.py (139 lines, 4 test methods). C++ tests cover: (1) end-to-end WrappedServer non-streaming cancellation via RequestCancelScope, (2) direct HttpClient post cancellation throwing HttpClientCancellationException, (3) StreamingProxy pre-first-byte SSE cancellation, (4) multipart request cancellation, and (5) nested RequestCancelScope preserving connection-liveness checkers. All tests use a mock httplib backend that blocks until released, so timing and structured exception behavior are deterministically verified. The Python integration test verifies server health after client drops (mid-stream, pre-prefill, non-streaming, and multi-client isolation) but does not assert that the non-streaming cancellation actually aborts the upstream request — only that the server stays responsive. The multi-client isolation test (test_04) was flagged by Copilot review as asserting /health instead of a real inference request, and the author has not yet addressed this; the test still passes even if a dropped request holds the backend slot. No evidence of test weakening or deletion."
+  },
+  "generation_seconds": 239.2,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-28T19:49:48Z",
+  "pr_number": 2898,
+  "range_start": "v2026.39.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-28T19:55:29+00:00",
+  "reviewers": [
+    "@Geramy",
+    "@fl0rianr",
+    "@ramkrishna2910"
+  ],
+  "sha": "e9d0fc365a00430e9269105df37e0f4ed92c882f",
+  "shout_outs": [],
+  "subject": "fix(server): abort non-streaming requests on client disconnect (#2898)",
+  "summary": "Fix non-streaming requests hanging indefinitely when a client disconnects mid-request by propagating connection-liveness checks through the entire request pipeline and aborting upstream HTTP transfers to backends.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "Documentation in router-policy.md claims the handler returns HTTP 499 for client disconnects but the code actually maps the cancellation response to HTTP 400 via ErrorType::INVALID_REQUEST, which could mislead release notes and users."
+}
