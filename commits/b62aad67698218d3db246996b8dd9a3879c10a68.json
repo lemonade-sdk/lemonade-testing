@@ -1,0 +1,32 @@
+{
+  "author": "@bitgamma",
+  "branch": "main",
+  "bucket": "v2026.41",
+  "commit_sha": "b62aad67698218d3db246996b8dd9a3879c10a68",
+  "committed_at": "2026-09-29T15:13:41+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The change is a single JSON version field update in src/cpp/resources/backend_versions.json. Users who previously used any Kokoro voice will now get b21 instead of b17, which is a drop-in replacement — no API, CLI, config format, or behavior changes in Lemonade's contract.",
+    "documentation": "No documentation changes needed. This is a version bump for a bug fix; no user-facing behavior, CLI, API, or config changes. Issue #3682 documents the original problem, and the PR body links to it.",
+    "manual_release_testing": "No manual release testing is required. This is a version bump in a JSON version pin file only; no code paths, CLI commands, API endpoints, GUI elements, or config options are touched. The Kokoro backend itself is unchanged — only the pinned tag for its CPU and Metal build artifacts moves from b17 to b21. Residual risk: b21 contains fixes for 5 specific voices but no release notes from Kokoro are available to confirm the full scope of changes.",
+    "post_approval_commits": "None. The PR contains exactly one commit (fde55d06) which was the original commit before approval. No commits were added after @superm1's approval.",
+    "review": "PR #3695 was approved by @superm1 on 2026-09-29T14:56:36Z, submitted before merge. No inline review comments were left. The PR body is well-structured, self-reviewed by the author, and clearly states it fixes #3682. @bitgamma has subject area expertise in 'new backends' per docs/dev/contribute.md, which includes Kokoro.",
+    "security": "No security concerns. The change only modifies a version pin in a JSON resource file. No supply-chain changes, credential handling, network calls, code execution, or permission changes beyond updating which pre-built artifact tag is downloaded.",
+    "tests": "No new tests were added, which is appropriate for a version bump in a JSON config file. The fix is validated indirectly through the PR's linked issue #3682 which demonstrates the bug with concrete curl/ffprobe evidence. The PR author reported local testing."
+  },
+  "generation_seconds": 139.5,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-29T15:57:49Z",
+  "pr_number": 3695,
+  "range_start": "v2026.39.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-29T16:01:59+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "b62aad67698218d3db246996b8dd9a3879c10a68",
+  "shout_outs": [],
+  "subject": "bump Kokoro version (#3695)",
+  "summary": "Bumps the Kokoro TTS backend version from b17 to b21 on both CPU and Metal, fixing four British English voices (bf_emma, bf_isabella, bm_george, bm_lewis) and one French voice (ff_siwis) that returned ~0.3s of fixed-length audio regardless of input text.",
+  "verdict": "Clean",
+  "verdict_reason": "Single-file version bump with a clear bug fix, approved by a maintainer, all CI passing, and no post-approval changes."
+}
