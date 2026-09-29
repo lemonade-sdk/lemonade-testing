@@ -1,0 +1,37 @@
+{
+  "author": "@pwilkin",
+  "branch": "main",
+  "bucket": "v2026.41",
+  "commit_sha": "e249a043f1d3a0586adbc4c4665f8f06acdfd616",
+  "committed_at": "2026-09-29T00:57:35+00:00",
+  "evidence": {
+    "api_compatibility": "No API changes. The llamacpp_args field in API responses (POST /v1/load, GET /v1/models/:name/options, GET /v1/models/:name) shows different example values but the schema, accepted values, and behavior are unchanged. Users are not required to change anything on upgrade.",
+    "documentation": "All affected documentation was updated: docs/api/lemonade.md (14 occurrences across examples for /v1/load and /v1/models/:name/options), docs/api/openai.md (1 occurrence in a models-list response example), docs/guide/cli.md (1 CLI usage example). The PR author checked 'Documentation is affected and has been updated.' in the PR checklist.",
+    "manual_release_testing": "No user-visible behavior change. The PR touches only documentation examples and test fixtures; the core code was already using or accepting the new --load-mode option (the PR body confirms the deprecated flags were not referenced in core code). All CI checks passed: C++ Server Build, Test, and Release (compile, unit tests, installers, .deb, embeddable builds on Linux/Windows/macOS/ARM64, CLI/endpoint tests on ubuntu/windows), Docs And Style (app-regression, backend-docs-drift, pre-commit, markdown-link-check, vendored-asset-integrity), Launchpad PPA builds, and llama.cpp validation (SUCCESS). No manual release test needed.",
+    "post_approval_commits": "No post-approval commits on the PR branch. The PR contained two commits (original fix by @pwilkin, merge-branch rebase by @sreeram-11), and the approval covered the tip commit 61b2e223b4. The local squash-merge commit e249a043 has a single parent 0fa21d8b and touches only the seven expected files — no unexpected churn.",
+    "review": "PR #3559 was approved by @sreeram-11 (COLLABORATOR) at 2026-09-29T00:27:19Z with the comment confirming --load-mode none is the correct direct replacement for --no-mmap and that it disables memory-mapping of the model file. The reviewer is a collaborator and co-author on the merge commit. Per docs/dev/contribute.md, @superm1 and @pwilkin have explicit llamacpp expertise; the reviewer @sreeram-11 does not list llamacpp in their subject areas but provided a substantive confirmation of the option mapping for this straightforward deprecation fix.",
+    "security": "No security concerns. The change is a simple text replacement in documentation and tests; no credentials, network calls, code execution paths, or permission changes are involved.",
+    "tests": "All four C++ test files and the Python server-endpoint test file were updated in lockstep with the documentation. test/custom_args.cpp replaces --no-mmap with --no-jinja in a negation-precedence test and switches --load-mode none / -lm alias tests to the new option. test/hrx_contract.cpp and test/recipe_arg_resolution.cpp use --load-mode none in their expected argv strings. test/server_endpoints.py updates global-args and per-model-args fixture values. No tests were weakened, deleted, or skipped; the change is a pure find-and-replace within test fixtures."
+  },
+  "generation_seconds": 288.1,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-29T01:39:17Z",
+  "pr_number": 3559,
+  "range_start": "v2026.39.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-29T01:45:53+00:00",
+  "reviewers": [
+    "@sreeram-11"
+  ],
+  "sha": "e249a043f1d3a0586adbc4c4665f8f06acdfd616",
+  "shout_outs": [
+    {
+      "handle": "@sreeram-11",
+      "reason": "Co-author of the squash-merged commit; also reviewed and confirmed that --load-mode none is the correct direct replacement for --no-mmap."
+    }
+  ],
+  "subject": "fix: change deprecated --no-mmap option to --load-mode none for llama.cpp (#3559)",
+  "summary": "Replaces the deprecated --no-mmap / --mmap / --mlock / --direct-io llama.cpp CLI options with --load-mode none / --load-mode mmap / --load-mode all variants across Lemonade's documentation examples (docs/api/lemonade.md, docs/api/openai.md, docs/guide/cli.md) and test fixtures (test/cpp/test_custom_args.cpp, test/cpp/test_hrx_contract.cpp, test/cpp/test_recipe_arg_resolution.cpp, test/server_endpoints.py).",
+  "verdict": "Clean",
+  "verdict_reason": "A focused documentation-and-test cleanup with no code changes, no user-visible behavior changes, full CI, and a substantive review confirming the correct option mapping."
+}
