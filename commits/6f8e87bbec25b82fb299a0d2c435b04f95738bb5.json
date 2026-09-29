@@ -1,0 +1,33 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.41",
+  "commit_sha": "6f8e87bbec25b82fb299a0d2c435b04f95738bb5",
+  "committed_at": "2026-09-29T22:26:05+00:00",
+  "evidence": {
+    "api_compatibility": "No API, CLI, config, or file format changes. Zero impact on API compatibility.",
+    "documentation": "The spec writing guide is self-contained at docs/dev/specs/spec-writing-guide.md with three sections (Structure, Precision, Content) and 14 rules across them. It is linked from three locations: the RFC discussion template, the spec-driven development guide, and mkdocs.yml navigation. The guide builds on the existing documentation guide and is consistent with the project's spec-driven development philosophy.",
+    "manual_release_testing": "This commit adds no user-reachable surface. It is a developer-facing documentation file and doc navigation changes only. No manual testing needed.",
+    "post_approval_commits": "One commit (a8bd103ba72555edb098313b418579e624679f13, 'Fixes for Mario's feedback') was added after the first approval at 2026-09-28T17:09:49Z. It fixed a typo, removed the 'relative to `main`' phrase, added 'mermaid' to the diagrams recommendation, and removed the prescriptive 'Describe the change from `main`' rule. @superm1 re-approved this commit, so it was reviewed within the spirit of the original PR.",
+    "review": "PR #3687 was opened by @jeremyfowers and requested review from @kenvandine. @ramkrishna2910 approved on the third commit (cf9b24432b) at 2026-09-28T17:09:49Z. @superm1 left several inline comments: a typo fix (specificaiton → specification), removal of the moving-target phrase 'relative to `main`' from the guide's opening paragraph, a suggestion to use mermaid diagrams explicitly instead of generic diagrams, and another removal of prescriptive `main` references. The author addressed all feedback in a post-first-approval commit (a8bd103b, 'Fixes for Mario's feedback'), which @superm1 approved at 2026-09-29T17:34:59Z. The review had subject matter coverage — @superm1 has expertise in documentation quality as a core maintainer.",
+    "security": "No security concerns. The change is purely markdown documentation and a yml nav entry. The co-authorship of an AI assistant (Claude Opus 5.5) is documented and poses no supply-chain risk.",
+    "tests": "All applicable CI checks passed: Docs And Style, Routing Schema Tests, CodeQL (5 languages), Server Download Registry Tests, C++ unit tests, and all build jobs. No tests apply to a pure documentation change."
+  },
+  "generation_seconds": 148.2,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-29T23:09:30Z",
+  "pr_number": 3687,
+  "range_start": "v2026.39.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-29T23:14:17+00:00",
+  "reviewers": [
+    "@superm1",
+    "@ramkrishna2910"
+  ],
+  "sha": "6f8e87bbec25b82fb299a0d2c435b04f95738bb5",
+  "shout_outs": [],
+  "subject": "docs: add a spec writing guide under docs/dev/specs (#3687)",
+  "summary": "Adds docs/dev/specs/spec-writing-guide.md (27 lines covering Structure, Precision, and Content rules for writing technical specs) and links it from the RFC discussion template (.github/DISCUSSION_TEMPLATE/request-for-comment-rfc.yml), the spec-driven development doc (docs/dev/spec-driven-dev.md), and the mkdocs navigation (mkdocs.yml).",
+  "verdict": "Clean",
+  "verdict_reason": "Pure documentation change that was reviewed by two maintainers, passed all CI checks, and introduces no user-facing surface."
+}
