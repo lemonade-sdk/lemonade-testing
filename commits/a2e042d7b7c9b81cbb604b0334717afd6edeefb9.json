@@ -1,0 +1,36 @@
+{
+  "author": "@RaulMermans",
+  "branch": "main",
+  "bucket": "v2026.41",
+  "commit_sha": "a2e042d7b7c9b81cbb604b0334717afd6edeefb9",
+  "committed_at": "2026-09-29T11:54:13+00:00",
+  "evidence": {
+    "api_compatibility": "The change tightens validation — previously accepted but never-read keys like flm.flm_bin or flm.foo_args now produce 'Unknown key' errors. The PR claims no breaking changes, which is reasonable because these keys were never functional and no existing setup depends on them. Valid keys (npu_bin, cuda_args, etc.) are unaffected.",
+    "documentation": "No documentation changes needed. The change is internal config validation that produces an existing error message for previously-accepted-but-unused keys.",
+    "manual_release_testing": "No evidence of a human exercising the new validation through the user-visible surface. All testing evidence is automated (C++ unit test, ctest, Python endpoint test, and the author's manual CLI run shown in the PR description). The /internal/config and /internal/set endpoints are user-reachable, so manual verification is needed.",
+    "post_approval_commits": "No commits were added after the first and only approval (2026-09-29T11:42:43Z). The two PR commits — the validation fix and the Windows path fix — both pre-date approval.",
+    "review": "One substantive reviewer — @bitgamma (MEMBER), whose subject area in contribute.md includes cli. Initial review requested a Windows portability fix in the test; author applied it; @bitgamma then approved with LGTM. No inline comments were left open unresolved. All checks passed before merge. No post-approval commits were added after the 2026-09-29T11:42:43Z approval.",
+    "security": "No security concerns. The change tightens config input validation, which is a defensive improvement. No supply-chain, credential, network, or permission changes.",
+    "tests": "New unit tests in test/cpp/test_runtime_config_backend_validation.cpp cover 20 cases: rejected invalid keys (flm_bin, random_bin, foo_args, vulkan_bin_extra, npu_bin on wrong sections, etc.), accepted valid keys (vulkan_bin, cuda_bin, npu_bin, hrx_bin, server_bin, etc.), type-check rejection (integer passed where string expected), and path-existence rejection for a nonexistent binary. A new Python endpoint test (test_066) verifies the /internal/set endpoint rejects invalid keys with HTTP 400 and accepts valid ones. All CI checks passed (C++ unit tests, endpoint tests, build on multiple platforms). No tests were weakened or deleted."
+  },
+  "generation_seconds": 146.6,
+  "maintainer_todos": [
+    {
+      "text": "Run lemonade config set flm.flm_bin=builtin and confirm it returns an Unknown key error, then run lemonade config set flm.npu_bin=builtin and confirm it succeeds."
+    }
+  ],
+  "merge_date": "2026-09-29T12:33:15Z",
+  "pr_number": 3684,
+  "range_start": "v2026.39.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-29T12:37:35+00:00",
+  "reviewers": [
+    "@bitgamma"
+  ],
+  "sha": "a2e042d7b7c9b81cbb604b0334717afd6edeefb9",
+  "shout_outs": [],
+  "subject": "fix(config): reject invalid backend-specific keys (#3684)",
+  "summary": "Tightens validate_backend in runtime_config.cpp to reject <variant>_bin and <variant>_args config keys unless <variant> is declared in the section descriptor's bin_variants / arg_variants or is a support-row backend, so that keys like flm.flm_bin and flm.foo_args are now rejected as Unknown keys instead of silently accepted.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The commit tightens config validation to a user-reachable surface (config set and /internal/config) but there is no evidence of manual end-to-end exercise before merge."
+}
