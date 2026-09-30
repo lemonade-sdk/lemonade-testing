@@ -1,0 +1,42 @@
+{
+  "author": "@bitgamma",
+  "branch": "main",
+  "bucket": "v2026.42",
+  "commit_sha": "40827a33c995ce1f70370d82b9939f2b0f1e13a0",
+  "committed_at": "2026-09-30T17:42:58+00:00",
+  "evidence": {
+    "api_compatibility": "The commit bumps the thenoise backend version from 0.7.1-rocm7.14.0 to 0.9.1-rocm10.1.0 in backend_versions.json for all platforms. The version string itself is an internal identifier used to download the correct archive, not a user-facing API. The only user-facing change is that Windows users now receive a .zip archive instead of .tar.gz — this is additive platform support, not a breaking change. No existing setup stops working on upgrade.",
+    "documentation": "README.md updated: the thenoise backend row now shows 'Windows, Linux' instead of just 'Linux'. docs/dev/backends-reference.md updated in the same way. The new CI job is internal infrastructure and does not require separate documentation.",
+    "manual_release_testing": "Two reviewers exercised the feature on real Windows AMD ROCm hardware: @jeremyfowers confirmed TheNoise runs on a Radeon 9070XT (gfx120X) and @ramkrishna2910 confirmed it on a Windows ROCm system. This is strong evidence, but a maintainer should still re-verify on a release-candidate build before shipping.",
+    "post_approval_commits": "None. The branch contained four commits (add windows support, launch python.exe instead of thenoise.bat, bump version, add split zip support), all authored by @bitgamma on Sep 24-29. First approval was Sep 30 at 14:55 and the latest approval at 17:42 — no commits were added after either approval.",
+    "review": "Approved by @jeremyfowers (admin maintainer, subject area includes new backends and ci) and @ramkrishna2910 (admin maintainer, subject area includes new backends). @jeremyfowers submitted an image showing TheNoise running successfully on Windows on a gfx120X card — hands-on validation. The only inline comments were a discussion between @jeremyfowers and @bitgamma about VRAM filtering logic, which is outside the PR scope and not a blocker. No post-approval commits; branch was clean through merge. All CI checks passed.",
+    "security": "The new thenoise_bundle.h sets environment variables (PATH, TORCH_ROCM_AOTRITON_ENABLE_EXPERIMENTAL, MIOPEN_FIND_MODE, TORCH_BLAS_PREFER_HIPBLASLT, TORCH_COMPILE_DISABLE, TORCHDYNAMO_DISABLE) derived from the bundle's own directory structure. No external network calls, credential handling, or untrusted input injection. No security concerns.",
+    "tests": "The PR adds a new CI test job for thenoise on Windows to cpp_server_build_test_release.yml (runner: Windows X64 stx-halo, lemon-prod). No existing tests were weakened or deleted. No unit tests for the new thenoise_bundle.h header, which is reasonable given its inline utility functions and the integration-level validation through the CI runner."
+  },
+  "generation_seconds": 168.7,
+  "maintainer_todos": [
+    {
+      "text": "Start the Lemonade server on a Windows system with an AMD ROCm GPU, set the thenoise backend to rocm, and generate an image to confirm the bundled Python interpreter launches and produces output."
+    }
+  ],
+  "merge_date": "2026-09-30T18:23:55Z",
+  "pr_number": 3666,
+  "range_start": "v2026.40.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-30T18:28:37+00:00",
+  "reviewers": [
+    "@jeremyfowers",
+    "@ramkrishna2910"
+  ],
+  "sha": "40827a33c995ce1f70370d82b9939f2b0f1e13a0",
+  "shout_outs": [
+    {
+      "handle": "@jeremyfowers",
+      "reason": "Provided hands-on proof of life by running TheNoise on Windows on a gfx120X card and shared the results during review."
+    }
+  ],
+  "subject": "Add Windows support for TheNoise (#3666)",
+  "summary": "Adds Windows support for TheNoise (ROCM) by shipping a bundled portable CPython interpreter, adding split-zip download support, and enabling a new CI test on the stx-halo Windows runner.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The change introduces user-visible Windows support for TheNoise that should be manually verified on a Windows AMD ROCm system before the release ships."
+}
