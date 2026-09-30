@@ -1,0 +1,157 @@
+{
+  "branch": "release-v2026.41",
+  "breaking_changes": [
+    "Removed the ROCm backend for OpenMOSS on Linux; set backend to vulkan or cuda instead.",
+    "Removed the ROCm backend for sd-cpp on Windows; set backend to vulkan or auto instead.",
+    "The POST /v1/images/upscale endpoint now requires the 'upscaling' model label; models without it are rejected with a 400 error.",
+    "The /api/v1/system-info API now returns AMD GPU names in marketing form (e.g., 'AMD Radeon RX 9070 XT (gfx1201)') instead of raw numeric codes; consumers that parse the name field for numeric versions need to adapt.",
+    "The release tagging tool no longer accepts --no-sign; omit the flag (now the default) or use --sign for signed tags."
+  ],
+  "bucket": "v2026.41",
+  "candidate_issues": [],
+  "checklist": [
+    {
+      "author": "@apollo-2006",
+      "commit": "6d0e01f505b10d13841da1822c118b8a9daae9a2",
+      "platforms": [
+        "Ubuntu PPA",
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 3601,
+      "priority": "P1",
+      "text": "Start the Lemonade server on a Linux machine with an AMD GPU, run curl on /api/v1/system-info, and confirm that amd_gpu entries show a human-readable marketing name (e.g. \"AMD Radeon RX 9070 XT (gfx1201)\") instead of a raw numeric version like \"120001\", while the family field remains the ISA code."
+    },
+    {
+      "author": "@atirna",
+      "commit": "ce082048172bc305e3a3dab963edd0f07ad5c048",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3511,
+      "priority": "P1",
+      "text": "Send a POST /v1/images/upscale request with a model that does not carry the 'upscaling' label and confirm the response is a 400 error with the message 'Upscale model is not labeled upscaling'."
+    },
+    {
+      "author": "@atirna",
+      "commit": "ce082048172bc305e3a3dab963edd0f07ad5c048",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3511,
+      "priority": "P1",
+      "text": "Send a POST /v1/images/upscale request with a model that does carry the 'upscaling' label and confirm the upscale completes successfully through the expected backend."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "e5d0eecb1ffb5d6e4254cf9c9be29ff40aed3020",
+      "platforms": [
+        "Ubuntu PPA",
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 3615,
+      "priority": "P1",
+      "text": "Start the server with an OpenMOSS config and confirm that selecting backend \"vulkan\" or \"cuda\" works correctly, since the ROCm path no longer exists."
+    },
+    {
+      "author": "@abn",
+      "commit": "e8000b458d7748fe54f0af13ad2baca8bf782a46",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3568,
+      "priority": "P1",
+      "text": "Start lemond with a configured cloud provider and API key, call GET /v1/models, and confirm the discovered cloud model entry includes max_output_tokens and max_completion_tokens integer fields with non-zero values."
+    },
+    {
+      "author": "@mashan555",
+      "commit": "d3481a80e816bb98492be45c5f01013b807433f6",
+      "platforms": [
+        "Windows"
+      ],
+      "pr_number": 3621,
+      "priority": "P1",
+      "text": "Run `lemonade launch junie --model <any-loaded-model>` on a native Windows machine (with a real or stub junie.bat) and confirm the generated `~/.junie/models/lemonade.json` contains the correct baseUrl, apiKey, and displayName fields."
+    },
+    {
+      "author": "@abn",
+      "commit": "3b5ec50e55f7af27f15c68573de17dc099933a4f",
+      "platforms": [
+        "Ubuntu PPA",
+        "macOS",
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 3304,
+      "priority": "P1",
+      "text": "On a Linux or macOS desktop without lemond running, launch lemonade-tray with --spawn-server and verify that lemond starts within 15 seconds, the tray menu populates, and quitting the tray causes lemond to terminate immediately without leaving an orphan process."
+    },
+    {
+      "author": "@RaulMermans",
+      "commit": "a2e042d7b7c9b81cbb604b0334717afd6edeefb9",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3684,
+      "priority": "P1",
+      "text": "Run lemonade config set flm.flm_bin=builtin and confirm it returns an Unknown key error, then run lemonade config set flm.npu_bin=builtin and confirm it succeeds."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "5f899725190c1f41212541951dcbb919e60ccb33",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3188,
+      "priority": "P2",
+      "text": "Run the Lemonade server artifact built from this merge on Arch Linux and confirm it starts and accepts API calls without mbedTLS linking errors."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "d5f154a7ce6dd5cc2b52e684628100da584d94bc",
+      "platforms": [
+        "Windows"
+      ],
+      "pr_number": 3616,
+      "priority": "P2",
+      "text": "On a Windows machine, set sd-cpp backend to rocm in the config and confirm the server returns a clear unsupported-backend error rather than silently running inference at CPU speed."
+    },
+    {
+      "author": "@Copilot",
+      "commit": "6deeb05f77b38081f1ac33c104a52ac1262170c3",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3660,
+      "priority": "P2",
+      "text": "Run the release tagging tool in dry-run mode and confirm the output says 'would create and push annotated tag' rather than 'signed tag'."
+    },
+    {
+      "author": "@Copilot",
+      "commit": "6deeb05f77b38081f1ac33c104a52ac1262170c3",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3660,
+      "priority": "P2",
+      "text": "Run the release tagging tool with the --sign flag in dry-run mode and confirm the output says 'would create and push signed tag'."
+    }
+  ],
+  "commits_reviewed": 31,
+  "commits_unreviewed": 0,
+  "evidence": {
+    "blockers": "AMD GPU hardware is needed to verify the system-info marketing name display (6d0e01f), and the sd-cpp ROCm error path on Windows (d5f154a). A machine with a configured cloud provider is needed to verify token limit discovery (e8000b4). The release tagging tool needs dry-run verification before the v2026.41 tag (6deeb05).",
+    "breaking_changes": "Five breaking changes ship: OpenMOSS and sd-cpp ROCm backends removed (migration to vulkan/cuda or auto documented in backend docs and README), the upscaling endpoint now enforces an 'upscaling' model label, the /api/v1/system-info name field now returns AMD GPU marketing names instead of numeric codes, and the release tagging tool no longer accepts --no-sign.",
+    "coverage": "31 commit reviews span the full range from v2026.39.1 to 6f8e87bbec (head SHA), covering all PRs merged into release-v2026.41. CI passed on every reviewed merge commit across build, test, smoke, docs, CodeQL, and platform packaging workflows.",
+    "manual_testing": "Exercise the /api/v1/system-info endpoint on AMD hardware to confirm marketing names. Drive POST /v1/images/upscale with both labeled and unlabeled models. Start an OpenMOSS config on AMD with backend vulkan or cuda. Call GET /v1/models with a cloud provider to check max_output_tokens and max_completion_tokens. Launch Junie on native Windows. Verify the sd-cpp ROCm error on Windows. Validate tray --spawn-server lifecycle on Linux and macOS.",
+    "security": "No security concerns observed across the 31 reviewed commits. Config validation tightening (a2e042d) and the watchdog pipe (3b5ec50) are defensive improvements. The ROCm removals (e5d0eec, d5f154a) reduce code and asset surface."
+  },
+  "generation_seconds": 415.2,
+  "head_sha": "6f8e87bbec25b82fb299a0d2c435b04f95738bb5",
+  "is_hotfix": false,
+  "last_stable_tag": "",
+  "range_start": "v2026.39.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-30T16:18:02+00:00"
+}
