@@ -1,0 +1,32 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.42",
+  "commit_sha": "4aa5fc5e2b5e74fa36963108eeb45329f669f79d",
+  "committed_at": "2026-09-30T16:24:35+00:00",
+  "evidence": {
+    "api_compatibility": "No changes to any API, CLI, config, or behavior. Purely a test file deletion.",
+    "documentation": "No docs affected. No documentation needed for a test removal.",
+    "manual_release_testing": "None required. This is a test-only change with no user-facing behavior.",
+    "post_approval_commits": "None. The PR has one commit (dc168edd) which was in place before @bitgamma's approval at 2026-09-30T16:05:16Z. No churn.",
+    "review": "@bitgamma approved with a casual comment (\"oh this is exactly the kind of tests we should eradicate :)\"). @bitgamma's subject areas (thenoise, cli, recipes, new backends, benchmarking, new models) do not include CI/testing, but the change is a trivial 33-line deletion with no behavioral impact — adequate review for the scope. No inline review comments were requested or provided.",
+    "security": "No security concerns. Test removal only.",
+    "tests": "This commit removes a test; it does not add new tests. No existing tests are weakened or deleted beyond the one being removed. All CI check suites passed on the merge queue commit (4aa5fc5e)."
+  },
+  "generation_seconds": 131.6,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-30T17:14:45Z",
+  "pr_number": 3720,
+  "range_start": "v2026.40.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-30T17:18:50+00:00",
+  "reviewers": [
+    "@bitgamma"
+  ],
+  "sha": "4aa5fc5e2b5e74fa36963108eeb45329f669f79d",
+  "shout_outs": [],
+  "subject": "test: remove flaky test_000b_retired_endpoints_removed (#3720)",
+  "summary": "Removes the flaky test_000b_retired_endpoints_removed integration test from test/server_endpoints.py that verified retired API routes (params, log-level, test, /status) returned 404 across all API version prefixes (/api/v0, /api/v1, /v0, /v1).",
+  "verdict": "Clean",
+  "verdict_reason": "A straightforward test-only removal of a flaky, low-value test with no user-visible impact, approved and merged with no post-approval changes."
+}
