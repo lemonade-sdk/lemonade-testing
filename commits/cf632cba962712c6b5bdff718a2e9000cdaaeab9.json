@@ -1,0 +1,38 @@
+{
+  "author": "@bitgamma",
+  "branch": "main",
+  "bucket": "v2026.42",
+  "commit_sha": "cf632cba962712c6b5bdff718a2e9000cdaaeab9",
+  "committed_at": "2026-09-30T15:48:32+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The `--backend` flag already existed; this PR improves error messaging and adds auto-install for the specified flag. No new CLI flags, no config schema changes, no API changes.",
+    "documentation": "PR author marks documentation as not affected. The change improves in-CLI error messages and existing `--backend` behavior; no new flags, config keys, or documented behavior change. No documentation update required.",
+    "manual_release_testing": "Evidence of manual testing exists: the author shows concrete `build/lemonade bench` output for both the no-backend-found error case and the `--backend vulkan` auto-install success case (including download progress). @jeremyfowers additionally confirms independent local testing. No additional manual to-do required.",
+    "post_approval_commits": "No commits were added to the PR branch after the latest approval (@jeremyfowers, 2026-09-30T14:59:43Z). The diff was stable. The post-approval commits returned by the merge-group queue (PRs #3692, #3559, #3684, #3695) belong to other PRs in the same merge group, not to this PR.",
+    "review": "PR #3690 received two approvals. @iswaryaalex raised two substantive inline comments: (1) suggest mentioning the `--backend` flag when no backends are found — the author addressed this by adding 'Or rerun the lemonade bench command with the --backend <name> flag to automatically install the backend(s).' to the error output; (2) suggest a `--yes/-y` confirmation prompt before auto-installing — the author rejected this on the basis of consistency with other lemonade commands (load/pull install without asking) and the explicit intent conveyed by passing `--backend`. @iswaryaalex then approved. @jeremyfowers approved with 'Tested locally, works great!'. Subject-matter expertise present: @bitgamma maintains CLI/backends/benchmarking; @jeremyfowers is an admin maintainer with expertise in new CLI commands.",
+    "security": "The install path calls the existing `client.install_backend()` RPC and refreshes system-info via `/api/v1/system-info`, following the same pattern used by `lemonade load` and `lemonade pull`. No new credential handling, network endpoints, or execution paths introduced. No supply-chain concerns.",
+    "tests": "No new automated tests were added for the new `install_requested_backends` helper or the improved error messages. The PR author provides concrete manual test output in the PR description showing both the error-path and auto-install success-path. @jeremyfowers independently confirms local testing ('Tested locally, works great!')."
+  },
+  "generation_seconds": 269.2,
+  "maintainer_todos": [],
+  "merge_date": "2026-09-30T16:30:20Z",
+  "pr_number": 3690,
+  "range_start": "v2026.39.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-09-30T16:38:12+00:00",
+  "reviewers": [
+    "@iswaryaalex",
+    "@jeremyfowers"
+  ],
+  "sha": "cf632cba962712c6b5bdff718a2e9000cdaaeab9",
+  "shout_outs": [
+    {
+      "handle": "@iswaryaalex",
+      "reason": "Co-author of the commit; wrote part of the implementation."
+    }
+  ],
+  "subject": "Auto-install specified backends with `lemonade bench` (#3690)",
+  "summary": "Auto-install specified backends when `lemonade bench` is run with `--backend <name>` and provide actionable error messages with auto-install suggestions when no installed backend is found and none is specified.",
+  "verdict": "Clean",
+  "verdict_reason": "Well-scoped CLI enhancement with substantive expert review from two reviewers, inline feedback addressed, and evidence of manual testing by both the author and an independent reviewer."
+}
