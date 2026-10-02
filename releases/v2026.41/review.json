@@ -1,0 +1,70 @@
+{
+  "branch": "release-v2026.41",
+  "breaking_changes": [
+    "Removed the --no-sign flag from the release tagging tool; omit the flag (now the default) or use --sign for signed tags."
+  ],
+  "bucket": "v2026.41",
+  "candidate_issues": [],
+  "checklist": [
+    {
+      "author": "@abn",
+      "commit": "3b5ec50e55f7af27f15c68573de17dc099933a4f",
+      "platforms": [
+        "Ubuntu PPA",
+        "Snap",
+        "macOS",
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 3304,
+      "priority": "P1",
+      "text": "On a Linux or macOS desktop without lemond running, launch lemonade-tray with --spawn-server and verify that lemond starts within 15 seconds, the tray menu populates, and quitting the tray causes lemond to terminate immediately without leaving an orphan process."
+    },
+    {
+      "author": "@RaulMermans",
+      "commit": "a2e042d7b7c9b81cbb604b0334717afd6edeefb9",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3684,
+      "priority": "P1",
+      "text": "Run lemonade config set flm.flm_bin=builtin and confirm it returns an Unknown key error, then run lemonade config set flm.npu_bin=builtin and confirm it succeeds."
+    },
+    {
+      "author": "@Copilot",
+      "commit": "6deeb05f77b38081f1ac33c104a52ac1262170c3",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3660,
+      "priority": "P2",
+      "text": "Run the release tagging tool in dry-run mode and confirm the output says 'would create and push annotated tag' rather than 'signed tag'."
+    },
+    {
+      "author": "@Copilot",
+      "commit": "6deeb05f77b38081f1ac33c104a52ac1262170c3",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3660,
+      "priority": "P2",
+      "text": "Run the release tagging tool with the --sign flag in dry-run mode and confirm the output says 'would create and push signed tag'."
+    }
+  ],
+  "commits_reviewed": 13,
+  "commits_unreviewed": 0,
+  "evidence": {
+    "blockers": "Three manual checks needed: the --spawn-server end-to-end tray-to-lemond lifecycle on a POSIX desktop, release tagging tool dry-run in both default and --sign modes, and config validation exercised through the user-facing `lemonade config set` CLI.",
+    "breaking_changes": "The --no-sign flag is removed from the release tagging tool CLI; operators should omit it or use --sign. No end-user-facing breaking changes.",
+    "coverage": "All 13 commits in the range v2026.40.0..6f8e87b reviewed. CI passed across all relevant workflows for each commit. No gaps identified in the review evidence.",
+    "manual_testing": "(1) Launch lemonade-tray --spawn-server on a POSIX desktop and verify lemond starts, the tray menu populates, and quitting the tray terminates lemond without orphan. (2) Run the release tagging tool in dry-run and with --sign dry-run to confirm output messages. (3) Test `lemonade config set` with invalid FLM keys (should error) and valid keys (should succeed).",
+    "security": "No security concerns observed. The watchdog pipe uses FD_CLOEXEC and posix_spawn_file_actions_addclose for safe subprocess isolation. Config validation is tightened, which is a defensive improvement."
+  },
+  "generation_seconds": 86.7,
+  "head_sha": "6f8e87bbec25b82fb299a0d2c435b04f95738bb5",
+  "is_hotfix": false,
+  "last_stable_tag": "",
+  "range_start": "v2026.40.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-02T18:58:26+00:00"
+}
