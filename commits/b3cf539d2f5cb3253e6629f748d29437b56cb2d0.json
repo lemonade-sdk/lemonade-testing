@@ -1,0 +1,37 @@
+{
+  "author": "@ramkrishna2910",
+  "branch": "main",
+  "bucket": "v2026.42",
+  "commit_sha": "b3cf539d2f5cb3253e6629f748d29437b56cb2d0",
+  "committed_at": "2026-10-02T00:22:41+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The change adds a single curl option (CURLSSLOPT_REVOKE_BEST_EFFORT) that relaxes revocation checking only when a CRL/OCSP responder is unavailable. Certificate signature, chain-of-trust, and hostname validation remain enforced. It does not change any CLI flags, config options, API endpoints, or saved-file formats. Existing HTTPS connections with public CAs are unaffected. The only behavioral difference is that connections to servers with internal CAs and no revocation responder will now succeed instead of failing.",
+    "documentation": "No documentation changes are needed. The change does not affect documented CLI commands, config options, API endpoints, or user-facing behavior descriptions. The code change includes a detailed inline comment explaining the fix. The PR body provides context on the problem and solution.",
+    "manual_release_testing": "No evidence of manual testing on the specific release-critical scenario: Windows + HTTPS + internal/private CA without CRL/OCSP responder. The CI build/test on windows-latest exercises basic HTTPS functionality but does not appear to cover the internal-CA edge case. The author's screenshot shows a local test but does not prove the fix works in the exact failure scenario (private CA, no revocation infrastructure).",
+    "post_approval_commits": "One commit (6626a4e3fc14c7ca29e88eacf012b0b0dae9f9cc) was added after @Geramy's approval at 2026-09-30T18:06:11Z, committed at 2026-10-01T23:22:16Z. This commit added #ifdef _WIN32 around the CURLSSLOPT_REVOKE_BEST_EFFORT setting in response to @superm1's inline review comment questioning whether the fix should be Windows-only. The change only added preprocessor guards — it did not alter behavior, introduce new code paths, weaken tests, or change API. It was within the spirit and scope of the approved PR and was a direct response to reviewer guidance.",
+    "review": "PR #3716 received an APPROVED review from @Geramy (subject-area expertise: security, sockets, tcp/ip), who approved with a caveat about multi-stage attack vectors. @superm1 (subject-area expertise: security, Docker, containers) left two inline comments questioning whether the fix should be Windows-only, which the author addressed by adding #ifdef _WIN32. The post-approval commit (6626a4e3fc) adding the #ifdef _WIN32 guard was a direct response to @superm1's review feedback and did not change behavior — it only limited the scope. No re-approval was needed since the addition was a straightforward platform restriction suggested in review. The review was adequate: at least one reviewer (@Geramy) had subject-matter expertise in security. @superm1's comments improved platform correctness. No release-blocking corner cases were missed by reviewers.",
+    "security": "The change relaxes certificate revocation checking on Windows by allowing connections to proceed when CRL/OCSP responders are unreachable. @Geramy flagged this as potentially enabling a multi-stage MITM attack, noting it is 'HIGHLY unlikely' but approving anyway. The change does not disable revocation checking entirely — it still checks when responders are reachable. Certificate chain validation and hostname checks are untouched. The risk is low: a revoked certificate from a private CA without infrastructure could be used in a targeted attack, but this requires the attacker to already have a valid certificate from the same private CA, which is a high bar.",
+    "tests": "The PR includes a screenshot in the body showing local testing on Windows, but there are no automated unit or integration tests covering the CURLSSLOPT_REVOKE_BEST_EFFORT path. CI passes on all platforms including windows-latest (Build, Compile-check, Test CLI/Endpoints, Test API Key all succeeded), but these tests likely use standard HTTPS endpoints with public CAs, not the internal-CA-without-CRL-OCSP scenario this fix targets. No new tests were added to the repository."
+  },
+  "generation_seconds": 248.4,
+  "maintainer_todos": [
+    {
+      "text": "On Windows, connect to a server using an internal or private CA certificate (not a public CA like Let's Encrypt) and confirm the HTTPS connection succeeds without SSL connect errors."
+    }
+  ],
+  "merge_date": "2026-10-02T01:04:55Z",
+  "pr_number": 3716,
+  "range_start": "v2026.40.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-02T01:10:55+00:00",
+  "reviewers": [
+    "@Geramy",
+    "@superm1"
+  ],
+  "sha": "b3cf539d2f5cb3253e6629f748d29437b56cb2d0",
+  "shout_outs": [],
+  "subject": "Don't fail HTTPS requests on Windows when cert revocation status is unknown (#3716)",
+  "summary": "Fixes HTTPS connection failures on Windows when connecting to servers secured by internal/private CAs by setting CURLSSLOPT_REVOKE_BEST_EFFORT in curl's Schannel TLS backend.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The change modifies TLS/HTTPS behavior on Windows and no evidence shows anyone manually tested the specific internal-CA scenario this fix targets."
+}
