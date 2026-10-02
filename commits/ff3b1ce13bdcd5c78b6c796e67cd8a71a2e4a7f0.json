@@ -1,0 +1,33 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.42",
+  "commit_sha": "ff3b1ce13bdcd5c78b6c796e67cd8a71a2e4a7f0",
+  "committed_at": "2026-10-02T16:48:44+00:00",
+  "evidence": {
+    "api_compatibility": "No API changes. This is a documentation-only PR — deleting an internal spec file, adding a published section to the custom model guide, and updating cross-references in the FAQ, configuration reference, and embeddable guide.",
+    "documentation": "Excellent. The PR consolidates a drifted internal spec (src/cpp/Extra-Models-Dir-Spec.md, which documented a --extra-models-dir flag that no longer exists) into a comprehensive published section in docs/guide/configuration/custom-models.md. It adds a rules table, an examples table with one row per interpretation, and notes for both non-HF/MS folders and HF/MS caches. It removes redundant rules restated in docs/embeddable/models.md (six partial rules copied verbatim, which the author notes is worse than a pointer). It updates cross-references in the FAQ, the configuration reference README, and the embeddable guide. The FAQ drops stale llama.cpp cache paths and replaces them with LM Studio and Hugging Face cache paths.",
+    "manual_release_testing": "This commit ships only documentation. The new Imported models section in docs/guide/configuration/custom-models.md describes the behavior, but the behavior itself is implemented by other commits in the stack. No user-reachable code changes or new surfaces introduced by this commit.",
+    "post_approval_commits": "One commit (9786cd6ac20a2373c0830ad498fd2d0489054368) was added after the first approval (@fl0rianr) but before the second approval (@anditherobot). It adds a single sentence and a horizontal rule to confirm that reserved-directory folder IDs like extra.embeddings still work after the directory is reserved. This is a documentation clarification consistent with an existing test (test_reserved_directory_keeps_folder_id) and directly implements @anditherobot's inline suggestion. No post-approval commits after the final approval.",
+    "review": "The PR was opened by @jeremyfowers and received detailed inline review from @fl0rianr (6+ review comments across naming rules, HF/MS cache detection, and conflict resolution) and hands-on testing from @anditherobot (tested LM Studio folder format with three publishers and two quants each, caught a missing note about reserved-directory folder-id preservation, and suggested the exact replacement text). @fl0rianr has subject area expertise in CI and GUI; @anditherobot reviewed the documentation with real-world scenarios. The first approval came from @fl0rianr on 2026-09-23T15:20:48Z. One commit (9786cd6) was added after first approval but before the second approval — it added a single sentence confirming that the folder's old name (e.g. extra.embeddings) still works, which directly implements @anditherobot's inline suggestion. The final approval from @anditherobot came on 2026-09-24T20:51:37Z with no further changes. No post-approval churn.",
+    "security": "No security concerns. The commit removes an old spec file and adds documentation. No credential handling, network calls, code execution paths, or supply-chain changes.",
+    "tests": "This is a documentation-only PR — no code, no tests. The author notes that naming examples were run against a live server. The spec file deletion (src/cpp/Extra-Models-Dir-Spec.md) removes outdated documentation that referenced a --extra-models-dir flag that no longer exists."
+  },
+  "generation_seconds": 189.4,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-02T19:34:06Z",
+  "pr_number": 3633,
+  "range_start": "v2026.40.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-02T19:39:11+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@anditherobot"
+  ],
+  "sha": "ff3b1ce13bdcd5c78b6c796e67cd8a71a2e4a7f0",
+  "shout_outs": [],
+  "subject": "docs(models): specify extra_models_dir behavior in the custom model guide (#3633)",
+  "summary": "docs(models): specify extra_models_dir behavior in the custom model guide (#3633)",
+  "verdict": "Clean",
+  "verdict_reason": "A thorough documentation-only PR that moved an internal spec into the published guide with two expert reviews, extensive inline feedback, and all CI checks passing."
+}
