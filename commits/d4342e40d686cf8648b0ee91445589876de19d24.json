@@ -1,0 +1,32 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.42",
+  "commit_sha": "d4342e40d686cf8648b0ee91445589876de19d24",
+  "committed_at": "2026-10-02T16:48:45+00:00",
+  "evidence": {
+    "api_compatibility": "No user-facing API changes. This is a Python test file refactoring against main's existing C++ server behavior. The author confirmed 'No behavior change: this passes against main's C++.'",
+    "documentation": "The PR explicitly marks documentation as not affected. This is a test-only change and does not alter any user-facing behavior that would require documentation updates.",
+    "manual_release_testing": "This is a test-only change (test/server_endpoints.py) with no behavior change to shipped code. It does not introduce or modify any user-facing surface — no API endpoint, CLI flag, config option, GUI, or newly supported model/backend. No manual release testing is needed.",
+    "post_approval_commits": [],
+    "review": "PR #3634 received one approval from @fl0rianr (LGTM, submitted 2026-10-01T11:42:46Z). @fl0rianr's subject areas include CI, which matches the PR's area::ci label and the test-only nature of this change. No inline comments were left. The review was brief but appropriate for a no-op refactoring where the author self-validated against main's C++ and all CI checks passed.",
+    "security": "No security concerns. The change is entirely within test/server_endpoints.py and introduces no new code paths, dependencies, credentials, or network calls. The helper functions create temporary directories for test fixtures only.",
+    "tests": "The PR converted all 12 extra_models_dir tests in test/server_endpoints.py. The new assertExtraModelsListed helper performs an exact id-to-path match, catching stray listings that previous per-test filtering could miss — coverage is increased, not weakened. Two helper functions (_listed_models, _get_model) replace repeated request blocks. The second commit drops the unused text_files parameter. All CI checks passed (CodeQL, app-regression-tests, server download registry tests, C++ unit tests, CLI/Endpoints on ubuntu and windows, embeddable tests, etc.)."
+  },
+  "generation_seconds": 171.6,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-02T19:34:06Z",
+  "pr_number": 3634,
+  "range_start": "v2026.40.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-02T19:40:56+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "d4342e40d686cf8648b0ee91445589876de19d24",
+  "shout_outs": [],
+  "subject": "test(models): describe extra_models_dir layouts declaratively (#3634)",
+  "summary": "Refactors all 12 extra_models_dir Python endpoint tests to use declarative helper functions (_extra_models_dir, assertExtraModelsListed), replacing imperative stub writers and per-test setup/teardown blocks, with no behavior change.",
+  "verdict": "Clean",
+  "verdict_reason": "Pure test refactoring with no behavior change, approved by a reviewer with CI subject-area expertise, and validated by a full passing CI."
+}
