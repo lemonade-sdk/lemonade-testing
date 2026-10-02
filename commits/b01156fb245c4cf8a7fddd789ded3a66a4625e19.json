@@ -1,0 +1,42 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.42",
+  "commit_sha": "b01156fb245c4cf8a7fddd789ded3a66a4625e19",
+  "committed_at": "2026-10-02T16:48:43+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking API changes. This is a behavioral fix to internal server model-discovery polling. No CLI flags, config values, API endpoints, or persistence formats are altered.",
+    "documentation": "Documentation is not affected by this change (confirmed in PR description). No public API, CLI, or config changes to document. The header comment in directory_watcher.h was updated to reflect the macOS implementation change.",
+    "manual_release_testing": "The fix changes behavior of the extra_models_dir mechanism: on macOS the kqueue watcher is replaced by FSEvents, and on Linux nested subdirectories are now inotify-watched. This affects users with nested model trees or cache repos whose refs/main points change. macOS was not exercised locally by the author (stated in the PR body), and the implementation is substantially different from the prior kqueue approach. See maintainer to-do for a macOS verification step.",
+    "post_approval_commits": "No commits were added after either @Geramy's or @fl0rianr's approvals. The fourth commit (b05be4c) landed 84 minutes before the first approval and 58 minutes before the last. All four commits are by the PR author or Claude.",
+    "review": "Two approvals on the final commit: @Geramy (APPROVED 2026-10-01T20:27:16Z, subject areas: sockets, mac, security, Nexus mesh compute) and @fl0rianr (APPROVED 2026-10-01T21:14:14Z, subject areas: LMX omni models, GUI, CI, smart router). @fl0rianr also filed an earlier COMMENTED review (2026-10-01T18:57:07Z) flagging that the initial nested watches included IN_CREATE without distinguishing open files, and the author addressed it in the final commit (b05be4c). @superm1 was requested as a reviewer (subject areas: ROCm, Linux packaging, security, Docker, containers, llamacpp) but never submitted a review; his absence is notable given the Linux inotify changes and overall system-level nature of the patch.",
+    "security": "No credentials, network calls, or permission broadening. The Linux inotify code uses recursive_directory_iterator without follow_directory_symlink and explicitly skips symlinked directories, preventing symlink-loop watches. The macOS FSEvents stream is created once with a single path and no iteration. CoreServices is linked via CMakeLists.txt — a system framework, not a new dependency risk.",
+    "tests": "Three new unit tests in test_directory_watcher.cpp: test_nested_change (pre-existing nested folder), test_new_folder_is_watched (folder created after start), test_open_file_waits_for_close (Linux-only, open file not announced until closed). The routing-policy-store test was also updated to poll for the correct policy instead of accepting any swap, and the delete-then-write workaround was removed. No existing tests were weakened or deleted. CI passed on all platforms (Linux x86/ARM64, macOS, Windows)."
+  },
+  "generation_seconds": 209.0,
+  "maintainer_todos": [
+    {
+      "text": "Start the server on macOS with extra_models_dir set to a directory containing nested subfolders, write a model file into one subfolder, and confirm the server's model list updates within a few seconds without any external trigger."
+    }
+  ],
+  "merge_date": "2026-10-02T19:34:05Z",
+  "pr_number": 3726,
+  "range_start": "v2026.40.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-02T19:39:30+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@Geramy"
+  ],
+  "sha": "b01156fb245c4cf8a7fddd789ded3a66a4625e19",
+  "shout_outs": [
+    {
+      "handle": "@claude",
+      "reason": "Co-authored by a Claude Opus 5.5 (1M context) session on all four commits, producing the substantive implementation including the macOS FSEvents rewrite, the Linux nested-watch logic, and the file-close-write deduplication."
+    }
+  ],
+  "subject": "fix(server): watch extra_models_dir's nested folders on Linux and macOS (#3726)",
+  "summary": "Replaces macOS DirectoryWatcher's kqueue with FSEvents for recursive monitoring, and adds inotify-based nested folder watches on Linux so that changes inside subdirectories of extra_models_dir (including cache repo refs/main updates and GGUF files written into nested model folders) are detected immediately instead of waiting for an unrelated invalidation.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "No reviewer on the project's subject-matter-expertise roster reviewed the macOS or Linux system-programming changes; @superm1 was requested but never responded."
+}
