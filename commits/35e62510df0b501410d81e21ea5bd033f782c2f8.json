@@ -1,0 +1,32 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.42",
+  "commit_sha": "35e62510df0b501410d81e21ea5bd033f782c2f8",
+  "committed_at": "2026-10-02T16:48:45+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking API change. The model manager's file-discovery logic is internal; users interact via the model list API. Before the fix, users with shard files at the root saw each shard as a separate model (incorrect behavior per the custom model guide). After the fix they see one model (correct behavior per the guide). This corrects a bug rather than introducing a breaking change.",
+    "documentation": "No documentation updates needed. The custom model guide (#3633) already specifies the shard rule. This fix makes the implementation match the documented behavior, so existing docs are correct and complete.",
+    "manual_release_testing": "Not required. The existing Python integration test directly exercises the model discovery path for root-level shard files, which is the only behavior this commit changes. Users place GGUF files in extra_models_dir and see them listed through the model API — the test covers this end-to-end.",
+    "post_approval_commits": "None. The PR contains one commit (dd8a7d54) from the PR branch and one squash commit (35e62510) for the merge. No commits were added after the approval on 2026-10-01T11:44:37Z.",
+    "review": "PR #3656 was approved by @fl0rianr with 'LGTM' on 2026-10-01T11:44:37Z. The change is a single small commit (36 insertions, 15 deletions across two files) that extracts the shard-grouping logic into a shared helper and applies it to root-level files. The review was minimal — one approval, no inline comments — and @fl0rianr's subject-area expertise from docs/dev/contribute.md covers CI and LMX rather than the C++ model_manager code specifically. For a 30-line refactor, this is acceptable, but a reviewer with C++ server-side expertise would have been a better fit.",
+    "security": "No security concerns. The change is a pure file-discovery logic refactor within model_manager.cpp — no new execution paths, no credential handling, no network calls, no supply-chain changes.",
+    "tests": "New test test_021yf_extra_root_shards_are_one_model in test/server_endpoints.py validates that two shard files (Big-Q4_K_M-00001-of-00002.gguf and Big-Q4_K_M-00002-of-00002.gguf) at the root are listed as one model 'Big-Q4_K_M', while a non-shard file (Small-Q8_0.gguf) remains a separate model. The author confirmed the new test fails without the C++ change. No existing tests were weakened or deleted."
+  },
+  "generation_seconds": 151.6,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-02T19:34:05Z",
+  "pr_number": 3656,
+  "range_start": "v2026.40.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-02T19:38:30+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "35e62510df0b501410d81e21ea5bd033f782c2f8",
+  "shout_outs": [],
+  "subject": "fix(models): group shard files at the extra_models_dir root (#3656)",
+  "summary": "Makes model discovery group shard files placed directly in the extra_models_dir root into a single model (matching the grouping behavior already used for files inside subdirectories), instead of listing each shard file as a separate model.",
+  "verdict": "Clean",
+  "verdict_reason": "Spec-driven bug fix with narrow scope, matching tests, and no post-approval changes."
+}
