@@ -1,0 +1,39 @@
+{
+  "author": "@julianxhokaxhiu",
+  "branch": "main",
+  "bucket": "v2026.42",
+  "commit_sha": "89635051a92b78d168f1f0a6d68c8c3daddf7fc9",
+  "committed_at": "2026-10-02T17:54:49+00:00",
+  "evidence": {
+    "api_compatibility": "This is a breaking change for users who reference hy-mt2:1.8b in configs, scripts, or model registrations. The upstream binary no longer recognises that tag. The PR body documents this clearly and quotes the upstream release notes. No compatibility mapping or fallback was added — the PR author chose the 'document and move on' approach, which @superm1 approved.",
+    "documentation": "The PR body quotes the upstream release notes in full, including the rename, the same-behavior caveat, and the action-required note for anyone pinning the old tag. The 'Documentation' checklist was marked 'not affected', which is reasonable for the project's own docs since no Lemonade-specific documentation changes are needed — the upstream notes serve as the migration guidance.",
+    "manual_release_testing": "The FLM v1.0.7 upstream release notes say the rename is 'a rename only — same weights, same 1k context, same single-turn behavior'. No evidence shows a human ran the NPU backend with the renamed model on the actual target hardware. The PR was not tested end-to-end on an NPU device; CI only validated the JSON file and did not run FLM-specific tests.",
+    "post_approval_commits": "No commits were added after approval. The single commit (6e57c6980e6da9c35c102bc496cad5dea45b56a7) existed before the first approval at 17:54:03Z. The merge commit (8963505) was created by the merge-queue bot after CI passed.",
+    "review": "PR #3744 was reviewed by @superm1, who has FastFlowLM and NPU in their subject-area expertise (docs/dev/contribute.md). CodeRabbit raised a potential breaking-change concern about the hy-mt2 rename. @superm1 commented on the description: 'can you please correct your description? This sounds like a breaking change for anyone on the older model.' The author responded 'Done, updated :)' and the PR body was amended to quote the upstream release notes verbatim, including the rename and the action-required note. @superm1 then approved (first and only approval, submitted 2026-10-02T17:54:03Z). No human reviewer independently verified the FLM v1.0.7 binaries, but the change is limited to a version bump in a JSON file.",
+    "security": "No security concerns. The change is a single-line version bump in a resource JSON file. The version string change pulls from the upstream ROCm/FastFlowLM v1.0.7 release, which includes four community fixes (OpenAI usage contract, CLI exit codes, flm validate, stray file). No supply-chain risks beyond trusting the upstream tag.",
+    "tests": "This PR changes only src/cpp/resources/backend_versions.json (one line: v1.0.6 → v1.0.7 for flm.npu). No code logic changed, so no new tests are needed. The C++ Server Build, Test, and Release workflow passed (conclusion: success), but CI does not test FLM-specific model loading or the hy-mt2 model name."
+  },
+  "generation_seconds": 158.1,
+  "maintainer_todos": [
+    {
+      "text": "On a machine with an NPU, install this release and confirm that lemonade can discover and serve the hy-mt2-flash:1.8b model by name."
+    },
+    {
+      "text": "Verify that any existing model registrations using the old hy-mt2:1.8b tag fail gracefully or produce a clear error, since the upstream binary no longer recognises that identifier."
+    }
+  ],
+  "merge_date": "2026-10-02T21:04:26Z",
+  "pr_number": 3744,
+  "range_start": "v2026.40.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-02T21:08:52+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "89635051a92b78d168f1f0a6d68c8c3daddf7fc9",
+  "shout_outs": [],
+  "subject": "chore(backends): bump FastFlowLM to v1.0.7 (#3744)",
+  "summary": "Bumps FastFlowLM NPU backend from v1.0.6 to v1.0.7, which renames the Hy-MT2 model tag from hy-mt2:1.8b to hy-mt2-flash:1.8b.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The FLM v1.0.7 bump renames the hy-mt2:1.8b model to hy-mt2-flash:1.8b, which is a breaking change for users who have registered or pinned the old model identifier."
+}
