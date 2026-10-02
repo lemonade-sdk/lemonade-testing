@@ -1,0 +1,37 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.42",
+  "commit_sha": "7dc09e21a2655f0644963dd6cf857bac2d8ba0af",
+  "committed_at": "2026-10-02T18:48:41+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The PR explicitly marks 'This PR does not introduce breaking changes.' The change makes no_progress_timeout default from 60 to 0, but the comment says '0 uses the default timeout', so it is a more conservative default that only changes behavior for callers relying on the old hardcoded 60-second stall timeout. The low_speed_time change in model_manager.cpp sets it to HttpClient::get_default_timeout() instead of 60 — this is an internal default adjustment, not a config or CLI change. All other HttpClient calls already use effective_timeout(), so this brings the download path into alignment.",
+    "documentation": "The header comment on no_progress_timeout in http_client.h was updated to '0 uses the default timeout'. No external documentation changes are needed for this internal consistency fix. The change is not user-visible at the config or CLI level.",
+    "manual_release_testing": "No evidence of manual testing. The change affects download timeout behavior that users can reach through model downloads. The PR description mentions the real-world trigger (Devlab Dispatch's Hugging Face proxy cold-start on 124 GB Halogen checkpoints dropping after 60 s, referenced in #3712), which is a credible user scenario, but no human explicitly tested this fix against a stalled or throttled download.",
+    "post_approval_commits": "None. The single commit aedbb4c2e737de6486fd90fe66b1182531417fcc was the only commit on the PR, approved by both reviewers, and no commits were added after either the first or latest approval.",
+    "review": "Two approvals received: @Geramy ('Love this PR it's so simple, this is a what 5 line bug fix?') at 2026-10-01T19:07:12Z and @superm1 (empty) at 2026-10-02T17:56:29Z, both on commit aedbb4c2e737de6486fd90fe66b1182531417fcc. @abn is listed in docs/dev/contribute.md as the maintainer with HTTP/sockets expertise but did not review. The PR author (@jeremyfowers) is also the admin maintainer responsible for CI, which makes self-approval somewhat less rigorous.",
+    "security": "No security concerns. The change only adjusts timeout values and an error message string. It does not introduce network calls, credential handling, code execution paths, or permission changes.",
+    "tests": "No new tests were added. The change modifies default timeout values and an error message string — not a new feature or algorithm. All CI checks passed: C++ Server Build + Test (amd64 + arm64), docker-smoke-test, CMake build + MCP smoke test, Server download registry tests, CodeQL (all languages), Build and smoke test on multiple platforms, packaging builds, and all embeddable builds. The existing C++ unit tests and download registry tests cover the HTTP client at a higher level but do not exercise the specific stall timeout path with a simulated slow download."
+  },
+  "generation_seconds": 170.7,
+  "maintainer_todos": [
+    {
+      "text": "Start the server, configure a very long global_timeout, and download a large model from a slow or flaky endpoint to confirm the download does not abort prematurely at 60 seconds but respects the global_timeout value."
+    }
+  ],
+  "merge_date": "2026-10-02T21:48:20Z",
+  "pr_number": 3730,
+  "range_start": "v2026.40.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-02T21:52:53+00:00",
+  "reviewers": [
+    "@Geramy",
+    "@superm1"
+  ],
+  "sha": "7dc09e21a2655f0644963dd6cf857bac2d8ba0af",
+  "shout_outs": [],
+  "subject": "fix(http): make download stall timeouts follow global_timeout (#3730)",
+  "summary": "Makes download stall timeouts (no_progress_timeout defaulting to global_timeout, and low_speed_time for model manifest downloads defaulting to global_timeout) consistent with every other HttpClient call, and fixes the stall error message to report the actual timeout that fired.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The HTTP subject-area specialist (@abn) did not review this HTTP-internal change, and no manual testing evidence exists for the download stall timeout behavior that users can reach."
+}
