@@ -1,0 +1,37 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.42",
+  "commit_sha": "ee87a42eaba7387fd17ae59b36d3e99239633eae",
+  "committed_at": "2026-10-04T00:06:08+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking API changes. The fix corrects a bug where the bare form and extra. form of one name resolved to different publishers. The change aligns runtime behavior with the documented spec in docs/guide/configuration/custom-models.md. Users who depended on the buggy last-wins behavior for the extra. form will see a different model, but this is a bug fix to documented behavior, not an undocumented API change.",
+    "documentation": "Updated docs/guide/configuration/custom-models.md to add an example showing how shared folder names are handled (alpha/Shared + beta/Shared example). The collision row in the naming table was amended to mention earlier-folder ownership alongside the existing collision-with-another-model rule.",
+    "manual_release_testing": "The behavior change is covered by CI-executed tests that exercise the model-resolution path through the server endpoint and C++ unit tests. No user-visible surface requires manual exercise beyond what CI already validates.",
+    "post_approval_commits": "None. @fl0rianr's final approval (2026-10-02T14:16:36Z) came after the last commit (6874706). The iterative fix cycle — review, fix, re-review, approve — follows the project's guideline that PRs should be thoroughly reviewed before merge.",
+    "review": "PR #3657 received two rounds of substantive review from @fl0rianr. First review identified a mixed layout bug (later single-model folder registering extra.Shared as canonical ID, shadowing the earlier variant folder). @jeremyfowers responded with a follow-up commit (c5c71fd). Second review caught a second edge case: the qualified fallback only checked canonical IDs, not kept folder-name aliases, so beta/Shared could become extra.beta-Shared and shadow an earlier alias. @jeremyfowers addressed this in the third commit (6874706) making ids and kept folder names share one claimed_names set, and @fl0rianr gave final approval. All three commits were reviewed; no unapproved changes.",
+    "security": "Low risk. The change only affects model name resolution for files in a user-configured extra_models_dir — a local filesystem scope. No new network calls, credential handling, or permission changes. CodeQL and security checks all passed.",
+    "tests": "Two new C++ unit tests in test/cpp/test_extra_model_discovery.cpp and two new Python server-endpoint tests in test/server_endpoints.py (test_021yg_extra_shared_folder_name_has_one_owner, test_021ygb_extra_shared_folder_name_qualifies_a_later_single_model). The author confirmed each new test fails before the fix and passes after. All 15 existing extra_models_dir tests and the full C++ test_extra_model_discovery suite pass. No existing tests weakened or deleted."
+  },
+  "generation_seconds": 205.5,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-04T00:51:55Z",
+  "pr_number": 3657,
+  "range_start": "v2026.40.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-04T00:57:08+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "ee87a42eaba7387fd17ae59b36d3e99239633eae",
+  "shout_outs": [
+    {
+      "handle": "@fl0rianr",
+      "reason": "Caught two distinct edge cases in review (mixed single-model/variant folder layouts, qualified ID shadowing kept folder names) and materially drove their fixes through iterative follow-up commits."
+    }
+  ],
+  "subject": "fix(models): give a shared folder name to one model in both forms (#3657)",
+  "summary": "Fixes model name resolution so that when multiple folders share the same name (e.g., bartowski/Qwen3-8B-GGUF and lmstudio-community/Qwen3-8B-GGUF), the bare model name and the extra. prefix form resolve to the same publisher's model — the first folder found owns the name in both forms, and later folders with the same name are qualified with their containing folder.",
+  "verdict": "Clean",
+  "verdict_reason": "The fix is narrowly scoped, substantively reviewed with two rounds of follow-up, and covered by new C++ and Python server-endpoint tests plus documentation updates."
+}
