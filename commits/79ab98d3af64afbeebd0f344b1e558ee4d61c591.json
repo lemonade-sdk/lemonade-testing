@@ -1,0 +1,32 @@
+{
+  "author": "@bitgamma",
+  "branch": "main",
+  "bucket": "v2026.42",
+  "commit_sha": "79ab98d3af64afbeebd0f344b1e558ee4d61c591",
+  "committed_at": "2026-10-05T13:46:48+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking change. Only a backend version string in a JSON config resource. Existing setups will transparently receive the newer version.",
+    "documentation": "Per PR description, not affected. No user-facing documentation changes required for a backend version bump.",
+    "manual_release_testing": "The change updates which TheNoise release archive Lemonade downloads — users with TheNoise models will get version 0.10.0 instead of 0.9.1. CI validated the download registry, so the new tag resolves correctly. No manual test needed for a routine upstream bump where CI confirms artifact existence.",
+    "post_approval_commits": "None. The sole commit (181a8ed) was approved before merge.",
+    "review": "PR approved by @jeremyfowers at 2026-10-05T13:46:42Z. Per docs/dev/contribute.md, @jeremyfowers covers \"new backends\" — appropriate expertise for a backend version bump. One approval, no inline comments, no post-approval commits.",
+    "security": "The tag thenoise-0.10.0-rocm10.1.0 points to an official GitHub release on the lemonade-sdk org. No code execution, supply-chain surprises, or new dependencies introduced.",
+    "tests": "No code tests changed. The diff touches only a version string. CI workflows (C++ Server Build/Test/Release, Server Download Registry Tests, Validate New vLLM Release, Docs And Style) all passed on the merge group."
+  },
+  "generation_seconds": 122.1,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-05T15:10:03Z",
+  "pr_number": 3750,
+  "range_start": "v2026.40.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-05T15:14:05+00:00",
+  "reviewers": [
+    "@jeremyfowers"
+  ],
+  "sha": "79ab98d3af64afbeebd0f344b1e558ee4d61c591",
+  "shout_outs": [],
+  "subject": "bump TheNoise version (#3750)",
+  "summary": "Bumps TheNoise ROCm backend from version 0.9.1 to 0.10.0 by updating the version string in src/cpp/resources/backend_versions.json.",
+  "verdict": "Clean",
+  "verdict_reason": "A one-line version bump in a JSON config file, reviewed by an approver with subject-matter expertise in backends, with all CI checks passing and no post-approval changes."
+}
