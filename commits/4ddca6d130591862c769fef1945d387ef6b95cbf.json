@@ -1,0 +1,32 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.42",
+  "commit_sha": "4ddca6d130591862c769fef1945d387ef6b95cbf",
+  "committed_at": "2026-10-05T13:45:33+00:00",
+  "evidence": {
+    "api_compatibility": "Not applicable. No code, API, CLI, config, schema, or contract was changed. Only a date string in a markdown policy document.",
+    "documentation": "The change itself is the documentation — it updates the re-evaluation date on docs/dev/ai-content-policy.md. The pre-merge template check flagged the missing PR description, but for a one-line doc change this is a minor compliance issue. The commit message and PR title clearly state the intent. Note: the date November 2, 2026 is 28 days after the stated vote date of October 5, 2026, not 30 as the commit message claims. CodeRabbit flagged this discrepancy; a human reviewer did not address it. The maintainers may want to verify whether the correct date should be November 4 or if the start date for the extension is different.",
+    "manual_release_testing": "Not applicable. This is an internal governance document change. It does not touch any CLI, API, GUI, config, backend, or installed artifact. Contributors reading the policy will see the new date, but no user-facing behavior changes.",
+    "post_approval_commits": "No commits were added after @kenvandine's approval at 2026-10-05T13:05:44Z. The single commit (e460a11) predates the approval and was the only commit on the branch. No post-approval churn.",
+    "review": "PR #3760 has one substantive approval from @kenvandine (maintainer, MEMBER) with the comment 'Thanks, I do feel we need more time.' CodeRabbit (bot) posted a non-blocking comment noting the date arithmetic discrepancy: October 5 + 30 days = November 4, but the PR writes November 2 (28 days). No human reviewer addressed the discrepancy. The PR has no author-provided description, failing the repository's pre-merge template check. All review activity is consistent with the change's scope — a single-line doc edit implementing a voted maintainer decision.",
+    "security": "No security concerns. The change modifies a date in a governance policy document. No credential handling, network calls, code execution, or supply-chain impact.",
+    "tests": "Not applicable. The change modifies only docs/dev/ai-content-policy.md — a one-line date replacement in a markdown policy document. No code, no logic, no tests to weaken."
+  },
+  "generation_seconds": 189.8,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-05T14:25:01Z",
+  "pr_number": 3760,
+  "range_start": "v2026.40.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-05T14:29:54+00:00",
+  "reviewers": [
+    "@kenvandine"
+  ],
+  "sha": "4ddca6d130591862c769fef1945d387ef6b95cbf",
+  "shout_outs": [],
+  "subject": "Change evaluation date for AI content policy (#3760)",
+  "summary": "Changes the AI content policy evaluation date from a relative '30 days after it is introduced' to the specific date November 2, 2026, implementing a maintainer vote to extend the existing policy for 30 more days.",
+  "verdict": "Clean",
+  "verdict_reason": "A trivial one-line documentation-only change that was approved by a voting maintainer with all CI checks passing."
+}
