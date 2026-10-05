@@ -1,0 +1,44 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.42",
+  "commit_sha": "e4bcbd643549fe82a06ef2acedd63f25c7a790e4",
+  "committed_at": "2026-10-05T15:55:58+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. This is a new feature — HuggingFace/ModelScope cache support did not exist before, so no existing setup will break. Users who happen to point extra_models_dir at an HF cache today will see their models switch from commit-hash names to repo names, but the old behavior was never officially supported. The PR author's comment on #3618 is that this was never supported before so adding support can't be a breaking change. Input alias resolution via the /models/ endpoint is unaffected — cache folders are explicitly not kept as input aliases, which is a deliberate design choice.",
+    "documentation": "The PR author notes documentation was updated in #3633 (the spec that preceded this implementation PR). The PR body includes a table describing the naming rules. CodeRabbit's pre-merge checks confirmed the description follows the required template with linked issues, test results, and breaking-change assessment. The custom model guide was the appropriate documentation to update; this PR implements what that spec describes.",
+    "manual_release_testing": "The PR adds user-reachable behavior: models from HF/MS caches are now named by repo instead of commit hash, superseded revisions get commit prefixes, collisions are qualified by org, and the model name follows refs/main switches on a running server. All tests are automated; no human was seen exercising a live server with a real HF cache. The refs/main switching test (021yi) is the most critical unexercised path — it polls for 10 seconds for the model to update after a refs/main rename, but this depends on a DirectoryWatcher fix in a separate PR (#3726) and may not pass on the release candidate without it.",
+    "post_approval_commits": "One commit (d646146) was added after the first approval by @PCAssistSoftware (2026-09-30). It adds test_021yi_extra_hf_cache_follows_a_refs_main_switch, a pure test addition for refs/main switching — exactly what @fl0rianr requested in their blocker review. No implementation changes followed approval. No commits were added after the latest approval (@PCAssistSoftware, 2026-10-02T17:04:55Z).",
+    "review": "PR #3635 received four reviews. @PCAssistSoftware gave a quick approval on 2026-09-30 with a screenshot confirming model names appear correctly. @fl0rianr raised a CHANGES_REQUESTED on 2026-10-01 noting the Linux DirectoryWatcher only watches the top-level extra_models_dir, so nested refs/main changes would not trigger discovery — this was a real concern. The author addressed it by separating a DirectoryWatcher recursive fix into #3726 (stacked below #3635) and added a running-server test for refs/main switching. @fl0rianr then APPROVED. @ramkrishna2910 raised a breaking-change concern; the author correctly explained this is a new feature, not a change to existing behavior, and @ramkrishna2910 approved. No reviewer has explicit models expertise per contribute.md (closest are @bitgamma and @sawansri with 'new models', and @superm1 with 'llamacpp'), but the author is an admin maintainer with 'large new features' in their scope and the change is a focused fix (not a WG-scoped RFC).",
+    "security": "The code reads refs/main files from the configured extra_models_dir to determine the active revision — this is consistent with the existing local-file trust model and does not introduce new network calls, credential handling, or permission broadening. CodeRabbit flagged medium reliability risk (a running model may resolve to a new checkpoint while a stale backend remains loaded) but noted the writer's existing ability to alter local model assets is counterevidence. No supply-chain or obfuscation concerns. No new code execution paths.",
+    "tests": "Six new end-to-end server tests in server_endpoints.py (test_021yb through test_021yi) plus an extended _extra_models_dir helper supporting refs= for writing refs/main files. Tests cover: HF/MS cache naming (021yb), org collision qualification (021yc), quantization subfolder naming (021yd), live revision ownership (021ye), cache lookalike fallback to folder naming (021yh), and refs/main switching on a running server (021yi). All CI checks passed: C++ unit tests, build on amd64/arm64, macOS, Windows, Docker smoke test, CodeQL. The PR author noted test_021yi fails on the current DirectoryWatcher (stays on old snapshot) but passes with the fix in #3726 — this is an acceptable dependency on a stacked PR."
+  },
+  "generation_seconds": 286.3,
+  "maintainer_todos": [
+    {
+      "text": "Start the server with extra_models_dir pointing at a Hugging Face cache that has two snapshots, set refs/main to the first, confirm the model lists as <repo> and <repo>-<quant>, then rename refs/main to the second snapshot and confirm the model name <repo> now resolves to the new checkpoint while the old snapshot is listed as <old-commit>-<repo>."
+    },
+    {
+      "text": "Set extra_models_dir to a Hugging Face cache with two different orgs shipping the same repo name, confirm the first org's models list as <repo> and the second's as <org>-<repo>, then swap the directory listing order and confirm the names stay the same (org qualification, not discovery order)."
+    },
+    {
+      "text": "Set extra_models_dir to a cache whose GGUFs are in a subfolder like Q4_K_M/, confirm the model name is <repo>-Q4_K_M, then request that model by name to confirm it loads correctly."
+    }
+  ],
+  "merge_date": "2026-10-05T16:46:09Z",
+  "pr_number": 3635,
+  "range_start": "v2026.40.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-05T16:52:49+00:00",
+  "reviewers": [
+    "@PCAssistSoftware",
+    "@fl0rianr",
+    "@ramkrishna2910"
+  ],
+  "sha": "e4bcbd643549fe82a06ef2acedd63f25c7a790e4",
+  "shout_outs": [],
+  "subject": "feat(models): support Hugging Face and ModelScope caches in extra_models_dir (#3635)",
+  "summary": "Adds Hugging Face and ModelScope cache naming rules to extra_models_dir so models stored under models--<org>--<repo>/snapshots/<commit>/ are discovered with readable repository-based names instead of opaque commit hash folder names, with superseded revisions prefixed by commit and collisions qualified by org.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "All CI checks passed, review was substantive with concerns addressed, and tests are comprehensive, but the new refs/main switching behavior is user-visible and was not exercised by a human on a live server."
+}
