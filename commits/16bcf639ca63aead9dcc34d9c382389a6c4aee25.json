@@ -1,0 +1,37 @@
+{
+  "author": "@ramkrishna2910",
+  "branch": "release-v2026.41",
+  "bucket": "v2026.41",
+  "cherry_picked_from": "886d0cd585872e5054ee9c4bf51f5d815bbb148a",
+  "commit_sha": "16bcf639ca63aead9dcc34d9c382389a6c4aee25",
+  "committed_at": "2026-10-06T13:04:10-07:00",
+  "evidence": {
+    "api_compatibility": "No breaking change. The --spawn-server flag was already accepted on macOS; it previously failed to spawn a local server (likely crashing or hanging). Now it accepts the flag, prints a warning to stderr, and starts in disconnected mode. Existing scripts or users passing --spawn-server on macOS will see different (better) behavior but no existing working setup is broken.",
+    "documentation": "Documentation is updated in two places: docs/guide/configuration/README.md gets a new 'lemonade-tray CLI (Linux/macOS)' section listing all flags with --spawn-server marked 'Linux only'. docs/dev/getting-started.md is updated to say '--spawn-server - Linux only; ignored with a warning on macOS' instead of the old description that implied macOS support via LaunchDaemon. The dev doc change is consistent with the code behavior.",
+    "manual_release_testing": "No evidence a human exercised --spawn-server on macOS before this release. The PR body notes the failure was discovered during 'v2026.41 candidate testing' but does not show a successful post-fix run. The change is user-reachable: any macOS user running lemonade-tray --spawn-server will see the new warning. Since this is the release surface that changed, a tester should verify the fix works end-to-end before shipping.",
+    "post_approval_commits": "No commits were added after approval on the original PR. This cherry-picked commit (16bcf639ca) is an identical copy of 886d0cd585 on release-v2026.41.",
+    "review": "PR #3756 was approved by @Geramy at 2026-10-06T16:19:04Z. @Geramy's subject-area expertise includes 'sockets, tcp/ip, udp, named pipes, mac, security, Nexus mesh compute' (docs/dev/contribute.md), so the reviewer has relevant macOS knowledge. No comments were raised during review. The PR was merged at 2026-10-06T17:24:34Z, about an hour after approval.",
+    "security": "No security concern. The change adds a compile-time guard (#ifdef __APPLE__) that suppresses server spawning on macOS. It prints a warning to stderr and sets spawn_server=false, which is strictly less permissive than the old behavior. No credential handling, network calls, or supply-chain changes are introduced.",
+    "tests": "No automated tests were added. The change modifies a CLI flag's behavior on macOS (prints a warning and sets spawn_server=false) and adds documentation. Testing this flag requires an actual macOS build and manual invocation; unit testing a platform-specific runtime behavior path is not currently done for this codebase. No existing tests were weakened or deleted."
+  },
+  "generation_seconds": 139.4,
+  "maintainer_todos": [
+    {
+      "text": "On a macOS release candidate, run lemonade-tray --spawn-server and confirm stderr prints 'Warning: --spawn-server is not supported on macOS and will be ignored.' and that the tray launches in disconnected mode without starting a local lemond."
+    }
+  ],
+  "merge_date": "2026-10-06T17:24:34Z",
+  "pr_number": 3756,
+  "range_start": "v2026.40.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-06T20:08:37+00:00",
+  "reviewers": [
+    "@Geramy"
+  ],
+  "sha": "16bcf639ca63aead9dcc34d9c382389a6c4aee25",
+  "shout_outs": [],
+  "subject": "fix(tray): make --spawn-server a no-op on macOS (#3756)",
+  "summary": "Makes lemonade-tray's --spawn-server flag a no-op on macOS (prints a warning and continues in disconnected mode) and documents all lemonade-tray CLI flags in the configuration guide.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The --spawn-server flag on macOS is user-visible behavior that changes from an attempted local spawn to a no-op with a warning, but no evidence shows a human exercised this path on macOS before the release."
+}
