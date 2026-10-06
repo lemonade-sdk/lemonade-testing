@@ -2,13 +2,13 @@
 
 ### ⚠️ These notes are AI generated and will be revised by a human ⚠️
 
-- lemonade-tray on POSIX now natively spawns and supervises a local lemond daemon with a watchdog pipe for automatic recovery.
-- AMD GPU support expands via ROCm runtime bump to version 10.0 and moving the stable-diffusion.cpp backend to the lemonade-sdk fork.
-- Kokoro TTS updated to fix four British English and one French voice returning fixed-length audio regardless of input text.
-- Non-streaming requests now abort cleanly when a client disconnects mid-request, with upstream HTTP transfers cancelled.
+- Non-streaming requests no longer hang when a client disconnects mid-request; the server now detects lost connections through the full pipeline and aborts upstream transfers.
+- Kokoro TTS voices for British English (bf_emma, bf_isabella, bm_george, bm_lewis) and French (ff_siwis) now generate audio of the correct length instead of fixed ~0.3s output.
+- lemonade-tray on Linux now supports spawning and supervising a local lemond process natively via the `--spawn-server` flag.
+- Documentation and test fixtures for llama.cpp now use the current `--load-mode` flag instead of the deprecated `--no-mmap` / `--mmap` / `--mlock` / `--direct-io` variants.
 
 ## Breaking Changes
 
 ### ⚠️ These notes are AI generated and will be revised by a human ⚠️
 
-- The --no-sign flag was removed from the release tagging tool; tags are now unsigned by default (previously signed). Use --sign to create signed tags.
+- The `--no-sign` flag was removed from the release tagging tool; omit the flag (now the default) or use `--sign` for signed tags. Update any scripts or workflows that passed `--no-sign`.
