@@ -1,0 +1,33 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.42",
+  "commit_sha": "b83cc1b55dca2fee949711254493c38cb15e7fd4",
+  "committed_at": "2026-10-06T20:01:06+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. No code was modified, so no existing command, flag, config value, API call, saved file, or documented behavior stops working on upgrade.",
+    "documentation": "The new spec at docs/dev/specs/container-backends.md is comprehensive (462 lines) and well-structured: design philosophy, scope, class architecture with Mermaid diagram, command contract with tables, setup by install type for both user-started and system-service scenarios, image update workflow, and detailed appendices comparing against Ramalama and AI Cockpit. mkdocs.yml was updated to group spec pages under a Specs nav section, including the new container-backends.md and the existing spec-writing-guide.md. The PR was labeled documentation, consistent with the change type.",
+    "manual_release_testing": "This commit is documentation-only. It adds a design spec for container backends — a future feature — and updates mkdocs navigation. No shipped code, no API change, no CLI flag, no new config. The spec itself is not user-reachable behavior. No manual release testing is required.",
+    "post_approval_commits": "Three commits were added after @superm1's first approval: (1) docs: allocate the lemonade sub-UID range in the install scripts, past existing ranges — moved subordinate ID allocation from ExecStartPre in the unit file to install scripts, with idempotent behavior. (2) docs: mount a model directory one file at a time, resolved through symlinks — refined the model mount table to clarify per-file mounting through symlinks. (3) docs: relax lemond-user.service for rootless Podman, and keep the system unit's other protections — clarified that systemd applies mount-based protections before switching accounts, so LockPersonality/RestrictRealtime remain effective. All three are documentation-only refinements that stay within the approved scope and do not change behavior, security, or API. They were also within the spirit of the review, addressing earlier inline comments.",
+    "review": "PR #3697 received two approval reviews: @superm1 approved at 2026-10-06T13:38:17Z and @Geramy approved at 2026-10-06T18:05:19Z. @superm1 has containers, Docker, and security listed as a subject-matter area in docs/dev/contribute.md, meeting the expertise bar. The spec went through substantive inline discussion with @abn on SELinux labeling, ContainerPolicy field naming (repository→image), and memlock_unlimited removal, and with @Geramy on ipc_host removal. All discussion points were addressed before approval. No release-blocking corner cases were missed — the spec is intentionally scoped to fundamentals and defers broader Linux support to future PRs.",
+    "security": "No security concerns. This is a pure documentation change. The spec itself discusses security hardening (cap-drop=all, no-new-privileges, seccomp defaults, SELinux) for future implementation but does not introduce or modify any security-sensitive code.",
+    "tests": "The PR changes only two files: docs/dev/specs/container-backends.md (new, 462 lines) and mkdocs.yml (+4/-1). No code was changed, so no code tests are affected. No tests were weakened or deleted. The spec references CI validation patterns (validate_llamacpp.yml, validate_containers.yml) for future implementation."
+  },
+  "generation_seconds": 219.0,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-06T20:44:25Z",
+  "pr_number": 3697,
+  "range_start": "v2026.40.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-06T20:49:46+00:00",
+  "reviewers": [
+    "@superm1",
+    "@Geramy"
+  ],
+  "sha": "b83cc1b55dca2fee949711254493c38cb15e7fd4",
+  "shout_outs": [],
+  "subject": "docs: add the container backends spec (#3697)",
+  "summary": "Adds a 462-line spec document at docs/dev/specs/container-backends.md that defines how Lemonade will support Linux container backends (Podman and Docker) for single-GPU inference, including class architecture, run-command contracts, setup-by-install-type procedures, and detailed comparison with Ramalama and AI Cockpit conventions.",
+  "verdict": "Clean",
+  "verdict_reason": "This is a documentation-only PR to a design spec, approved by two reviewers including a containers subject-matter expert, with no code changes, no breaking API, and no security impact."
+}
