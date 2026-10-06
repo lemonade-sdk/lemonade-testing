@@ -31,6 +31,16 @@
       "text": "Run lemonade config set flm.flm_bin=builtin and confirm it returns an Unknown key error, then run lemonade config set flm.npu_bin=builtin and confirm it succeeds."
     },
     {
+      "author": "@ramkrishna2910",
+      "commit": "16bcf639ca63aead9dcc34d9c382389a6c4aee25",
+      "platforms": [
+        "macOS"
+      ],
+      "pr_number": 3756,
+      "priority": "P1",
+      "text": "On a macOS release candidate, run lemonade-tray --spawn-server and confirm stderr prints 'Warning: --spawn-server is not supported on macOS and will be ignored.' and that the tray launches in disconnected mode without starting a local lemond."
+    },
+    {
       "author": "@Copilot",
       "commit": "6deeb05f77b38081f1ac33c104a52ac1262170c3",
       "platforms": [
@@ -51,20 +61,20 @@
       "text": "Run the release tagging tool with the --sign flag in dry-run mode and confirm the output says 'would create and push signed tag'."
     }
   ],
-  "commits_reviewed": 13,
+  "commits_reviewed": 14,
   "commits_unreviewed": 0,
   "evidence": {
-    "blockers": "Three manual checks needed: the --spawn-server end-to-end tray-to-lemond lifecycle on a POSIX desktop, release tagging tool dry-run in both default and --sign modes, and config validation exercised through the user-facing `lemonade config set` CLI.",
-    "breaking_changes": "The --no-sign flag is removed from the release tagging tool CLI; operators should omit it or use --sign. No end-user-facing breaking changes.",
-    "coverage": "All 13 commits in the range v2026.40.0..6f8e87b reviewed. CI passed across all relevant workflows for each commit. No gaps identified in the review evidence.",
-    "manual_testing": "(1) Launch lemonade-tray --spawn-server on a POSIX desktop and verify lemond starts, the tray menu populates, and quitting the tray terminates lemond without orphan. (2) Run the release tagging tool in dry-run and with --sign dry-run to confirm output messages. (3) Test `lemonade config set` with invalid FLM keys (should error) and valid keys (should succeed).",
-    "security": "No security concerns observed. The watchdog pipe uses FD_CLOEXEC and posix_spawn_file_actions_addclose for safe subprocess isolation. Config validation is tightened, which is a defensive improvement."
+    "blockers": "No blockers. The three P1 to-dos cover new user-visible surface (tray spawn-server on POSIX, config validation tightening, spawn-server warning on macOS) and two P2 items for internal release-tooling. All CI passed on merge.",
+    "breaking_changes": "The release tagging tool removed --no-sign and made unsigned tags the default; operators using --no-sign must drop it. No end-user API or config changes break existing setups.",
+    "coverage": "Reviewed all 14 commits in the release bucket from v2026.40.0 to 16bcf63. Five to-dos from three commits carry forward; the remaining nine commits had no testable to-dos (documentation-only changes, version bumps, or internal refactors).",
+    "manual_testing": "Tray spawn-server end-to-end on a real Linux/macOS desktop (PR #3304), macOS --spawn-server warning path (PR #3687), and config validation through lemonade CLI (PR #3684) were not exercised by automated tests before merge.",
+    "security": "No security-relevant observations. The watchdog pipe FD_CLOEXEC semantics are sound (PR #3304), the macOS spawn-server guard is strictly more restrictive (PR #3687), and the config validation tightening is a defensive improvement (PR #3684)."
   },
-  "generation_seconds": 86.7,
-  "head_sha": "6f8e87bbec25b82fb299a0d2c435b04f95738bb5",
+  "generation_seconds": 118.6,
+  "head_sha": "16bcf639ca63aead9dcc34d9c382389a6c4aee25",
   "is_hotfix": false,
   "last_stable_tag": "",
   "range_start": "v2026.40.0",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-10-02T18:58:26+00:00"
+  "reviewed_at": "2026-10-06T20:10:38+00:00"
 }
