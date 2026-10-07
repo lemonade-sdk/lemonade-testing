@@ -1,0 +1,169 @@
+{
+  "branch": "release-v2026.42",
+  "breaking_changes": [
+    "The FastFlowLM NPU model hy-mt2:1.8b was renamed to hy-mt2-flash:1.8b in the upstream v1.0.7 release; update any configs or scripts that reference the old hy-mt2:1.8b tag.",
+    "The release tagging tool no longer accepts the --no-sign flag (omitting the flag now creates unsigned annotated tags by default); use --sign if you want a signed tag."
+  ],
+  "bucket": "v2026.42",
+  "candidate_issues": [],
+  "checklist": [
+    {
+      "author": "@abn",
+      "commit": "3b5ec50e55f7af27f15c68573de17dc099933a4f",
+      "platforms": [
+        "Ubuntu PPA",
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 3304,
+      "priority": "P1",
+      "text": "On a Linux or macOS desktop without lemond running, launch lemonade-tray with --spawn-server and verify that lemond starts within 15 seconds, the tray menu populates, and quitting the tray causes lemond to terminate immediately without leaving an orphan process."
+    },
+    {
+      "author": "@RaulMermans",
+      "commit": "a2e042d7b7c9b81cbb604b0334717afd6edeefb9",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3684,
+      "priority": "P1",
+      "text": "Run lemonade config set flm.flm_bin=builtin and confirm it returns an Unknown key error, then run lemonade config set flm.npu_bin=builtin and confirm it succeeds."
+    },
+    {
+      "author": "@bitgamma",
+      "commit": "40827a33c995ce1f70370d82b9939f2b0f1e13a0",
+      "platforms": [
+        "Windows"
+      ],
+      "pr_number": 3666,
+      "priority": "P1",
+      "text": "Start the Lemonade server on a Windows system with an AMD ROCm GPU, set the thenoise backend to rocm, and generate an image to confirm the bundled Python interpreter launches and produces output."
+    },
+    {
+      "author": "@ramkrishna2910",
+      "commit": "b3cf539d2f5cb3253e6629f748d29437b56cb2d0",
+      "platforms": [
+        "Windows"
+      ],
+      "pr_number": 3716,
+      "priority": "P1",
+      "text": "On Windows, connect to a server using an internal or private CA certificate (not a public CA like Let's Encrypt) and confirm the HTTPS connection succeeds without SSL connect errors."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "b01156fb245c4cf8a7fddd789ded3a66a4625e19",
+      "platforms": [
+        "macOS"
+      ],
+      "pr_number": 3726,
+      "priority": "P1",
+      "text": "Start the server on macOS with extra_models_dir set to a directory containing nested subfolders, write a model file into one subfolder, and confirm the server's model list updates within a few seconds without any external trigger."
+    },
+    {
+      "author": "@julianxhokaxhiu",
+      "commit": "89635051a92b78d168f1f0a6d68c8c3daddf7fc9",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3744,
+      "priority": "P1",
+      "text": "On a machine with an NPU, install this release and confirm that lemonade can discover and serve the hy-mt2-flash:1.8b model by name."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "7dc09e21a2655f0644963dd6cf857bac2d8ba0af",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3730,
+      "priority": "P1",
+      "text": "Start the server, configure a very long global_timeout, and download a large model from a slow or flaky endpoint to confirm the download does not abort prematurely at 60 seconds but respects the global_timeout value."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "e4bcbd643549fe82a06ef2acedd63f25c7a790e4",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3635,
+      "priority": "P1",
+      "text": "Start the server with extra_models_dir pointing at a Hugging Face cache that has two snapshots, set refs/main to the first, confirm the model lists as <repo> and <repo>-<quant>, then rename refs/main to the second snapshot and confirm the model name <repo> now resolves to the new checkpoint while the old snapshot is listed as <old-commit>-<repo>."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "e4bcbd643549fe82a06ef2acedd63f25c7a790e4",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3635,
+      "priority": "P1",
+      "text": "Set extra_models_dir to a Hugging Face cache with two different orgs shipping the same repo name, confirm the first org's models list as <repo> and the second's as <org>-<repo>, then swap the directory listing order and confirm the names stay the same (org qualification, not discovery order)."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "e4bcbd643549fe82a06ef2acedd63f25c7a790e4",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3635,
+      "priority": "P1",
+      "text": "Set extra_models_dir to a cache whose GGUFs are in a subfolder like Q4_K_M/, confirm the model name is <repo>-Q4_K_M, then request that model by name to confirm it loads correctly."
+    },
+    {
+      "author": "@github-actions[bot]",
+      "commit": "aa085f90a110966f5964d09446a1b2a8c3305c18",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3754,
+      "priority": "P1",
+      "text": "Start the server with vulkan, rocm-stable, or rocm-nightly backend and load one model using each new architecture (clef, glm5-next, hrm_text, hy_v4, maple, spark2_5) to confirm it loads and answers without error."
+    },
+    {
+      "author": "@Copilot",
+      "commit": "6deeb05f77b38081f1ac33c104a52ac1262170c3",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3660,
+      "priority": "P2",
+      "text": "Run the release tagging tool in dry-run mode and confirm the output says 'would create and push annotated tag' rather than 'signed tag'."
+    },
+    {
+      "author": "@Copilot",
+      "commit": "6deeb05f77b38081f1ac33c104a52ac1262170c3",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3660,
+      "priority": "P2",
+      "text": "Run the release tagging tool with the --sign flag in dry-run mode and confirm the output says 'would create and push signed tag'."
+    },
+    {
+      "author": "@julianxhokaxhiu",
+      "commit": "89635051a92b78d168f1f0a6d68c8c3daddf7fc9",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3744,
+      "priority": "P2",
+      "text": "Verify that any existing model registrations using the old hy-mt2:1.8b tag fail gracefully or produce a clear error, since the upstream binary no longer recognises that identifier."
+    }
+  ],
+  "commits_reviewed": 31,
+  "commits_unreviewed": 0,
+  "evidence": {
+    "blockers": "No blocking P0 items. The most critical checks are the Windows internal CA HTTPS fix (b3cf539-1), which is a user-facing fix on a specific configuration, and the FLM model rename (8963505-1), which affects NPU users. The remaining 12 to-dos are P1/P2 and can be tested in parallel.",
+    "breaking_changes": "The FastFlowLM NPU model hy-mt2:1.8b was renamed to hy-mt2-flash:1.8b in the upstream v1.0.7 release; update any configs or scripts that reference the old hy-mt2:1.8b tag. The release tagging tool's --no-sign flag was removed; omit the flag for unsigned tags or pass --sign for signed tags.",
+    "coverage": "31 commits reviewed across the range v2026.40.0..aa085f9, covering backends, CLI, config validation, tray subprocess management, downloads, extra_models_dir, HF/MS cache naming, model catalog, TLS, DirectoryWatcher, and release tooling. The release tagging tool's default-tag behavior was tested via dry-run only; no live tag was created in CI. Several new user-facing features (tray spawn, Windows ROCm TheNoise, HF cache naming, six new model architectures) lack automated end-to-end tests on target hardware.",
+    "manual_testing": "A Windows tester with an internal/private CA must verify HTTPS connections succeed (b3cf539-1). An NPU user must verify the renamed hy-mt2-flash:1.8b model loads (8963505-1) and that old registrations produce a clear error (8963505-2). A Linux desktop tester should verify the tray --spawn-server lifecycle (3b5ec50-1). A macOS tester should verify nested extra_models_dir watches update automatically (b01156f-1). A Windows ROCm tester should verify TheNoise spawning (40827a3-1). A tester on any platform should verify download stall timeouts respect global_timeout (7dc09e2-1). A tester with an HF cache should verify refs/main switching (e4bcbd6-1). A tester should verify new model architectures load on vulkan/rocm backends (aa085f9-1). The release tagging tool dry-run flags (6deeb05-1, 6deeb05-2) are for release admins.",
+    "security": "The curl CURLSSLOPT_REVOKE_BEST_EFFORT change on Windows (b3cf539) relaxes certificate revocation checking when CRL/OCSP responders are unreachable, enabling internal-CA connections but potentially allowing a revoked certificate from such a CA to be used in a targeted MITM attack. The posix_spawn watchdog in lemonade-tray (3b5ec50) uses FD_CLOEXEC and pipe-EOF for clean subprocess termination with no injection surface. The config validation tightening (a2e042d) is a defensive improvement."
+  },
+  "generation_seconds": 380.5,
+  "head_sha": "aa085f90a110966f5964d09446a1b2a8c3305c18",
+  "is_hotfix": false,
+  "last_stable_tag": "",
+  "range_start": "v2026.40.0",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-07T16:17:58+00:00"
+}
