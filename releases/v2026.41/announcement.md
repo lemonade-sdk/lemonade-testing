@@ -27,9 +27,4 @@
 - `@abn` added `lemonade-tray --spawn-server` for Linux source builds. On macOS the flag is accepted but ignored, because the LaunchDaemon already runs lemond.
 - `@ramkrishna2910` and `@jeremyfowers` fixed broken README and docs links, and `@superm1` added the missing macOS config path to the docs.
 
-### Known issues
-
-- On Strix Halo, llama.cpp with the ROCm backend can misread prompts longer than about 1k tokens. This also affects v2026.40. Use the Vulkan backend for long-context and agent workloads until it is fixed.
-- The Snap update may arrive later than the other packages.
-
 Full release notes are on [GitHub Releases](https://github.com/lemonade-sdk/lemonade/releases). Thanks to everyone who tested the candidates in #release-candidate!
