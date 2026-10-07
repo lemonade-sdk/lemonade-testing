@@ -1,14 +1,11 @@
 ## Headline
 
-### ⚠️ These notes are AI generated and will be revised by a human ⚠️
-
-- Non-streaming requests no longer hang when a client disconnects mid-request; the server now detects lost connections through the full pipeline and aborts upstream transfers.
-- Kokoro TTS voices for British English (bf_emma, bf_isabella, bm_george, bm_lewis) and French (ff_siwis) now generate audio of the correct length instead of fixed ~0.3s output.
-- lemonade-tray on Linux now supports spawning and supervising a local lemond process natively via the `--spawn-server` flag.
-- Documentation and test fixtures for llama.cpp now use the current `--load-mode` flag instead of the deprecated `--no-mmap` / `--mmap` / `--mlock` / `--direct-io` variants.
+- ROCm backends move to ROCm 10 for llama.cpp, whisper.cpp, stable-diffusion.cpp, ThinkSound, TRELLIS, and ACE-Step.
+- Non-streaming requests now stop as soon as the client disconnects, so an abandoned request no longer ties up the server.
+- Kokoro TTS fixes four British English voices and one French voice that returned short fixed-length audio.
+- Configuration now rejects unknown backend keys instead of silently ignoring them.
 
 ## Breaking Changes
 
-### ⚠️ These notes are AI generated and will be revised by a human ⚠️
-
-- The `--no-sign` flag was removed from the release tagging tool; omit the flag (now the default) or use `--sign` for signed tags. Update any scripts or workflows that passed `--no-sign`.
+- ROCm backends now use ROCm 10. The first ROCm model load after upgrading downloads the new runtime (about 2.6 GB).
+- lemonade config set now rejects unknown backend keys, for example flm.flm_bin.

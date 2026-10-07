@@ -1,35 +1,35 @@
 ## Lemonade v2026.41.1
 
-### ⚠️ These notes are AI generated and will be revised by a human ⚠️
-
-@everyone today's release brings some important robustness fixes, better audio from Kokoro TTS, a new `--spawn-server` mode for lemonade-tray, and updated llama.cpp examples — plus a quick cleanup of the release tooling.
+@everyone v2026.41 is out: ROCm 10 across every ROCm backend, requests that let go the moment a client disconnects, fixed Kokoro voices, and stricter config validation.
 
 ### Breaking Changes
 
-- The `--no-sign` flag was dropped from the release tagging tool. If you script releases, just drop the flag (it's the default now) or use `--sign` to create signed tags.
+- ROCm backends now use ROCm 10. The first ROCm model load after upgrading downloads the new runtime (about 2.6 GB), so do it while you're online.
+- `lemonade config set` now rejects unknown backend keys (for example `flm.flm_bin`) instead of silently accepting them.
 
-### 🎤 Kokoro TTS voices now have the right length
+### 🔥 ROCm 10 everywhere
 
-`@bitgamma` bumped the Kokoro TTS backend to b21 on CPU and Metal — the British English and French voices that were outputting a fixed ~0.3s clip now generate audio at the correct length.
+`@superm1` and `@sreeram-11` moved the ROCm runtime to ROCm 10 and switched stable-diffusion.cpp back to the Lemonade fork. llama.cpp, whisper.cpp, stable-diffusion.cpp, ThinkSound, TRELLIS and ACE-Step all pick up the new runtime on their next load.
 
-### ⚡ Requests don't hang when a client disconnects
+### ⚡ Abandoned requests no longer tie up the server
 
-`@abn` wired connection-liveness checks through the entire request pipeline, so non-streaming requests abort upstream transfers and stop blocking the moment a client drops the connection.
+`@abn` wired connection-liveness checks through the whole request pipeline. When a client disconnects or times out during a non-streaming request, Lemonade aborts the backend request right away, and the next request is served immediately.
 
-### 🖥️ lemonade-tray can now spawn lemond natively
+### 🎤 Kokoro voices fixed
 
-`@abn` added the `--spawn-server` flag so lemonade-try can start and supervise a local lemond process on Linux with a pipe-EOF watchdog. `@ramkrishna2910` made the flag a no-op on macOS and documented all lemonade-tray CLI flags.
-
-### 📖 llama.cpp docs now use `--load-mode`
-
-`@pwilkin` updated all Lemonade documentation examples and test fixtures to use the current `--load-mode` flag instead of the deprecated `--no-mmap` / `--mmap` / `--mlock` / `--direct-io` options.
+`@bitgamma` bumped Kokoro to b21. The British English voices (bf_emma, bf_isabella, bm_george, bm_lewis) and the French voice ff_siwis now produce audio of the right length instead of a fixed ~0.3 s clip.
 
 ### Additional Improvements
 
-- `@superm1` updated the macOS config path docs and moved stable-diffusion.cpp to the Lemonade SDK fork with an ROCm 10.0 bump. Thanks `@superm1` for the release-tooling cleanup too!
-- `@ramkrishna2910` fixed the broken README links that were 404ing on the pre-release site.
-- `@jeremyfowers` corrected website-only page links, added a Windows RAM filter for qwen3.6-moe-35b-a3b-FLM, and a spec-writing guide for `docs/dev`.
-- `@RaulMermans` tightened backend config validation so unknown keys get rejected instead of silently accepted.
-- `@jeremyfowers` bumped the repo-manager CI version pin.
+- `@RaulMermans` tightened backend config validation so typos in backend keys are caught.
+- `@jeremyfowers` hid qwen3.6-moe-35b-a3b-FLM on Windows PCs with less than 64 GB RAM, where it cannot run, and added a spec-writing guide.
+- `@pwilkin` moved the llama.cpp docs and examples to the current `--load-mode` option. Saved `--no-mmap` args still work.
+- `@abn` added `lemonade-tray --spawn-server` for Linux source builds. On macOS the flag is accepted but ignored, because the LaunchDaemon already runs lemond.
+- `@ramkrishna2910` and `@jeremyfowers` fixed broken README and docs links, and `@superm1` added the missing macOS config path to the docs.
 
-Full release notes are live on [GitHub Releases](https://github.com/lemonade-sdk/lemonade/releases) — take it for a spin and tell me what you think!
+### Known issues
+
+- On Strix Halo, llama.cpp with the ROCm backend can misread prompts longer than about 1k tokens. This also affects v2026.40. Use the Vulkan backend for long-context and agent workloads until it is fixed.
+- The Snap update may arrive later than the other packages.
+
+Full release notes are on [GitHub Releases](https://github.com/lemonade-sdk/lemonade/releases). Thanks to everyone who tested the candidates in #release-candidate!
