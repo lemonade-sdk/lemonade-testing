@@ -5,6 +5,7 @@
 - Streaming requests no longer hang when a client disconnects mid-request.
 - Windows support added for TheNoise (ROCm) via a bundled portable CPython interpreter.
 - llama.cpp backend updated with six new model architectures (clef, glm5-next, hrm_text, hy_v4, maple, spark2_5) and HRX runtime updated to hrx-b99 with 26 new text-chat models.
+- `extra_models_dir` now correctly import models from Hugging Face style cache directories. 
 
 ## Breaking Changes
 
