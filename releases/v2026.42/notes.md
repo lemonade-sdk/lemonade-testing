@@ -11,4 +11,3 @@
 ### ⚠️ These notes are AI generated and will be revised by a human ⚠️
 
 - The FastFlowLM NPU model hy-mt2:1.8b was renamed to hy-mt2-flash:1.8b; update any configs or scripts that reference the old tag.
-- The release tagging tool no longer accepts the --no-sign flag — omitting the flag creates unsigned annotated tags by default; use --sign if you want a signed tag.
