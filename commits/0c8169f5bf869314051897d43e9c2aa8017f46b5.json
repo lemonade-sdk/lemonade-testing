@@ -1,0 +1,36 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.43",
+  "commit_sha": "0c8169f5bf869314051897d43e9c2aa8017f46b5",
+  "committed_at": "2026-10-08T20:21:38+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. WrappedServer::unload() gets a default implementation (stop_server()). Per-backend unload() and destructor signatures are unchanged; some backends dropped their overrides because the default suffices. ServerCommand is a new internal struct and NativeProcess is a new class — both are internal to the server process. The load() virtual method signature is unchanged; how it starts the process is internal. The /health, /system-info, and all inference endpoints are unaffected.",
+    "documentation": "docs/dev/adding-a-backend.md gains a new \"Starting the server process\" section with a ServerCommand/start_server() example, a table documenting command.env, command.ready_endpoint, timeout_seconds, ProcessOutput settings, and NativeProcess working_dir. It documents the default unload() and when to override it. docs/dev/backends-reference.md is updated to reference start_server() and the local NativeProcess for the OpenMOSS voice-design path. AGENTS.md was updated then reverted (the last post-approval commit). All documentation changes are accurate and consistent with the code.",
+    "manual_release_testing": "The refactoring changes how every backend subprocess is started, polled, and stopped, but the behavior visible to a user (load a model, send inference, unload) is the same. CI ran all three workflows (llamacpp validate, sdcpp validate, C++ build/test/release) and they passed. No human exercised a real backend through the new start_server() path. The test uses a fake process against a local httplib health server rather than a real inference binary. The new OpenMOSS voice-design path through NativeProcess is unexercised in CI.",
+    "post_approval_commits": "One commit (f19d547d) was added after the latest approval at 2026-10-07T06:26:44Z. It changes one line in AGENTS.md (removing unload() from the list of methods every backend implements) and is purely documentation. It does not alter behavior, tests, or API.",
+    "review": "Only one substantive human review: @bitgamma approved with \"nice refactoring!\" at 2026-10-07T06:26:44Z. @bitgamma's subject areas (thennoise, cli, recipes, new backends, benchmarking, new models) do not cover the server-process framework, process lifecycle, or watchdog — those fall under @jeremyfowers' and @ramkrishna2910's domains per docs/dev/contribute.md. @ramkrishna2910 was requested as reviewer but never reviewed. The project guidelines say \"PRs should have at least one reviewer with subject area expertise\" and \"avoid merging PRs that are approved, but not thoroughly reviewed.\" The review did not evaluate the correctness of the new start_server()/stop_server() lifecycle or the rewritten watchdog integration. CodeRabbit bot raised a concern about ServerProcess::stop() virtual dispatch in the base destructor, which the PR author acknowledged; the PR stack addresses this in PR #3709.",
+    "security": "Process management was restructured but follows the same patterns as before: NativeProcess delegates to ProcessManager::start_process(), stop() calls ProcessManager::stop_process(), and the watchdog monitors liveness. No new credential handling, network calls, or permission broadening. The OpenMOSS voice-design path spawns a local process on a loopback port with no external exposure. No supply-chain changes. The change to /metrics to parse backend URLs via utils::parse_target_url instead of a custom parse_backend_port() function is safer (handles IPv6 hosts properly).",
+    "tests": "test/cpp/test_launch_command.cpp was updated to exercise the new ServerProcess/WrappedServer integration: it creates a StubWrappedServer, calls start_server() with a FakeProcess that does not spawn a real child, and verifies get_process_info() reports the correct PID and command line after start, after stop, and after a failed start (process exiting before ready). The test covers restart replacing the old process and cleanup clearing state. This is a unit-level test that proves the ownership invariant; it does not drive any real backend binary."
+  },
+  "generation_seconds": 718.0,
+  "maintainer_todos": [
+    {
+      "text": "Run the server with two different backends (e.g. llamacpp and sdcpp), load a model on each, and confirm the /health endpoint reports the correct PID and launch command for each, then unload one and verify it is gone."
+    }
+  ],
+  "merge_date": "2026-10-08T21:05:46Z",
+  "pr_number": 3705,
+  "range_start": "v2026.41.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-08T21:19:33+00:00",
+  "reviewers": [
+    "@bitgamma"
+  ],
+  "sha": "0c8169f5bf869314051897d43e9c2aa8017f46b5",
+  "shout_outs": [],
+  "subject": "refactor(server): run backend servers through ServerProcess and NativeProcess (#3705)",
+  "summary": "Refactors WrappedServer to manage backend subprocesses through a new ServerProcess abstraction and NativeProcess concrete class, replacing per-backend manual process-handle plumbing with a unified start_server()/stop_server() lifecycle, and adds OpenMOSS voice design through a local NativeProcess.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "A refactoring touching the entire backend lifecycle across 16 server classes received only a one-line approval from a reviewer who lacks backend expertise, while the assigned reviewer with backend subject-matter knowledge did not review it."
+}
