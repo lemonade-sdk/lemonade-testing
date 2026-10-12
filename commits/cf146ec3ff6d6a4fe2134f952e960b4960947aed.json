@@ -1,0 +1,36 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.43",
+  "commit_sha": "cf146ec3ff6d6a4fe2134f952e960b4960947aed",
+  "committed_at": "2026-10-12T11:35:23+00:00",
+  "evidence": {
+    "api_compatibility": "Not breaking. The endpoint now accepts one or more image[] fields instead of a single image field, but the old single-image contract is preserved (image_data fallback path retained for callers that do not use repeated fields). The /v1/images/edits OpenAPI doc in docs/api/openai.md has been updated to reflect the new behavior.",
+    "documentation": "docs/api/openai.md updated: the endpoint description now says 'one or more reference images', the image parameter accepts PNG or JPEG and notes repeatable image[] fields, and the size parameter describes the new auto-dimension behavior with the 4 MP soft cap.",
+    "manual_release_testing": "No evidence that a human exercised the multi-reference image editing endpoint end-to-end. The POST /v1/images/edits endpoint now accepts repeated image[] fields, auto-selects output dimensions from the first reference image, and applies a 4 MP soft cap — all user-visible behavior that should be manually verified with real images before release. Two image formats (PNG and JPEG) are parsed, which adds another dimension to test.",
+    "post_approval_commits": "No commits were added after @bitgamma's approval (submitted at 2026-10-12T11:35:12Z). The merge happened at 2026-10-12T12:19:16Z with three commits in total, all preceding approval.",
+    "review": "PR #3801 was reviewed by @bitgamma (theneoise, backends, benchmarking). They first requested changes on two points: (1) extract and cap the first-image size at the endpoint level rather than per-backend for coherent cross-engine behavior, and (2) add a resolution cap (they suggested 1024 area) to avoid users uploading 40 MP images that cause OOM or incoherent output. The author followed up with commit 914bbc9 (addressing a CodeRabbit-bot concern about mixed image/image[] field names) and commit c009934 (moving size extraction and capping into the /images/edits handler in server.cpp with a 4 MP default cap). @bitgamma approved the final version. No dedicated stable-diffusion or image-generation reviewer was engaged — @ramkrishna2910 covers stable diffusion in the maintainers list but was not a reviewer on this PR. The reviewer guidelines recommend having at least one reviewer with subject-area expertise.",
+    "security": "No security concerns identified. The change adds PNG and JPEG header parsing for dimension extraction (no external dependency), preserves original bytes through backends without re-encoding (no new serialization path), and does not touch authentication, permissions, or credential handling.",
+    "tests": "The PR author reports local testing covering server build, single/multiple reference images, explicit and original output resolution, and compatibility with GUI/GUI3. CI passes (Server Download Registry, Routing Schema, Validate New llama.cpp Release, C++ Server Build/Test/Release). However, there are no new automated unit or integration tests for the multi-reference parsing, dimension extraction, or 4 MP cap logic in the codebase diff. The CodeRabbit-bot inline comment about mixed field ordering was addressed in a follow-up commit."
+  },
+  "generation_seconds": 185.3,
+  "maintainer_todos": [
+    {
+      "text": "Start the server with Flux-2-Klein-4B or SD-Turbo, send POST /v1/images/edits with two different image[] uploads and a prompt, and confirm the output is edited using both references at the auto-selected dimensions (derived from the first image, capped at 4 MP)."
+    }
+  ],
+  "merge_date": "2026-10-12T12:19:16Z",
+  "pr_number": 3801,
+  "range_start": "v2026.41.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-12T12:24:18+00:00",
+  "reviewers": [
+    "@bitgamma"
+  ],
+  "sha": "cf146ec3ff6d6a4fe2134f952e960b4960947aed",
+  "shout_outs": [],
+  "subject": "fix(server): support multi-reference image editing (#3801)",
+  "summary": "Extends the POST /v1/images/edits endpoint to accept one or more reference images (repeating image[] fields), auto-selects output dimensions from the first reference with a 4 MP soft cap, and preserves original image bytes through the SD CPP and TheNoise backends without re-encoding.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "All checks passed and a subject-matter reviewer approved, but no evidence that anyone manually exercised the multi-reference image editing endpoint end-to-end before merge."
+}
