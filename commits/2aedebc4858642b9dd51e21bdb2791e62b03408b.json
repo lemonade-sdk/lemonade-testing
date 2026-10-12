@@ -1,0 +1,55 @@
+{
+  "author": "@fl0rianr",
+  "branch": "release-v2026.42",
+  "bucket": "v2026.42",
+  "cherry_picked_from": "1d63aa22e329b04b80ed9162a4a4e1889712d933",
+  "commit_sha": "2aedebc4858642b9dd51e21bdb2791e62b03408b",
+  "committed_at": "2026-10-12T11:46:02-05:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The discover_extra_models() signature gains an optional registered_paths parameter with a default empty set, preserving backward compatibility. The /models and /delete API behaviors are corrected (bug fix), not altered in a breaking way. No schema or protocol changes.",
+    "documentation": "The PR body states documentation is not affected. This is accurate — it is a bug fix to internal model resolution and deletion logic, not a change to user-facing documentation, API specs, or CLI behavior.",
+    "manual_release_testing": "No evidence of a human exercising the --extra-models-dir + registered model path end-to-end. The PR is a bug fix with significant behavioral changes to model discovery and deletion. Seven to-do items are written to cover the release-critical paths: registered identity in extra_models_dir, MTP/DFlash dedup, shard handling, external file deletion protection, ref/escape safety, legacy layouts, and non-GGUF multi-file cache preservation.",
+    "post_approval_commits": "Commit cf1ecae7f94adb3fe5fd98d2f69e4da068814bd5 (\"fix(models): preserve legacy multi-repo cache layouts\") was authored at 2026-10-12T14:36:01Z, after superm1's approval at 13:51:32Z. It modifies try_resolve_registered_extra_cache to allow legacy auxiliary files in the main repo cache, adds path_inside safety checks, and introduces two new integration tests (test_021yp, test_021yq). This is a behavior extension in delete_model and path resolution, but it is scoped to a specific legacy pattern, includes tests, and was flagged during the original review process. It is not re-approved.",
+    "review": "PR #3805 was approved by @superm1 (maintainer with llamacpp and system-level model management expertise) at 2026-10-12T13:51:32Z. CodeRabbit flagged two issues: a data integrity concern about incomplete shard collection in registered_extra_paths (addressed) and a delete_model concern about blocking registry-only removal for user models with only an extra cache copy (addressed). No human inline comments were posted beyond the bot discussion. The review was thorough enough for a bug fix but lacked human-written inline commentary.",
+    "security": "The commit improves security posture by blocking refs/main symlinks from escaping their repository and adopting sibling repo files (test_021yn). It also prevents accidental deletion of user-managed files outside the managed cache. No new security concerns introduced.",
+    "tests": "Comprehensive Python integration tests added to test/server_endpoints.py (8 new tests covering registered GGUF identity preservation, MTP/DFlash dedup, Krea-2-Turbo multi-file cache, sharded GGUF handling, ref/escape prevention, delete protection, legacy auxiliary layouts, legacy external auxiliary). One C++ unit test added in test/cpp/test_hf_variants.cpp for Qwen3.8-Flash-Next-MTP-UD draft detection. The PR body notes 'Full server integration tests: Pending local execution', meaning the tests in CI may not have been run against a real server with registered models and extra_models_dir before merge."
+  },
+  "generation_seconds": 216.9,
+  "maintainer_todos": [
+    {
+      "text": "Start lemond with a registered GGUF model (e.g. LFM2.5-8B-A1B) whose HF cache is copied into --extra-models-dir, then confirm the model appears under its original catalog name (not extra.*) in the /models API response."
+    },
+    {
+      "text": "Start lemond with --extra-models-dir containing a complete repo with a main GGUF, an MTP companion, and a DFlash.gguf file; confirm only the main GGUF appears as a model and the companions do not create separate entries."
+    },
+    {
+      "text": "Register a model with a sharded GGUF (e.g. Shards-Q4_K_M-00001-of-00002.gguf) whose complete shard family and other quantizations exist in --extra-models-dir; confirm only the unrelated quantizations appear as extra.* models, not the registered shards."
+    },
+    {
+      "text": "Register a model whose files are only in --extra-models-dir, then attempt DELETE /api/v1/delete; confirm the model registration is removed but the GGUF file on disk is preserved."
+    },
+    {
+      "text": "Set --extra-models-dir with a refs/main entry that is a symlink to a sibling repository cache; confirm the model is NOT adopted from the sibling and remains un-downloaded."
+    },
+    {
+      "text": "Register a user model with an mmproj auxiliary checkpoint and place both files in --extra-models-dir under a legacy multi-repo layout (auxiliary in the main repo cache); confirm the model retains its registration and can still be deleted via the API without error."
+    },
+    {
+      "text": "Start lemond with a non-GGUF catalog model (e.g. Krea-2-Turbo) whose multi-file cache is in --extra-models-dir; confirm the model loads with its original recipe (thenoise) and is not listed in the extra models endpoint."
+    }
+  ],
+  "merge_date": "2026-10-12T16:26:01Z",
+  "pr_number": 3805,
+  "range_start": "v2026.41.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-12T16:51:38+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "2aedebc4858642b9dd51e21bdb2791e62b03408b",
+  "shout_outs": [],
+  "subject": "fix(models): preserve catalog identities in extra_models_dir (#3805)",
+  "summary": "Preserves registered catalog identities (model name, recipe, metadata) when a complete HuggingFace/ModelScope repository cache also resides in --extra-models-dir, prevents MTP/DFlash companions from appearing as duplicate standalone GGUFs, handles sharded caches and legacy multi-repo layouts safely, and blocks accidental deletion of externally-managed model files through the /delete API.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "A post-approval commit (cf1ecae7) added legacy multi-repo cache layout handling after superm1's approval without re-approval, and full server integration testing was not completed before merging."
+}
