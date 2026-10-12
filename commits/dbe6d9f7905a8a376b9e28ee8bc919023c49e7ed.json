@@ -1,0 +1,42 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.43",
+  "commit_sha": "dbe6d9f7905a8a376b9e28ee8bc919023c49e7ed",
+  "committed_at": "2026-10-12T12:55:38+00:00",
+  "evidence": {
+    "api_compatibility": "The /models endpoint now includes a soft_pixel_cap field in image_defaults for models that set it (previously the field did not exist). For clients that ignore unknown fields this is additive; for clients that assert exact field sets it is a breaking change. The API spec (docs/api/openai.md) is updated to document the new per-model cap behavior. The soft_pixel_cap does not alter the /images/edits request contract — it only changes the default output dimensions when size is omitted, which was already a soft cap, not a hard guarantee. No CLI flags, config keys, or persisted formats changed.",
+    "documentation": "docs/api/openai.md updated to document that the size parameter's implicit fallback uses image_defaults.soft_pixel_cap (defaulting to 2048×2048 / ~4 MP). docs/guide/configuration/custom-models.md expanded to describe soft_pixel_cap and show an example. The /models endpoint serializer was updated to emit soft_pixel_cap in the response.",
+    "manual_release_testing": "This commit changes user-reachable behavior: the /images/edits endpoint now applies per-model soft_pixel_cap instead of the global 4 MP fallback, and a new model Qwen-Image-2.1-Turbo-INT8 appears in the built-in model list. No evidence shows a human exercised either through a full request cycle. CI passes (llamacpp validate, stable-diffusion.cpp validate, vLLM validate, C++ server build & test), but CI does not drive image-edit requests against these models.",
+    "post_approval_commits": "No commits were added after the sole approval at 11:10:34Z. The branch is a single commit (58eec8ecf15ec75707901e267b8d8d5c71957ab7), merged verbatim.",
+    "review": "PR #3803 was reviewed by @bitgamma, who has subject-matter expertise in thenoise, cli, recipes, new backends, and new models per docs/dev/contribute.md. @bitgamma opened with a changes-requested review noting three points: (1) the field name max_edit_pixels sounded like a hard cap, (2) non-editing models may not need this value, and (3) Qwen-Image-2.1's minimum useful generation resolution is around 2 MP. @fl0rianr addressed all three: the field was renamed to soft_pixel_cap, kept across image models for consistency (with a note about excluding upscaling models), and the Qwen-Image-2.1-Turbo-INT8 default resolution was adjusted to 1440×1440. @bitgamma then approved with 'lgtm!' at 11:10:34Z. CodeRabbit flagged a test assertion using max_edit_pixels=262144 while server_models.json listed 525625 for SD-Turbo; the author self-corrected to soft_pixel_cap=525625 in the final commit.",
+    "security": "The change is purely additive: a new optional JSON field parsed from model registry configuration, a new built-in model entry pointing to a Comfy-Org HuggingFace checkpoint, and a backend version bump from thenoise 0.10.0 to 0.10.1. No credential handling, network calls to new hosts, code execution, or permission changes. The soft_pixel_cap is parsed as unsigned int64 with an existence check, so malformed JSON is safely ignored. The model registry is a local JSON file under project control.",
+    "tests": "test/server_sd.py adds one assertion verifying SD-Turbo's soft_pixel_cap returns the registry value from the /models endpoint. No new end-to-end or integration test exercises the per-model soft-pixel-cap path through handle_image_edits(). The author's testing note says 'compilation and cap works.'"
+  },
+  "generation_seconds": 349.3,
+  "maintainer_todos": [
+    {
+      "text": "Start a server with Qwen-Image-2.1-Turbo-INT8 loaded and call /images/edits with a reference image (without sending a size parameter) — confirm the response dimensions respect the four-megapixel soft cap for that model."
+    },
+    {
+      "text": "Call GET /models and look up SD-Turbo in the response — confirm image_defaults includes soft_pixel_cap set to the value matching the registry."
+    },
+    {
+      "text": "Call GET /models and look up Qwen-Image-2.1-Turbo-INT8 in the response — confirm it lists recipe as thenoise, labels include image and edit, and image_defaults specifies 1440×1440 resolution with a soft_pixel_cap of four megapixels."
+    }
+  ],
+  "merge_date": "2026-10-12T13:42:27Z",
+  "pr_number": 3803,
+  "range_start": "v2026.41.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-12T13:50:07+00:00",
+  "reviewers": [
+    "@bitgamma"
+  ],
+  "sha": "dbe6d9f7905a8a376b9e28ee8bc919023c49e7ed",
+  "shout_outs": [],
+  "subject": "feat(images): add per-model edit size caps and Qwen-Image-2.1 Turbo INT8 (#3803)",
+  "summary": "Adds per-model image_defaults.soft_pixel_cap to cap inferred output area on /images/edits when size is omitted, registers Qwen-Image-2.1-Turbo-INT8 as a new thenoise recipe model, and bumps thenoise from 0.10.0 to 0.10.1.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The new Qwen-Image-2.1-Turbo-INT8 model and per-model edit-size-caps feature are user-reachable but no human exercised them end-to-end before merge."
+}
