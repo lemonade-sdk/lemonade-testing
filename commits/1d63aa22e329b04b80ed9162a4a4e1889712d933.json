@@ -1,0 +1,44 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.43",
+  "commit_sha": "1d63aa22e329b04b80ed9162a4a4e1889712d933",
+  "committed_at": "2026-10-12T15:37:49+00:00",
+  "evidence": {
+    "api_compatibility": "This is a bug fix with no breaking API changes. The discover_extra_models() method signature gained an optional parameter with a default value, preserving binary and source compatibility. Behavior changes only affect how models are discovered and displayed when both a managed cache and an extra_models_dir cache exist: previously the user might have seen a duplicate or lost identity, now they see the original catalog identity. No CLI flags, config values, or API endpoints changed.",
+    "documentation": "The PR states documentation is not affected. The changes are internal model resolution logic. No API endpoints, CLI commands, or user-facing behaviors are changed in a way that requires documentation updates. The model_manager.h comment was updated to reflect the new parameter.",
+    "manual_release_testing": "No human is shown to have exercised the model resolution paths end-to-end in a fresh lemond installation. The CI C++ test run failed, so automated test results are unavailable. The real-user testing by @PCAssistSoftware was on a pre-existing setup with potential corruption artifacts, so it does not constitute a clean end-to-end verification.",
+    "post_approval_commits": "@superm1 approved at 2026-10-12T13:51:32Z (commit 2a193b87). A third commit (cf1ecae7, 'preserve legacy multi-repo cache layouts') was added at 2026-10-12T14:36:01Z after approval, without re-approval. This commit extends try_resolve_registered_extra_cache and delete_model to handle a legacy cache layout where auxiliary files (mmproj) were placed in the main repo cache instead of a separate checkpoint repo. The change is consistent with the approved scope (same functions, same pattern) and was triggered by the author's own additional checks. It does not add new behavior outside the PR's domain.",
+    "review": "One substantive human reviewer: @superm1 (subject-area expertise in llamacpp, directly relevant) approved at 2026-10-12T13:51:32Z (commit 2a193b87). CodeRabbit posted automated inline comments on two review runs: one on the first commit flagging shard-family tracking, and one on the second commit flagging the delete_model external-path guard. The author addressed the shard-family comment and confirmed the delete_model comment as addressed. The diff is substantial (567 insertions, 16 deletions across 5 files, including ~450 lines of new model resolution logic).",
+    "security": "The new path_inside() function and path-escape checks in try_resolve_registered_extra_cache prevent a potential attack where an external refs/main entry could be adopted from a sibling repository. The delete_model path checks correctly prevent accidental deletion of externally managed files through a registered model name. These are security improvements, not vulnerabilities. No supply-chain concerns, credential handling, or suspicious code patterns detected.",
+    "tests": "Comprehensive coverage added: one C++ unit test in test_hf_variants.cpp (MTP-UD draft detection) and seven Python integration tests in test/server_endpoints.py (test_021yj through test_021yq) covering registered GGUF cache identity preservation, MTP/DFlash duplicate prevention, Krea-2-Turbo multi-file cache restoration, sharded GGUF handling, refs/main escape protection, user model deletion with external weights, and legacy cache layouts. No evidence of test weakening or deletion."
+  },
+  "generation_seconds": 427.9,
+  "maintainer_todos": [
+    {
+      "text": "Re-run the C++ Server Build, Test, and Release workflow for PR #3805 (run #11110) at https://github.com/lemonade-sdk/lemonade/actions/runs/38271676336 and confirm all jobs pass before shipping the release."
+    },
+    {
+      "text": "Start lemond with a registered model (e.g. LFM2.5-8B-A1B) whose HuggingFace cache is placed in extra_models_dir with a refs/main entry, call GET /models/LEFM2.5-8B-A1B and confirm the response shows the original catalog name, the correct recipe, downloaded=true, and source is not extra_models_dir."
+    }
+  ],
+  "merge_date": "2026-10-12T16:26:01Z",
+  "pr_number": 3805,
+  "range_start": "v2026.41.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-12T16:34:56+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "1d63aa22e329b04b80ed9162a4a4e1889712d933",
+  "shout_outs": [
+    {
+      "handle": "@PCAssistSoftware",
+      "reason": "Ran the PR on their existing production setup, tested multiple model scenarios, and confirmed which remaining issues were pre-existing. Their hands-on validation across real model installations was essential to verifying the fix before merge."
+    }
+  ],
+  "subject": "fix(models): preserve catalog identities in extra_models_dir (#3805)",
+  "summary": "Fixes duplicate GGUF discovery, lost catalog identities, and broken sharded-GGUF and multi-file model cache resolution when a registered model's HuggingFace/ModelScope cache also exists in extra_models_dir.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The C++ Server Build, Test, and Release workflow failed on this PR and the merge happened before the failure was resolved; the extensive model resolution changes warrant a passing CI before release."
+}
