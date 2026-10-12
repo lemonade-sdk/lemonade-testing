@@ -1,0 +1,32 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.43",
+  "commit_sha": "ea40c7deb1d9a518c387c46b6fbcfca17f9cfc8b",
+  "committed_at": "2026-10-12T11:57:26+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The change only affects where `lemond` reads `defaults.json` from. For the standard packaged install (`/usr/bin/lemond`), the resolved path is still `/usr/share/lemonade/defaults.json` — identical to before. For source builds, the behavior changes from picking up a system-wide stale file to reading from the build tree, which is the intended fix. No CLI flags, config schema, API endpoints, or saved-file formats are affected.",
+    "documentation": "Updated `docs/guide/configuration/README.md` to reflect the new relative-path behavior: \"On Linux, `lemond` merges `share/lemonade/defaults.json` under its own install prefix if it exists (`/usr/share/lemonade/defaults.json` for `/usr/bin/lemond`), so distro packages can ship system-level defaults.\" Also updated the `ConfigFile::get_defaults()` header comment in `src/cpp/include/lemon/config_file.h`. The documentation accurately describes the new behavior.",
+    "manual_release_testing": "The behavior change is user-visible (lemond startup resolves distro defaults from a relative path), but the author exercised it. The packaged path `/usr/bin/lemond` still reads from `/usr/share/lemonade/defaults.json` (unchanged behavior), and the macOS guard was narrowed from `#ifndef _WIN32` to `#ifdef __linux__` — macOS binaries simply do not compile the distro-defaults block, which is correct since macOS never installed that file. The fix does not add new shipped behavior; it corrects a bug in an existing path. No additional manual release testing to-do required.",
+    "post_approval_commits": "None. Both PR commits (2d05ec0 and 436e646) were pushed before @superm1's approval. The second commit addressed review feedback (Linux-only guard + exception handling) and was explicitly noted as addressed by CodeRabbit before the approval.",
+    "review": "PR #3775 was reviewed by @superm1, who has subject-matter expertise in linux packaging, system info, and security per docs/dev/contribute.md. Initial review comments flagged two issues: (1) the `#ifndef _WIN32` guard was too broad and should be Linux-only since macOS does not install `share/lemonade/defaults.json`, and (2) NixOS compatibility should be considered; @superm1 suggested rpath as an alternative. The author addressed both concerns in a follow-up commit before approval. @superm1 then re-evaluated his own rpath proposal, determined it would not actually work for this case, and approved the PR with the message \"The solution you proposed is good for this situation.\" Approval was submitted at 2026-10-12T01:59:17Z. No commits were added after approval.",
+    "security": "No security concerns. The change replaces a hardcoded absolute path with a path derived from the executable's own location, which is a safer default. Exception handling was added for `get_executable_dir()` failures. The file being read (`defaults.json`) is a local configuration file already opened by `lemond` on startup. No network calls, credential changes, or permission broadening.",
+    "tests": "The author documented manual testing: (1) running `gen_backend_boilerplate.py --check` with a build-tree `lemond` on a machine with `lemonade-server 2026.39.1` installed — before the fix the stale `openmoss.rocm_bin` from the old system package caused drift in the docs; after the fix it was up to date. (2) Copying `lemond` to `<tmp>/bin/` with `<tmp>/share/lemonade/defaults.json` containing a custom `openmoss.rocm_bin` and confirming `/internal/config` showed the override. No new automated tests were added, which is reasonable for a configuration-loading path fix. The author's testing demonstrates the fix works correctly in both the source-build and custom-prefix scenarios."
+  },
+  "generation_seconds": 161.1,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-12T13:00:25Z",
+  "pr_number": 3775,
+  "range_start": "v2026.41.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-12T13:05:06+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "ea40c7deb1d9a518c387c46b6fbcfca17f9cfc8b",
+  "shout_outs": [],
+  "subject": "fix(config): read the distro defaults override from lemond's own install prefix (#3775)",
+  "summary": "Fixes ConfigFile::get_defaults() so the distro defaults override reads from <prefix>/share/lemonade/defaults.json relative to the lemond binary's install prefix instead of a hardcoded /usr/share/lemonade/defaults.json, and restricts the lookup to Linux only.",
+  "verdict": "Clean",
+  "verdict_reason": "Focused bug fix with subject-matter review, no breaking changes, and documentation updated."
+}
