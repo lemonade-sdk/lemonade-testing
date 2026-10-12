@@ -1,33 +1,20 @@
 {
   "branch": "release-v2026.42",
   "breaking_changes": [
-    "The FastFlowLM NPU model hy-mt2:1.8b was renamed to hy-mt2-flash:1.8b in the upstream v1.0.7 release; update any configs or scripts that reference the old hy-mt2:1.8b tag.",
-    "The release tagging tool no longer accepts the --no-sign flag (omitting the flag now creates unsigned annotated tags by default); use --sign if you want a signed tag."
+    "The FastFlowLM NPU model hy-mt2:1.8b was renamed to hy-mt2-flash:1.8b in the upstream v1.0.7 release; update any configs or scripts that reference the old hy-mt2:1.8b tag."
   ],
   "bucket": "v2026.42",
   "candidate_issues": [],
   "checklist": [
     {
-      "author": "@abn",
-      "commit": "3b5ec50e55f7af27f15c68573de17dc099933a4f",
-      "platforms": [
-        "Ubuntu PPA",
-        "Fedora",
-        "Debian"
-      ],
-      "pr_number": 3304,
-      "priority": "P1",
-      "text": "On a Linux or macOS desktop without lemond running, launch lemonade-tray with --spawn-server and verify that lemond starts within 15 seconds, the tray menu populates, and quitting the tray causes lemond to terminate immediately without leaving an orphan process."
-    },
-    {
-      "author": "@RaulMermans",
-      "commit": "a2e042d7b7c9b81cbb604b0334717afd6edeefb9",
+      "author": "@fl0rianr",
+      "commit": "2aedebc4858642b9dd51e21bdb2791e62b03408b",
       "platforms": [
         "all"
       ],
-      "pr_number": 3684,
-      "priority": "P1",
-      "text": "Run lemonade config set flm.flm_bin=builtin and confirm it returns an Unknown key error, then run lemonade config set flm.npu_bin=builtin and confirm it succeeds."
+      "pr_number": 3805,
+      "priority": "P0",
+      "text": "Register a model whose files are only in --extra-models-dir, then attempt DELETE /api/v1/delete; confirm the model registration is removed but the GGUF file on disk is preserved."
     },
     {
       "author": "@bitgamma",
@@ -120,24 +107,64 @@
       "text": "Start the server with vulkan, rocm-stable, or rocm-nightly backend and load one model using each new architecture (clef, glm5-next, hrm_text, hy_v4, maple, spark2_5) to confirm it loads and answers without error."
     },
     {
-      "author": "@Copilot",
-      "commit": "6deeb05f77b38081f1ac33c104a52ac1262170c3",
+      "author": "@fl0rianr",
+      "commit": "2aedebc4858642b9dd51e21bdb2791e62b03408b",
       "platforms": [
         "all"
       ],
-      "pr_number": 3660,
-      "priority": "P2",
-      "text": "Run the release tagging tool in dry-run mode and confirm the output says 'would create and push annotated tag' rather than 'signed tag'."
+      "pr_number": 3805,
+      "priority": "P1",
+      "text": "Start lemond with a registered GGUF model (e.g. LFM2.5-8B-A1B) whose HF cache is copied into --extra-models-dir, then confirm the model appears under its original catalog name (not extra.*) in the /models API response."
     },
     {
-      "author": "@Copilot",
-      "commit": "6deeb05f77b38081f1ac33c104a52ac1262170c3",
+      "author": "@fl0rianr",
+      "commit": "2aedebc4858642b9dd51e21bdb2791e62b03408b",
       "platforms": [
         "all"
       ],
-      "pr_number": 3660,
-      "priority": "P2",
-      "text": "Run the release tagging tool with the --sign flag in dry-run mode and confirm the output says 'would create and push signed tag'."
+      "pr_number": 3805,
+      "priority": "P1",
+      "text": "Start lemond with --extra-models-dir containing a complete repo with a main GGUF, an MTP companion, and a DFlash.gguf file; confirm only the main GGUF appears as a model and the companions do not create separate entries."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "2aedebc4858642b9dd51e21bdb2791e62b03408b",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3805,
+      "priority": "P1",
+      "text": "Register a model with a sharded GGUF (e.g. Shards-Q4_K_M-00001-of-00002.gguf) whose complete shard family and other quantizations exist in --extra-models-dir; confirm only the unrelated quantizations appear as extra.* models, not the registered shards."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "2aedebc4858642b9dd51e21bdb2791e62b03408b",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3805,
+      "priority": "P1",
+      "text": "Set --extra-models-dir with a refs/main entry that is a symlink to a sibling repository cache; confirm the model is NOT adopted from the sibling and remains un-downloaded."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "2aedebc4858642b9dd51e21bdb2791e62b03408b",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3805,
+      "priority": "P1",
+      "text": "Register a user model with an mmproj auxiliary checkpoint and place both files in --extra-models-dir under a legacy multi-repo layout (auxiliary in the main repo cache); confirm the model retains its registration and can still be deleted via the API without error."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "2aedebc4858642b9dd51e21bdb2791e62b03408b",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3805,
+      "priority": "P1",
+      "text": "Start lemond with a non-GGUF catalog model (e.g. Krea-2-Turbo) whose multi-file cache is in --extra-models-dir; confirm the model loads with its original recipe (thenoise) and is not listed in the extra models endpoint."
     },
     {
       "author": "@julianxhokaxhiu",
@@ -150,20 +177,20 @@
       "text": "Verify that any existing model registrations using the old hy-mt2:1.8b tag fail gracefully or produce a clear error, since the upstream binary no longer recognises that identifier."
     }
   ],
-  "commits_reviewed": 31,
+  "commits_reviewed": 18,
   "commits_unreviewed": 0,
   "evidence": {
-    "blockers": "No blocking P0 items. The most critical checks are the Windows internal CA HTTPS fix (b3cf539-1), which is a user-facing fix on a specific configuration, and the FLM model rename (8963505-1), which affects NPU users. The remaining 12 to-dos are P1/P2 and can be tested in parallel.",
-    "breaking_changes": "The FastFlowLM NPU model hy-mt2:1.8b was renamed to hy-mt2-flash:1.8b in the upstream v1.0.7 release; update any configs or scripts that reference the old hy-mt2:1.8b tag. The release tagging tool's --no-sign flag was removed; omit the flag for unsigned tags or pass --sign for signed tags.",
-    "coverage": "31 commits reviewed across the range v2026.40.0..aa085f9, covering backends, CLI, config validation, tray subprocess management, downloads, extra_models_dir, HF/MS cache naming, model catalog, TLS, DirectoryWatcher, and release tooling. The release tagging tool's default-tag behavior was tested via dry-run only; no live tag was created in CI. Several new user-facing features (tray spawn, Windows ROCm TheNoise, HF cache naming, six new model architectures) lack automated end-to-end tests on target hardware.",
-    "manual_testing": "A Windows tester with an internal/private CA must verify HTTPS connections succeed (b3cf539-1). An NPU user must verify the renamed hy-mt2-flash:1.8b model loads (8963505-1) and that old registrations produce a clear error (8963505-2). A Linux desktop tester should verify the tray --spawn-server lifecycle (3b5ec50-1). A macOS tester should verify nested extra_models_dir watches update automatically (b01156f-1). A Windows ROCm tester should verify TheNoise spawning (40827a3-1). A tester on any platform should verify download stall timeouts respect global_timeout (7dc09e2-1). A tester with an HF cache should verify refs/main switching (e4bcbd6-1). A tester should verify new model architectures load on vulkan/rocm backends (aa085f9-1). The release tagging tool dry-run flags (6deeb05-1, 6deeb05-2) are for release admins.",
-    "security": "The curl CURLSSLOPT_REVOKE_BEST_EFFORT change on Windows (b3cf539) relaxes certificate revocation checking when CRL/OCSP responders are unreachable, enabling internal-CA connections but potentially allowing a revoked certificate from such a CA to be used in a targeted MITM attack. The posix_spawn watchdog in lemonade-tray (3b5ec50) uses FD_CLOEXEC and pipe-EOF for clean subprocess termination with no injection surface. The config validation tightening (a2e042d) is a defensive improvement."
+    "blockers": "No blockers. The release candidate has comprehensive CI coverage across all platforms, with two commits requiring manual verification on specific platforms — Windows ROCm for TheNoise and Windows internal CA for HTTPS connections.",
+    "breaking_changes": "One breaking change: the upstream FastFlowLM v1.0.7 renamed the hy-mt2:1.8b model tag to hy-mt2-flash:1.8b. Users referencing the old tag must update their configs. The rename is a straightforward string replacement with no migration script needed.",
+    "coverage": "Every commit in the release range from v2026.41.1 to the release candidate was reviewed across all platforms. The range includes backend version bumps, model discovery fixes, CLI improvements, and documentation updates.",
+    "manual_testing": "Manual verification is needed on Windows with AMD ROCm GPU for TheNoise backend, on Windows with internal or private CA certificates for HTTPS connections, on macOS for nested extra_models_dir FSEvents watching, on NPU hardware for the renamed hy-mt2-flash model, and on a large model download from a slow endpoint for timeout behavior.",
+    "security": "One security-relevant change: Windows TLS now uses CURLSSLOPT_REVOKE_BEST_EFFORT, which relaxes revocation checking when CRL/OCSP responders are unavailable. This enables connections to servers with internal CAs but introduces a low risk of accepting revoked certificates from private CAs without revocation infrastructure. The change is scoped to Windows and only activates when responders are unreachable."
   },
-  "generation_seconds": 380.5,
-  "head_sha": "aa085f90a110966f5964d09446a1b2a8c3305c18",
+  "generation_seconds": 295.7,
+  "head_sha": "2aedebc4858642b9dd51e21bdb2791e62b03408b",
   "is_hotfix": false,
   "last_stable_tag": "",
-  "range_start": "v2026.40.0",
+  "range_start": "v2026.41.1",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-10-07T16:17:58+00:00"
+  "reviewed_at": "2026-10-12T16:56:36+00:00"
 }
