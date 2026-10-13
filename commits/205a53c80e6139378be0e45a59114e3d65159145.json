@@ -1,0 +1,32 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.43",
+  "commit_sha": "205a53c80e6139378be0e45a59114e3d65159145",
+  "committed_at": "2026-10-12T23:09:02+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The change is internal to model discovery logic in `collect_registered_shards` and `try_resolve_registered_extra_cache`. It does not alter any API endpoint, CLI flag, config value, or persistence format. Users upgrading will simply stop seeing spurious duplicate entries for incomplete shard families — a strictly additive correctness fix.",
+    "documentation": "Documentation is not affected by this change. The PR correctly marks documentation as unaffected. The behavior is a bug fix (suppressing spurious duplicate entries) and does not alter any documented user-facing surface.",
+    "manual_release_testing": "The change modifies model catalog discovery behavior — a registered multi-shard model with a missing or corrupt shard should no longer spawn an extra.* duplicate entry. However, the fix only suppresses behavior that was already buggy (spurious duplicates), and the existing test coverage is thorough. No manual release testing is required.",
+    "post_approval_commits": "No commits were added after approval. The PR contains a single commit (14f04c6d) authored by @fl0rianr, approved at 2026-10-12T19:47:57Z, and merged at 2026-10-13T00:16:08Z. The merge went through the standard merge_group queue.",
+    "review": "PR #3811 has one substantive approval from @superm1 (submitted 2026-10-12T19:47:57Z). @superm1's subject areas include llamacpp, which is directly relevant since the fix touches `src/cpp/server/model_manager.cpp` in the shard discovery path used by the llamacpp backend. The PR description is a follow-up to #3805 addressing a CodeRabbit finding — a narrow, well-contained bug fix. No inline review comments or follow-up discussion needed; @superm1 approved without requesting changes. The review body was empty, but the approval is substantive given the reviewer's domain expertise.",
+    "security": "No security concerns. The change tightens catalog visibility for registered GGUF checkpoint paths by ensuring incomplete families are excluded from extra model discovery. Validation and repository containment checks are preserved. CodeRabbit's security architecture review rated merge risk as Minimal. No supply-chain, credential, network, or permission changes.",
+    "tests": "The PR adds comprehensive regression tests in `test/server_endpoints.py` for the `test_021ym_registered_shards_and_unrelated_quantization` test case. Three scenarios are covered: (1) only the first shard of a 2-shard family is present — the registered model is not downloaded and unrelated quantizations remain discoverable; (2) either the first or second shard is corrupted (zeroed size) — the whole registered family is suppressed and unrelated variants remain discoverable. No existing tests were weakened or deleted."
+  },
+  "generation_seconds": 183.6,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-13T00:16:08Z",
+  "pr_number": 3811,
+  "range_start": "v2026.41.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-13T00:21:01+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "205a53c80e6139378be0e45a59114e3d65159145",
+  "shout_outs": [],
+  "subject": "fix(models): prevent duplicate discovery of incomplete shards (#3811)",
+  "summary": "Prevents incomplete or corrupt registered GGUF shard families from appearing as extra.* duplicate models by recording ownership before validation and returning failure when any shard is incomplete or invalid, while preserving discovery of unrelated quantization variants.",
+  "verdict": "Clean",
+  "verdict_reason": "Single well-scoped bug fix with domain-appropriate review, passing CI, and tests covering the missing-shard and corrupt-shard scenarios."
+}
