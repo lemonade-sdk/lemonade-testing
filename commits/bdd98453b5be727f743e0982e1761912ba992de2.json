@@ -1,0 +1,32 @@
+{
+  "author": "@sreeram-11",
+  "branch": "main",
+  "bucket": "v2026.43",
+  "commit_sha": "bdd98453b5be727f743e0982e1761912ba992de2",
+  "committed_at": "2026-10-13T16:54:05+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The file src/cpp/resources/backend_versions.json is internal metadata served by the server; its schema does not change. The PR declares no breaking changes.",
+    "documentation": "Documentation is not affected. The version pins are internal data; they do not change any user-facing documentation, API spec, or CLI behavior. The PR author correctly checked 'Documentation is not affected by this change.'",
+    "manual_release_testing": "The ROCm TheRock version pin (10.1.0) is an external binary reference that CI cannot exercise on real AMD hardware. The vLLM and sd-cpp new version pins were validated by dedicated CI workflows. No human is shown to have exercised the `lemonade backends install` flow with the new ROCm 10.1.0 binaries on real hardware, but the risk is low given the reviewer's ROCm expertise and the CI validating dependent components.",
+    "post_approval_commits": "One commit after approval: 6e6274ef (merge branch 'main' into sreeram/rocm-10.1.0). This merge brought in PR #3706's backend tier/format refactor, which was already reviewed and approved separately. No new author-authored changes appeared after approval; the rebase is expected and benign.",
+    "review": "PR #3821 was reviewed by @superm1, an admin maintainer whose subject areas include ROCm. They submitted an approve review (empty body) at 2026-10-13T11:51:56Z on the final commit. The PR has no inline comments. The reviewer has ROCm in their documented subject area per docs/dev/contribute.md, so subject-matter expertise was present. No post-approval commits added new author changes — the only commit after approval (6e6274ef at 16:08:33Z) is a merge of main into the feature branch, bringing in the already-reviewed PR #3706 (tier/format backend labeling). This is a standard rebase, not new PR churn.",
+    "security": "No security concerns. The change updates version pins — string values in a JSON config file. No supply-chain changes (the pins point to the same artifact sources), no credential handling, no code execution path changes.",
+    "tests": "The single changed file is src/cpp/resources/backend_versions.json — version string updates only. No test files were modified. The change does not weaken or delete any tests. CI validated the new sd-cpp pins via the 'Validate New stable-diffusion.cpp Release' workflow (success) and the new vLLM pins via the 'Validate New vLLM Release' workflow (success). The C++ Server Build, Test, and Release workflow also passed. CodeRabbit review completed successfully."
+  },
+  "generation_seconds": 278.3,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-13T18:24:34Z",
+  "pr_number": 3821,
+  "range_start": "v2026.41.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-13T18:31:00+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "bdd98453b5be727f743e0982e1761912ba992de2",
+  "shout_outs": [],
+  "subject": "Update Lemonade to ROCm 10.1.0 (#3821)",
+  "summary": "Updates the shipped backend version pins: ROCm TheRock 10.0.0→10.1.0, llamacpp rocm-stable b11395→b11580, and sd-cpp master-894-017cc8e→master-957-90e86d1.",
+  "verdict": "Clean",
+  "verdict_reason": "Straightforward version pin update in a single JSON file, reviewed by a ROCm expert who is also an admin maintainer, with CI validating the new vLLM and sd-cpp versions."
+}
