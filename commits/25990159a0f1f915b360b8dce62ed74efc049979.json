@@ -1,0 +1,49 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.43",
+  "commit_sha": "25990159a0f1f915b360b8dce62ed74efc049979",
+  "committed_at": "2026-10-13T21:01:45+00:00",
+  "evidence": {
+    "api_compatibility": "The existing scalar fields gpu_percent and vram_gb remain at the same JSON keys, so existing API consumers will not break. However, on multi-GPU systems their meaning changes from 'max utilization GPU' to 'primary GPU by total memory' — a behavioral change that may surprise consumers who relied on the old selection logic. The PR body was originally checked as 'does not introduce breaking changes' but the author did not update the PR body as requested by superm1. Two new fields (primary_gpu_id, gpus) are added, which is additive and safe. The /system-stats endpoint is the surface that changes.",
+    "documentation": "The API schema change is reflected in the existing server behavior; no separate API spec file was updated. The PR body mentions the new fields but the author was asked to update it to match the diff and did not. The PR is labeled 'rfc:not-required' and 'fix(server)' — both are slightly misleading (enhancement, not bug fix). The change does not require RFC-level documentation.",
+    "manual_release_testing": "No human evidence shows the new NVIDIA telemetry path was exercised on hardware before merge. All three CI workflows (C++ Server Build, Server Download Registry Tests, Routing Schema Tests) passed. The new /system-stats fields (primary_gpu_id, gpus array) and the NVML loading path are user-facing and should be validated with at least one NVIDIA GPU system before release.",
+    "post_approval_commits": "The merge was a squash merge via the merge queue. The merge commit message lists nine incremental commits including 'fix(server): library detection.' Superm1's approval came on 2026-10-12T19:48:32Z and the merge occurred on 2026-10-13T23:13:04Z. The post-approval changes appear to be follow-ups to review comments (library detection fix, multi-GPU rework). The diff is consistent with an addressed review cycle, but the squash merge hides individual commit boundaries, making it impossible to verify whether each review comment received a dedicated follow-up commit.",
+    "review": "@kenvandine (NVIDIA CUDA maintainer) submitted two CHANGES_REQUESTED reviews covering multi-GPU correctness, NVML lifecycle, and snap/container library paths; the author addressed them and kenvandine approved. @superm1 (ROCm/system info maintainer) raised a valid security concern about using plain LoadLibraryA on Windows instead of LOAD_LIBRARY_SEARCH_SYSTEM32; the author updated to use that flag. superm1 also flagged that the PR body should match the diff and asked about auto-tune; both were addressed before superm1 approved. The final commit message still uses 'fix(server)' despite this being an enhancement, which is a labeling inconsistency.",
+    "security": "@superm1 flagged that plain LoadLibraryA on Windows can load nvml.dll from the current working directory, which is a DLL hijacking vector. The author fixed this by switching to LoadLibraryExA with LOAD_LIBRARY_SEARCH_SYSTEM32 and LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR, restricting searches to system directories. On Linux, the code uses dlopen with a soname-first lookup ('libnvidia-ML.so.1') followed by architecture-specific absolute fallbacks; the soname path is safe because the dynamic linker resolves it through LD_LIBRARY_PATH and ldconfig. The NVML runtime is cached with a mutex and uses a 30-second retry backoff on failure, which prevents repeated dlopen churn. Supply-chain risk is minimal — the code dynamically loads a driver library already present on the host.",
+    "tests": "The PR adds a C++ unit test in test/cpp/test_system_info_helpers.cpp that exercises the GpuMetricsTracker with mixed AMD/NVIDIA inputs, transient telemetry loss, and unknown memory capacities. Tests pass in CI. No end-to-end or integration test exercises the live /system-stats endpoint with real hardware, which is appropriate given the complexity of multi-GPU hardware."
+  },
+  "generation_seconds": 298.2,
+  "maintainer_todos": [
+    {
+      "text": "Start the lemond server with at least one NVIDIA GPU and one AMD GPU (or APU) and call GET /api/v1/system-stats; confirm the response contains a primary_gpu_id field, a gpus array listing each GPU with vendor/name/memory_type/gpu_percent/memory_total_gb/memory_used_gb, and that gpu_percent/vram_gb refer to the GPU with the largest total memory."
+    },
+    {
+      "text": "On a system with only NVIDIA GPUs, call GET /api/v1/system-stats and verify that the gpus array shows at least one entry with vendor \"nvidia\" and that the scalar metrics are non-negative numbers."
+    }
+  ],
+  "merge_date": "2026-10-13T23:13:04Z",
+  "pr_number": 3282,
+  "range_start": "v2026.41.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-13T23:19:47+00:00",
+  "reviewers": [
+    "@kenvandine",
+    "@superm1"
+  ],
+  "sha": "25990159a0f1f915b360b8dce62ed74efc049979",
+  "shout_outs": [
+    {
+      "handle": "@kenvandine",
+      "reason": "Substantive NVIDIA CUDA and Linux platform expertise; drove review through two rounds of changes, caught snap/container NVML path risks, and validated the final solution."
+    },
+    {
+      "handle": "@superm1",
+      "reason": "Raised a Windows DLL loading security concern (plain LoadLibraryA vs LOAD_LIBRARY_SEARCH_SYSTEM32) that was addressed, and verified correctness of multi-GPU behavior."
+    }
+  ],
+  "subject": "fix(server): report NVIDIA GPU and VRAM usage (#3282)",
+  "summary": "Adds NVIDIA GPU utilization and VRAM reporting to the /system-stats endpoint and refactors multi-GPU primary selection on Linux and Windows via runtime-loaded NVML.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The /system-stats API now reports new per-GPU fields and changes which GPU the scalar metrics refer to, but the PR body was not updated as requested and no human manually exercised the new NVIDIA telemetry path before merge."
+}
