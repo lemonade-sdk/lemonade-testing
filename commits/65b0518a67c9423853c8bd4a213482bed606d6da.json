@@ -1,0 +1,36 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.43",
+  "commit_sha": "65b0518a67c9423853c8bd4a213482bed606d6da",
+  "committed_at": "2026-10-13T13:55:15+00:00",
+  "evidence": {
+    "api_compatibility": "The BackendDescriptor C++ struct dropped its `experimental` bool field, which is an internal API break — any code referencing `desc->experimental` will no longer compile. The /system-info JSON API no longer reads the boolean directly; instead it derives the recipe's `experimental` field from the tier of the selected backend (`experimental` is true when the tier is experimental or guest). This preserves the field's presence but changes its derivation, which is likely transparent to clients. The /system-info response now includes `tier` and `format` strings in each backend's JSON object and in support rows — a net-new addition that clients can ignore.",
+    "documentation": "Updated: docs/dev/specs/container-backends.md (tier definitions changed from core/community/experimental to core/experimental/guest), docs/api/lemonade.md (Backend Tiers and Formats section added/updated), docs/guide/cli.md (removed '(experimental)' suffixes, added tier/format reference), docs/tools/gen_backend_boilerplate.py (support matrix generator adds tier/format columns and dagger/double-dagger marks), README.md (support matrix updated). Display names in backend headers dropped '(experimental)' suffix. All changes are internally consistent.",
+    "manual_release_testing": "The guest-backend gating is a new user-visible path: when a model's only available backend is guest-tier, the model stays hidden in `/v1/models?show_all=true` until the backend is installed, and attempting to pull such a model returns `model_not_supported` with a recommendation to install the backend. The PR author's test table shows these flows were tested locally, but CI does not exercise them (no guest backends available in CI). Manual verification on a Strix Halo machine with ds4:rocm is warranted.",
+    "post_approval_commits": "None. First approval was 2026-10-09T18:42:45Z; the final commit was pushed 2026-10-08T21:02:00Z. The merge queue commit (65b0518a…) contains the same five squashed commits with no additions.",
+    "review": "One approval from @bitgamma (subject-area expertise: thenoise, cli, recipes, new backends per contribute.md). The approval included a suggestion to move TheNoise to Core tier — the author replied 'yes!' but did not implement the change, leaving thenoise as experimental. No other reviewers participated. The PR was requested of @Geramy and @ramkrishna2910 but neither provided review.",
+    "security": "No security concerns. The guest-backend gating prevents accidental installation of externally-maintained backends by hiding their models until explicitly installed, which is a safety improvement. No credential handling, network calls, or supply-chain changes beyond existing backend install paths.",
+    "tests": "No new tests were added for the new tier/format classification, the guest-backend model-gating logic, or the CLI table column rendering. One existing test was removed: `test_ds4_install_params.cpp` no longer asserts `descriptor.experimental` because that field was deleted from BackendDescriptor. No evidence of inappropriate test weakening — the removed test was testing a field that no longer exists. The PR author reported extensive manual testing across `lemonade backends`, `/system-info`, `GET /v1/models?show_all=true`, and install/uninstall flows."
+  },
+  "generation_seconds": 245.3,
+  "maintainer_todos": [
+    {
+      "text": "Install the ds4:rocm guest backend on a Strix Halo machine, then run `lemonade pull DeepSeek-V4-Flash-IQ2XXS-DS4` and confirm the model is accepted after installation rather than returning `model_not_supported`."
+    }
+  ],
+  "merge_date": "2026-10-13T14:42:38Z",
+  "pr_number": 3706,
+  "range_start": "v2026.41.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-13T14:48:35+00:00",
+  "reviewers": [
+    "@bitgamma"
+  ],
+  "sha": "65b0518a67c9423853c8bd4a213482bed606d6da",
+  "shout_outs": [],
+  "subject": "feat(backends): label each backend with a tier and a format (#3706)",
+  "summary": "Labels every backend with a tier (core, experimental, guest) and a format (native, python, container), replaces the descriptor's experimental boolean with tier metadata, introduces guest-backend model-gating so models are hidden until the guest backend is installed, updates the CLI backends table to show tier and format columns, and updates the /system-info API to report tier and format for each backend row.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The PR introduces user-visible guest-backend model-gating behavior that was not manually exercised, and the @bitgamma review did not catch that TheNoise was classified as experimental despite being a Lemonade-maintained backend that could have been placed at core."
+}
