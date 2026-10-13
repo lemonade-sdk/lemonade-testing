@@ -1,0 +1,36 @@
+{
+  "author": "@zaneni6",
+  "branch": "main",
+  "bucket": "v2026.43",
+  "commit_sha": "0163739023591bdf7b8978319b078e00ba183f3b",
+  "committed_at": "2026-10-13T17:35:57+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The update is a version bump in a JSON config file only. Existing setups referencing FLM will get the newer version on next backend install.",
+    "documentation": "No documentation changes required for a single backend version bump. The change touches no CLI, API, config flag, or guide.",
+    "manual_release_testing": "The change updates an inference backend version — a user-visible artifact installed by `lemonade backends`. CI builds the code and runs generic smoke tests but no human has exercised FLM inference on NPU hardware. This is the sole user-reachable surface and nobody confirmed it works.",
+    "post_approval_commits": "None. The PR contains a single commit (65511826) which was the commit approved at 19:46:10Z. No post-approval churn.",
+    "review": "Approved by @superm1 at 2026-10-12T19:46:10Z. @superm1 is the correct domain expert (subject areas: ROCm, NPU, FastFlowLM, llamacpp). No inline review comments were generated. The approval is a single empty-body APPROVE, appropriate for a one-line version bump but sparse for a maintainer wanting more confidence.",
+    "security": "No supply-chain, credential, network, or execution-path concerns beyond a routine backend version bump. The bump is a version number change in a JSON resource file. No suspicious blobs or obfuscation.",
+    "tests": "CI passes with all 50 relevant checks succeeding (6 skipped by workflow logic for unrelated backends). The C++ server build test suite, Docker smoke tests, and embeddable build all pass. However, the PR test plan includes an unchecked item: 'lemonade backends installs FLM v1.0.8 and an FLM model loads/runs on NPU.' No end-to-end NPU hardware test evidence is present — the CI build and smoke tests do not drive FLM inference on actual NPU hardware, only compilation and generic smoke paths."
+  },
+  "generation_seconds": 174.1,
+  "maintainer_todos": [
+    {
+      "text": "Run `lemonade backends` on an NPU system, confirm FLM v1.0.8 is listed, then load and run an FLM model on NPU to verify it works."
+    }
+  ],
+  "merge_date": "2026-10-13T20:03:55Z",
+  "pr_number": 3810,
+  "range_start": "v2026.41.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-13T20:08:56+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "0163739023591bdf7b8978319b078e00ba183f3b",
+  "shout_outs": [],
+  "subject": "chore(flm): bump FLM to v1.0.8 (#3810)",
+  "summary": "Bumps the FastFlowLM (FLM) NPU backend version pin from v1.0.7 to v1.0.8 in src/cpp/resources/backend_versions.json.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "No human has manually verified that the bumped FLM v1.0.8 NPU backend actually loads and runs a model, which is the only user-reachable surface this change introduces."
+}
