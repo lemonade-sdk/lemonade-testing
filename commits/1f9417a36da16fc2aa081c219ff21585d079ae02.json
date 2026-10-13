@@ -1,0 +1,32 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.43",
+  "commit_sha": "1f9417a36da16fc2aa081c219ff21585d079ae02",
+  "committed_at": "2026-10-13T02:40:05+00:00",
+  "evidence": {
+    "api_compatibility": "This commit does not break any existing setup. The change is entirely internal to the auto-labeler GitHub Action script. No user-facing API, CLI, config, or contract is affected. The Anthropic API contract (model name string, thinking parameter, response format) is updated in the code to match the new model version but does not alter any external-facing interface.",
+    "documentation": "No documentation is affected. This is a CI automation script change with no user-facing or developer-facing documentation impact. The PR author correctly marked 'Documentation is not affected by this change.' No update to docs or release notes is needed.",
+    "manual_release_testing": "This is an internal CI automation script that runs as part of GitHub Actions. It is not a user-facing feature, CLI command, API endpoint, config option, or installed artifact. No manual release testing is required.",
+    "post_approval_commits": "No commits were added after the first and only approval. The sole commit on the PR is ab64997c2e9ec79122d771da29f9260f8eff53cd authored by @fl0rianr, and it is the same commit that was approved and merged.",
+    "review": "PR #3774 was approved by @superm1 (MEMBER) at 2026-10-13T02:39:58Z. The PR has no inline review comments and CodeRabbit assessed it as 'Low' priority with 'Minimal' merge risk. @superm1's subject areas include security, Docker, containers, and system tooling, which provides reasonable coverage for a CI-script change. @fl0rianr (the author) is listed as a maintainer with ci as a subject area in docs/dev/contribute.md, confirming the PR author has domain expertise. The review was substantive enough for a one-file change of this nature.",
+    "security": "The change updates the model name to a newer Anthropic model and disables thinking mode. The API endpoint, version header, and authentication mechanism are unchanged. No new credentials, network calls, code execution paths, or permission broadening are introduced. The new response parsing iterates over content blocks rather than accessing by index, which actually makes the code more robust against unexpected API responses. No security concern.",
+    "tests": "The change modifies .github/scripts/auto_label.py, which is a GitHub Actions workflow script. There are no unit tests for this script in the repository. CI passed the 'label' workflow check successfully, and the 'Docs And Style' pre-commit check passed, but this is not equivalent to dedicated testing of the new parsing logic. The code change is small (8 additions, 2 deletions) and the new robustness guard (raising ValueError if no text blocks exist) is logically correct, mitigating the absence of tests."
+  },
+  "generation_seconds": 130.9,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-13T04:34:23Z",
+  "pr_number": 3774,
+  "range_start": "v2026.41.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-13T04:38:17+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "1f9417a36da16fc2aa081c219ff21585d079ae02",
+  "shout_outs": [],
+  "subject": "ci: bump auto-labeler to Claude Haiku 5.5 (#3774)",
+  "summary": "Bumps the auto-labeler GitHub Action script from Claude Haiku 4.5 to 5.5, disables thinking mode, and makes the Anthropic response parser more robust by iterating over all text blocks instead of assuming the first block is text.",
+  "verdict": "Clean",
+  "verdict_reason": "Single-file, internal CI script update with a substantive approval from a maintainer, no user-visible surface, and no post-approval changes."
+}
