@@ -1,0 +1,38 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.43",
+  "commit_sha": "f2208e49edba137c81a56bc2fc12ef54e55a1815",
+  "committed_at": "2026-10-14T12:53:47+00:00",
+  "evidence": {
+    "api_compatibility": "The changes add set_environment_variable_utf8() and unset_environment_variable_utf8() to path_platform.h and path_utils.h, but these are used exclusively by the test isolation library and are not a public contract. No existing user-facing API is changed or broken.",
+    "documentation": "No user-facing documentation changes needed. This is purely a test-infra improvement.",
+    "manual_release_testing": "This PR changes only C++ test framework internals. It does not modify any user-facing API, CLI command, config option, GUI element, installed artifact, or documented behavior. Users have no reachable surface to exercise.",
+    "post_approval_commits": "None. All three commits (jeremyfowers x2, fl0rianr x1) predate the single approval at 2026-09-17T17:24:12Z. The branch did not change after approval.",
+    "review": "PR #3612 was reviewed and approved by @superm1 (MEMBER, subject-area expertise includes Linux packaging, Docker, llamacpp per contribute.md) at 2026-09-17T17:24:12Z. @fl0rianr (COLLABORATOR) pushed a hardening commit before approval and discussed the approach in comments. The author's stated preference — 'push it instead of requesting changes' — was followed iteratively with three commits landing before approval. No commits were added after the approval timestamp, so the approved tree is exactly what was merged. The discussion covered scope concerns (production API changes) and @fl0rianr's reasoning for keeping them (init-order safety and cross-platform correctness).",
+    "security": "No security concerns. The new environment-variable functions are simple wrappers around platform calls (setenv/unsetenv on POSIX, _wputenv_s/SetEnvironmentVariableW on Windows) used only by test code. No supply-chain, credential, network, or code-execution path changes.",
+    "tests": "The PR adds three new files: test_state_isolation.cpp/h (the automatic isolation library) and test_state_isolation_guard.cpp (verifies the guard actually keeps tests within their sandbox). It removes per-test temp-dir scaffolding from five existing tests (test_extra_model_discovery, test_model_download_state, test_model_manager_collection_validation, test_model_registry, test_model_sync_and_auto_update, test_recipe_hiding) that now inherit isolation. The guard test explicitly validates that get_cache_dir() and get_config_dir() stay within the sandbox even after clearing overrides, which catches regression of the exact bug this PR fixes. All CI checks passed on the merge commit."
+  },
+  "generation_seconds": 184.8,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-14T14:17:17Z",
+  "pr_number": 3612,
+  "range_start": "v2026.42.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-14T14:22:33+00:00",
+  "reviewers": [
+    "@superm1",
+    "@fl0rianr"
+  ],
+  "sha": "f2208e49edba137c81a56bc2fc12ef54e55a1815",
+  "shout_outs": [
+    {
+      "handle": "@fl0rianr",
+      "reason": "Co-author of the commit; pushed a substantial hardening addition (test_state_isolation_guard.cpp, cross-platform environment variable setters, init-order safety fix) that went well beyond a normal review."
+    }
+  ],
+  "subject": "test: isolate every C++ test from the real config dir (#3612)",
+  "summary": "Automates isolation of all C++ unit tests from the developer's real ~/.config/lemonade directory by linking a throwaway-state library into every test binary via add_cpp_ci_test().",
+  "verdict": "Clean",
+  "verdict_reason": "A well-scoped test-infra change that eliminates a real developer-side bug, received substantive review, passes all CI checks, and introduces no user-visible surface."
+}
