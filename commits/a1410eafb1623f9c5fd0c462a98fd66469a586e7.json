@@ -1,0 +1,36 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.43",
+  "commit_sha": "a1410eafb1623f9c5fd0c462a98fd66469a586e7",
+  "committed_at": "2026-10-14T11:42:30+00:00",
+  "evidence": {
+    "api_compatibility": "No API, CLI, config, or contract changes. This is a static website content addition with zero breaking-change risk.",
+    "documentation": "This commit is documentation itself — it adds two news entries to the website. The entries include proper titles, URLs, dates, descriptions, and image references following the existing format. CodeRabbit flagged that the PR body omitted standard template sections (Spec Driven Development status, Scope checks, Testing, Breaking Changes), but those are procedural conventions for PRs, not substantive documentation issues for a content-only change.",
+    "manual_release_testing": "The website news page is a user-visible surface. No human is shown to have loaded the live site to verify the new entries render correctly. All CI checks passed (43 successful, 23 skipped — the skipped ones are build workflows gated on release events). CodeRabbit flagged a potential date discrepancy (AnythingLLM article date listed as October 13 vs. actual publication October 5), but the author committed a fix ('Fix AnythingLLM news entry date') before approval and the final code shows October 13, 2026; CodeRabbit's assertion appears to have been resolved by the author without further review comment.",
+    "post_approval_commits": "No commits were added after the first (and only) approval at 2026-10-13T20:08:20Z. The final merge commit a1410ea is the squash of the four PR commits, none of which post-date the approval.",
+    "review": "PR #3836 was approved by @sawansri (COLLABORATOR) at 2026-10-13T20:08:20Z with the comment 'Good news 😃'. The review was brief but sufficient for this trivial content-only change. @sawansri's subject areas include agents, tui, cli, new backends, launch, vLLM, and new models — not the website per se (which falls under @jeremyfowers' domain), but reviewing a static content addition is reasonable for any collaborator. No reviewer had explicit website subject-matter expertise, but the change is purely data entries in a JS file, so deep expertise was not required.",
+    "security": "No security concerns. The change adds two entries (title, URL, date, description, image URL, imageStyle, type) to a client-side JavaScript array. No code execution, network calls, credential handling, or supply-chain changes are introduced.",
+    "tests": "No tests were modified or added. This is a static data file for website content; adding unit tests for a JSON/JS data array would be overkill and no test weakening or deletion occurred."
+  },
+  "generation_seconds": 179.8,
+  "maintainer_todos": [
+    {
+      "text": "Open the Lemonade website news page and confirm the AnythingLLM entry displays the correct title ('Why AnythingLLM is moving from Ollama to Lemonade and llama.cpp'), date (October 13, 2026), description, and that the link resolves to anythingllm.com."
+    }
+  ],
+  "merge_date": "2026-10-14T12:26:20Z",
+  "pr_number": 3836,
+  "range_start": "v2026.41.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-14T12:31:05+00:00",
+  "reviewers": [
+    "@sawansri"
+  ],
+  "sha": "a1410eafb1623f9c5fd0c462a98fd66469a586e7",
+  "shout_outs": [],
+  "subject": "Add AnythingLLM and Phoronix Lemonade 11.9 articles to news page (#3836)",
+  "summary": "Adds two new entries to the website news page in docs/assets/news-data.js: an AnythingLLM blog post about moving from Ollama to Lemonade-managed llama.cpp (October 13, 2026) and a Phoronix article about Lemonade 11.9 with the AMD ROCm HRX backend (September 2, 2026).",
+  "verdict": "Needs Attention",
+  "verdict_reason": "Two new items were added to the public news page with no evidence of manual verification by a human on the live site."
+}
