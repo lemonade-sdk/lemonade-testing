@@ -1,0 +1,32 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.43",
+  "commit_sha": "d6b2c39da4c2d539143d56d7b5e960a507e5beb7",
+  "committed_at": "2026-10-14T05:42:12+00:00",
+  "evidence": {
+    "api_compatibility": "No user-facing API changes. The change is purely test infrastructure. No breaking changes.",
+    "documentation": "No documentation impact. This is a test-only change with no user-facing behavior changes.",
+    "manual_release_testing": "This PR touches only test files (test/server_llm.py and test/server_endpoints.py). There are no user-visible changes — no new API endpoints, CLI flags, config options, or behavioral changes. No manual release testing is needed.",
+    "post_approval_commits": "No post-approval commits. The single commit (76bea1d20c3a48c79f032e8c872a5387553ddc9d) was approved before it existed on the merge queue. There is no post-approval churn to flag.",
+    "review": "PR #3839 received one substantive human approval from @bitgamma, who has subject matter expertise in backends, models, and benchmarking per docs/dev/contribute.md. @bitgamma approved at 2026-10-14T05:42:05Z — minutes before the commit timestamp of 2026-10-14T05:42:12Z — consistent with reviewing the PR branch and approving the merge. No human review comments were left; the reviewer trusted the PR description's rationale and the single-commit diff. A CodeRabbit bot comment flagged one reliability concern (missing try/finally on the inference test's cleanup) but rated the merge risk Low, and the PR merged without addressing it.",
+    "security": "No security concerns. The change is limited to test code. The CodeRabbit ast-grep SSRF warnings are standard lint noise in test code that constructs URLs to localhost; they are not real vulnerabilities.",
+    "tests": "Two changes: (1) server_llm.py's setUpClass now calls pull_model_with_retry for each capability-dependent test model (LLM, tool_calls, embeddings, reranking, multi_model), establishing a pre-pull pattern consistent with other large-model test suites. (2) test_008b_inference_pulls_missing_model in server_endpoints.py explicitly tests the implicit pull-on-inference feature: it deletes the model, calls chat/completions, verifies a 200 response with choices, then confirms the model appeared in the models list before cleaning up. The new test is self-contained and follows the existing test patterns. A CodeRabbit bot suggestion to wrap the inference/assertion block in try/finally was not implemented; the test's explicit cleanup at the bottom handles the happy path correctly, and assertion failures are unlikely to cascade given the test runs after test_008."
+  },
+  "generation_seconds": 167.6,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-14T06:25:05Z",
+  "pr_number": 3839,
+  "range_start": "v2026.41.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-14T06:29:35+00:00",
+  "reviewers": [
+    "@bitgamma"
+  ],
+  "sha": "d6b2c39da4c2d539143d56d7b5e960a507e5beb7",
+  "shout_outs": [],
+  "subject": "test: pre-pull server_llm.py's models and cover implicit pull on inference (#3839)",
+  "summary": "Adds pre-pull of LLM test models in server_llm.py's setUpClass and adds an explicit test (test_008b_inference_pulls_missing_model) that verifies chat-completions inference downloads a missing model and returns a 200 response with choices.",
+  "verdict": "Clean",
+  "verdict_reason": "Focused test-only improvement with one substantive approval from a relevant expert, all CI checks passing, no user-visible changes or release risk."
+}
