@@ -1,0 +1,36 @@
+{
+  "author": "@meghsat",
+  "branch": "main",
+  "bucket": "v2026.44",
+  "commit_sha": "0100ec6ddd614bf8080d22ab3a74c648b0a4366a",
+  "committed_at": "2026-10-14T18:45:36+00:00",
+  "evidence": {
+    "api_compatibility": "No API, CLI, config, or schema changes. The author correctly marked the PR as non-breaking. The deletion path change is internal to ModelManager and does not expose new endpoints or flags.",
+    "documentation": "No documentation affected. The change is an internal bug fix to model deletion that does not change user-facing behavior descriptions or CLI flags.",
+    "manual_release_testing": "The change rewrites ModelManager::delete_model to check actual disk state instead of the model catalog. A user with shared model families (Anima variants sharing text encoder/VAE) can verify by deleting one variant and confirming the shared files are reclaimed. The author reports testing on Windows and Linux, but no reviewer or maintainer demonstrated this with real models installed. The post-approval test-only commit means the branch changed after approval without renewed review, though only the test is affected.",
+    "post_approval_commits": "The PR branch tip commit f8dd1bbdd26798779323bc0dc9fc6fc44d05f304 (\"macos- CI bug fix\", authored 18:19 UTC Oct 14) landed after @fl0rianr's latest approval at 17:17 UTC Oct 14. It adds disable_model_filtering to the new test only, fixing macOS CI that rejects the ThinkSound recipe used in the test fixtures. This is a low-risk test-only change that does not alter behavior or risk profile; it should have been merged to the review branch before requesting the final approval round.",
+    "review": "PR #3765 received an extensive iterative review from @fl0rianr, who filed 13 sets of inline comments over 8 days (Oct 6–14) and re-approved twice (14:19 UTC and 17:17 UTC on Oct 14). The author addressed every finding. No other requested reviewer (@abn, @bitgamma, @anditherobot, @jeremyfowers) submitted a substantive review. @fl0rianr's subject-matter areas per contribute.md are LMX omni models, GUI, CI, and smart router — not model management. The review caught real bugs (cache staleness, manifest ownership, shard families, adopted --extra-models-dir paths, quantization-name edge cases), but no maintainer with explicit model-management expertise weighed in.",
+    "security": "The change is a bug fix that reads from disk instead of an untrusted JSON catalog to decide file ownership. This reduces trust in catalog state, which is the safer direction. No new network calls, credential handling, or execution paths introduced.",
+    "tests": "The PR adds a new 685-line C++ test suite (test/cpp/test_model_delete_shared_repo.cpp) that covers 30+ edge cases: sibling never downloaded, sibling on disk, unfinished .partial downloads, stale manifests without .partial, directory checkpoints, repo-root fallback (no refs/main), twin models resolving to the same file, sharded checkpoints, quantization-only variants, extra-models-dir adoption, late-arriving files, and registered vs. user model deletion refusal. It also adjusts test/utils/test_models.py to avoid conflicting with existing registered models. The test coverage is thorough and well-structured."
+  },
+  "generation_seconds": 285.2,
+  "maintainer_todos": [
+    {
+      "text": "Install a shared model family (e.g. Anima-aesthetic, Anima-base, Anima-turbo that share text encoder and VAE files), delete one variant, and confirm the shared text encoder and VAE files are also removed from the models cache directory."
+    }
+  ],
+  "merge_date": "2026-10-14T19:30:18Z",
+  "pr_number": 3765,
+  "range_start": "v2026.42.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-14T19:36:57+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "0100ec6ddd614bf8080d22ab3a74c648b0a4366a",
+  "shout_outs": [],
+  "subject": "Fixes 3267: Model delete keeps files on the disk (#3765)",
+  "summary": "Fixes 3267: Model delete keeps files on the disk",
+  "verdict": "Needs Attention",
+  "verdict_reason": "Extensive rewrites of core deletion logic with one post-approval test-only commit and no human hands-on validation of the delete-path behavior with real shared model families."
+}
