@@ -1,0 +1,32 @@
+{
+  "author": "@bitgamma",
+  "branch": "main",
+  "bucket": "v2026.43",
+  "commit_sha": "e6c164ab653b392b48781e9a800a23dc7f62ce92",
+  "committed_at": "2026-10-14T02:41:34+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking change. BackendTier::Core was already an existing enum value; only a single constant is changed from Experimental to Core. No command, flag, config value, API call, or saved file behavior is altered.",
+    "documentation": "All three affected files are updated consistently: README.md (backend support table, removes the experimental dagger), docs/dev/backends-reference.md (backend tier column changed to core), and src/cpp/include/lemon/backends/thenoise/thenoise.h (BackendTier::Core). Documentation and code are in sync.",
+    "manual_release_testing": "This is a metadata-only change (tier enum, README table, and doc table). No code behavior, API, CLI, or config is modified. Users see the thenoise backend listed as Core instead of Experimental in documentation and the backend descriptor, but runtime behavior is unchanged. No manual testing needed.",
+    "post_approval_commits": "None. The single commit 1d37158f7d5daf4344cd49597aaad9be406a5d61 was authored before the approval at 2026-10-13T15:46:53Z. No commits were added after approval.",
+    "review": "PR #3826 was authored by @bitgamma, who is listed in docs/dev/contribute.md as the subject-matter maintainer for thenoise. @jeremyfowers (admin maintainer) approved with a brief celebratory comment. No inline review comments or requests for changes. The PR follows spec-driven development with all checklist items completed.",
+    "security": "No security concerns. The change touches no credential handling, network calls, code execution paths, auth, permissions, or supply-chain dependencies.",
+    "tests": "The diff contains no source code changes — only a tier constant and two documentation references. No unit or integration test changes are needed. The project's existing routing schema tests and server download registry tests pass on merge."
+  },
+  "generation_seconds": 114.0,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-14T03:23:19Z",
+  "pr_number": 3826,
+  "range_start": "v2026.41.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-14T03:26:51+00:00",
+  "reviewers": [
+    "@jeremyfowers"
+  ],
+  "sha": "e6c164ab653b392b48781e9a800a23dc7f62ce92",
+  "shout_outs": [],
+  "subject": "mark TheNoise as Core (#3826)",
+  "summary": "Promotes the thenoise backend from Experimental to Core tier for ROCm on AMD GPUs (gfx103X, gfx110X, gfx1150, gfx1151, gfx1152, gfx120X) on Linux and Windows.",
+  "verdict": "Clean",
+  "verdict_reason": "A three-line metadata change that was approved by the subject-matter expert's own team (bitgamma is the listed thenoise maintainer) with all CI checks passing and no post-approval churn."
+}
