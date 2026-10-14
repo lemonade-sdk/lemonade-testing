@@ -1,7 +1,5 @@
 ## Lemonade v2026.42.1
 
-### ⚠️ These notes are AI generated and will be revised by a human ⚠️
-
 @everyone v2026.42 is out: Windows support for TheNoise (ROCm), updated llama.cpp with six new model architectures, and HuggingFace-style cache directories now import correctly into `extra_models_dir`.
 
 ### Breaking Changes
@@ -12,9 +10,10 @@
 
 `@bitgamma` shipped a portable CPython interpreter alongside the ROCm backend, so TheNoise now works on Windows. The README and docs are updated — check them out if you've been waiting.
 
-### 🦙 llama.cpp gets six new architectures + 26 models
 
-`@sreeram-11` and `@AaronStGeorge` bumped llama.cpp to b11393 (vulkan, cpu, metal), b11395 (rocm-stable, cuda), and b1338 (rocm-nightly), adding support for clef, glm5-next, hrm_text, hy_v4, maple, and spark2_5. The HRX backend jumped to hrx-b99 with 26 new text-chat model entries — Qwen3.8-27B, Mistral-Small-3.2-24B, Jan-v1-4B, Phi-4-mini-instruct, Llama-3.2-3B, and 21 smaller ones.
+###Qwen3.8-27B on the NPU!
+
+FLM added support for Qwen 3.8
 
 ### 📦 HuggingFace cache directories import into `extra_models_dir`
 
