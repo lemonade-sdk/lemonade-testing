@@ -1,0 +1,36 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.43",
+  "commit_sha": "d9ac44641e1ec57ef1a92f60afa8b26dbc45e202",
+  "committed_at": "2026-10-14T12:46:18+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The /v1/stats response gains a new top-level 'live' object with active_requests and estimated_tokens_per_second. Existing fields and their semantics are unchanged. API clients that do not expect the 'live' key will see it as a harmless additive field. The PR author explicitly marks no breaking changes, which is correct.",
+    "documentation": "docs/api/lemonade.md updated with the new 'live' field in the /v1/stats response example and a description noting the estimate is approximate (based on SSE text, not exact token count), returns to zero after ~3 seconds of inactivity or immediately on request end, and excludes status/keepalive SSE events. The PR addresses issue #3778. Documentation is adequate for the change.",
+    "manual_release_testing": "The GET /v1/stats endpoint is a user-reachable API surface. The new live.active_requests and live.estimated_tokens_per_second fields were not exercised by any human during review. No end-to-end test in CI drives the live throughput path with active streaming requests — only the unit test for the LiveThroughput class exists. The merge_group run for 'C++ Server Build, Test, and Release' shows a failure conclusion, though the PR was still merged (likely a transient issue retried by the merge queue). This warrants manual verification with a live streaming request before release.",
+    "post_approval_commits": "No commits were added after the first (and only) approval at 2026-10-13T05:34:41Z. The PR contained a single commit (8ef1f2caeb9fcd75625e0df48b844f7beda24948) that was identical to the approved diff. The merge commit (d9ac44641e1ec57ef1a92f60afa8b26dbc45e202) is a merge-group squash with no additional code changes.",
+    "review": "PR #3791 was approved by @bitgamma (MEMBER) with an 'lgtm' review submitted 2026-10-13T05:34:41Z. @jeremyfowers was requested as a reviewer but did not submit a review. According to docs/dev/contribute.md, @bitgamma's subject areas are 'thenoise, cli, recipes, new backends, benchmarking, new models'; the new feature touches server internals (router streaming paths) and telemetry, which falls closer to @abn's 'telemetry, sandboxing, http' or @jeremyfowers's 'large new features' domains. The review was light — a single one-line approval with no inline comments or substantive discussion. CodeRabbit flagged one nit to add router-level SSE event selection tests, which was not addressed. The PR is small (225 insertions, 7 deletions across 6 files) and low-risk, mitigating the thin human review.",
+    "security": "No security concerns. The change adds local observation of SSE output text deltas for throughput estimation only. No network calls, credential handling, code execution, permission changes, or telemetry exfiltration. The throughput estimation is a best-effort heuristic computed entirely on the server with no data leaving the process. CodeRabbit rated merge risk as 'Minimal' and architecture risk as 'Low'.",
+    "tests": "New C++ unit tests in test/cpp/test_live_throughput.cpp (54 lines) cover the LiveThroughput class directly: snapshot at idle, active stream with token estimation, concurrent streams, inactivity timeout (3s), request completion, and UTF-8 input handling. Tests are well-structured with assertion helpers. The merge_group CI run for 'C++ unit tests' passed. CodeRabbit noted that existing streaming tests validate response output but do not test observe_stream_content through a router-level test seam, leaving the SSE event filtering (chat.completion.chunk content vs usage events vs response.completed) untested end-to-end. The PR author reports local testing 'together with a GUI3 adaption' but no end-to-end integration test is included in the repo."
+  },
+  "generation_seconds": 271.2,
+  "maintainer_todos": [
+    {
+      "text": "Start a streaming inference request via the chat completion or completion endpoint, then poll GET /v1/stats and confirm the response contains a live object with active_requests > 0 and estimated_tokens_per_second > 0 while the stream is generating, and both fields return to zero after the stream ends."
+    }
+  ],
+  "merge_date": "2026-10-14T13:33:01Z",
+  "pr_number": 3791,
+  "range_start": "v2026.42.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-14T13:39:19+00:00",
+  "reviewers": [
+    "@bitgamma"
+  ],
+  "sha": "d9ac44641e1ec57ef1a92f60afa8b26dbc45e202",
+  "shout_outs": [],
+  "subject": "fix(server): expose live inference throughput across backends (#3791)",
+  "summary": "Adds backend-independent live inference throughput tracking and exposes live.active_requests and live.estimated_tokens_per_second on GET /v1/stats, counting output deltas from chat.completion.chunk, text_completion, and response output-text delta SSE events.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The /v1/stats endpoint is a user-facing API that now returns new live-throughput fields, but no human exercised the live endpoint with active streaming requests before merge."
+}
