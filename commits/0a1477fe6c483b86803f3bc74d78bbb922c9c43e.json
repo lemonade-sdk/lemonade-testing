@@ -1,0 +1,43 @@
+{
+  "author": "@bitgamma",
+  "branch": "main",
+  "bucket": "v2026.43",
+  "commit_sha": "0a1477fe6c483b86803f3bc74d78bbb922c9c43e",
+  "committed_at": "2026-10-14T09:19:22+00:00",
+  "evidence": {
+    "api_compatibility": "Additive only — bench gains a new `PP t/s` column (TTFT/TPS columns unchanged), JSON gains optional `pp_tps` keys (existing keys preserved), comparison gains `PP change` column (shows `null` when prior run lacks prefill data). No breaking changes detected.",
+    "documentation": "docs/guide/cli.md updated to describe the new `PP t/s` column, its calculation method (backend prompt-eval time when available, wall-clock TTFT as fallback), and cloud vs local backend caveats. The note about cloud models showing lower PP t/s due to routing overhead is well-written. No documentation update for the new system stats API fields (`primary_gpu_id`, `gpus`). CodeRabbit bot flagged the timing source definition as ambiguous (line 1046); the note already covers both sources but the first sentence states PP t/s as prompt_tokens/TTFT which does not match the code path that prefers `prompt_per_second` when available.",
+    "manual_release_testing": "The `lemonade bench` CLI output format changes — new `PP t/s` column in table mode, `pp_tps` stats in `--json` output, `PP change` in `--compare` mode. No evidence of manual end-to-end testing on the release build.",
+    "post_approval_commits": "The post-approval-commits output (after @jeremyfowers' approval at 2026-10-13T16:51:29Z) shows GPU metrics changes (nvidia_metrics.h, amd_gpu_type.h, metrics_linux.cpp, metrics_windows.cpp, server.cpp, system_info.cpp, prometheus_metrics.cpp, test additions) and a '[PATCH 20/20] mark TheNoise as Core (#3826)' commit that appear to belong to PR #3826 on the same merge queue branch (gh-readonly-queue/main/pr-3759-...). The merge commit diff itself only includes 7 prefill TPS files (bench.cpp, bench_comparison.cpp, bench_output.cpp, bench.h, bench_comparison.h, bench_output.h, cli.md). Investigate whether the merge queue branch was intended to combine multiple PRs and whether those commits were merged.",
+    "review": "@iswaryaalex approved with 'Tested locally, works!' and @jeremyfowers approved with 'rubber stamp!' Neither review involved detailed code inspection. CodeRabbit bot raised two concerns — filtering zero PP values in statistics (line 77 of bench.cpp) and clarifying the PP t/s timing source definition in docs (line 1046 of cli.md) — neither was addressed by the author. Per docs/dev/contribute.md, @bitgamma (the author) and @sofiageo cover benchmarking; @bitgamma reviewed his own changes. @jeremyfowers (admin maintainer) covers new CLI commands and gave a one-word rubber-stamp approval without substantive inspection.",
+    "security": "Benign — reads existing timing data from benchmark responses (`timings.prompt_per_second` or computed from `input_tokens * 1000 / ttft_ms`) and displays it. No new network calls, credential handling, code execution paths, or supply-chain changes.",
+    "tests": "@iswaryaalex reports local testing. Unit tests for GpuMetricsTracker were added in test/cpp/test_system_info_helpers.cpp (89 lines) but these test GPU metrics, not the prefill TPS feature. No dedicated unit or integration tests for the pp_tps calculation or output formatting were added."
+  },
+  "generation_seconds": 529.3,
+  "maintainer_todos": [
+    {
+      "text": "Run `lemonade bench <model_name>` with a downloaded model and at least one chat scenario, and confirm the table output includes a `PP t/s` column with throughput values."
+    },
+    {
+      "text": "Run `lemonade bench <model_name> --json` on an available local model and confirm the output includes a `pp_tps` statistics object with keys mean, min, max, p50, p95."
+    },
+    {
+      "text": "Run `lemonade bench <model_name> --compare <previous_results.json>` and confirm the comparison table includes a `PP change` percentage column with correct deltas."
+    }
+  ],
+  "merge_date": "2026-10-14T10:00:57Z",
+  "pr_number": 3759,
+  "range_start": "v2026.41.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-14T10:11:36+00:00",
+  "reviewers": [
+    "@iswaryaalex",
+    "@jeremyfowers"
+  ],
+  "sha": "0a1477fe6c483b86803f3bc74d78bbb922c9c43e",
+  "shout_outs": [],
+  "subject": "add prefill tps (#3759)",
+  "summary": "Adds PP t/s (prefill throughput = prompt tokens / TTFT) to the `lemonade bench` CLI command — new `PP t/s` column in table output, `pp_tps` statistics keys (mean, min, max, p50, p95) in `--json` output, and `PP change` percentage tracking in `--compare` mode.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "@jeremyfowers approved with a \"rubber stamp\" without substantive code review, and the post-approval-commits output shows GPU metrics changes and a PR #3826 commit on the same merge queue branch that were not part of the 7-file prefill TPS merge, suggesting scope management concerns."
+}
