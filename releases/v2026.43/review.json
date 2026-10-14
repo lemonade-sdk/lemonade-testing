@@ -1,0 +1,175 @@
+{
+  "branch": "release-v2026.43",
+  "breaking_changes": [
+    "GET /api/v1/system-stats now reports the scalar gpu_percent and vram_gb fields for the primary GPU by total memory instead of the GPU with the highest utilization — on multi-GPU systems the numbers meaningfully change and existing dashboards or alerting based on those fields will see different values.",
+    "Models gated behind a guest-tier backend are now hidden from GET /v1/models?show_all=true and return model_not_supported on pull until the guest backend is installed — existing setups that relied on the model being visible without the backend will see them disappear."
+  ],
+  "bucket": "v2026.43",
+  "candidate_issues": [],
+  "checklist": [
+    {
+      "author": "@jeremyfowers",
+      "commit": "0c8169f5bf869314051897d43e9c2aa8017f46b5",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3705,
+      "priority": "P0",
+      "text": "Run the server with two different backends (e.g. llamacpp and sdcpp), load a model on each, and confirm the /health endpoint reports the correct PID and launch command for each, then unload one and verify it is gone."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "65b0518a67c9423853c8bd4a213482bed606d6da",
+      "platforms": [
+        "Ubuntu PPA",
+        "Snap",
+        "Docker",
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 3706,
+      "priority": "P0",
+      "text": "Install the ds4:rocm guest backend on a Strix Halo machine, then run `lemonade pull DeepSeek-V4-Flash-IQ2XXS-DS4` and confirm the model is accepted after installation rather than returning `model_not_supported`."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "cf146ec3ff6d6a4fe2134f952e960b4960947aed",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3801,
+      "priority": "P1",
+      "text": "Start the server with Flux-2-Klein-4B or SD-Turbo, send POST /v1/images/edits with two different image[] uploads and a prompt, and confirm the output is edited using both references at the auto-selected dimensions (derived from the first image, capped at 4 MP)."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "dbe6d9f7905a8a376b9e28ee8bc919023c49e7ed",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3803,
+      "priority": "P1",
+      "text": "Start a server with Qwen-Image-2.1-Turbo-INT8 loaded and call /images/edits with a reference image (without sending a size parameter) — confirm the response dimensions respect the four-megapixel soft cap for that model."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "dbe6d9f7905a8a376b9e28ee8bc919023c49e7ed",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3803,
+      "priority": "P1",
+      "text": "Call GET /models and look up SD-Turbo in the response — confirm image_defaults includes soft_pixel_cap set to the value matching the registry."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "dbe6d9f7905a8a376b9e28ee8bc919023c49e7ed",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3803,
+      "priority": "P1",
+      "text": "Call GET /models and look up Qwen-Image-2.1-Turbo-INT8 in the response — confirm it lists recipe as thenoise, labels include image and edit, and image_defaults specifies 1440×1440 resolution with a soft_pixel_cap of four megapixels."
+    },
+    {
+      "author": "@zaneni6",
+      "commit": "0163739023591bdf7b8978319b078e00ba183f3b",
+      "platforms": [
+        "Windows"
+      ],
+      "pr_number": 3810,
+      "priority": "P1",
+      "text": "Run `lemonade backends` on an NPU system, confirm FLM v1.0.8 is listed, then load and run an FLM model on NPU to verify it works."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "25990159a0f1f915b360b8dce62ed74efc049979",
+      "platforms": [
+        "Windows",
+        "Ubuntu PPA",
+        "Snap"
+      ],
+      "pr_number": 3282,
+      "priority": "P1",
+      "text": "Start the lemond server with at least one NVIDIA GPU and one AMD GPU (or APU) and call GET /api/v1/system-stats; confirm the response contains a primary_gpu_id field, a gpus array listing each GPU with vendor/name/memory_type/gpu_percent/memory_total_gb/memory_used_gb, and that gpu_percent/vram_gb refer to the GPU with the largest total memory."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "25990159a0f1f915b360b8dce62ed74efc049979",
+      "platforms": [
+        "Windows",
+        "Ubuntu PPA",
+        "Snap"
+      ],
+      "pr_number": 3282,
+      "priority": "P1",
+      "text": "On a system with only NVIDIA GPUs, call GET /api/v1/system-stats and verify that the gpus array shows at least one entry with vendor \"nvidia\" and that the scalar metrics are non-negative numbers."
+    },
+    {
+      "author": "@bitgamma",
+      "commit": "0a1477fe6c483b86803f3bc74d78bbb922c9c43e",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3759,
+      "priority": "P1",
+      "text": "Run `lemonade bench <model_name>` with a downloaded model and at least one chat scenario, and confirm the table output includes a `PP t/s` column with throughput values."
+    },
+    {
+      "author": "@bitgamma",
+      "commit": "0a1477fe6c483b86803f3bc74d78bbb922c9c43e",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3759,
+      "priority": "P1",
+      "text": "Run `lemonade bench <model_name> --json` on an available local model and confirm the output includes a `pp_tps` statistics object with keys mean, min, max, p50, p95."
+    },
+    {
+      "author": "@bitgamma",
+      "commit": "0a1477fe6c483b86803f3bc74d78bbb922c9c43e",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3759,
+      "priority": "P1",
+      "text": "Run `lemonade bench <model_name> --compare <previous_results.json>` and confirm the comparison table includes a `PP change` percentage column with correct deltas."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "d9ac44641e1ec57ef1a92f60afa8b26dbc45e202",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3791,
+      "priority": "P1",
+      "text": "Start a streaming inference request via the chat completion or completion endpoint, then poll GET /v1/stats and confirm the response contains a live object with active_requests > 0 and estimated_tokens_per_second > 0 while the stream is generating, and both fields return to zero after the stream ends."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "a1410eafb1623f9c5fd0c462a98fd66469a586e7",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3836,
+      "priority": "P2",
+      "text": "Open the Lemonade website news page and confirm the AnythingLLM entry displays the correct title ('Why AnythingLLM is moving from Ollama to Lemonade and llama.cpp'), date (October 13, 2026), description, and that the link resolves to anythingllm.com."
+    }
+  ],
+  "commits_reviewed": 18,
+  "commits_unreviewed": 0,
+  "evidence": {
+    "blockers": "Two P0 items must pass: backend process lifecycle with real backend binaries (0c8169f), and guest backend model gating (65b0518). If either fails, the release cannot ship — broken process management blocks all backends, and broken gating blocks model installation on ROCm platforms.",
+    "breaking_changes": "Two breaking changes identified: system-stats GPU selection behavior changes on multi-GPU systems (metrics now reflect primary GPU by memory rather than highest utilization), and guest backend gating that hides models until the guest backend is installed. Both have migration paths — the former requires dashboard consumers to check primary_gpu_id and the gpus array; the latter requires users to install the required guest backend before the model becomes available.",
+    "coverage": "Reviewed 18 commits spanning v2026.42.1..f2208e4, covering the full range of the release bucket. All 14 to-dos from the commit reviews have been rated. Coverage includes backend lifecycle refactoring, image editing features, GPU telemetry, benchmark CLI, model discovery, version pin updates, test infrastructure, build system, and documentation.",
+    "manual_testing": "Real backend end-to-end through start_server() path (0c8169f-1). Multi-reference image editing with actual image files (cf146ec-1). Guest backend install and model pull on ROCm hardware (65b0518-1). FLM inference on NPU hardware (0163739-1). System stats with mixed GPU hardware (2599015-1, 2599015-2). Live streaming throughput with active requests (d9ac446-1). Bench CLI with a local model (0a1477f-1).",
+    "security": "No security concerns observed. The NVML DLL loading path on Windows was fixed during review (LoadLibraryExA with SEARCH_SYSTEM32 mitigates hijacking). Backend process management follows existing safe patterns. No new credential handling, network calls, or supply-chain changes."
+  },
+  "generation_seconds": 120.0,
+  "head_sha": "f2208e49edba137c81a56bc2fc12ef54e55a1815",
+  "is_hotfix": false,
+  "last_stable_tag": "",
+  "range_start": "v2026.42.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-14T16:13:02+00:00"
+}
