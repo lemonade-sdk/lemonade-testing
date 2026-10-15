@@ -1,0 +1,36 @@
+{
+  "author": "@zaneni6",
+  "branch": "main",
+  "bucket": "v2026.44",
+  "commit_sha": "80891dbcb08eea9b639a19d462f40a229a50b41f",
+  "committed_at": "2026-10-15T22:55:07+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The change is a single version string in a JSON config file. It does not modify any API, CLI, schema, or behavior contract — it changes which downstream binary Lemonade fetches during `lemonade backends`.",
+    "documentation": "No documentation changes were needed or made. The `backend-docs-drift` CI check passed, indicating the docs are consistent with the version pin change. The project does not maintain a changelog-style doc for backend version bumps of this type.",
+    "manual_release_testing": "The PR test plan specifies that `lemonade backends` should install FLM v1.0.9 and that an FLM model should load/run on NPU, but neither step shows evidence of having been performed. No comments or linked issues confirm manual validation on NPU hardware. The `backend-docs-drift` check passed, confirming no docs needed updating. No human is shown to have exercised the new FLM version.",
+    "post_approval_commits": "None. The single commit (242ca6e) was submitted at 2026-10-15T22:23:47Z, well before @superm1's approval at 22:32:30Z. The merge-group runs all passed (CI status check rollup shows only SUCCESS and SKIPPED conclusions).",
+    "review": "PR #3873 was approved by @superm1 at 2026-10-15T22:32:30Z, roughly 9 minutes after the PR was opened. @superm1 has FLM/NPU in their documented subject areas (ROCm, linux packaging, system info, security, Docker, containers, llamacpp, NPU, FastFlowLM), so the reviewer had domain expertise. No post-approval commits were added. The PR description was AI-generated (Claude Code), but the change is trivially scoped — one line in one file. CodeRabbit flagged the PR description for not meeting the human-authored template requirement and for missing Spec Driven Development, Scope, Documentation, and Breaking Changes sections, but these are process compliance issues on a one-line chore.",
+    "security": "The commit is a version number bump in a local JSON config; it does not introduce new code, network calls, or dependencies beyond what the external FLM NPU backend binary already provides. Supply-chain risk is inherent to any dependency update but is minimal for a patch-level version bump to a backend already in use.",
+    "tests": "No automated tests were added or modified for this version bump. The PR test plan checks CI and manual NPU testing (neither checkbox was ticked). CI validation workflows run for vLLM, llama.cpp, and stable-diffusion.cpp but not for FLM, so there is no CI path that exercises the FLM backend binary itself."
+  },
+  "generation_seconds": 153.0,
+  "maintainer_todos": [
+    {
+      "text": "Install the release candidate, run `lemonade backends` to pull FLM v1.0.9, and load an FLM model on NPU to confirm it starts and runs without errors."
+    }
+  ],
+  "merge_date": "2026-10-15T23:37:56Z",
+  "pr_number": 3873,
+  "range_start": "v2026.42.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-15T23:42:11+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "80891dbcb08eea9b639a19d462f40a229a50b41f",
+  "shout_outs": [],
+  "subject": "chore(flm): bump FLM to v1.0.9 (#3873)",
+  "summary": "Updates the pinned FastFlowLM (FLM) NPU backend version from v1.0.8 to v1.0.9 in src/cpp/resources/backend_versions.json.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The change is a clean one-line version bump properly reviewed by an FLM-domain reviewer, but no evidence shows an FLM model was manually exercised on NPU with v1.0.9 before merge."
+}
