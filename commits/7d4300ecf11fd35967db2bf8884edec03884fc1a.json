@@ -1,0 +1,32 @@
+{
+  "author": "@sawansri",
+  "branch": "main",
+  "bucket": "v2026.44",
+  "commit_sha": "7d4300ecf11fd35967db2bf8884edec03884fc1a",
+  "committed_at": "2026-10-15T21:14:40+00:00",
+  "evidence": {
+    "api_compatibility": "No API compatibility impact. The change modifies only src/cpp/resources/server_models.json, adding one model entry. No CLI flags, config values, API endpoints, or persisted formats are affected. Existing setups are not broken on upgrade.",
+    "documentation": "No documentation updates required. Adding a model to the registry is an internal catalog change; the model itself is self-documenting through its labels and the existing server_models.json format. The project does not maintain per-model documentation pages.",
+    "manual_release_testing": "The model is user-reachable: it appears in the model catalog, is labeled 'suggested', and will be discoverable via the app UI and CLI once downloaded. No evidence shows a human downloaded and ran this specific model end-to-end beyond the author's screenshots. Passing CI is not a substitute for user-path exercise.",
+    "post_approval_commits": "None. The single commit ad9847ef was approved at 19:15:47Z and merged at 21:58:48Z. No commits were added after approval. The merge-group commit 7d4300ec was GitHub's merge commit, not a PR contributor addition.",
+    "review": "PR #3866 was reviewed by @fl0rianr (LGTM at 2026-10-15T19:15:47Z). The PR author @sawansri has 'new models' listed as a subject-area expertise in docs/dev/contribute.md, so the PR was authored by someone with relevant domain knowledge. @fl0rianr's subject areas are GUI, CI, LMX omni models, and smart router — not explicitly new models — so subject-matter coverage for new models is partial. One approval was obtained; the project docs recommend at least one reviewer with subject-matter expertise, which is borderline here. The PR description included screenshots showing the model working, which is evidence of author-side validation.",
+    "security": "No security concerns. The change is a static JSON catalog entry pointing to an official Hugging Face repo (unsloth/LFM2.5-24B-A2B-GGUF). No code execution, network changes, or credential handling involved.",
+    "tests": "CI passed: C++ unit tests, Server download registry tests, C++ Server Build, Docker smoke test, MCP smoke test, CodeQL, and all packaging workflows succeeded. The Server download registry test workflow (which validates the JSON model registry) ran and passed, confirming the new entry's JSON is well-formed. No unit or integration tests specifically assert download-and-inference for new model entries; this is consistent with how other model additions have been handled."
+  },
+  "generation_seconds": 171.2,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-15T21:58:48Z",
+  "pr_number": 3866,
+  "range_start": "v2026.42.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-15T22:03:22+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "7d4300ecf11fd35967db2bf8884edec03884fc1a",
+  "shout_outs": [],
+  "subject": "Add LFM2.5-24B-A2B-GGUF to model registry (#3866)",
+  "summary": "Adds the LFM2.5-24B-A2B-GGUF model entry to the server model registry (src/cpp/resources/server_models.json) with checkpoint unsloth/LFM2.5-24B-A2B-GGUF:LFM2.5-24B-A2B-UD-Q4_K_XL.gguf, llamacpp recipe, suggested status, labels chat/reasoning/tool-calling, and 14.9 GB size.",
+  "verdict": "Clean",
+  "verdict_reason": "A minimal, well-formed model registry addition with passing CI, at least one approval, no post-approval commits, no API or security risk, and no breaking changes."
+}
