@@ -1,0 +1,38 @@
+{
+  "author": "@QuTosh",
+  "branch": "main",
+  "bucket": "v2026.44",
+  "commit_sha": "6e27237439f152c6de9d984971f2516374d6ae8b",
+  "committed_at": "2026-10-15T14:54:51+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking API changes. This PR touches only test code and test corpus files (CMakeLists.txt, docs, test/conformance/routing/, test/cpp/*conformance*.*, src/cpp/resources/schemas/README.md). No CLI, config, API, or persistence format is modified. No existing setup breaks on upgrade.",
+    "documentation": "The PR updates docs/dev/router-policy.md (states multi-key leaf order is unspecified, explicit all/any runs in list order), rewrites test/conformance/routing/README.md (new per-tier layout, stub format, score-comparison rule, how to add cases), and corrects inaccurate claims in existing docs. No user-facing API or feature docs are needed since no user-facing change is introduced.",
+    "manual_release_testing": "No user-reachable surface is changed — this PR adds test code and test corpus data (test/conformance/routing/). There is no API endpoint, CLI command, config option, GUI change, or installed artifact affected. The verdict is Clean with no maintainer to-do.",
+    "post_approval_commits": "No commits were added after the latest approval (2026-10-15T12:28:11Z). The last two commits — making FakeClassifierServices thread-safe and stopping freezing of key order inside multi-key leaves — were authored 2026-10-06T12:47:25Z and 2026-10-06T12:58:43Z, both before @fl0rianr's approval. No post-approval churn to assess.",
+    "review": "PR #2865 was reviewed by @fl0rianr (smart router specialist per docs/dev/contribute.md) and @SlawomirNowaczyk (smart router specialist). @fl0rianr filed 9 rounds of substantive comments spanning corpus layout, strict fake behavior, duplicate-key guards, tier-enforcement, thread-safety, and leaf-order freezing. @SlawomirNowaczyk opened with a changes-requested review and later approved. Both reviewers applied the project philosophy — design for agility (the new tier layout keeps related cases together, making future additions easier without scattered files), and user error is a bug (the runner rejects malformed rows, stray files, and unexpected backend calls). @fl0rianr's first approval came 2026-10-06T14:59:06Z; @SlawomirNowaczyk approved 2026-10-15T12:28:11Z. No commits were added after either approval.",
+    "security": "No security concerns. The PR adds test infrastructure — FakeClassifierServices, conformance harness, and corpus data. There are no credential handling changes, network calls, supply-chain changes, code execution paths, permission changes, or telemetry additions.",
+    "tests": "The PR adds 176 test cases across 4 policy tiers (L0a: 30/4 policies, L1: 88/10, L2: 18/4, L3: 40/9) plus a self-test for the harness's row guards (test_conformance_harness_checks). Each case declares its stub answers in a per-case services field, and the strict fake ensures every backend call is stubbed and every stub is consumed. The decision comparison walks an explicit field list so schema drift is caught. A 1e-12 tolerance is scoped to semantic_similarity trace scores only (computed via dot product, sqrt, division — non-deterministic across x86/ARM); classifier and LLM scores are compared exactly. All CI checks passed: C++ Server Build, Test, and Release; Validate New vLLM Release; Validate New stable-diffusion.cpp Release."
+  },
+  "generation_seconds": 204.4,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-15T15:39:06Z",
+  "pr_number": 2865,
+  "range_start": "v2026.42.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-15T15:44:16+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@SlawomirNowaczyk"
+  ],
+  "sha": "6e27237439f152c6de9d984971f2516374d6ae8b",
+  "shout_outs": [
+    {
+      "handle": "@fl0rianr",
+      "reason": "Provided sustained, multi-iteration review on 9 comment threads across 2+ months — identified corpus layout issues, the strict fake backend gap, duplicate-key silent-overwrite risk, missing tier-enforcement guard, thread-safety hole in shared fake, and the leaf-order freezing risk; guided the author through iterative improvements that materially raised quality."
+    }
+  ],
+  "subject": "Add conformance tests (phase 2: model-backed) (#2865)",
+  "summary": "Adds 176 model-backed conformance test cases across L0a, L2 and L3 tiers (llm router, semantic_similarity, classifier) to the routing conformance corpus with a strict FakeClassifierServices harness and per-tier (policies.json + cases.jsonl) layout.",
+  "verdict": "Clean",
+  "verdict_reason": "Well-reviewed test-only PR with two subject-matter approvals (smart router) and no post-approval commits; all CI checks passed and every reviewer concern was addressed."
+}
