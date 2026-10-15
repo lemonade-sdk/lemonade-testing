@@ -1,0 +1,32 @@
+{
+  "author": "@sreeram-11",
+  "branch": "main",
+  "bucket": "v2026.44",
+  "commit_sha": "f0816fe46480067c156bb5b559f7ac6835bf61d4",
+  "committed_at": "2026-10-15T10:15:41+00:00",
+  "evidence": {
+    "api_compatibility": "Not applicable. Only a GitHub Actions workflow YAML file is modified; no user API, CLI, config, or persistence format is touched.",
+    "documentation": "No documentation change required. The PR checklist confirms documentation is not affected; only the test workflow is modified.",
+    "manual_release_testing": "Not applicable. This is a CI workflow fix only; no user-facing command, API, config, or artifact is changed or added.",
+    "post_approval_commits": "No post-approval commits. The single commit (353af1be) was authored 2026-10-15T08:30:52Z and received approval 44 minutes later. Zero commits were added after approval.",
+    "review": "PR #3860 was approved by @fl0rianr (2026-10-15T09:43:34Z), who is listed in docs/dev/contribute.md with CI as a subject area. The reviewer confirmed: 'The SIGPIPE issue is properly addressed, and the changes are nicely scoped. Let's do a more extensive CI run before merging.' No inline review comments were filed. No commits were added after approval.",
+    "security": "No security concern. The change captures output into shell variables and uses heredoc redirection (<<<) — no credential handling, network calls, or code execution paths are introduced.",
+    "tests": "The change is itself a test fix — it repairs assertions in the launchpad-ppa workflow (.github/workflows/launchpad-ppa.yml) so the upgrade test can run reliably under set -o pipefail. The root cause is real: grep -q exiting early SIGPIPEs the upstream command, which pipefail treats as a pipeline failure. All merge-group CI checks passed: Routing Schema Tests, Docs And Style, Server Download Registry Tests, and C++ Server Build/Test/Release all concluded success."
+  },
+  "generation_seconds": 119.5,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-15T11:01:01Z",
+  "pr_number": 3860,
+  "range_start": "v2026.42.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-15T11:04:48+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "f0816fe46480067c156bb5b559f7ac6835bf61d4",
+  "shout_outs": [],
+  "subject": "fix(ci): avoid SIGPIPE race in launchpad upgrade assertions (#3860)",
+  "summary": "Avoids SIGPIPE race conditions in the launchpad-ppa CI workflow by capturing `lemonade list --downloaded` and `lemonade config` output into shell variables before grepping, instead of piping the commands directly into grep.",
+  "verdict": "Clean",
+  "verdict_reason": "A narrow, well-scoped CI fix with clear root-cause explanation, approved by a reviewer with CI subject-area expertise, and all CI checks passed."
+}
