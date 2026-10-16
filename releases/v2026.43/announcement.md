@@ -1,38 +1,37 @@
-## Lemonade v2026.43.0
+## Lemonade v2026.43.1
 
 ### ⚠️ These notes are AI generated and will be revised by a human ⚠️
 
-@everyone v2026.43 is out: you can now drop one or more reference images into the edit endpoint and get consistent output sizes, thenoise graduates to core on AMD, live inference stats are back, and `lemonade bench` finally measures prefill throughput too.
+@everyone v2026.43.1 is out with multi-GPU stats that finally make sense, image editing with reference images, live inference throughput tracking, and prefill throughput in the bench tool — plus thenoise is now a Core backend for AMD GPUs.
 
 ### Breaking Changes
 
-- `GET /api/v1/system-stats` reports `gpu_percent` and `vram_gb` for the primary GPU (the one with the most total memory) instead of the most utilised GPU — on multi-GPU systems dashboards and alerts that depend on those fields will see different numbers.
-- Guest-tier models are now hidden from `GET /v1/models?show_all=true` and return `model_not_supported` on pull until the guest backend is installed — if your setup relied on seeing these models before installing the backend they will disappear.
+- `GET /api/v1/system-stats` now reports `gpu_percent` and `vram_gb` for the primary GPU (the one with the most total memory) instead of the GPU with the highest utilization — if you're on a multi-GPU setup your dashboards and alerting thresholds may need updating.
+- Models gated behind a guest-tier backend are now hidden from `GET /v1/models?show_all=true` and return `model_not_supported` on pull until the guest backend is installed — setups that relied on seeing those models without the backend will no longer work.
 
-### 🖼️ Multi-reference image editing
+### 📊 Multi-GPU stats that make sense
 
-`@fl0rianr` extended the image edit endpoint to accept one or more reference images — output dimensions are picked automatically from the first reference with a 4 MP soft cap, and original image bytes are preserved without re-encoding. A new `soft_pixel_cap` model setting lets you tune that cap, and thenoise 0.10.1 adds the Qwen-Image-2.1-Turbo-INT8 recipe.
+`@fl0rianr` rewrote the primary GPU selection to pick by total memory instead of highest utilization and added NVIDIA GPU utilization and VRAM reporting — on multi-GPU systems the numbers now match what you'd expect. Thanks to @kenvandine and @superm1 for the help.
 
-### 🎨 thenoise joins the core tier
+### 🖼️ Image editing with reference images
 
-`@bitgamma` promoted thenoise from Experimental to Core for ROCm on AMD GPUs (gfx103X, gfx110X, gfx1150, gfx1151, gfx1152, gfx120X) on both Linux and Windows. If your card is on that list it's ready for everyday use.
+`@fl0rianr` extended the image editing endpoint to accept one or more reference images, auto-selecting output dimensions from the first one with a soft 4 MP cap. A new Qwen-Image-2.1-Turbo-INT8 recipe is also available in thenoise.
 
-### 📊 Live inference tracking returns
+### 📈 Live inference throughput at a glance
 
-`@fl0rianr` added live inference tracking to the stats endpoint — `GET /v1/stats` now reports `live.active_requests` and `live.estimated_tokens_per_second` by counting output deltas across all SSE event types, so you can see what your server is doing right now.
+`@fl0rianr` added live inference throughput tracking to `GET /v1/stats`, so you can see `live.active_requests` and `live.estimated_tokens_per_second` — you can't optimize what you can't measure.
 
-### ⚡ Prefill throughput on `lemonade bench`
+### ⚡ Prefill throughput in `lemonade bench`
 
-`@bitgamma` added a `PP t/s` (prompt tokens per second, TTFT-based) column to the bench table, corresponding `pp_tps` keys to `--json` output, and a `PP change` percentage in `--compare` mode, so you can measure whether your prompt changes are actually speeding things up.
+`@bitgamma` added prefill throughput (`PP t/s`) to the bench output — a new `PP t/s` column in table mode, `pp_tps` stats in `--json`, and `PP change` percentage tracking in `--compare` mode.
 
 ### Additional Improvements
 
-- `@jeremyfowers` and `@fl0rianr` labelled every backend with a tier (core, experimental, guest) and format — the CLI backends table and `/system-info` now show this metadata, and guest-tier models are gated behind their backends.
-- `@fl0rianr` fixed spurious duplicate GGUF entries when shard families were incomplete.
-- `@fl0rianr` fixed config defaults to read from the install prefix rather than a hardcoded path.
-- `@jeremyfowers` refactored the server process abstraction for cleaner backend lifecycle management, and added an auto-pull test to the test suite.
-- `@sreeram-11` bumped ROCm, llamacpp, and sd-cpp to their latest versions.
-- `@zaneni6` bumped the FLM NPU backend to v1.0.8.
-- `@joshuacox` added the missing systemd service step to the Arch Linux install page.
+- `@bitgamma` promoted TheNoise from Experimental to Core for ROCm on AMD GPUs.
+- `@sreeram-11` bumped TheRock to 10.1.0, updated llama.cpp ROCm-stable to b11580, and updated stable-diffusion.cpp to master-957-90e86d1.
+- `@zaneni6` bumped the FastFlowLM NPU backend from v1.0.7 to v1.0.9.
+- `@fl0rianr` fixed a bug where incomplete GGUF shard families would appear as spurious duplicate models.
+- `@jeremyfowers` fixed the distro defaults path so `lemond` reads `defaults.json` relative to its install prefix on Linux.
+- `@joshuacox` added the missing "Start the service" step to the Arch Linux install guide.
 
-Grab the new release over on [GitHub Releases](https://github.com/lemonade-sdk/lemonade/releases) — I'd love to hear what you build with it!
+Head over to [GitHub Releases](https://github.com/lemonade-sdk/lemonade/releases) for the full changelog — happy to hear how this version treats your setup!
