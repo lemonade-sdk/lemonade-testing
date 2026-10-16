@@ -21,15 +21,21 @@
       "author": "@jeremyfowers",
       "commit": "65b0518a67c9423853c8bd4a213482bed606d6da",
       "platforms": [
-        "Ubuntu PPA",
-        "Snap",
-        "Docker",
-        "Fedora",
-        "Debian"
+        "all"
       ],
       "pr_number": 3706,
       "priority": "P0",
       "text": "Install the ds4:rocm guest backend on a Strix Halo machine, then run `lemonade pull DeepSeek-V4-Flash-IQ2XXS-DS4` and confirm the model is accepted after installation rather than returning `model_not_supported`."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "25990159a0f1f915b360b8dce62ed74efc049979",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3282,
+      "priority": "P0",
+      "text": "Start the lemond server with at least one NVIDIA GPU and one AMD GPU (or APU) and call GET /api/v1/system-stats; confirm the response contains a primary_gpu_id field, a gpus array listing each GPU with vendor/name/memory_type/gpu_percent/memory_total_gb/memory_used_gb, and that gpu_percent/vram_gb refer to the GPU with the largest total memory."
     },
     {
       "author": "@fl0rianr",
@@ -75,7 +81,7 @@
       "author": "@zaneni6",
       "commit": "0163739023591bdf7b8978319b078e00ba183f3b",
       "platforms": [
-        "Windows"
+        "Fedora"
       ],
       "pr_number": 3810,
       "priority": "P1",
@@ -87,19 +93,9 @@
       "platforms": [
         "Windows",
         "Ubuntu PPA",
-        "Snap"
-      ],
-      "pr_number": 3282,
-      "priority": "P1",
-      "text": "Start the lemond server with at least one NVIDIA GPU and one AMD GPU (or APU) and call GET /api/v1/system-stats; confirm the response contains a primary_gpu_id field, a gpus array listing each GPU with vendor/name/memory_type/gpu_percent/memory_total_gb/memory_used_gb, and that gpu_percent/vram_gb refer to the GPU with the largest total memory."
-    },
-    {
-      "author": "@fl0rianr",
-      "commit": "25990159a0f1f915b360b8dce62ed74efc049979",
-      "platforms": [
-        "Windows",
-        "Ubuntu PPA",
-        "Snap"
+        "Snap",
+        "Fedora",
+        "Debian"
       ],
       "pr_number": 3282,
       "priority": "P1",
@@ -146,6 +142,16 @@
       "text": "Start a streaming inference request via the chat completion or completion endpoint, then poll GET /v1/stats and confirm the response contains a live object with active_requests > 0 and estimated_tokens_per_second > 0 while the stream is generating, and both fields return to zero after the stream ends."
     },
     {
+      "author": "@zaneni6",
+      "commit": "9d473c398374d303bcaa48dcb4186e7b89537a6c",
+      "platforms": [
+        "Fedora"
+      ],
+      "pr_number": 3873,
+      "priority": "P1",
+      "text": "Install the release candidate on an NPU system, run `lemonade backends` to confirm FLM NPU reports version v1.0.9, and load an FLM model on NPU to verify it runs without errors."
+    },
+    {
       "author": "@jeremyfowers",
       "commit": "a1410eafb1623f9c5fd0c462a98fd66469a586e7",
       "platforms": [
@@ -156,20 +162,20 @@
       "text": "Open the Lemonade website news page and confirm the AnythingLLM entry displays the correct title ('Why AnythingLLM is moving from Ollama to Lemonade and llama.cpp'), date (October 13, 2026), description, and that the link resolves to anythingllm.com."
     }
   ],
-  "commits_reviewed": 18,
+  "commits_reviewed": 19,
   "commits_unreviewed": 0,
   "evidence": {
-    "blockers": "Two P0 items must pass: backend process lifecycle with real backend binaries (0c8169f), and guest backend model gating (65b0518). If either fails, the release cannot ship — broken process management blocks all backends, and broken gating blocks model installation on ROCm platforms.",
-    "breaking_changes": "Two breaking changes identified: system-stats GPU selection behavior changes on multi-GPU systems (metrics now reflect primary GPU by memory rather than highest utilization), and guest backend gating that hides models until the guest backend is installed. Both have migration paths — the former requires dashboard consumers to check primary_gpu_id and the gpus array; the latter requires users to install the required guest backend before the model becomes available.",
-    "coverage": "Reviewed 18 commits spanning v2026.42.1..f2208e4, covering the full range of the release bucket. All 14 to-dos from the commit reviews have been rated. Coverage includes backend lifecycle refactoring, image editing features, GPU telemetry, benchmark CLI, model discovery, version pin updates, test infrastructure, build system, and documentation.",
-    "manual_testing": "Real backend end-to-end through start_server() path (0c8169f-1). Multi-reference image editing with actual image files (cf146ec-1). Guest backend install and model pull on ROCm hardware (65b0518-1). FLM inference on NPU hardware (0163739-1). System stats with mixed GPU hardware (2599015-1, 2599015-2). Live streaming throughput with active requests (d9ac446-1). Bench CLI with a local model (0a1477f-1).",
-    "security": "No security concerns observed. The NVML DLL loading path on Windows was fixed during review (LoadLibraryExA with SEARCH_SYSTEM32 mitigates hijacking). Backend process management follows existing safe patterns. No new credential handling, network calls, or supply-chain changes."
+    "blockers": "Three P0 items: backend subprocess lifecycle (refactored start/stop/health), guest-backend model gating (new hidden-model behavior), and multi-GPU system-stats (changed primary-GPU selection). All require human verification on real hardware before release.",
+    "breaking_changes": "The system-stats endpoint changed which GPU the scalar fields refer to (largest memory instead of highest utilization) — a behavioral change on multi-GPU systems. Guest-tier models are now hidden without their backend installed — a new gating behavior affecting model visibility and pull behavior.",
+    "coverage": "All 15 to-dos from the 19 commit reviews are rated. Five commits had no to-dos (config path fix, shard dedup, Arch install docs, CI auto-labeler, pre-pull test infra). The remaining ten commits with to-dos are fully covered.",
+    "manual_testing": "NPU hardware verification for FLM v1.0.8 and v1.0.9 (Fedora). Multi-GPU NVML system-stats on mixed NVIDIA/AMD and NVIDIA-only systems (Linux/Windows). Guest backend install on Strix Halo hardware. Multi-reference image editing endpoint with real images. All are unexercised in CI due to hardware requirements.",
+    "security": "No security concerns identified across the release. The NVML DLL load path was hardened in this bucket (LOAD_LIBRARY_SEARCH_SYSTEM32 on Windows). No new credential handling, external network calls, or supply-chain risks beyond routine backend version bumps."
   },
-  "generation_seconds": 120.0,
-  "head_sha": "f2208e49edba137c81a56bc2fc12ef54e55a1815",
+  "generation_seconds": 70.3,
+  "head_sha": "9d473c398374d303bcaa48dcb4186e7b89537a6c",
   "is_hotfix": false,
   "last_stable_tag": "",
   "range_start": "v2026.42.1",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-10-14T16:13:02+00:00"
+  "reviewed_at": "2026-10-16T21:18:25+00:00"
 }
