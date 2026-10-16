@@ -2,14 +2,14 @@
 
 ### ⚠️ These notes are AI generated and will be revised by a human ⚠️
 
-- Multi-reference image editing now accepts one or more reference images with automatic dimension sizing, preserving original image bytes without re-encoding.
-- TheNoise image backend moves from Experimental to Core tier for supported AMD GPUs on Linux and Windows.
-- Live inference tracking reports active request count and estimated tokens per second on GET /v1/stats.
-- Prefill throughput (TTFT-based prompt tokens per second) added to the `lemonade bench` table and JSON output.
+- `GET /api/v1/system-stats` selects the primary GPU by total memory instead of highest utilization, with NVIDIA GPU utilization and VRAM reporting, so the numbers match what you expect on multi-GPU systems.
+- Image editing now accepts one or more reference images with auto-selected output dimensions and a configurable soft pixel cap.
+- Live inference throughput is now available on `GET /v1/stats` as `live.active_requests` and `live.estimated_tokens_per_second`.
+- `lemonade bench` shows prefill throughput (PP t/s) in table output and `--json`, with `--compare` mode tracking PP change.
 
 ## Breaking Changes
 
 ### ⚠️ These notes are AI generated and will be revised by a human ⚠️
 
-- GET /api/v1/system-stats now reports gpu_percent and vram_gb for the primary GPU by total memory instead of the most utilized GPU — on multi-GPU systems the values change and existing dashboards or alerting that depends on these fields will see different numbers.
-- Guest-tier models are now hidden from GET /v1/models?show_all=true and return model_not_supported on pull until the guest backend is installed — setups that relied on the model being visible without installing the backend will see them disappear.
+- `GET /api/v1/system-stats` now reports the primary GPU by total memory instead of the GPU with highest utilization, so dashboard values and alerting thresholds may change on multi-GPU systems.
+- Models gated behind a guest-tier backend are now hidden from `GET /v1/models?show_all=true` and return `model_not_supported` on pull until the guest backend is installed.
