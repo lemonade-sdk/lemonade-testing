@@ -1,0 +1,33 @@
+{
+  "author": "@sreeram-11",
+  "branch": "main",
+  "bucket": "v2026.44",
+  "commit_sha": "cadfc0ad5abe21f10ed33145238decfbb698b06e",
+  "committed_at": "2026-10-18T00:39:54+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. This is a CI workflow restructure that does not touch any user-facing API, CLI, config, persistence format, or documented behavior. The merge PR body explicitly checked the 'no breaking changes' box, and the diff confirms only the workflow YAML file was modified.",
+    "documentation": "No user-facing documentation is affected. The change is internal CI infrastructure. The PR body itself serves as changelog-level documentation, describing the problem (runner handoff drops causing ~32 lost jobs across 21 runs in one day), the solution (grouping by runner class), and the before/after handoff math. Inline comments in the workflow file were rewritten to follow the project's comment guidance (stating what the code does, not what it doesn't do).",
+    "manual_release_testing": "This is a CI-only change to .github/workflows/cpp_server_build_test_release.yml. It does not affect any user-facing surface — no API endpoint, CLI command, config option, GUI element, or installed artifact changes. The test suites themselves are unchanged; only how GitHub Actions dispatches them to self-hosted runners has been restructured. No manual release testing is warranted.",
+    "post_approval_commits": "Three non-merge commits were added after the first approval at 2026-10-16T00:23:09Z: (1) split the Windows vulkan-rocm group into two to shorten the critical path, (2) merge of main, and (3) stop inference groups at the first failing suite + comments rewritten. All post-approval commits addressed reviewer feedback and were within the spirit and scope of the original PR. The final merge commit (cadfc0ad) was approved by both reviewers after all these commits, so no unreviewed churn reached the branch.",
+    "review": "The PR had two substantive human reviewers with CI subject-matter expertise per docs/dev/contribute.md: @jeremyfowers (admin maintainer, CI) and @fl0rianr (ci, Lemonade Mix omni models). @fl0rianr approved on the first commit (c5112fc) after noting that all 31 suites retained their original configurations. @jeremyfowers raised several concerns — why $ErrorActionPreference was changed from Stop to Continue, why continue running test suites after one fails in a group (wasting scarce self-hosted runner time), inconsistent comment wording, and a discrepancy between the PR body's job count and the actual code. All were resolved: the author reverted the error preference to Stop, switched to stopping at the first failing suite in a group (saving runner resources), rewrote the comments, and updated the PR body to reflect the final job count (6 Windows + 6 Linux = 12, not the originally stated numbers). @fl0rianr re-approved after all fixes. @jeremyfowers gave the final approval 2 days later (2026-10-18T00:39:48Z) with no additional concerns. CodeRabbit also flagged a functional bug — the Linux bash script used tab as a field separator, which collapses consecutive tabs and shifts the empty extra_args field of the stable-diffusion suite into the backends column. The author fixed it by switching to ASCII unit separator (\\x1f), matching the approach used in the PowerShell script.",
+    "security": "No security concerns. The change is a GitHub Actions workflow restructure. The new JSON parsing and shell script logic does not introduce any credential handling, network calls, code execution paths, or permission broadening. The use of ASCII unit separator is a correctness fix, not a security change.",
+    "tests": "No new unit or integration tests were added, but this is expected: the change is purely a CI workflow restructure. All 31 test suites from the original matrix are preserved in the grouped configuration, and @fl0rianr confirmed this in his first review. No existing tests were weakened, deleted, or skipped. The three merge-group check runs all passed: C++ Server Build, Test, and Release (#11650), Validate New stable-diffusion.cpp Release (#4153), and Validate New vLLM Release (#6446)."
+  },
+  "generation_seconds": 241.9,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-18T01:19:45Z",
+  "pr_number": 3861,
+  "range_start": "v2026.42.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-18T01:25:26+00:00",
+  "reviewers": [
+    "@jeremyfowers",
+    "@fl0rianr"
+  ],
+  "sha": "cadfc0ad5abe21f10ed33145238decfbb698b06e",
+  "shout_outs": [],
+  "subject": "ci: group inference suites by runner class to reduce handoffs (#3861)",
+  "summary": "Renames the self-hosted inference matrix from one GitHub job per test suite (31 total: 17 on Windows, 14 on Linux) to one job per runner class (12 total: 6 on Windows, 6 on Linux) so suites sharing the same hardware run sequentially on the same machine and reduce GitHub Actions runner handoffs that were causing spurious CI failures.",
+  "verdict": "Clean",
+  "verdict_reason": "A well-scoped CI-only change with thorough review from two CI-experienced maintainers, all inline concerns resolved before final approval, and passing merge-group checks."
+}
