@@ -1,0 +1,39 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.44",
+  "commit_sha": "333469dd036a457dbb3c24054c867cb0d617a9e0",
+  "committed_at": "2026-10-18T08:06:04+00:00",
+  "evidence": {
+    "api_compatibility": "Breaking. The /v1/models/{model}/options endpoint's resolved_ctx_size field changes from always numeric (int64) to potentially null when automatic sizing cannot fit a valid context. The author marked this as a breaking change in the PR body. A client that parses resolved_ctx_size as an integer without null-handling will fail. The documentation update adds one sentence to docs/api/lemonade.md but does not include a migration note or explicit null-type annotation.",
+    "documentation": "docs/api/lemonade.md updated with one sentence noting resolved_ctx_size can be null. This is minimal for a breaking API change; the PR body acknowledges the break but there is no migration guide or client-facing changelog entry visible in the repo.",
+    "manual_release_testing": "The options API change — resolved_ctx_size can now be null — is a user-reachable contract change that no human visibly exercised. CI passes but the null branch in server.cpp (respond_with_model_options) and the error-throw branch in router.cpp (load_model) are not driven by the C++ unit tests, which exercise the budget functions in isolation.",
+    "post_approval_commits": "Five commits were added after the first approval (2026-10-16T10:48:49Z): handle missing unified memory metrics, require RAM telemetry for unified memory budgets, preserve unknown physical RAM capacity, correct context limits and small UMA budgets, and estimate BERT encoder KV memory. All are labeled fix/fix/refactor and directly address @bitgamma's inline comments. A second round of CodeRabbit comments was also addressed. The final approval at 2026-10-18T07:52:22Z came after all five fix-ups, so the post-approval churn did not bypass the review.",
+    "review": "Reviewer @bitgamma (subject-area expertise in recipes, backends, benchmarking, and models per docs/dev/contribute.md) opened with substantive inline comments: flagged a likely-unreachable code path around checkpoint/mmproj resolution, questioned magic numbers in reserve policies, and raised a forward-looking concern about Apple releasing a discrete GPU on Mac. The reviewer requested changes, the author addressed them across five follow-up commits, and @bitgamma re-approved (LGTM + two empty approvals after fixes). All post-approval commits are fix-ups directly responding to the review and were re-approved, so the review discipline is sound. The analysis uses the latest approval at 2026-10-18T07:52:22Z; no commits were added after that approval.",
+    "security": "No security concerns. The change is purely in memory budgeting logic. No credential handling, network calls, or permission changes. File-size reads use std::filesystem safely with error codes.",
+    "tests": "Comprehensive C++ tests added across two files. test_auto_tune.cpp gains a ~169-line test_auto_context_budget() covering: discrete GPU budgets (RTX 5090), UMA budgets (APUs, 7 GiB Mac, constrained Mac), compute headroom bounds, weight accounting with/without mmproj/draft, speculative decoding MTP and draft multipliers, embedding model floors, model-max clamping, BERT encoder KV estimation, shared-memory capping, and safe-fallback paths (unknown VRAM, nonfinite values, int64 overflow). test_gpu_memory_selection.cpp adds assertions for unified/discrete pool flags and physical_total_gb. The CMakeLists.txt also enables the AutoTuneTest in CI (CI ON). No existing tests were weakened or deleted."
+  },
+  "generation_seconds": 223.1,
+  "maintainer_todos": [
+    {
+      "text": "Run the Lemonade server and load a model on a system with limited GPU memory (or simulate it) and confirm the /v1/models/{model}/options endpoint returns {\"resolved_ctx_size\": null} instead of a number."
+    },
+    {
+      "text": "Write a small HTTP client that calls /v1/models/{model}/options and verify it handles the null resolved_ctx_size without crashing, since existing clients may not expect a non-numeric value."
+    }
+  ],
+  "merge_date": "2026-10-18T08:42:22Z",
+  "pr_number": 3862,
+  "range_start": "v2026.42.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-18T08:48:01+00:00",
+  "reviewers": [
+    "@bitgamma"
+  ],
+  "sha": "333469dd036a457dbb3c24054c867cb0d617a9e0",
+  "shout_outs": [],
+  "subject": "fix(auto-tune): improve context sizing to avoid GPU memory pressure (#3862)",
+  "summary": "Fixes auto-tuned context sizing to reserve runtime buffer memory for discrete GPUs, unified-memory GPUs, and host backends — using per-GPU reserve policies, multi-artifact weight accounting, and safe unknown-memory handling; adds null to the resolved_ctx_size API field when automatic sizing cannot fit a valid context.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The options API's resolved_ctx_size now returns null — a breaking change for clients that expect a numeric value — and the documentation update is thin for that change."
+}
