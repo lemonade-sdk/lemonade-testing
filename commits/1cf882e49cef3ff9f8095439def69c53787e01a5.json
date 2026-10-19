@@ -1,0 +1,42 @@
+{
+  "author": "@iswaryaalex",
+  "branch": "main",
+  "bucket": "v2026.44",
+  "commit_sha": "1cf882e49cef3ff9f8095439def69c53787e01a5",
+  "committed_at": "2026-10-19T21:29:52+00:00",
+  "evidence": {
+    "api_compatibility": "The /system-stats gpus[] array now includes a new vendor: \"amd\" entry on Windows with AMD hardware. This is additive — existing fields remain unchanged, existing NVIDIA entries are unaffected. No breaking change.",
+    "documentation": "docs/api/lemonade.md was updated to reflect that Windows AMD telemetry now comes from DXGI, DXCore, and PDH in addition to NVIDIA NVML. The API spec change is accurate and scoped.",
+    "manual_release_testing": "The /system-stats endpoint returns a new AMD GPU entry on Windows hosts with AMD hardware — this is user-visible behavior. CI runs on Linux/macOS and does not exercise the Windows AMD path. The author validated only an integrated APU; discrete GPU memory reporting and mixed AMD+NVIDIA ordering are untested on real hardware and need manual verification.",
+    "post_approval_commits": "None. The PR had five commits. The latest approval was submitted at 2026-10-19T21:27:29Z. The last pre-approval commit (22b4e7ba, 'fix(server): make AMD telemetry resilient to partial counter availability') was pushed before approval and addressed the reviewer's second-round findings. No commits were added after the approval.",
+    "review": "PR #3872 received one substantive human review from @fl0rianr (COMMENTED 2026-10-15 23:54 UTC, COMMENTED 2026-10-19 10:09 UTC, APPROVED 2026-10-19 21:27 UTC). The reviewer identified a reliable integrated/discrete classification bug (SharedSystemMemory > DedicatedVideoMemory heuristic fails on discrete cards) and recommended DXCore, along with three targeted fixes (capacity accounting, utilization clamping, Budget override removal) and requested regression tests. All four were addressed across follow-up commits. A second review round caught remaining PDH initialization and partial-memory issues; the final commit addressed those. The reviewer's subject areas per docs/dev/contribute.md are 'GUI, CI, smart router' — not AMD GPU telemetry or hardware-vendor support. @superm1 (ROCm, hardware vendor support, security) or @kenvandine (hardware vendor support) would have been the subject-matter experts, but neither reviewed. The author validated on one integrated AMD part (Strix Halo / Radeon 8060S) only; discrete GPU and mixed AMD+NVIDIA paths are explicitly untested.",
+    "security": "Dynamic loading of dxgi.dll, pdh.dll, and dxcore.dll via LoadLibraryEx with LOAD_LIBRARY_SEARCH_SYSTEM32 is safe. No network calls, no credential handling, no code execution beyond Windows-native API calls. No supply-chain surface. PDH counter strings are parsed from OS-provided data with no external input.",
+    "tests": "A new test function test_002c_system_stats_gpu_schema was added to test/server_endpoints.py. It asserts the gpus[] schema, value bounds (pct 0–100, used <= total), and a hardware-gated check requiring an AMD entry in gpus[] when system-info advertises an available AMD GPU. The test validates the endpoint contract but runs only where the test harness has GPU access; no unit tests exercise the new amd_metrics_windows.h internals. The author's Strix Halo validation (shared adapter, utilization 1% idle to ~95% under inference) is reported in the PR description but was not reproduced in CI."
+  },
+  "generation_seconds": 202.9,
+  "maintainer_todos": [
+    {
+      "text": "On a Windows host with an AMD discrete GPU, start the server and verify that /system-stats reports the GPU with memory_type \"dedicated\" (not \"unknown\"), memory_total_gb matching the card's VRAM, and gpu_percent that rises under load."
+    },
+    {
+      "text": "On a Windows host with both an AMD GPU and an NVIDIA GPU, start the server and confirm /system-stats lists both vendors, each with its own id and memory_type, and that primary_gpu_id points to the GPU with the largest memory_total_gb."
+    },
+    {
+      "text": "On a Windows host with an AMD discrete GPU, open /system-stats in the Lemonade GUI and verify that the AMD GPU's utilization and VRAM values are displayed (not omitted or null) so the future multi-GPU GUI work has real data to work from."
+    }
+  ],
+  "merge_date": "2026-10-19T22:28:29Z",
+  "pr_number": 3872,
+  "range_start": "v2026.42.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-19T22:33:38+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "1cf882e49cef3ff9f8095439def69c53787e01a5",
+  "shout_outs": [],
+  "subject": "fix(server): report AMD GPU usage and VRAM on Windows (#3872)",
+  "summary": "Adds AMD GPU telemetry to the /system-stats endpoint on Windows using DXGI for adapter identity and memory capacity, DXCore for integrated/discrete classification, and PDH GPU performance counters for live utilization and memory usage, merging AMD data alongside existing NVIDIA NVML telemetry.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The code quality is solid and all review findings were addressed, but no reviewer had subject-matter expertise in AMD GPU telemetry or hardware-vendor support, leaving residual risk on discrete-GPU and mixed AMD+NVIDIA paths that were validated on an integrated part only."
+}
