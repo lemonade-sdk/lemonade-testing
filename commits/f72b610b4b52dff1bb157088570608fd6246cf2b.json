@@ -1,0 +1,32 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.44",
+  "commit_sha": "f72b610b4b52dff1bb157088570608fd6246cf2b",
+  "committed_at": "2026-10-19T20:35:48+00:00",
+  "evidence": {
+    "api_compatibility": "No API changes. The only files modified are .github/workflows/publish-news.yml (new), .github/workflows/publish-website.yml (modified), .github/workflows/triage-dashboard.yml (comment-only), and docs/dev/documentation.md (text update). No CLI, no API, no config format, no persistence format changed.",
+    "documentation": "docs/dev/documentation.md was updated to document the new news-publishing behavior and the requirement that news posts be in their own PR. The publish-news.yml file includes a clear header comment explaining the rationale. The PR description is self-documenting and was marked as documentation-affected. One minor gap: the `publish-news.yml` workflow header explains the PR-enforcement rule, but the triage-dashboard.yml comment update is purely cosmetic and adds no new documentation.",
+    "manual_release_testing": "No to-do items. This commit changes no CLI commands, no API endpoints, no GUI, no config options, no installed artifacts, and no model or backend support. The only user-visible effect is that news posts appear on lemonade-server.ai sooner than before — that is a workflow timing change, not a feature to test. The new publish-news workflow will self-validate the next time a news-only PR merges to main, and the release-publish re-sync is guarded by the same pattern (git rm + checkout from main with --ignore-unmatch).",
+    "post_approval_commits": "Zero commits were added after sawansri's approval at 2026-10-19T20:35:34Z. The final commit c039300aaeb8e3c7ff5aae29cffcc5631a08691a was pushed before the approval. The branch was clean at merge time.",
+    "review": "PR #3884 received one substantive human review from @sawansri (admin maintainer, CI subject-area expertise per docs/dev/contribute.md). sawansri identified a real risk: a release branch merged with `-X theirs` could roll back a news-data.js entry that merged to main after the release cut. The author addressed this in commit 44b092a (pushed to the PR, merged into the final squash), which re-syncs news from main after the release merge. sawansri then approved with LGTM at 2026-10-19T20:35:34Z. The PR description was thorough and followed the spec-driven development checklist. Two CodeRabbit bot comments flagged a `git fetch` refspec issue and a potential concurrent-edit conflict in publish-website; both were addressed in the same 44b092a commit before approval.",
+    "security": "The publish-news workflow uses `contents: write` on the `publish-news` job only (not workflow-wide), scoped to pushing to the website branch. The publish-website workflow uses `git push || { git pull --no-rebase --no-edit origin website && git push; }` which has no rebase (no-edit) and only pushes to origin. No credentials, no external network calls, no supply-chain changes. CodeRabbit's zizmor flagged 'overly broad permissions' on one workflow but the permissions block is explicitly set and appropriate. No security concerns.",
+    "tests": "This is a CI/CD workflow change with no user-facing runtime code; no unit tests are expected. The merge group ran all project CI checks (vLLM validation, stable-diffusion.cpp validation, C++ Server Build/Release) and all passed. The new publish-news workflow itself has no test suite but the PR-enforcement check (`check-news-pr`) validates the in-repo behavior: rejecting mixed news+code PRs. No tests were weakened or deleted."
+  },
+  "generation_seconds": 223.5,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-19T21:20:39Z",
+  "pr_number": 3884,
+  "range_start": "v2026.42.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-19T21:28:11+00:00",
+  "reviewers": [
+    "@sawansri"
+  ],
+  "sha": "f72b610b4b52dff1bb157088570608fd6246cf2b",
+  "shout_outs": [],
+  "subject": "ci: publish news posts to the website as soon as they merge (#3884)",
+  "summary": "Adds a new Publish News workflow that copies docs/news/ and docs/assets/news-data.js from main onto the website branch immediately on merge, and modifies the existing publish-website workflow to re-sync news from main after merging a release branch, so news posts go live as soon as they merge rather than waiting for the next release.",
+  "verdict": "Clean",
+  "verdict_reason": "The change is well-scoped CI-only work that was reviewed by an admin maintainer with CI subject-area expertise, all identified issues were addressed before approval, and no commits were added after the final approval."
+}
