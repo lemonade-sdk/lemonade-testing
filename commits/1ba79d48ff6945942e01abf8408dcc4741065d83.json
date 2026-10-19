@@ -1,0 +1,49 @@
+{
+  "author": "@sreeram-11",
+  "branch": "main",
+  "bucket": "v2026.44",
+  "commit_sha": "1ba79d48ff6945942e01abf8408dcc4741065d83",
+  "committed_at": "2026-10-19T07:34:09+00:00",
+  "evidence": {
+    "api_compatibility": "The router change (router.cpp) catches ConfigurationException separately and throws it without triggering the model eviction/retry path. This is not a breaking API change — the HTTP response shape is unchanged and the error is still returned to the client — but it changes the server's internal behavior around configuration errors, which could affect users relying on the previous retry behavior. The sd-cpp ROCm filename for Windows is new (sd-<version>-bin-win-rocm-<therock>-x64.zip) so it does not affect existing setups.",
+    "documentation": "README and backends-reference were updated to list ROCm as supported on Windows and Linux (per the PR body). The validation script help text was updated to document the new --logs-dir requirement for GPU backends. The auto-generated CodeRabbit release notes summary is reasonable but imprecise — it does not mention the router configuration-error behavior change or the Windows path-length refusal.",
+    "manual_release_testing": "The author reports testing on four Windows Strix Halo (gfx1151) machines and confirms GPU execution via server log lines. However, the new Windows MAX_PATH refusal path (when cache dir + install tree depth exceeds 259 characters) and the router configuration-error handling change (ConfigurationException now stops model loading without retry) have not been manually exercised in a release-candidate environment.",
+    "post_approval_commits": "The final approval from @ramkrishna2910 was at 2026-10-19T06:44:09Z; the PR was merged via merge queue at 2026-10-19T08:11:03Z. The merge queue ran all CI checks which passed. No substantive post-approval behavior changes are evident from the review history — the author responded to all CodeRabbit suggestions and inline comments through the final approval.",
+    "review": "Three reviewers with subject-matter expertise approved: @superm1 (ROCm) approved at 2026-10-01T18:10:59Z, @jeremyfowers (CI/infra) approved at 2026-10-02T19:27:28Z, @ramkrishna2910 (stable diffusion, ROCm) approved at 2026-10-19T06:44:09Z. @ramkrishna2910 provided the most thorough review, submitting inline comments that caught four bugs (path guard failing open, stale cached absolute path, missing _WIN32 guard, tests not exercising real code). All were addressed by the author. @jeremyfowers initially requested changes around GPU offload verification and was satisfied when the author added per-model GPU offload checks to the validation scripts. CodeRabbitAI also ran multiple reviews, suggesting fixes that were all addressed.",
+    "security": "The commit stages DLLs (amdhip64* and amd_comgr*) into the sd-server executable directory. This is a Windows DLL hijacking mitigation — by staging TheRock's known-good runtime DLLs alongside the executable, it prevents System32's display driver DLLs from being loaded in a mixed pair. The staging logic only copies files that System32 would shadow or that already exist in the exe directory, so it is not introducing arbitrary copies. No supply-chain, credential, or telemetry changes.",
+    "tests": "New file test/cpp/test_rocm_path_measure.cpp (193 lines) exercises BackendUtils::measure_rocblas_max_path and ensure_rocm_tensile_reachable directly with fixture trees at normal and excessive cache directory lengths, including a >260 character subdirectory case on Windows. New shared helper test/utils/gpu_offload.py is consumed by validate_llamacpp.py and validate_sdcpp.py. Both validation scripts now require --logs-dir for GPU backends and assert GPU device lines (e.g., \"Initializing backend: ROCm0\") appear in the server log. The CI workflow was updated to add rocm backend coverage for sd-cpp validation. No evidence of tests being weakened or deleted."
+  },
+  "generation_seconds": 785.6,
+  "maintainer_todos": [
+    {
+      "text": "On a Windows machine with a Windows ROCm installation and an sd-cpp backend installed, start lemond with log_level=debug, load SD-Turbo with the rocm backend, and confirm the server log shows \"Initializing backend: ROCm0\" and the image generation completes in seconds rather than failing to the CPU."
+    },
+    {
+      "text": "On a Windows machine where LEMONADE_CACHE_DIR resolves to a path that, combined with the installed ROCm tree depth, exceeds 259 characters, start lemond and load any sd-cpp rocm model; confirm it fails with a ConfigurationException mentioning the cache directory length and that the error message suggests rocm_install_method=tarball."
+    },
+    {
+      "text": "Start lemond, load a model on the rocm backend, then attempt to load a second model with a deliberately invalid configuration; confirm the router throws the error immediately and the first loaded model remains active."
+    }
+  ],
+  "merge_date": "2026-10-19T08:11:03Z",
+  "pr_number": 3718,
+  "range_start": "v2026.42.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-19T08:26:00+00:00",
+  "reviewers": [
+    "@superm1",
+    "@jeremyfowers",
+    "@ramkrishna2910"
+  ],
+  "sha": "1ba79d48ff6945942e01abf8408dcc4741065d83",
+  "shout_outs": [
+    {
+      "handle": "@ramkrishna2910",
+      "reason": "Provided an exceptional inline review that caught four real bugs in the ROCm path guard: a scan error returning 0 (false pass that caused an access violation), a cached absolute path length that broke when a user moved their cache directory, a missing _WIN32 guard that would block Linux users, and a unit test that never called the real code. Each finding was reproduced with a specific scenario and the author addressed all four."
+    }
+  ],
+  "subject": "Restore sdcpp rocm support on Windows (#3718)",
+  "summary": "Re-enables the sd-cpp ROCm backend on Windows by staging the full HIP runtime DLL set (amdhip64* and amd_comgr*) into the sd-server executable directory instead of only amdhip64_7.dll, preventing a mixed-pair DLL loading bug that caused silent CPU fallback, and adds a Windows MAX_PATH guard for rocBLAS Tensile file lengths, router configuration-error handling, and GPU offload validation in CI.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The PR introduces user-facing behavior changes (the Windows ROCm path-length refusal and the router configuration-error handling change) that have no evidence of being manually exercised on a release-candidate installation."
+}
