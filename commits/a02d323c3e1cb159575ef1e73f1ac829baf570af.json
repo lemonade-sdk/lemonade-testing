@@ -1,0 +1,38 @@
+{
+  "author": "@superm1",
+  "branch": "main",
+  "bucket": "v2026.44",
+  "commit_sha": "a02d323c3e1cb159575ef1e73f1ac829baf570af",
+  "committed_at": "2026-10-19T03:10:18+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The change is a version string rollback in backend_versions.json. It does not affect the server API, CLI interface, config schema, or persistence format.",
+    "documentation": "No documentation affected. The PR correctly checked 'Documentation is not affected by this change' in the Breaking Changes section. CodeRabbit noted a minor internal inconsistency in the Documentation checkbox (marked as affected but no docs changed), which is a PR body issue not a documentation gap.",
+    "manual_release_testing": "This change only updates a version number in a JSON config file; it does not modify code, APIs, CLI flags, GUI, or any user-visible surface. The CI build pipeline already exercises all build targets with this pin. No manual release testing is required for a version pin rollback.",
+    "post_approval_commits": "None. The two PR commits (revert of v1.0.9 bump, revert of v1.0.8 bump) were authored on 2026-10-18T12:48-49Z, well before the first approval at 2026-10-18T22:13:39Z. The branch was stable through merge.",
+    "review": "PR #3903 was requested from @jeremyfowers and @ZaneNi. Two substantive reviews were submitted: @fl0rianr approved at 2026-10-18T22:13:39Z and @iswaryaalex approved at 2026-10-18T22:16:55Z, both without bodies. Neither reviewer has FLM listed as a subject area in docs/dev/contribute.md, though the change is a one-line JSON rollback rather than code, reducing the need for deep domain expertise. @superm1 (the author) is the admin maintainer with FLM/NPU expertise, so the regression itself was authored and understood by a subject-matter expert. CodeRabbit flagged an internal inconsistency in the PR body (Documentation checkbox mismatch) but this is cosmetic.",
+    "security": "No security concerns. This is a revert of upstream version bumps — no new code execution paths, no supply-chain additions, no credential handling, no network calls beyond what the version pin already triggers.",
+    "tests": "All CI checks passed (C++ build, Docker smoke test, MCP smoke test, unit tests, ARM64 build, embeddable builds, linting, CodeQL, etc.). The change only modifies a version pin in src/cpp/resources/backend_versions.json; no code paths changed, so no new tests are needed. @iswaryaalex provided external validation that 1.0.9 fails on Linux while 1.0.7 works. @superm1 cherry-picked to release-v2026.43 and confirmed FLM worked on a Kracken laptop under systemd."
+  },
+  "generation_seconds": 167.2,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-19T03:47:16Z",
+  "pr_number": 3903,
+  "range_start": "v2026.42.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-19T03:51:48+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@iswaryaalex"
+  ],
+  "sha": "a02d323c3e1cb159575ef1e73f1ac829baf570af",
+  "shout_outs": [
+    {
+      "handle": "@iswaryaalex",
+      "reason": "Provided hands-on validation that 1.0.9 still fails on Linux while 1.0.7 works, confirming the need for the rollback."
+    }
+  ],
+  "subject": "Roll back FLM to 1.0.7 release (#3903)",
+  "summary": "Rolls back the FastFlowLM NPU backend version from v1.0.9 to v1.0.7 in backend_versions.json, reverting the v1.0.8 and v1.0.9 bumps that introduced a Linux systemd launch regression.",
+  "verdict": "Clean",
+  "verdict_reason": "A minimal one-line version pin rollback, approved by two reviewers, backed by real-world validation, and fully passing CI with no post-approval churn."
+}
