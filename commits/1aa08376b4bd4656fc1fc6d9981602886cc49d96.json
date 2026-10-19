@@ -1,0 +1,32 @@
+{
+  "author": "@bernardogv",
+  "branch": "main",
+  "bucket": "v2026.44",
+  "commit_sha": "1aa08376b4bd4656fc1fc6d9981602886cc49d96",
+  "committed_at": "2026-10-19T17:41:18+00:00",
+  "evidence": {
+    "api_compatibility": "No code or API changes. No breaking changes.",
+    "documentation": "The change adds a detailed note to the custom-models.md Imported models section explaining the ProtectHome=yes restriction and providing a concrete drop-in solution (ProtectHome=tmpfs + BindReadOnlyPaths). The FAQ entry for LM Studio models is updated with a cross-reference link to that note. The documentation is self-contained and directly addresses the user-visible problem described in the PR body.",
+    "manual_release_testing": "This PR only adds text to docs/guide/configuration/custom-models.md and docs/guide/faq.md. No code, config, API, CLI, or shipped behavior changes — nothing a user can exercise by hand before release.",
+    "post_approval_commits": "The PR had two commits: the initial docs change and a second commit ('docs: note drop-in scope and link it from the FAQ') added after the first commit but before the approval at 15:46:05Z. Both commits were approved together — no commits were added after approval.",
+    "review": "PR #3895 received one approval from @fl0rianr at 2026-10-19T15:46:05Z with the comment 'Thanks, LGTM'. No inline review comments or discussions. The PR was merged via a merge group (gh-readonly-queue/main/pr-3895) with all CI checks green. The reviewer's subject areas (LMX, GUI, CI, smart router) do not include documentation or packaging specifically, but the change is self-contained text-only with no code risk.",
+    "security": "No code changes. The documentation snippet references a systemd drop-in with ProtectHome=tmpfs and BindReadOnlyPaths for read-only model access — the proposed configuration is security-positive and does not weaken the service hardening.",
+    "tests": "No tests expected or needed for a documentation-only change. All three CI workflows (Docs And Style, Server Download Registry Tests, C++ Server Build Test and Release) passed on the merge commit."
+  },
+  "generation_seconds": 190.2,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-19T18:30:34Z",
+  "pr_number": 3895,
+  "range_start": "v2026.42.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-19T18:35:36+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "1aa08376b4bd4656fc1fc6d9981602886cc49d96",
+  "shout_outs": [],
+  "subject": "docs: extra_models_dir under /home needs a drop-in on deb/rpm (#3895)",
+  "summary": "Adds documentation explaining the systemd ProtectHome=yes restriction on .deb/.rpm packages when using extra_models_dir under /home, including a drop-in snippet and a link from the FAQ.",
+  "verdict": "Clean",
+  "verdict_reason": "Pure documentation-only change with one approval and all CI checks passing."
+}
