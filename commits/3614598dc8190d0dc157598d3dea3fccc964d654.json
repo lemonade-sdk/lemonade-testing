@@ -1,0 +1,46 @@
+{
+  "author": "@sawansri",
+  "branch": "main",
+  "bucket": "v2026.44",
+  "commit_sha": "3614598dc8190d0dc157598d3dea3fccc964d654",
+  "committed_at": "2026-10-19T17:41:54+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The `build_agent_server_base_url` signature adds an optional `is_ssl` parameter with a default of false, preserving backward compatibility. The `AgentModelEntry` struct adds a `labels` vector field. All new flags are optional. No existing config format is broken; the provider block gains new fields (compat, contextWindow, maxTokens, input) which are additive to what pi reads. The author explicitly checked 'no breaking changes'.",
+    "documentation": "Both docs/integrations/pi.md and docs/guide/cli.md are updated. The pi integration doc covers MCP setup with --mcp, codemode with --codemode, images and tool-calling warnings, and the three config files written by launch. The CLI guide documents --mcp/--no-mcp and version requirements (MCP needs pi 1.0+, codemode needs pi 1.1+). Version requirements were added in response to reviewer feedback.",
+    "manual_release_testing": "This PR changes the `lemonade launch pi` command with three new flags (--mcp, --no-mcp, --codemode), modifies how pi's models.json and settings.json are written (new fields, API key reference), and changes error/stop behavior. None of this was exercised end-to-end against a real pi installation by a human; CI tests use a fake agent stub. This is user-visible CLI behavior that should be manually verified before release. See maintainer todos above.",
+    "post_approval_commits": "None. The last approval (@jeremyfowers) was at 2026-10-19T15:38:08Z. The final PR commit was at 2026-10-16T21:41:58Z. The merge group commit (3614598) was the merge of the readonly-queue branch, and all PR commits predate the approval.",
+    "review": "The PR was reviewed by @jeremyfowers (a maintainer with CLI subject-area expertise) who submitted a changes-requested review on 2026-10-15 noting HTTPS URL issues and MCP credential handling. @fl0rianr reviewed and approved on 2026-10-16. @jeremyfowers re-reviewed after the author fixed auto-tuned ctx_size, HTTPS, MCP credential drops, and other issues, approving again on 2026-10-19. The author responded to all substantive comments, addressing context window, MCP credentials, HTTPS URLs, stdio key cleanup, permission/symlink preservation, and version checks. No post-approval commits were added (last approval at 2026-10-19T15:38:08Z; merge at 19:13:32Z).",
+    "security": "API key handling is correct: a real key is exported to the process environment and referenced as ${LEMONADE_API_KEY} in models.json rather than written to disk. When the MCP server URL changes, old credentials (headers, oauth, auth) are dropped to prevent credential leakage to a different server. When mcp.json is unreadable and a key is set, launch exits rather than starting pi with the key pointing at a stale server. The code properly handles symlinked mcp.json by writing through the link and preserving file permissions. No supply-chain changes or suspicious code detected.",
+    "tests": "New C++ unit test file test/cpp/test_pi_profile.cpp (281 lines) covering provider block construction (llama.cpp compat flags, context window, vision, reasoning models, unknown window fallback), API key value resolution, server origin (HTTPS vs HTTP), pi version parsing, and MCP server merge/refresh/remove behavior including symlink handling and permission preservation. New integration test file test/server_cli2.py adds 413 lines of Python tests (test_128 through test_141) covering: config and launch, API key handling off disk, --mcp/--no-mcp flag lifecycle, --ctx-size propagation, auto ctx_size with model load wait, labels for not-yet-downloaded models, unknown model warnings, error stops on MCP removal failure / config update failure / unreadable mcp.json / missing pi binary / load failure, and --codemode version check. Tests are comprehensive for the scope."
+  },
+  "generation_seconds": 343.7,
+  "maintainer_todos": [
+    {
+      "text": "Run `lemonade launch pi --mcp --codemode` against a model and confirm the pi agent starts, pi's mcp.json contains a lemonade server entry with the correct URL, and pi's models.json includes contextWindow and maxTokens for the model."
+    },
+    {
+      "text": "Run `lemonade launch pi --api-key mykey` and verify that pi's process environment contains LEMONADE_API_KEY set to mykey, while pi's models.json contains \"apiKey\": \"${LEMONADE_API_KEY}\" rather than the plaintext key."
+    },
+    {
+      "text": "Run `lemonade launch pi --model <a-vision-model>` and confirm pi's models.json sets \"input\": [\"text\", \"image\"] for that model, then verify the agent accepts an image paste."
+    },
+    {
+      "text": "Run `lemonade launch pi --no-mcp` when a lemonade entry already exists in mcp.json and confirm the entry is removed and pi starts."
+    }
+  ],
+  "merge_date": "2026-10-19T19:13:32Z",
+  "pr_number": 3786,
+  "range_start": "v2026.42.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-19T19:39:39+00:00",
+  "reviewers": [
+    "@jeremyfowers",
+    "@fl0rianr"
+  ],
+  "sha": "3614598dc8190d0dc157598d3dea3fccc964d654",
+  "shout_outs": [],
+  "subject": "Improve `lemonade launch pi` integration (#3786)",
+  "summary": "Adds --mcp, --no-mcp, and --codemode flags to `lemonade launch pi`; writes per-model contextWindow/maxTokens and image input to pi's models.json; keeps the API key off disk by referencing ${LEMONADE_API_KEY} in models.json while export it to pi's process.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The PR introduces significant new user-visible CLI behavior with new flags and config-file writes that has not been manually exercised end-to-end against a real pi installation."
+}
