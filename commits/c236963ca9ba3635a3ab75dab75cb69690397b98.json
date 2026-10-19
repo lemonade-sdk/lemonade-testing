@@ -1,0 +1,32 @@
+{
+  "author": "@bernardogv",
+  "branch": "main",
+  "bucket": "v2026.44",
+  "commit_sha": "c236963ca9ba3635a3ab75dab75cb69690397b98",
+  "committed_at": "2026-10-19T17:46:44+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The fix corrects a bug where a directory-valued *_bin config was passed to exec() unmodified. This changes behavior only for the broken case (users who configured a directory and got a failure). Users who correctly pointed *_bin at a file path see no change. The author confirmed this is not a breaking change.",
+    "documentation": "Not affected. This is a bug fix restoring intended behavior for a documented config pattern (pointing *_bin at a directory). No new features or behavior changes to document. @superm1's question about docs was appropriately answered by the author.",
+    "manual_release_testing": "This is a regression fix (previously lemond tried to exec the directory and failed with 'Failed to execute …/bin'). Users who had set llamacpp.vulkan_bin or similar *_bin config values to a directory path experienced a failure before this fix; they now get the correct behavior automatically. No new user-visible surface is introduced — the documented config form that previously broke is now fixed. The existing CI tests the fix path sufficiently; no manual release testing is required.",
+    "post_approval_commits": "No commits were added after the approval at 2026-10-19T17:41:50Z. The second commit (test: per-run temp dir and cleared Vulkan override) was authored at 2026-10-17T22:27:46Z, well before approval. The branch was clean through merge.",
+    "review": "PR #3893 was approved by @superm1 (submitted 2026-10-19T17:41:50Z), who has llamacpp listed as a subject-area expertise. @superm1 asked 'Should docs be updated for this?' before approving; the author indicated no documentation changes were needed, which is correct since this fixes a regression, not a behavior change. No other human review comments exist. CodeRabbit AI raised two comments on the test code (unique temp directory, clearing LEMONADE_LLAMACPP_VULKAN_BIN env var), both addressed in the second commit. The PR was self-reviewed by the author and scoped to one clear issue.",
+    "security": "No security concerns. The change only adds a filesystem check (is_directory → is_regular_file) before resolving a configured path. No new code execution paths, network calls, or credential handling.",
+    "tests": "New unit test added to test/cpp/test_backend_utils_gpu_env.cpp covering three scenarios: (1) a *_bin directory resolves to the backend binary inside it, (2) a file *_bin path is returned unchanged, (3) a directory without the binary at top level is left unchanged. The author verified the fix by rebuilding with backend_utils.cpp reverted to main and observing the expected single test failure. All CI checks passed including the C++ Server Build, Test, and Release workflow."
+  },
+  "generation_seconds": 134.5,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-19T19:54:38Z",
+  "pr_number": 3893,
+  "range_start": "v2026.42.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-19T19:58:36+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "c236963ca9ba3635a3ab75dab75cb69690397b98",
+  "shout_outs": [],
+  "subject": "fix(backends): resolve a *_bin directory to the binary inside it (#3893)",
+  "summary": "fix(backends): resolve a *_bin directory to the binary inside it (#3893)",
+  "verdict": "Clean",
+  "verdict_reason": "Small, targeted bug fix with subject-matter-expert review, adequate unit tests, and all CI checks passing."
+}
