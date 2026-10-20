@@ -1,0 +1,45 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.44",
+  "commit_sha": "10166a85ba53d1b4b8b9dec8179b1acdbeef03c2",
+  "committed_at": "2026-10-20T20:04:29+00:00",
+  "evidence": {
+    "api_compatibility": "No API changes. The only code change is docs/assets/news-data.js, a static JS array that feeds the website's news feed. No CLI, HTTP API, config file, or persistence format is affected.",
+    "documentation": "The blog post is itself documentation — a vision document published as a styled HTML article. The news-data.js was updated to register it in the site's news feed with title, URL, date, description, and image. The HTML follows the site's established styling patterns and is consistent with recent news posts. The byline lists eight team members (@jeremyfowers, @bitgamma, @ramkrishna2910, @iswaryaalex, @sawansri, @sreeram-11, @sofiageo, @meghsat) and the AI assistant Claude as co-author. No separate release notes entry is required for a vision blog post.",
+    "manual_release_testing": "The HTML blog post is user-reachable at https://lemonade-server.ai/news/auto-bkc-vision.html. It contains an animated SVG hero diagram, CSS animations, responsive breakpoints, an intersection-observer-triggered fade-in, and external CDN references (Google Fonts, Material Symbols). No evidence that anyone opened the page in a browser, verified the animation, or checked mobile layouts. The post-approval commit only touched text and metadata, not the interactive elements — but the interactive elements themselves were never exercised.",
+    "post_approval_commits": "One commit (edbad0c3fb6f6ca0e55358ff2a10dfa7111d6c7a, 'Ready for publication') was added after the sole approval on 2026-10-15. It changes: news-data.js date from 'October 14, 2026' to 'October 20, 2026', expanded the description text, updated the og:title to 'Vision: your auto-optimizing local stack of agents, models, and engines. Automatically Selecting the Best Known Configuration (auto-BKC)', updated the h1 title, and updated the byline date. These are cosmetic publication-readying changes consistent with the PR's purpose. The CodeRabbit bot issue about .lit class persistence was also resolved here. No new behavior was added.",
+    "review": "Only one substantive review from @bitgamma, submitted on 2026-10-15T06:50:27Z, with the comment: 'Love the vision. I wonder if we should rename/extend the auto-tune working group to make realizing this vision its main goal.' This is a single-line reaction, not a thorough review of the 1207-line HTML file or the news-data.js integration. Per contribute.md, PRs should have at least one reviewer with subject-matter expertise; @jeremyfowers' subject areas include 'website' and 'governance,' and @bitgamma's areas include 'benchmarks' and 'new models' — so the review touches a related domain but the depth was light. An auto-generated CodeRabbit bot comment flagged a minor UI bug (previous animation combination stays .lit after cycle advance), which was addressed in the post-approval commit.",
+    "security": "The HTML page loads fonts and icons from Google Fonts CDN (fonts.googleapis.com, fonts.gstatic.com) and Material Symbols — standard for the Lemonade site. No new external domains, no inline scripts beyond the page's own animation code, no credentials or network calls. No supply-chain changes. The only external reference is to raw.githubusercontent.com for the banner image, already present on the site.",
+    "tests": "This is a documentation/content PR (one new HTML file plus a JS data array update). No automated tests are expected for static blog content, and none were weakened or deleted."
+  },
+  "generation_seconds": 227.6,
+  "maintainer_todos": [
+    {
+      "text": "Open https://lemonade-server.ai/news/auto-bkc-vision.html in a browser and verify the hero animation cycles through all four agent/model/engine combinations (Hermes+Qwen3.8-Flash-Next+Halogen, Pi+Gemma 4+llama.cpp, AnythingLLM+Qwen3.6+FastFlowLM, DeepSeek Harness+DeepSeek-V4-Flash+DwarfStar4) and the status text updates correctly for each cycle."
+    },
+    {
+      "text": "Resize the browser window to under 620px width and confirm the layout collapses: the hero animation stacks into a single column, the enabling technology table hides its header and stacks cells, and the flow-track columns stack vertically."
+    },
+    {
+      "text": "Open the page in a browser with prefers-reduced-motion enabled (or use Firefox's responsive design mode with reduced motion) and verify all animations and transitions are disabled — the hero animation should show a static final state, and the enabling technology board should be immediately visible without the scroll-triggered fade-in."
+    },
+    {
+      "text": "Verify the news feed at the Lemonade home page lists the new blog post with the correct title, date (October 20, 2026), description, and image."
+    }
+  ],
+  "merge_date": "2026-10-20T20:04:29Z",
+  "pr_number": 3846,
+  "range_start": "v2026.42.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-20T20:46:59+00:00",
+  "reviewers": [
+    "@bitgamma"
+  ],
+  "sha": "10166a85ba53d1b4b8b9dec8179b1acdbeef03c2",
+  "shout_outs": [],
+  "subject": "News: auto-BKC vision blog post (#3846)",
+  "summary": "Publishes Lemonade's auto-BKC (Automatically Selecting the Best Known Configuration) vision document as a styled HTML blog post at docs/news/auto-bkc-vision.html and registers it in the news-data.js feed, with an animated hero diagram, technology tables, and responsive design.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The HTML blog post is user-visible with interactive animations that were never manually exercised, and the review was limited to a single one-line approval."
+}
