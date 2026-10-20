@@ -1,0 +1,33 @@
+{
+  "author": "@sreeram-11",
+  "branch": "main",
+  "bucket": "v2026.44",
+  "commit_sha": "8014fd17459fa8d69c29f3b7702d7ac7cb3ff78d",
+  "committed_at": "2026-10-20T04:22:32+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The /pull endpoint returns a different HTTP status (503 vs 500) and structured error body when HF is throttled — clients typically retry on both, and the new format adds useful retry metadata. The RegistryRateLimitError C++ exception class is internal. The test helper gained an optional rate_limit_budget parameter with a default, preserving backward compatibility.",
+    "documentation": "The PR states no documentation changes are needed, which is appropriate for an internal CI fix and improved error handling. The API docs were not altered.",
+    "manual_release_testing": "The LEMONADE_CI_MODE change (auto_check_model_updates=false) is CI-only. The /pull endpoint now returns 503 with Retry-After and code=registry_unavailable instead of 500 when HF is rate-limited — this is an external-condition behavior change (requires HF throttling) and is a strict improvement over the prior 500 response. The SSE stream_download_operation path similarly gains the structured error. No manual test is practical or necessary.",
+    "post_approval_commits": "The PR branch had two merges with main (2026-10-15 and 2026-10-18) and one rebase commit removing the cache fallback. @fl0rianr approved after the removal on 2026-10-18T10:36:53Z; @superm1 approved on 2026-10-19T18:05:31Z; the final merge with main (0ca75c6) occurred at 2026-10-20T03:41:37Z. All post-approval commits were merge commits — no new behavior was added after the latest approval.",
+    "review": "PR #3859 was requested for review by @jeremyfowers. @fl0rianr reviewed first (CI subject-area expert), requested changes on a proposed cache-fallback feature, then approved after the author removed it. @superm1 also approved. CodeRabbit bot raised 4 issues across the cache fallback and test helper; the author resolved all by removing the cache fallback and fixing the retry logic. No substantive post-approval commits altered the review scope.",
+    "security": "No security concerns. No new supply-chain dependencies, credential handling changes, or code execution paths. The change reduces external API calls in CI (auto_check_model_updates=false), which actually improves the security posture slightly.",
+    "tests": "The test helper in test/utils/server_base.py was modified to parse structured error codes instead of string-matching repo IDs, and to handle 503 with a bounded 60s retry budget. This improves CI robustness but no new unit or integration test was added to verify the new RegistryRateLimitError exception or the 503 response path on the C++ server side. No existing tests were weakened or deleted."
+  },
+  "generation_seconds": 244.5,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-20T04:58:42Z",
+  "pr_number": 3859,
+  "range_start": "v2026.42.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-20T05:04:29+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@superm1"
+  ],
+  "sha": "8014fd17459fa8d69c29f3b7702d7ac7cb3ff78d",
+  "shout_outs": [],
+  "subject": "fix(ci): stop Hugging Face rate limits from failing model pulls (#3859)",
+  "summary": "Stops Hugging Face rate limits from failing model pulls by disabling per-repo startup update checks in LEMONADE_CI_MODE and returning 503 with Retry-After headers (code: \"registry_unavailable\") instead of 500 when the HF registry is throttled, plus extending the test helper's /pull retry budget from ~6s to 60s.",
+  "verdict": "Clean",
+  "verdict_reason": "Well-scoped CI fix that properly addresses rate-limiting with no breaking changes, adequate review, and no user-facing behavior requiring manual release testing."
+}
