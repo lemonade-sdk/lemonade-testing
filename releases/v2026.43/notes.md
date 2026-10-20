@@ -2,14 +2,14 @@
 
 ### ⚠️ These notes are AI generated and will be revised by a human ⚠️
 
-- `GET /api/v1/system-stats` selects the primary GPU by total memory instead of highest utilization, with NVIDIA GPU utilization and VRAM reporting, so the numbers match what you expect on multi-GPU systems.
-- Image editing now accepts one or more reference images with auto-selected output dimensions and a configurable soft pixel cap.
-- Live inference throughput is now available on `GET /v1/stats` as `live.active_requests` and `live.estimated_tokens_per_second`.
-- `lemonade bench` shows prefill throughput (PP t/s) in table output and `--json`, with `--compare` mode tracking PP change.
+- TheNoise image backend promoted to Core tier for ROCm on AMD GPUs across Linux and Windows.
+- Image editing now accepts multiple reference images with automatic size selection and lossless passthrough.
+- Live inference metrics added to GET /v1/stats, showing active requests and estimated tokens per second.
+- AMD GPU utilization and VRAM telemetry now reported on Windows alongside NVIDIA in system-stats.
 
 ## Breaking Changes
 
 ### ⚠️ These notes are AI generated and will be revised by a human ⚠️
 
-- `GET /api/v1/system-stats` now reports the primary GPU by total memory instead of the GPU with highest utilization, so dashboard values and alerting thresholds may change on multi-GPU systems.
-- Models gated behind a guest-tier backend are now hidden from `GET /v1/models?show_all=true` and return `model_not_supported` on pull until the guest backend is installed.
+- GET /api/v1/system-stats now reports gpu_percent and vram_gb for the primary GPU by total memory instead of the GPU with the highest utilization — on multi-GPU systems these fields will show different values, requiring updates to dashboards and alerting rules.
+- Models gated behind a guest-tier backend are now hidden from GET /v1/models?show_all=true and return model_not_supported on pull until the guest backend is installed — existing setups relying on those models being visible will no longer see them.
