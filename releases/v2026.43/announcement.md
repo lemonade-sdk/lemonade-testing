@@ -1,37 +1,35 @@
-## Lemonade v2026.43.1
+## Lemonade v2026.43.3
 
 ### ⚠️ These notes are AI generated and will be revised by a human ⚠️
 
-@everyone v2026.43.1 is out with multi-GPU stats that finally make sense, image editing with reference images, live inference throughput tracking, and prefill throughput in the bench tool — plus thenoise is now a Core backend for AMD GPUs.
+@everyone v2026.43.3 is out: the thenoise image backend lands on AMD GPUs across Linux and Windows, image editing now accepts multiple reference images, live inference metrics show up on `/v1/stats`, and AMD GPU telemetry joins NVIDIA on Windows.
 
 ### Breaking Changes
 
-- `GET /api/v1/system-stats` now reports `gpu_percent` and `vram_gb` for the primary GPU (the one with the most total memory) instead of the GPU with the highest utilization — if you're on a multi-GPU setup your dashboards and alerting thresholds may need updating.
-- Models gated behind a guest-tier backend are now hidden from `GET /v1/models?show_all=true` and return `model_not_supported` on pull until the guest backend is installed — setups that relied on seeing those models without the backend will no longer work.
+- `GET /api/v1/system-stats` reports `gpu_percent` and `vram_gb` for the primary GPU by total memory instead of the GPU with the highest utilization — on multi-GPU setups the numbers will change, so update your dashboards and alerting rules accordingly.
+- Models gated behind a guest-tier backend are now hidden from `GET /v1/models?show_all=true` and return `model_not_supported` on pull until you install the guest backend — if your setup relied on those models being visible without the backend, they'll disappear now.
 
-### 📊 Multi-GPU stats that make sense
+### 💥 thenoise on AMD GPUs
 
-`@fl0rianr` rewrote the primary GPU selection to pick by total memory instead of highest utilization and added NVIDIA GPU utilization and VRAM reporting — on multi-GPU systems the numbers now match what you'd expect. Thanks to @kenvandine and @superm1 for the help.
+`@bitgamma` promoted the thenoise image backend to Core tier for ROCm on AMD GPUs (Linux and Windows), so AMD users can now generate and edit images alongside everyone else.
 
-### 🖼️ Image editing with reference images
+### 🎨 Multiple reference images for editing
 
-`@fl0rianr` extended the image editing endpoint to accept one or more reference images, auto-selecting output dimensions from the first one with a soft 4 MP cap. A new Qwen-Image-2.1-Turbo-INT8 recipe is also available in thenoise.
+`@fl0rianr` taught the edit endpoint to accept multiple reference images with automatic size selection and lossless passthrough — the output dimensions come from the first reference with a 4 MP soft cap, and images flow through TheNoise and SD CPP backends without re-encoding.
 
-### 📈 Live inference throughput at a glance
+### 📊 Live inference metrics on `/v1/stats`
 
-`@fl0rianr` added live inference throughput tracking to `GET /v1/stats`, so you can see `live.active_requests` and `live.estimated_tokens_per_second` — you can't optimize what you can't measure.
+`@fl0rianr` added live inference throughput tracking to `/v1/stats`, surfacing `live.active_requests` and `live.estimated_tokens_per_second` so you can see what's happening in real time.
 
-### ⚡ Prefill throughput in `lemonade bench`
+### 🖥️ AMD GPU telemetry on Windows
 
-`@bitgamma` added prefill throughput (`PP t/s`) to the bench output — a new `PP t/s` column in table mode, `pp_tps` stats in `--json`, and `PP change` percentage tracking in `--compare` mode.
+`@iswaryaalex` added AMD GPU utilization and VRAM reporting on Windows, bringing parity with the NVIDIA data already available through `/system-stats`.
 
 ### Additional Improvements
 
-- `@bitgamma` promoted TheNoise from Experimental to Core for ROCm on AMD GPUs.
-- `@sreeram-11` bumped TheRock to 10.1.0, updated llama.cpp ROCm-stable to b11580, and updated stable-diffusion.cpp to master-957-90e86d1.
-- `@zaneni6` bumped the FastFlowLM NPU backend from v1.0.7 to v1.0.9.
-- `@fl0rianr` fixed a bug where incomplete GGUF shard families would appear as spurious duplicate models.
-- `@jeremyfowers` fixed the distro defaults path so `lemond` reads `defaults.json` relative to its install prefix on Linux.
-- `@joshuacox` added the missing "Start the service" step to the Arch Linux install guide.
+- `@sreeram-11` bumped ROCm backend version pins: TheRock to 10.1.0, llama.cpp ROCm to b11580, and sd-cpp to master-957-90e86d1.
+- `@bitgamma` added a `PP t/s` (prefill throughput) column to `lemonade bench`, including JSON keys and `--compare` percentage tracking.
+- `@superm1` rolled back the FLM NPU backend to v1.0.7 to fix a regression where FLM fails to launch under systemd.
+- `@joshuacox` added the missing "Start the service" step to the Arch Linux install page.
 
-Head over to [GitHub Releases](https://github.com/lemonade-sdk/lemonade/releases) for the full changelog — happy to hear how this version treats your setup!
+Grab v2026.43.3 from [GitHub Releases](https://github.com/lemonade-sdk/lemonade/releases) and let me know in #general if anything doesn't look right!
