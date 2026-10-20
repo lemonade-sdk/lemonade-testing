@@ -1,0 +1,37 @@
+{
+  "author": "@iswaryaalex",
+  "branch": "main",
+  "bucket": "v2026.44",
+  "commit_sha": "fbab8ce02d636034473fe2a730f590ed2dda4d66",
+  "committed_at": "2026-10-20T15:17:48+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The benchmark JSON schema is extended with new fields (pp_tps, quant, lemonade_version, vram_peak_gb, tg_tps, ttft_ms_best) but no existing keys are renamed or removed. The leaderboard merge fix (keying by fork_id field instead of folder names) corrects a bug that silently dropped single-fork dispatches. Version selection changes from lexical to numeric sort — v2026.42.1 now correctly sorts ahead of v2026.9.1. These are additive/corrective changes with no downstream migration required.",
+    "documentation": "No user-facing or developer-facing documentation changes. The changes are entirely to CI/benchmarking infrastructure. The scenario definitions added to bench_scenarios.json (context-4k scenario) are consumed by the benchmark script, not by end-user documentation.",
+    "manual_release_testing": "This is CI/benchmarking infrastructure — no user-facing binary, CLI flag, or API endpoint changes. The benchmark data feeds into public leaderboards, but verifying leaderboard output requires a CI run with actual hardware and is not something a tester can directly exercise from a release candidate. Per the build-system exception, no manual release testing to-do is written; residual risk is that incorrect aggregation logic (e.g., hardware dedup, numeric version sort) could produce stale or duplicate leaderboard entries until the next CI run validates the pipeline end-to-end.",
+    "post_approval_commits": "The branch was last pushed on 2026-10-19T04:23:56Z (sha dac212b). @sreeram-11's approval came at 2026-10-20T07:16:11Z. No commits were added after approval. The final merge commit (d326b6f) by @iswaryaalex was a merge of main into the PR branch, not a new feature commit.",
+    "review": "The PR was reviewed by @sreeram-11 (a maintainer whose subject area includes 'benchmarking' per docs/dev/contribute.md). They first requested changes on 2026-10-16T21:10:42Z, then approved on 2026-10-20T07:16:11Z after all follow-up commits were pushed. CodeRabbit bot also posted automated inline comments across the PR lifecycle, all of which the author addressed. The reviewer applied the project's design-for-agility principle by restructuring the benchmark pipeline (per-ctx invocations) rather than patching individual issues, and the scope was kept within CI/benchmarking infrastructure.",
+    "security": "No security concerns. The changes are to CI scripts (.github/scripts/validate_backend_bench.py), CI workflow (.github/workflows/benchmark-regression.yml), and benchmark configuration JSON files (bench_scenarios.json, benchmark_forks.json). The new halo-box-strix fork config references a public GitHub release download URL (https://github.com/halo-box/strix-llama.cpp/releases/download/{version}/...), which is a standard pattern for external backend binaries in this project.",
+    "tests": "The PR changes CI scripts and workflow YAML only. All CI checks passed on the merge queue: Validate New llama.cpp Release, Launchpad PPA, and C++ Server Build/Test/Release all completed with success. The benchmark scripts (validate_backend_bench.py) are not unit-tested in this project; the CI run itself serves as the integration test."
+  },
+  "generation_seconds": 259.2,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-20T16:01:27Z",
+  "pr_number": 3715,
+  "range_start": "v2026.42.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-20T16:07:39+00:00",
+  "reviewers": [
+    "@sreeram-11"
+  ],
+  "sha": "fbab8ce02d636034473fe2a730f590ed2dda4d66",
+  "shout_outs": [
+    {
+      "handle": "@sreeram-11",
+      "reason": "Credited as a co-author of the merge commit (Co-authored-by: Sreeram <sreeram.sivasubramony@amd.com>), contributing to the final merge of this PR."
+    }
+  ],
+  "subject": "(ci) : Adding halo box backend benchmarking support (#3715)",
+  "summary": "Adds halo-box-strix backend fork to the benchmark regression CI and restructures the benchmark pipeline to run per-ctx scenario invocations (context-4k@4096, context-32k@32768), introduces pp_tps prefill throughput metrics, deduplicates hardware leaderboard entries by CPU+VRAM+OS, and adds numeric version selection to the aggregation.",
+  "verdict": "Clean",
+  "verdict_reason": "The CI benchmarking changes were reviewed by a maintainer with benchmarking subject-matter expertise (@sreeram-11), all requested changes were addressed before approval, and no post-approval commits were added."
+}
