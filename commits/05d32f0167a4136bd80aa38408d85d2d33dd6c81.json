@@ -1,0 +1,32 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.44",
+  "commit_sha": "05d32f0167a4136bd80aa38408d85d2d33dd6c81",
+  "committed_at": "2026-10-20T22:08:42+00:00",
+  "evidence": {
+    "api_compatibility": "The commit introduces a redirect (noindex with meta refresh and JS fallback) from docs/news/auto-bkc-vision.html to docs/news/auto-opt-vision.html, so any bookmarks or external links to the old URL continue to resolve. No breaking changes.",
+    "documentation": "The PR correctly updates the blog title to 'Vision: your auto-optimizing local stack of agents, models, and engines', the byline to list the contributors, and the news-data.js entry to point to the new slug. One minor inconsistency remains: the article:published_time meta tag still reads 2026-10-14 while the byline and news-data.js entry use 2026-10-20 — crawlers and link previews will show the wrong date.",
+    "manual_release_testing": "This is a pure documentation/content change with no API, CLI, config, or behavioral surface. The user-visible change is a renamed blog post and a redirect from the old URL. No manual testing required.",
+    "post_approval_commits": "No commits were added after approval; the latest commit (6497ff263eca0022b22ee081b15760abe71875e3) was pushed at 2026-10-20T21:44:31Z, and the approval came at 21:46:37Z.",
+    "review": "@superm1 (website area maintainer, subject-matter-expert per docs/dev/contribute.md) approved the PR at 2026-10-20T21:46:37Z after all five commits were in place. CodeRabbit posted a minor concern about a mismatched article:published_time meta tag (set to 2026-10-14 while the byline says October 20, 2026) but the author did not address it before merge. CodeRabbit itself rated merge risk as low and said correcting the metadata date 'does not block merging'.",
+    "security": "No security concerns. The change touches only static blog content. The redirect includes a JS fallback and a fallback link, which is a standard safe pattern.",
+    "tests": "The changes touch only three static HTML/JS files (docs/news/auto-opt-vision.html, docs/news/auto-bkc-vision.html, docs/assets/news-data.js). No tests are expected for documentation edits. The Routing Schema Tests workflow passed (conclusion: success) and the C++ Server Build workflow passed (conclusion: success). The Publish News workflow was skipped, which is expected since it runs post-merge."
+  },
+  "generation_seconds": 194.0,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-20T22:48:58Z",
+  "pr_number": 3921,
+  "range_start": "v2026.42.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-20T22:53:54+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "05d32f0167a4136bd80aa38408d85d2d33dd6c81",
+  "shout_outs": [],
+  "subject": "News: edit auto-opt blog based on feedback (#3921)",
+  "summary": "Renames the auto-bkc-vision blog post to auto-opt-vision with updated title, byline, and a noindex redirect from the old slug.",
+  "verdict": "Clean",
+  "verdict_reason": "This is a documentation-only rename with a proper redirect, approved by a website-area maintainer, with all CI passing."
+}
