@@ -1,0 +1,37 @@
+{
+  "author": "@superm1",
+  "branch": "release-v2026.43",
+  "bucket": "v2026.43",
+  "commit_sha": "0cb1da0014e765c38198cab0efdc2ce8f7284454",
+  "committed_at": "2026-10-19T00:10:18-07:00",
+  "evidence": {
+    "api_compatibility": "This commit does not introduce breaking changes. It rolls back to a previously shipped version (1.0.7), so any existing setups using FLM on NPU under systemd should regain the behavior from before the 1.0.8 bump. No API, CLI, config, or schema changes beyond the version number.",
+    "documentation": "No documentation changes are needed for a version rollback. The PR body has a minor checkbox mismatch (marked documentation as updated when only the version config changed), but this is a template hygiene issue, not a documentation gap.",
+    "manual_release_testing": "The commit changes the FLM NPU backend version consumed by users on NPU hardware. No human-run end-to-end test is evidenced beyond the author's single-device test. This is user-visible behavior that should be exercised on a NPU device before release.",
+    "post_approval_commits": "No commits were added after either approval. The two commits in the PR (revert of the v1.0.9 bump and revert of the v1.0.8 bump) both predate the first approval by ~9.5 hours.",
+    "review": "PR #3903 received two approvals: @fl0rianr at 2026-10-18T22:13:39Z and @iswaryaalex at 2026-10-18T22:16:55Z, both on the final commit (3234102). @fl0rianr's documented subject areas are LMX omni models, GUI, CI, and smart router — not FLM or NPU. @iswaryaalex is a contributor (not listed as a maintainer) with no documented FLM/NPU expertise. The project's contributor guide states PRs should have at least one reviewer with subject-area expertise; neither approver covers the engine::flm label area (owned by @superm1 and @ramkrishna2910). @superm1 (the PR author) is the maintainer with explicit FLM and NPU expertise. The PR was merged by @iswaryaalex. @iswaryaalex commented that FLM 1.0.9 still does not work on Linux while 1.0.7 does, which supports the rollback decision. CodeRabbit ran an automated review with no actionable comments beyond noting the PR body checkbox mismatch on the Documentation section.",
+    "security": "No security concerns. This is a version number rollback in a JSON config file. No code execution, credential handling, network calls, or supply-chain changes beyond a dependency version pin to a previously vetted release.",
+    "tests": "No new tests were added. The change is a single-line version rollback in src/cpp/resources/backend_versions.json. The author tested by cherry-picking to the release-v2026.43 branch and confirming FLM worked on a Kracken laptop under systemd. The PR body checkbox for 'Documentation is affected and has been updated' does not match the code (no documentation files changed), a minor template inconsistency flagged by CodeRabbit but not blocking."
+  },
+  "generation_seconds": 118.8,
+  "maintainer_todos": [
+    {
+      "text": "Launch a model via the FLM NPU backend on a NPU device running Linux with systemd and confirm the model launches without the failure seen in FLM 1.0.8/1.0.9."
+    }
+  ],
+  "merge_date": "2026-10-19T03:47:16Z",
+  "pr_number": 3903,
+  "range_start": "v2026.42.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-20T02:45:59+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@iswaryaalex"
+  ],
+  "sha": "0cb1da0014e765c38198cab0efdc2ce8f7284454",
+  "shout_outs": [],
+  "subject": "Roll back FLM to 1.0.7 release (#3903)",
+  "summary": "Rolls back the FastFlowLM (FLM) NPU backend version in backend_versions.json from v1.0.9 to v1.0.7 to fix a regression where FLM fails to launch under systemd on Linux.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "Neither approving reviewer has FLM or NPU subject-matter expertise per the project's review ownership matrix, so the rollback lacks a subject-matter expert sign-off even though the change itself is a minimal revert."
+}
