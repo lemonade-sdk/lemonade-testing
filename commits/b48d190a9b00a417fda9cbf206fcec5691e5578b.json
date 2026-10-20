@@ -1,0 +1,36 @@
+{
+  "author": "@iswaryaalex",
+  "branch": "release-v2026.43",
+  "bucket": "v2026.43",
+  "commit_sha": "b48d190a9b00a417fda9cbf206fcec5691e5578b",
+  "committed_at": "2026-10-19T19:36:55-07:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The /system-stats gpus[] schema accepts null measurement fields, so existing consumers handle the new AMD entries without modification. The existing NVIDIA-only Windows behavior (empty or partial gpus[] for AMD hardware) becomes more complete; no existing setup breaks on upgrade.",
+    "documentation": "docs/api/lemonade.md updated to document AMD telemetry on Windows (DXGI, DXCore, PDH) alongside NVIDIA NVML. The API example for gpus[] entries remains accurate since all measurement fields can already be null. The new file amd_metrics_windows.h includes inline comments explaining the design rationale for each component (DXGI adapters, DXCore classification, PDH counters).",
+    "manual_release_testing": "The new Windows AMD telemetry in /system-stats is user-visible behavior not covered by CI. The C++ build workflow reports in_progress at check time; the Launchpad PPA build passed. No human is documented as having exercised the AMD path on a discrete card or a mixed AMD+NVIDIA system. The author validated on one integrated AMD part only and noted the dedicated-VRAM path and mixed AMD+NVIDIA ordering are untested on real hardware. A Windows machine with an AMD GPU should be started and /system-stats called to confirm AMD GPU reporting.",
+    "post_approval_commits": "The last commit (22b4e7b, 'fix(server): make AMD telemetry resilient to partial counter availability') was authored at 2026-10-19T21:03:43Z, approximately 24 minutes before @fl0rianr's approval at 2026-10-19T21:27:29Z. No commits were added after approval. The post-approval commit addressed the reviewer's two remaining correctness points (enabling PDH sampling when any counter is available, requiring both dedicated and shared readings for UMA memory usage) and strengthened the test and docs — consistent with the review guidance.",
+    "review": "Reviewer @fl0rianr provided substantive, multi-round review across all four PR commits. They identified an important correctness issue in the initial submission — that SharedSystemMemory > DedicatedVideoMemory is not a reliable APU/dGPU classifier because Windows exposes shared system memory on dedicated GPUs too. They suggested DXCore's IsIntegrated property (which the author implemented). They caught a per-engine utilization undercounting bug (PDH instances are per-process), a capacity/usage mismatch for UMA adapters (usage included both pools but capacity reported only shared), and the QueryVideoMemoryInfo budget override being process-specific rather than physical. The author addressed all substantive findings in follow-up commits. The final review noted two minor correctness concerns (PDH retry on driver init, partial UMA memory reporting) which the author addressed in the last commit before approval. Reviewer @fl0rianr has Windows and hardware vendor support as subject areas per docs/dev/contribute.md.",
+    "security": "No security concerns. System libraries (dxgi.dll, dxcore.dll, pdh.dll) are loaded dynamically via LoadLibraryExA with LOAD_LIBRARY_SEARCH_SYSTEM32 — no vendor SDK dependency, no network calls, no credential handling, no supply-chain changes. The new CMakeLists.txt links dxgi and pdh, which are standard Windows system libraries.",
+    "tests": "The PR adds test_002c_system_stats_gpu_schema() in test/server_endpoints.py, asserting the gpus[] schema, value bounds (0-100% utilization, non-negative memory values, used <= total), and a hardware-gated assertion that an AMD GPU advertised in /system-info must appear in /system-stats. The PR author verified on a Strix Halo box (Radeon 8060S) showing the GPU reports memory_type 'shared', live memory_used, and gpu_percent tracking load (1% idle to ~95% under inference). However, the Python test file runs only on Linux in CI, and the new Windows-specific code (amd_metrics_windows.h, metrics_windows.cpp changes) is never exercised by CI checks. The reviewer noted the test was strengthened with the hardware-gated AMD assertion."
+  },
+  "generation_seconds": 146.2,
+  "maintainer_todos": [
+    {
+      "text": "Start the Lemonade server on a Windows machine with an AMD GPU and call /system-stats to confirm the AMD GPU appears in gpus[] with non-null gpu_percent and memory_used_gb values."
+    }
+  ],
+  "merge_date": "2026-10-19T22:28:29Z",
+  "pr_number": 3872,
+  "range_start": "v2026.42.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-20T02:48:28+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "b48d190a9b00a417fda9cbf206fcec5691e5578b",
+  "shout_outs": [],
+  "subject": "fix(server): report AMD GPU usage and VRAM on Windows (#3872)",
+  "summary": "Adds a Windows AMD GPU telemetry source (DXGI for adapter identity/memory capacity, DXCore for integrated-vs-discrete classification, PDH GPU performance counters for live utilization and dedicated/shared memory usage) to the /system-stats endpoint, enabling AMD GPU usage and VRAM reporting alongside NVIDIA on Windows.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The Windows AMD telemetry path adds user-visible behavior that is not exercised by CI because the C++ build tests do not run on Windows, and the Python endpoint test only covers Linux."
+}
