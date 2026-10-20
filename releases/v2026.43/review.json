@@ -38,6 +38,16 @@
       "text": "Start the lemond server with at least one NVIDIA GPU and one AMD GPU (or APU) and call GET /api/v1/system-stats; confirm the response contains a primary_gpu_id field, a gpus array listing each GPU with vendor/name/memory_type/gpu_percent/memory_total_gb/memory_used_gb, and that gpu_percent/vram_gb refer to the GPU with the largest total memory."
     },
     {
+      "author": "@superm1",
+      "commit": "0cb1da0014e765c38198cab0efdc2ce8f7284454",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3903,
+      "priority": "P0",
+      "text": "Launch a model via the FLM NPU backend on a NPU device running Linux with systemd and confirm the model launches without the failure seen in FLM 1.0.8/1.0.9."
+    },
+    {
       "author": "@fl0rianr",
       "commit": "cf146ec3ff6d6a4fe2134f952e960b4960947aed",
       "platforms": [
@@ -81,7 +91,7 @@
       "author": "@zaneni6",
       "commit": "0163739023591bdf7b8978319b078e00ba183f3b",
       "platforms": [
-        "Fedora"
+        "all"
       ],
       "pr_number": 3810,
       "priority": "P1",
@@ -91,11 +101,7 @@
       "author": "@fl0rianr",
       "commit": "25990159a0f1f915b360b8dce62ed74efc049979",
       "platforms": [
-        "Windows",
-        "Ubuntu PPA",
-        "Snap",
-        "Fedora",
-        "Debian"
+        "all"
       ],
       "pr_number": 3282,
       "priority": "P1",
@@ -145,11 +151,21 @@
       "author": "@zaneni6",
       "commit": "9d473c398374d303bcaa48dcb4186e7b89537a6c",
       "platforms": [
-        "Fedora"
+        "all"
       ],
       "pr_number": 3873,
       "priority": "P1",
       "text": "Install the release candidate on an NPU system, run `lemonade backends` to confirm FLM NPU reports version v1.0.9, and load an FLM model on NPU to verify it runs without errors."
+    },
+    {
+      "author": "@iswaryaalex",
+      "commit": "b48d190a9b00a417fda9cbf206fcec5691e5578b",
+      "platforms": [
+        "Windows"
+      ],
+      "pr_number": 3872,
+      "priority": "P1",
+      "text": "Start the Lemonade server on a Windows machine with an AMD GPU and call /system-stats to confirm the AMD GPU appears in gpus[] with non-null gpu_percent and memory_used_gb values."
     },
     {
       "author": "@jeremyfowers",
@@ -162,20 +178,20 @@
       "text": "Open the Lemonade website news page and confirm the AnythingLLM entry displays the correct title ('Why AnythingLLM is moving from Ollama to Lemonade and llama.cpp'), date (October 13, 2026), description, and that the link resolves to anythingllm.com."
     }
   ],
-  "commits_reviewed": 19,
+  "commits_reviewed": 21,
   "commits_unreviewed": 0,
   "evidence": {
-    "blockers": "Three P0 items: backend subprocess lifecycle (refactored start/stop/health), guest-backend model gating (new hidden-model behavior), and multi-GPU system-stats (changed primary-GPU selection). All require human verification on real hardware before release.",
-    "breaking_changes": "The system-stats endpoint changed which GPU the scalar fields refer to (largest memory instead of highest utilization) — a behavioral change on multi-GPU systems. Guest-tier models are now hidden without their backend installed — a new gating behavior affecting model visibility and pull behavior.",
-    "coverage": "All 15 to-dos from the 19 commit reviews are rated. Five commits had no to-dos (config path fix, shard dedup, Arch install docs, CI auto-labeler, pre-pull test infra). The remaining ten commits with to-dos are fully covered.",
-    "manual_testing": "NPU hardware verification for FLM v1.0.8 and v1.0.9 (Fedora). Multi-GPU NVML system-stats on mixed NVIDIA/AMD and NVIDIA-only systems (Linux/Windows). Guest backend install on Strix Halo hardware. Multi-reference image editing endpoint with real images. All are unexercised in CI due to hardware requirements.",
-    "security": "No security concerns identified across the release. The NVML DLL load path was hardened in this bucket (LOAD_LIBRARY_SEARCH_SYSTEM32 on Windows). No new credential handling, external network calls, or supply-chain risks beyond routine backend version bumps."
+    "blockers": "Four P0 items must clear before shipping: the backend lifecycle refactoring must handle multiple backends correctly without process leaks, guest-backend model gating must work end-to-end so users can pull models after installing required backends, multi-GPU primary GPU selection must return correct metrics for monitoring, and the FLM v1.0.7 rollback must fix the systemd launch failure on NPU hardware.",
+    "breaking_changes": "Two breaking changes ship in this release: (1) GET /api/v1/system-stats now reports gpu_percent and vram_gb for the primary GPU by total memory instead of the highest-utilization GPU — on multi-GPU systems these values change meaningfully and existing dashboards will see different numbers; (2) models gated behind guest-tier backends are now hidden from GET /v1/models?show_all=true and return model_not_supported on pull until the guest backend is installed — existing setups that relied on the model being visible without the backend will see them disappear.",
+    "coverage": "All 21 commits in the v2026.42.1 to b48d190a9b00a417fda9cbf206fcec5691e5578b range were reviewed. Each commit received at least one reviewer assessment; no PRs in the range lack a digest entry.",
+    "manual_testing": "Human verification required on: (1) multi-GPU hardware with mixed NVIDIA and AMD GPUs to validate the primary GPU selection change, (2) Strix Halo NPU systems to verify guest-backend model gating, (3) Windows machines with AMD discrete GPUs for the new DXCore/PDH telemetry path, (4) real image files for multi-reference editing and soft-pixel-cap behavior, and (5) an NPU device under systemd to confirm the FLM rollback.",
+    "security": "No security concerns observed. The Windows AMD telemetry path uses safe DLL loading with LOAD_LIBRARY_SEARCH_SYSTEM32. The guest-backend gating is a safety improvement that prevents accidental installation of externally-maintained backends. No supply-chain, credential, or code-execution changes detected across the release."
   },
-  "generation_seconds": 70.3,
-  "head_sha": "9d473c398374d303bcaa48dcb4186e7b89537a6c",
+  "generation_seconds": 309.0,
+  "head_sha": "b48d190a9b00a417fda9cbf206fcec5691e5578b",
   "is_hotfix": false,
   "last_stable_tag": "",
   "range_start": "v2026.42.1",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-10-16T21:18:25+00:00"
+  "reviewed_at": "2026-10-20T02:53:39+00:00"
 }
