@@ -1,0 +1,166 @@
+{
+  "branch": "release-v2026.44",
+  "breaking_changes": [
+    "The /v1/models/{model}/options endpoint's resolved_ctx_size field can now return null instead of a numeric value when automatic GPU sizing cannot fit a valid context; clients must handle null gracefully."
+  ],
+  "bucket": "v2026.44",
+  "candidate_issues": [],
+  "checklist": [
+    {
+      "author": "@fl0rianr",
+      "commit": "333469dd036a457dbb3c24054c867cb0d617a9e0",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3862,
+      "priority": "P0",
+      "text": "Run the Lemonade server and load a model on a system with limited GPU memory (or simulate it) and confirm the /v1/models/{model}/options endpoint returns {\"resolved_ctx_size\": null} instead of a number."
+    },
+    {
+      "author": "@sawansri",
+      "commit": "3614598dc8190d0dc157598d3dea3fccc964d654",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3786,
+      "priority": "P0",
+      "text": "Run `lemonade launch pi --api-key mykey` and verify that pi's process environment contains LEMONADE_API_KEY set to mykey, while pi's models.json contains \"apiKey\": \"${LEMONADE_API_KEY}\" rather than the plaintext key."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "333469dd036a457dbb3c24054c867cb0d617a9e0",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3862,
+      "priority": "P1",
+      "text": "Write a small HTTP client that calls /v1/models/{model}/options and verify it handles the null resolved_ctx_size without crashing, since existing clients may not expect a non-numeric value."
+    },
+    {
+      "author": "@sreeram-11",
+      "commit": "1ba79d48ff6945942e01abf8408dcc4741065d83",
+      "platforms": [
+        "Windows"
+      ],
+      "pr_number": 3718,
+      "priority": "P1",
+      "text": "On a Windows machine with a Windows ROCm installation and an sd-cpp backend installed, start lemond with log_level=debug, load SD-Turbo with the rocm backend, and confirm the server log shows \"Initializing backend: ROCm0\" and the image generation completes in seconds rather than failing to the CPU."
+    },
+    {
+      "author": "@sreeram-11",
+      "commit": "1ba79d48ff6945942e01abf8408dcc4741065d83",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3718,
+      "priority": "P1",
+      "text": "Start lemond, load a model on the rocm backend, then attempt to load a second model with a deliberately invalid configuration; confirm the router throws the error immediately and the first loaded model remains active."
+    },
+    {
+      "author": "@sawansri",
+      "commit": "3614598dc8190d0dc157598d3dea3fccc964d654",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3786,
+      "priority": "P1",
+      "text": "Run `lemonade launch pi --mcp --codemode` against a model and confirm the pi agent starts, pi's mcp.json contains a lemonade server entry with the correct URL, and pi's models.json includes contextWindow and maxTokens for the model."
+    },
+    {
+      "author": "@sawansri",
+      "commit": "3614598dc8190d0dc157598d3dea3fccc964d654",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3786,
+      "priority": "P1",
+      "text": "Run `lemonade launch pi --model <a-vision-model>` and confirm pi's models.json sets \"input\": [\"text\", \"image\"] for that model, then verify the agent accepts an image paste."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "10166a85ba53d1b4b8b9dec8179b1acdbeef03c2",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3846,
+      "priority": "P1",
+      "text": "Open the page in a browser with prefers-reduced-motion enabled (or use Firefox's responsive design mode with reduced motion) and verify all animations and transitions are disabled — the hero animation should show a static final state, and the enabling technology board should be immediately visible without the scroll-triggered fade-in."
+    },
+    {
+      "author": "@meghsat",
+      "commit": "0100ec6ddd614bf8080d22ab3a74c648b0a4366a",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3765,
+      "priority": "P2",
+      "text": "Install a shared model family (e.g. Anima-aesthetic, Anima-base, Anima-turbo that share text encoder and VAE files), delete one variant, and confirm the shared text encoder and VAE files are also removed from the models cache directory."
+    },
+    {
+      "author": "@sreeram-11",
+      "commit": "1ba79d48ff6945942e01abf8408dcc4741065d83",
+      "platforms": [
+        "Windows"
+      ],
+      "pr_number": 3718,
+      "priority": "P2",
+      "text": "On a Windows machine where LEMONADE_CACHE_DIR resolves to a path that, combined with the installed ROCm tree depth, exceeds 259 characters, start lemond and load any sd-cpp rocm model; confirm it fails with a ConfigurationException mentioning the cache directory length and that the error message suggests rocm_install_method=tarball."
+    },
+    {
+      "author": "@sawansri",
+      "commit": "3614598dc8190d0dc157598d3dea3fccc964d654",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3786,
+      "priority": "P2",
+      "text": "Run `lemonade launch pi --no-mcp` when a lemonade entry already exists in mcp.json and confirm the entry is removed and pi starts."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "10166a85ba53d1b4b8b9dec8179b1acdbeef03c2",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3846,
+      "priority": "P2",
+      "text": "Open https://lemonade-server.ai/news/auto-bkc-vision.html in a browser and verify the hero animation cycles through all four agent/model/engine combinations (Hermes+Qwen3.8-Flash-Next+Halogen, Pi+Gemma 4+llama.cpp, AnythingLLM+Qwen3.6+FastFlowLM, DeepSeek Harness+DeepSeek-V4-Flash+DwarfStar4) and the status text updates correctly for each cycle."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "10166a85ba53d1b4b8b9dec8179b1acdbeef03c2",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3846,
+      "priority": "P2",
+      "text": "Resize the browser window to under 620px width and confirm the layout collapses: the hero animation stacks into a single column, the enabling technology table hides its header and stacks cells, and the flow-track columns stack vertically."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "10166a85ba53d1b4b8b9dec8179b1acdbeef03c2",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3846,
+      "priority": "P2",
+      "text": "Verify the news feed at the Lemonade home page lists the new blog post with the correct title, date (October 20, 2026), description, and image."
+    }
+  ],
+  "commits_reviewed": 15,
+  "commits_unreviewed": 0,
+  "evidence": {
+    "blockers": "The resolved_ctx_size null API change requires server-side verification (333469d-1) and client compatibility checks (333469d-2). Windows ROCm sd-cpp backend needs manual exercise on a Windows ROCm setup (1ba79d4-1 through 1ba79d4-3). The pi integration flags need end-to-end testing against a real pi installation (3614598-1 through 3614598-4).",
+    "breaking_changes": "The /v1/models/{model}/options endpoint's resolved_ctx_size field can now return null instead of a numeric value when automatic GPU sizing cannot fit a valid context; clients must handle null gracefully.",
+    "coverage": "All 15 commits reviewed across the range v2026.43.3..05d32f0; all 14 to-dos rated. Coverage spans model deletion, CI workflow fixes, model registry additions, context-sizing auto-tune, Windows ROCm backend re-enablement, pi integration flags, and documentation releases.",
+    "manual_testing": "Verify the null resolved_ctx_size API contract and that HTTP clients handle it without crashing. Exercise Windows ROCm sd-cpp backend with real models. Run lemonade launch pi with --mcp, --codemode, --no-mcp, and vision model flags against a real pi installation. Confirm API key is in environment only, never written to disk.",
+    "security": "API key handling for pi integration is correct by design (exported to environment, referenced as ${LEMONADE_API_KEY} in models.json) but needs manual verification. Windows ROCm DLL staging mitigates DLL hijacking risks by co-locating known-good runtime DLLs."
+  },
+  "generation_seconds": 168.1,
+  "head_sha": "05d32f0167a4136bd80aa38408d85d2d33dd6c81",
+  "is_hotfix": false,
+  "last_stable_tag": "",
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-21T16:12:43+00:00"
+}
