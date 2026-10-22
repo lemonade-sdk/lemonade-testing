@@ -1,0 +1,32 @@
+{
+  "author": "@lucbruni-amd",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "2e96ad2ac48e931a75b2e8b5e9b577c623bbb9a3",
+  "committed_at": "2026-10-22T19:22:40+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The fix changes a model catalog entry from a repo-only checkpoint (which resolved to no file or a wrong draft file) to a repo:file reference. Users who previously selected this model would have hit a crash; the fix makes it work. No existing setup stops working on upgrade.",
+    "documentation": "Not affected. This is an internal model catalog data fix; no user-facing or developer-facing documentation changes are needed.",
+    "manual_release_testing": "Not required for the release surface. The gpt-oss-20b-mxfp4-GGUF model entry is marked 'suggested' with a 'hot' label, making it user-reachable. However, the author verified it works on their own system, and the change is a straightforward data correction following an identical pattern from PR #3496, so no additional manual verification is needed.",
+    "post_approval_commits": "None. The PR contains a single commit (509374c5886979d77a5e8e89067c1abf9954f9ac) which was present before the approval. No churn after approval.",
+    "review": "Approved by @sreeram-11 (collaborator) with an 'LGTM' comment at 2026-10-22T17:48:06Z. The PR author explicitly asked @superm1 (who covers llamacpp and ROCm per contribute.md) to review, but he did not. The change is a one-line JSON data fix mirroring an identical, previously merged fix (#3496), so a subject-matter-expert reviewer is not essential — the change is trivially small and follows a known pattern.",
+    "security": "No security concerns. The change is a JSON string update in a model catalog. No code, no network calls, no credential handling, no supply-chain changes.",
+    "tests": "No new automated tests were added — this is a change to server_models.json, a data/configuration file. The author tested locally on Win11/R9700 with Lemonade 26.43.3, confirmed the model loads and chat/completions returns 200. The server-download-registry workflow passes on this commit, but it does not specifically test individual model checkpoint filenames in the JSON. This is acceptable for a data-only fix of this scale."
+  },
+  "generation_seconds": 208.7,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-22T20:08:18Z",
+  "pr_number": 3939,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-22T20:15:35+00:00",
+  "reviewers": [
+    "@sreeram-11"
+  ],
+  "sha": "2e96ad2ac48e931a75b2e8b5e9b577c623bbb9a3",
+  "shout_outs": [],
+  "subject": "fix: name the gpt-oss-20b checkpoint file (#3939)",
+  "summary": "Names the gpt-oss-20b-mxfp4-GGUF model's checkpoint file to ggml-org/gpt-oss-20b-GGUF:gpt-oss-20b-MXFP4.gguf and removes a stale benchmark-regression.yml comment, fixing a llama-server crash caused by the loader picking an EAGLE3 draft file.",
+  "verdict": "Clean",
+  "verdict_reason": "A one-line data fix following an established pattern from PR #3496, approved, with all CI checks passing and no post-approval changes."
+}
