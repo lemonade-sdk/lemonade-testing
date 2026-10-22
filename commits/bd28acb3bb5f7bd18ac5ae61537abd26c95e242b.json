@@ -1,0 +1,32 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "bd28acb3bb5f7bd18ac5ae61537abd26c95e242b",
+  "committed_at": "2026-10-21T22:26:55+00:00",
+  "evidence": {
+    "api_compatibility": "No product code changed. No API, CLI, config, or schema changes. No breaking changes.",
+    "documentation": "Not applicable. No product code, no API changes, no new features. The PR adds a regression test only.",
+    "manual_release_testing": "This PR adds no product code and no user-visible surface; it is a regression test pinning existing behavior. No manual release test is needed.",
+    "post_approval_commits": "No commits were added after @meghsat's first and only approval (2026-10-21T18:33:28Z). The branch contains two merge commits (origin/main rebases on 2026-10-19 and 2026-10-21) that occurred before the approval. The final diff is identical to what was approved.",
+    "review": "PR #3850 was approved by @meghsat (COLLABORATOR) with the comment 'LGTM. Tested against the /v1/systemone endpoint and it works as expected.' @meghsat asked a clarifying question about test model download behavior which the author did not answer; no further review was requested. @ramkrishna2910 was requested as a reviewer (subject area expertise: smart router and orchestration) but did not review. CodeRabbit provided a low-priority nitpick about hard-coded routing candidates that was not addressed. The PR has no linked issues. The merge date is 2026-10-22T00:15:45Z.",
+    "security": "No security concerns. The change adds only test code; no credential handling, network calls, code execution paths, or permission changes.",
+    "tests": "The commit adds exactly one test (81 lines, 0 deletions) in test/server_classify.py. It is an end-to-end integration test against a live server: it registers a collection.router policy with a classifier condition using get_test_model('classification'), calls POST /v1/routing/validate to load the classifier, verifies residency_class is 'routing_helper', calls POST /v1/classify without a 'model' field, and asserts the residency is still 'routing_helper'. The test has proper cleanup in a finally block. No existing tests were weakened, deleted, or skipped. The test was verified by the reviewer @meghsat against the /v1/systemone endpoint."
+  },
+  "generation_seconds": 155.5,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-22T00:15:45Z",
+  "pr_number": 3850,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-22T00:20:07+00:00",
+  "reviewers": [
+    "@meghsat"
+  ],
+  "sha": "bd28acb3bb5f7bd18ac5ae61537abd26c95e242b",
+  "shout_outs": [],
+  "subject": "Test that model-optional classify keeps a routing helper's residency (#3850)",
+  "summary": "Adds test_505_model_optional_keeps_routing_helper_residency to test/server_classify.py, which registers a collection.router policy with a classifier condition, calls POST /v1/routing/validate to load the classifier as a routing helper, then classifies without a 'model' field and verifies the helper still reports residency_class: routing_helper in /v1/health afterward.",
+  "verdict": "Clean",
+  "verdict_reason": "Test-only change pinning a regression discovered during agentic review of #3771, approved by a collaborator with subject matter knowledge, all CI checks passed."
+}
