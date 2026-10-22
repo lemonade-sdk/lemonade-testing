@@ -1,0 +1,32 @@
+{
+  "author": "@bitgamma",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "32bb85968b9ecbcde5430e20a667059dbe035ba8",
+  "committed_at": "2026-10-22T15:34:19+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. This is a documentation-only commit with no code, no API, no config, and no behavior changes. The spec it introduces will drive future code that may introduce breaking changes (as the author noted in the PR body), but those belong in subsequent PRs.",
+    "documentation": "This commit is itself a documentation change: it adds a comprehensive 1283-line spec (docs/dev/specs/model-management.md) covering ModelManager's component architecture, artifact sources, transfer and layout, sync service, change notification, concurrency model, source layout, contracts, generated docs, and test acceptance criteria. It updates mkdocs.yml to register the new spec in the navigation. The spec is well-structured with C++ code excerpts, tables, and rules, following the project's spec-driven development style. No existing documentation required updates beyond adding the new entry.",
+    "manual_release_testing": "This commit adds no user-reachable surface. It touches only docs/dev/specs/model-management.md (new architecture spec) and mkdocs.yml (nav entry). No API, CLI, config, GUI, artifact, or behavior changes ship with this commit. The spec documents future API surfaces (e.g., POST /models/check-updates, POST /internal/models/sync, /internal/aliases), but these are design documents, not shipped code. No manual release testing needed.",
+    "post_approval_commits": "No substantive post-approval commits. The four commits after the first approval on 2026-10-13T14:08:59Z are empty lists — the final approval was also 2026-10-13T14:08:59Z, which is the merge commit itself. The pre-approval commits (5 total) were: draft model manager refactoring, draft model management spec, address review comments, remove eol, and remove some non-relevant comments. All post-approval squashes were editorial only.",
+    "review": "PR #3768 was authored by @bitgamma and reviewed by @jeremyfowers (admin maintainer whose subject area includes 'large new features'). Jeremy opened with a CHANGES_REQUESTED after reading the full spec, then threaded a substantive discussion: he questioned whether the refactoring introduces behavioral changes (answer: goal is zero behavioral change, quirky test-photographed behavior might surface), flagged a backwards edge in the architecture diagram (author committed to redrawing it), requested moving PR-tracking text out of the spec body (author removed it), asked for an example of the new catalog documentation format (author said they'd add one), and probed the ModelSyncService design — whether continuous internet checks are really necessary (author agreed to simplify). After these exchanges, Jeremy approved. The review was thorough, constructive, and followed the project philosophy of addressing questions before merging. CodeRabbit bot also posted 2 rounds of nitpick comments, which were handled separately.",
+    "security": "No security concerns. Pure documentation change. No code, no dependencies, no network calls, no credentials, no supply-chain surface.",
+    "tests": "This is a documentation-only change (one new .md file, one .yml nav edit). No tests are expected or required for a spec document. The spec itself includes acceptance criteria that describe what future tests should prove — e.g., adding a third FetchableRepository without editing ModelStore, a catalog-staleness test with one models_changed notification, and a FilesystemRepository fixture with no HTTP — but these belong in the implementation PRs, not in this one."
+  },
+  "generation_seconds": 204.2,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-22T16:24:01Z",
+  "pr_number": 3768,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-22T16:29:14+00:00",
+  "reviewers": [
+    "@jeremyfowers"
+  ],
+  "sha": "32bb85968b9ecbcde5430e20a667059dbe035ba8",
+  "shout_outs": [],
+  "subject": "docs: add ModelManager spec (#3768)",
+  "summary": "Adds a 1283-line architecture spec (docs/dev/specs/model-management.md) that refactors the ModelManager into multiple components — ModelStore, ModelSyncService, ModelIngest, ArtifactSource/Resolver, FetchableRepository, ModelChangeNotifier, and RecipeOptionsStore — plus updates the mkdocs navigation to include it.",
+  "verdict": "Clean",
+  "verdict_reason": "Pure documentation-only change that received a thorough, subject-matter-expert review from @jeremyfowers, with all questions resolved and CI passing cleanly."
+}
