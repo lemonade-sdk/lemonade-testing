@@ -1,0 +1,54 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "9a9d43abc622e844525f9a6fa264100b9bfe928e",
+  "committed_at": "2026-10-22T11:51:42+00:00",
+  "evidence": {
+    "api_compatibility": "The PR introduces documented breaking changes to the HTTP API surface. GET on previously-404 POST-only paths (slots/{id}, jobs/{id}/pause|interrupt|resume, models/register) now returns 405. The standardized HTTP parser catches malformed arguments that main silently dropped or converted — for example a non-numeric transcription temperature answers 400 instead of 500. A request without the model field now raises the consistent 'Missing model field in request' on every model route (chat/completions, completions, embeddings, responses, rerank each worded this differently before). Streams carry the cancel token, so Omni streaming cancels on disconnect. @fl0rianr identified an alias-listing bug where /v1/models fails to list some aliases targeting registered user models — this appears to be a pre-existing issue, not a regression of the refactor. The breaking changes are declared in the PR body and should be clearly communicated in release notes.",
+    "documentation": "Documentation is extensively updated. API docs in docs/api/ are generated from route RouteSpecs by gen_api_boilerplate.py with a drift-check guard. 105 real recorded request/response pairs protect the docs from drift. The PR fixed 48 instances of incorrect documentation and filled over 200 gaps (examples, arg descriptions, error descriptions). A new GET /internal/routes endpoint exposes all registered routes. Internal endpoints are consolidated under docs/api/internal.md. MCP reference docs were regenerated. The generated docs follow main's existing API reference layout with modality and status columns in summary tables. No documentation gaps identified.",
+    "manual_release_testing": "The PR declares breaking changes and introduces user-visible behavior changes that a human can exercise before release: 405 responses on POST-only paths, consistent missing-model error on every model route, stricter form-field type conversion (400 vs 500), streaming cancel tokens for disconnect, and :latest/alias resolution applied to every OpenAI-compatible model route. The CI checks were pending at the time of merge review; no evidence shows a human exercised every new behavior path end-to-end. Five targeted manual verifications are recommended as maintainer todos above.",
+    "post_approval_commits": "None. The first and latest approvals share the same timestamp (2026-10-20T15:46:04Z), and the post-approval-commits check returned empty. The branch was clean after approval.",
+    "review": "The PR was requested to @ramkrishna2910, @meghsat, and @sawansri. @bitgamma reviewed and approved (LGTQ) on 2026-10-20. @fl0rianr performed extensive review and testing: built a dedicated integration branch combining this PR with GUI3, ran 88 HTTP contract tests and 59 offline self-tests, and posted detailed findings on 2026-10-18 and 2026-10-21 identifying 4 pre-existing bugs (null content in chat completions, local_import validation, Anthropic fallback model field, alias listing) that were not regressions of this PR. @fl0rianr also flagged that argument validation does not run for GET/Raw routes (e.g., show_all=invalid silently treated as false) and a regex backtracking issue in the docs generator — both noted as pre-existing or minor. The PR author (@jeremyfowers) is the admin maintainer for new endpoints and large new features per docs/dev/contribute.md, so subject matter expertise was present. No commits were added after the first (and only) approval on 2026-10-20T15:46:04Z.",
+    "security": "CodeQL flagged an inefficient regular expression (backtracking) in ROUTE_ARG_ALIASES. The author fixed this in a follow-up commit by narrowing the pattern to avoid exponential backtracking. No other security concerns found. The refactor does not introduce new credential handling, network calls, or permission broadening. Supply-chain impact is limited to existing dependencies.",
+    "tests": "The PR changed 4 test files. Two (registrySearch.test.cjs and test_config_merging.cpp) updated file paths and handler call signatures because the refactor moved code into route classes — expected and necessary. The other two (server_pinning.py and test_ollama.py) were improved: server_pinning.py tightened error-code expectations to match the new standardized parser, and test_ollama.py added 5 new tests sending exact request shapes that Ollama's Go client emits (model/name semantics for show/pull/delete, think level values, /api/chat with all think values). @fl0rianr independently ran 88 HTTP contract tests and 59 offline self-tests on a dedicated integration branch, covering routing, validation, authentication, model management, aliases, concurrency, and GUI3 integration, with both suites passing (one skipped test in the GUI3 API bridge, noted for retest). No existing tests were weakened or deleted."
+  },
+  "generation_seconds": 360.7,
+  "maintainer_todos": [
+    {
+      "text": "Hit every POST-only route with a GET request (slots/{id}, jobs/{id}/pause|interrupt|resume, models/register) and confirm each answers 405 instead of the old 404."
+    },
+    {
+      "text": "Send a model request to /v1/chat/completions, /v1/completions, /v1/embeddings, /v1/responses, and /v1/rerank without a model field and confirm each returns the consistent 'Missing model field in request' error."
+    },
+    {
+      "text": "Send a form-encoded request to a transcription endpoint with a non-numeric temperature (for example temperature=abc) and confirm it returns 400 instead of the old 500."
+    },
+    {
+      "text": "Open a streaming chat/completions SSE connection, then drop the TCP connection mid-stream and confirm the server stops sending and the client receives the cancel."
+    },
+    {
+      "text": "Load a model via an alias (for example user/my-model aliased to a registered model) and send a request through the alias name to /v1/chat/completions, confirming the alias resolves and the request reaches the correct model."
+    }
+  ],
+  "merge_date": "2026-10-22T12:32:00Z",
+  "pr_number": 3771,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-22T12:39:54+00:00",
+  "reviewers": [
+    "@bitgamma",
+    "@fl0rianr"
+  ],
+  "sha": "9a9d43abc622e844525f9a6fa264100b9bfe928e",
+  "shout_outs": [
+    {
+      "handle": "@fl0rianr",
+      "reason": "Co-author of the merge commit; ran 88 HTTP contract tests and 59 offline self-tests covering routing, validation, authentication, model management, aliases, concurrency, and GUI3 integration."
+    }
+  ],
+  "subject": "Fully refactor the HTTP server: route classes, core components, generated API docs (#3771)",
+  "summary": "Fully refactor the HTTP server into a route-class architecture (one route file per endpoint under routes/<page>/<section>/) with generated API docs protected from drift, adding GET /internal/routes and formalizing every route's arguments, errors, descriptions, and examples into schema-driven classes.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "A massive server refactor with documented breaking changes and remaining post-review findings that warrant targeted manual verification before shipping."
+}
