@@ -1,0 +1,32 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "dfe79a7b330e8b68f946001b72c89b562bb390e8",
+  "committed_at": "2026-10-21T22:26:56+00:00",
+  "evidence": {
+    "api_compatibility": "No API changes. The spec is a design document describing how future code will be structured. It does not change any existing API behavior, request format, response schema, or config option. The 'Compatibility with v2026.42 and Prior' section is part of the spec text — it is a promise for future code, not a change to current behavior. No breaking or non-breaking API change.",
+    "documentation": "This PR is itself a documentation change. It adds a new 755-line spec at docs/dev/specs/http-server.md and registers it in mkdocs.yml under dev/specs/. The spec is comprehensive: it defines the C++ data model (RouteSpec, RouteArg, RouteResponse, RouteError, RouteExample, etc.), the two base classes (ApiRoute, ModelRoute), prefix and auth policies, argument validation rules, the shared helpers, response schemas, error handling, generated docs pipeline, drift checking, the route folder layout, core components, an Appendix with PR history, and an Appendix on error format cleanup. The spec is co-authored by Claude Opus 5.5 and Claude, which is transparent via Co-authored-by trailers. The quality of the spec is high — it is detailed, well-structured, and includes a complete worked example. One concern: the spec is very long and complex; reviewers (especially those without server architecture expertise) may struggle to verify every claim against the existing implementation. The spec's claim review step (described within the spec itself) is a forward-looking safeguard.",
+    "manual_release_testing": "This is a documentation-only change. It adds a spec file under docs/dev/specs/ and a single nav entry in mkdocs.yml. No code, API, CLI, config, or shipped artifact changes. There is nothing for a tester to exercise. The spec documents a future refactoring of server.cpp but does not implement it, so no user-visible surface exists.",
+    "post_approval_commits": "The first (and only) human approval landed on 2026-10-13T14:15:25Z. After that, ~30 commits were added between 2026-10-13 and 2026-10-21, authored by @jeremyfowers and @Claude. These include: fixing four implementation gaps (model requirement, ApiRoute classification for images/upscale, RouteSpec::experimental, Support enum), specifying the generated docs layout, adding drift check contracts, closing docs-generation gaps, declaring route errors as RouteError values, specifying argument validation and alias rules, adding compatibility documentation for v2026.42 and prior, and rebasing on main multiple times. None of these change code behavior (the spec is docs-only), but they substantially changed the spec content — error declarations, argument validation rules, compatibility guarantees, and docs-generation contracts were all refined after approval without renewed reviewer sight. The PR body states 'Absolutely no behavioral changes; all existing CI tests will stay in place', which is correct for the spec file itself, but the post-approval churn means the final spec was not reviewed.",
+    "review": "PR #3762 was opened by @jeremyfowers on 2026-10-06 and merged by @fl0rianr on 2026-10-22. The only human reviewer is @bitgamma, who left a CHANGES_REQUESTED review on 2026-10-07 and approved on 2026-10-13. @bitgamma's subject areas (per contribute.md) are 'thenoise, cli, recipes, new backends, benchmarking, new models' — none include HTTP server, API server, or large new features. @jeremyfowers (the author) is listed as admin maintainer with subject areas 'new endpoints, new backends, large new features, GUI design language, new CLI commands, website, governance, Lemonade Mix (LMX) omni models, ci', which does cover the server refactor, but he reviewed only his own PR. CodeRabbit AI provided multiple COMMENTED reviews throughout, flagging authentication documentation gaps and cache-key concerns that were subsequently addressed. @ramkrishna2910 was requested as a reviewer but submitted no review. The project docs say 'Whenever possible, PRs should have at least one reviewer with subject area expertise' and 'try to avoid merging PRs that are approved, but not thoroughly reviewed' — neither bar is met here.",
+    "security": "No code changes, no credential handling, no network calls, no supply-chain changes. The spec documents authentication policies (Quad/Internal/Root prefix rules) but does not change them. No security concern.",
+    "tests": "This PR touches only two files: docs/dev/specs/http-server.md (new, ~755 lines) and mkdocs.yml (one nav entry added). There are no code changes and no new tests. The spec itself describes how future code changes will be tested via the drift check in gen_api_boilerplate.py, but those are tests for future PRs, not for this one. CI checks on the merge queue passed: Routing Schema Tests (success) and C++ Server Build, Test, and Release (success). The build/tests pass because the repo's existing CI is unaffected by a new docs file."
+  },
+  "generation_seconds": 402.4,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-22T00:15:47Z",
+  "pr_number": 3762,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-22T00:24:21+00:00",
+  "reviewers": [
+    "@bitgamma"
+  ],
+  "sha": "dfe79a7b330e8b68f946001b72c89b562bb390e8",
+  "shout_outs": [],
+  "subject": "docs: add the server architecture spec (#3762)",
+  "summary": "Adds the HTTP Server architecture spec (docs/dev/specs/http-server.md) and registers it in mkdocs.yml — a comprehensive specification for Lemonade's refactored HTTP server that defines route base classes, the RouteSpec data model, core components, argument validation, error handling, and the docs-generation pipeline with drift checking.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The single human reviewer (@bitgamma) does not have HTTP server architecture expertise per the maintainer table, and ~30 commits were added after approval that changed substantial parts of the spec."
+}
