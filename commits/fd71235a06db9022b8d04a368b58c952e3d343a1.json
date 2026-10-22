@@ -1,0 +1,36 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "fd71235a06db9022b8d04a368b58c952e3d343a1",
+  "committed_at": "2026-10-22T22:04:40+00:00",
+  "evidence": {
+    "api_compatibility": "This commit does not introduce breaking changes. It adds a cache invalidation call; the /system-info API contract is unchanged — the response simply becomes accurate sooner. No flags, configs, file formats, or documented behaviors are altered.",
+    "documentation": "No documentation changes are needed. This is an internal cache behavior fix; the /system-info API spec, release notes, and user-facing docs are unaffected.",
+    "manual_release_testing": "This is a user-visible behavior change: the /system-info API endpoint and the GUI3/App backend status panel now report the correct installed state after an implicit backend install, rather than a stale state that persists until a server restart. The author validated it locally, but there is no evidence that a human exercised this path on a release candidate build before merging.",
+    "post_approval_commits": "The PR contains two commits: the original fix (83c0a72, 2026-10-21T18:22:49Z) and a merge of main into the feature branch (689f9c1, 2026-10-22T13:04:33Z). @superm1's approval was at 2026-10-22T21:08:00Z, which is after both commits. There are zero commits added after approval. The merge commit is a standard rebase-of-main, not a content change.",
+    "review": "PR #3926 received an APPROVED review from @superm1 at 2026-10-22T21:08:00Z. @superm1 is a repository maintainer whose documented subject areas include 'system info' — directly relevant to this cache-invalidation fix. The approval was submitted with an empty body and no inline comments; the reviewer trusted the PR author's description and self-review claims. CodeRabbit performed an automated assessment and confirmed the guard placement covers valid early returns and exception paths. No other human reviewer participated.",
+    "security": "The change adds one function call (SystemInfoCache::invalidate_recipes()) inside a RAII scope guard. There are no network calls, credential handling, permission changes, or new code execution paths. No security concerns.",
+    "tests": "No new automated tests were added. The author describes a live test in the PR body: they uninstalled a backend, triggered auto-installation via model load, and confirmed the backend status updated without a server restart. This is a valid manual verification but was run only in the author's own environment. The fix is a single scope guard that calls an existing cache-invalidation method — the risk is low, and CI (C++ unit tests, all build targets, CodeQL, smoke tests) passed cleanly — but the absence of an automated test means regressions in this code path would not be caught by CI."
+  },
+  "generation_seconds": 187.3,
+  "maintainer_todos": [
+    {
+      "text": "Install the release candidate, uninstall an inference backend, then trigger an implicit install by loading a model that requires it, and confirm that the /system-info endpoint (or the GUI3/App backend status panel) reflects the installed status immediately — without needing a server restart."
+    }
+  ],
+  "merge_date": "2026-10-22T22:48:24Z",
+  "pr_number": 3926,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-22T22:53:34+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "fd71235a06db9022b8d04a368b58c952e3d343a1",
+  "shout_outs": [],
+  "subject": "fix(server): invalidate backend status cache after implicit installs (#3926)",
+  "summary": "Adds an RAII scope guard to BackendManager::install_backend() so that SystemInfoCache::invalidate_recipes() is called whenever backend installation finishes — including early returns and exception paths — fixing stale /system-info backend status in the GUI3/App after implicit installs.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The fix is a clean four-line RAII guard approved by a subject-matter maintainer with no post-approval churn, but the user-visible behavior change — backend status shown by the GUI after an implicit install — was exercised only in the author's local environment and not on a release candidate build."
+}
