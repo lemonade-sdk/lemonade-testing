@@ -1,0 +1,56 @@
+{
+  "author": "@meghsat",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "9cfd620508a7820affecaaea074e20f7fce01a30",
+  "committed_at": "2026-10-21T23:35:04+00:00",
+  "evidence": {
+    "api_compatibility": "No server-side (src/cpp/) code changes. The API client has behavioral changes: (1) API key persistence is now disabled for the web app (session-only); desktop apps continue to persist keys. (2) Session header fallback now only retries GET/HEAD/OPTIONS on network failure; POST/PUT/PATCH/DELETE are not retried to avoid unsafe request duplication. (3) WebSocket inspect capture now tracks API key changes and stops headers on invalid key errors. These changes are backward-compatible (no breaking contract), but the session header retry behavior difference from the old implementation could affect proxy scenarios.",
+    "documentation": "docs/guide/gui3-beta.md was added covering navigation, connecting, model preparation, chat, effective settings, backends, monitor, settings, downloads, multi-client behavior, and troubleshooting. docs/assets/gui3-visual-design-system/ contains desktop and mobile screenshots. README images were swapped for GUI3 versions. The debian/copyright and LICENSE files were corrected for vendored third-party code (model-viewer 4.3.1, highlight.js, Lucide 1.25.0, fflate). The PR author self-reported that documentation was affected and updated.",
+    "manual_release_testing": "Nothing shows a human has manually exercised the GUI3 interface with a running server. The GUI is the primary user-facing artifact — six new workspaces, model manager, router policy editor, monitor dashboard, Chinese localization, download manager, telemetry, and server log viewer. No end-to-end walkthrough or real-server smoke test evidence exists in the PR. The CI tests cover isolated components and runtime assertions but cannot verify that the full desktop or web application loads, navigates, and connects to a server.",
+    "post_approval_commits": "No formal approval exists, so there is no post-approval window to analyze in the conventional sense. However, the three commits that landed closest to the merge were: ff4adf57 (CI: reuse existing server artifact for smoke tests), 716f35a9 (docs: fix news image asset), and dc0c9bb9 (docs: revert news assets). These are CI configuration and documentation fixes, not behavior changes. The licensing fixes (corrected fflate attribution, highlight.js license, Lucide copyright, model-viewer version) were in commits before the merge.",
+    "review": "The PR has zero formal APPROVAL reviews. The most substantive reviewers are @superm1 (Debian licensing, subject area: ROCm, Linux packaging, security, llamacpp) who submitted a CHANGES_REQUESTED on 2026-10-14 and a detailed follow-up licensing audit on 2026-10-20; and @jeremyfowers (subject area: new endpoints, GUI design language, CI), who posted four empty COMMENTED reviews on 2026-10-20 and a comment questioning GUI test placement in the cpp CI workflow. No review from the GUI subject-matter experts (@kpoineal or @fl0rianr) reached an approval state. The PR was merged into main after superm1's 10/20 licensing audit, though the specific issues he flagged (fflate attribution, highlight.js license, Lucide version, model-viewer version) were addressed in subsequent commits (#3918, #3917) that landed just before the merge. CodeRabbit bot comments were extensive and were resolved by the author in follow-up PRs (#3883, #3867, #3874, #3876).",
+    "security": "The API key handling change for web apps (session-only) is a security improvement that prevents stale secrets in localStorage. Tool call media (data URIs, base64 blobs) is redacted before localStorage persistence, preventing embedded media from bloating storage. The session header fallback change (no unsafe request replay) prevents duplicate inference requests. No supply-chain or credential handling concerns were detected.",
+    "tests": "Extensive test coverage was added: browser-key-persistence.runtime.cjs (API key persistence for web vs desktop), chat-tool-media-persistence.runtime.cjs (tool call media redaction before localStorage), download-backend-retry.runtime.cjs (shared backend/model restart action), inspect-auth-reconnect.runtime.cjs (WebSocket auth with key rotation), inspect-header-fallback.runtime.cjs (session header fallback for safe vs unsafe HTTP methods), tauri-release-version.runtime.cjs (Tauri build version handling), plus Playwright integration tests, app regression tests, and documentation contract tests. The test coverage is thorough but the Playwright test placement in the C++ CI workflow was questioned by @jeremyfowers."
+  },
+  "generation_seconds": 466.8,
+  "maintainer_todos": [
+    {
+      "text": "Launch the built Tauri desktop app and connect it to a running Lemonade server. Verify that each of the six workspaces (Chat, Models, Backends, Apps, Monitor, Settings) opens without errors and that the global search field is interactive."
+    },
+    {
+      "text": "In the Chat workspace, start a new conversation, send a message to a loaded model, and confirm the response streams. Then scroll up mid-stream to verify that auto-scroll stops and resumes when you scroll back near the bottom."
+    },
+    {
+      "text": "In the Models workspace, use the task filter dropdown (Chat, Omni, Router, Image, Audio, Music & SFX, TTS, 3D, Embed, Classify) to narrow results, and confirm the model detail panel shows Configuration, README, and Files tabs with Get & Load, Download, Load, Unload, Pin, Favorite, and Delete actions."
+    },
+    {
+      "text": "Open Settings and switch the locale to Chinese to verify the runtime locale switch and that translated UI labels render correctly."
+    },
+    {
+      "text": "In the Monitor workspace, verify that the throughput charts show prompt/decode TPS, TTFT, and system vitals (CPU, RAM, GPU, VRAM), and confirm Pause / Resume freezes the refresh."
+    }
+  ],
+  "merge_date": "2026-10-22T00:54:28Z",
+  "pr_number": 3834,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-22T01:04:01+00:00",
+  "reviewers": [
+    "@superm1",
+    "@jeremyfowers",
+    "@fl0rianr",
+    "@Geramy"
+  ],
+  "sha": "9cfd620508a7820affecaaea074e20f7fce01a30",
+  "shout_outs": [
+    {
+      "handle": "@kpoineal",
+      "reason": "Co-author of the merge commit and explicitly credited in the PR description as taking the initiative and driving the development efforts with @fl0rianr and many others."
+    }
+  ],
+  "subject": "GUI3 into Main (#3834)",
+  "summary": "Merges the GUI3 workspace revamp into main, replacing the legacy desktop interface with a React/Tauri-based desktop and web client featuring six workspaces (Chat, Models, Backends, Apps, Monitor, Settings), a model manager with multi-provider search, a visual router policy editor, Chinese localization, and session header fallback.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "No formal GUI-subject-matter expert approval was recorded before merge, and the full user-facing GUI has no evidence of manual end-to-end exercise by a human."
+}
