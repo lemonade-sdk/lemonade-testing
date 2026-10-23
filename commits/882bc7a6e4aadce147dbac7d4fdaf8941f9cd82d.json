@@ -1,0 +1,32 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "882bc7a6e4aadce147dbac7d4fdaf8941f9cd82d",
+  "committed_at": "2026-10-23T10:00:17+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The `--ctx-size` flag semantics are preserved; the new behavior (skipping scenarios that cannot fit the requested context) is backwards-compatible because it replaces a broken path (scenarios that ran but failed with HTTP 400 or produced corrupted results) with a graceful skip. The `BenchScenario` struct gains a `minimum_ctx_size` field (default 0), which is additive and harmless.",
+    "documentation": "docs/guide/cli.md updated: the `--ctx-size` default description now mentions the per-scenario raise, and the context block description explains the new behavior — without `--ctx-size` the target is rounded up, with an explicit sweep incompatible scenarios are skipped, and tokens are approximate. The change is reflected in the documentation.",
+    "manual_release_testing": "This is a bug fix to the `lemonade bench` command's context-size selection for scenarios with a `context.target_tokens` block. The change affects scenarios where a context block is present and the user runs `--ctx-size` with an explicit sweep: previously all scenarios ran at every size; now incompatible ones are skipped with a printed message. The unit test covers the planning logic exhaustively. The bench command itself requires a loaded model, a GPU (or CPU fallback), and scenario files to exercise end-to-end — CI did not exercise a full bench run, but this is a regression test for internal planning, not a new user-facing feature. No additional manual testing is required for release.",
+    "post_approval_commits": "No commits were added after the approval at 2026-10-23T05:32:34Z. The PR contains two commits (b7fc505 by fl0rianr and 2f943e8 by fl0rianr), both authored before approval, and neither was added post-approval. The post-approval history is clean.",
+    "review": "PR #3942 was approved by @bitgamma, a maintainer whose subject areas include cli, benchmarking, recipes, and new models — direct subject-matter expertise for this change. The review was substantive: the PR author iterated on inline CodeRabbit comments (fixing the default-token mismatch between expansion and minimum-context calculation, and the effective-context check for nonpositive --ctx-size values), and @bitgamma approved the final state without requesting further changes. One CodeRabbit finding — that `max_tokens` completion capacity should be included in the context requirement — remains open; the author responded to a related suggestion with \"4096 is our Lemonade 'good' minimum, less is basically useless,\" which is a reasonable design boundary given the baseline floor.",
+    "security": "No security concerns. The change is purely local CLI logic in the benchmark command: token-count rounding, context-size planning, and scenario grouping. No network calls, credential handling, code execution, or supply-chain changes.",
+    "tests": "New file test/cpp/test_bench_context.cpp (70 lines) exercises bench_context_for_target_tokens for power-of-two rounding (4K through 128K, custom 5K), the default target token constant, the context planner with no explicit sizes (four distinct batches grouped), model-default override, explicit sweeps with skips, undersized-only requests that fail preflight, and server-auto edge cases. The test builds and runs via a new CMakeLists.txt entry (BenchContextTest). No existing tests were weakened or deleted."
+  },
+  "generation_seconds": 228.4,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-23T10:44:12Z",
+  "pr_number": 3942,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-23T10:49:45+00:00",
+  "reviewers": [
+    "@bitgamma"
+  ],
+  "sha": "882bc7a6e4aadce147dbac7d4fdaf8941f9cd82d",
+  "shout_outs": [],
+  "subject": "fix(bench): select context size per scenario (#3942)",
+  "summary": "fix(bench): automatically select the required context size (4K, 32K, 64K, 128K) per benchmark scenario and skip incompatible scenarios during an explicit --ctx-size sweep instead of letting them fail at runtime.",
+  "verdict": "Clean",
+  "verdict_reason": "Focused bug fix reviewed by a benchmarking-expert maintainer with subject-matter expertise, clean post-approval history, and thorough unit tests covering both the token-conversion and context-planning logic."
+}
