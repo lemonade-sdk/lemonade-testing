@@ -1,0 +1,32 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "c611876788abc002e074b3dbae512b85b1eff094",
+  "committed_at": "2026-10-23T21:05:33+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking change. The PR replaces inline tier definition tables in docs/api/lemonade.md and system_info.cpp with a reference link to the centralized policy. The `/v1/models` endpoint, the BackendTier enum values, and all CLI/API behavior are unchanged. The change is strictly forward-compatible (links are added, nothing removed).",
+    "documentation": "The PR is itself documentation. It creates a single source of truth for the backend submission policy (docs/dev/adding-a-backend.md#policy) with structured tables for support tiers (core/experimental/guest) and their update/feedback cadences, test plan requirements (DevLab Dispatch as of October 1 2026), and user story expectations. It replaces competing tier definitions in docs/api/lemonade.md and docs/dev/specs/container-backends.md with links. It updates the RFC template, RFC guide, spec-driven-dev.md, dev README, and BackendTier enum comment to reference the centralized policy. One minor inconsistency remains: docs/dev/README.md line 35 still groups the RFC template and backend policy together ('follow the policy and template in the [adding a backend guide]'), whereas the CodeRabbit review correctly noted the template lives at .github/DISCUSSION_TEMPLATE/request-for-comment-rfc.yml. The RFC template itself was updated to include the backend policy reference. This is a small nit that does not affect the policy's correctness or accessibility.",
+    "manual_release_testing": "N/A — this PR changes only documentation files (docs/dev/adding-a-backend.md, docs/api/lemonade.md, docs/dev/specs/container-backends.md, docs/dev/spec-driven-dev.md, .github/DISCUSSION_TEMPLATE/request-for-comment-rfc.yml, docs/dev/README.md, src/cpp/include/lemon/recipe_backend_def.h comment). It produces no user-visible behavior change and adds no shipped artifact.",
+    "post_approval_commits": "The PR branch received one commit after approval: 90e1331 at 2026-10-23T19:47:09Z ('Merge main into docs/backend-policy — Resolve the conflict in docs/api/lemonade.md'). This is a merge-conflict resolution that happened while other PRs merged into main on the merge queue. The resolution replaced the tier table inline in docs/api/lemonade.md with a link to the centralized policy, which is consistent with the approved PR content and introduces no new behavior. Low risk; no re-approval was sought. The other commits visible in the diff (from #3946, #3954, #3926) are from separate PRs merged concurrently in the merge group, not part of this PR.",
+    "review": "PR #3925 received an APPROVE from @bitgamma (2026-10-22T06:39:58Z). Per docs/dev/contribute.md, @bitgamma has subject-matter expertise in 'new backends' among other areas, so the review satisfies the contributor guideline that PRs should have at least one reviewer with subject-matter expertise. @jeremyfowers (the author) is also listed as a maintainer with expertise in 'new backends'. An auto-generated CodeRabbit bot review posted one minor comment suggesting that docs/dev/README.md link the RFC template separately from the backend policy rather than grouping them in the guide; the PR author did not address this on docs/dev/README.md line 35 (which still reads 'follow the policy and template in the [adding a backend guide]'), but the RFC template was updated to reference the backend policy. This is a small documentation consistency nit, not a quality gate issue.",
+    "security": "No security concerns. The changes are purely documentation and a comment update. No credential handling, network calls, code execution paths, or permission changes.",
+    "tests": "N/A — this is a documentation-only PR with no code changes to test. No tests weakened or deleted."
+  },
+  "generation_seconds": 256.9,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-23T22:10:16Z",
+  "pr_number": 3925,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-23T22:21:56+00:00",
+  "reviewers": [
+    "@bitgamma"
+  ],
+  "sha": "c611876788abc002e074b3dbae512b85b1eff094",
+  "shout_outs": [],
+  "subject": "docs: transcribe the policy for adding a new backend (#3925)",
+  "summary": "Adds a Policy section to docs/dev/adding-a-backend.md covering the user story, hardware test plan (DevLab Dispatch), and support tiers (core/experimental/guest with update and feedback cadence); replaces inline tier definitions in docs/api/lemonade.md and docs/dev/specs/container-backends.md with links to the centralized policy; updates the RFC template, RFC guide, dev README, and BackendTier enum comment to reference the new policy document.",
+  "verdict": "Clean",
+  "verdict_reason": "This is a focused documentation consolidation PR with no behavior change, approved by a reviewer with backend subject-matter expertise, and all CI checks passed."
+}
