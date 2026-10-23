@@ -1,0 +1,36 @@
+{
+  "author": "@meghsat",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "9653d0a8317b62b13c7b480acb9ccf4730d46eaa",
+  "committed_at": "2026-10-23T08:19:01+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. This is a pure allowlist addition — existing setups continue to work. Only new hardware is recognized.",
+    "documentation": "Documentation is not affected by this change per the PR template. No release notes entry is needed for a hardware allowlist addition unless the release explicitly advertises GRG-Halo support.",
+    "manual_release_testing": "No evidence of a human exercising this change. The behavior is visible when running Lemonade on a GRG-Halo device (system name containing \"8065s\") with llamacpp-rocm enabled: the backend should appear instead of \"unsupported\". CI builds the change but cannot drive a GRG-Halo device.",
+    "post_approval_commits": "None. The PR contains a single commit (1c7522f8ffc8d504b5f6e7510acd236ee00abf10) authored by @meghsat on 2026-10-23T07:42:23Z, which is before the approval at 07:52:22Z. No commits were added after approval.",
+    "review": "PR #3954 was approved by @fl0rianr (approval submitted at 2026-10-23T07:52:22Z). Per docs/dev/contribute.md, @fl0rianr's subject areas are LMX omni models, GUI, CI, and smart router — not ROCm or hardware vendor support. @superm1 (ROCm, system info, llamacpp) and @kenvandine (hardware vendor support) were not involved. No inline review comments were made. The change is a single-line addition to an existing string-match block, so the risk is low, but the project explicitly recommends at least one reviewer with subject-area expertise.",
+    "security": "No security concerns. The change adds a string to a device-name matching list in a C++ server-side function. No code execution, credential handling, or network calls introduced.",
+    "tests": "No unit or integration tests were added for this change. The change touches system_info.cpp's ROCm device name matching — a low-risk, data-only addition to an existing allowlist. CI passes on all four workflows: Lemonade App checks, Validate New llama.cpp Release, Validate New stable-diffusion.cpp Release, and C++ Server Build, Test, and Release."
+  },
+  "generation_seconds": 129.0,
+  "maintainer_todos": [
+    {
+      "text": "Run the server on a GRG-Halo device (device name containing \"8065s\") with llamacpp-rocm and confirm the backend is listed instead of showing \"unsupported\"."
+    }
+  ],
+  "merge_date": "2026-10-23T09:04:19Z",
+  "pr_number": 3954,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-23T09:08:15+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "9653d0a8317b62b13c7b480acb9ccf4730d46eaa",
+  "shout_outs": [],
+  "subject": "Adding GRG Halo device into the device allow list (#3954)",
+  "summary": "Adds the \"8065s\" device name string to the same if-branch in identify_rocm_arch_from_name() that already maps \"8050s\" and \"8060s\" to the gfx1151 ROCm architecture, enabling GRG-Halo GPUs to be recognized instead of reported as unsupported.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The PR was approved by @fl0rianr whose documented subject areas (LMX models, GUI, CI, smart router) do not cover ROCm or hardware vendor support, despite the project's guidance that at least one reviewer should have domain expertise."
+}
