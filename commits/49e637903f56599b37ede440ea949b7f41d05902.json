@@ -1,0 +1,32 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "49e637903f56599b37ede440ea949b7f41d05902",
+  "committed_at": "2026-10-22T23:48:40+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking change. The pinned_backend() function is internal to the docs generation tool; it does not expose an API contract to users. The re-keyed cache entries are consumed by the same tool at build time. Existing user setups are unaffected.",
+    "documentation": "This commit is itself a docs-tooling fix that improves the accuracy of the API example cache. No external documentation changes are needed; the fix ensures the generated docs remain correct going forward.",
+    "manual_release_testing": "This change modifies only the docs tooling (docs/tools/gen_api_boilerplate.py) and the static API example cache file (docs/tools/api_examples_cache.json). It does not change any CLI command, API endpoint, config option, GUI, or shipped artifact. The docs tool is used during build-time documentation generation, not at runtime by end users. No manual release testing is needed.",
+    "post_approval_commits": "There were zero commits added after the first (and only) approval at 2026-10-22T23:42:47Z. The branch contained a single commit (7ac81dab) from the author that was approved as-is and then merged via the merge queue. No post-approval churn to flag.",
+    "review": "PR #3946 has a single approval review from @sawansri (submitted 2026-10-22T23:42:47Z). @sawansri's subject-area coverage in docs/dev/contribute.md includes agents, tui, cli, new backends, launch, vLLM, and new models — not docs tooling or llamacpp specifically. However, the change is a small, self-contained Python script fix (8 lines changed in gen_api_boilerplate.py) plus data re-keying in a JSON cache file, so broad subject-area expertise is less critical. CodeRabbit ran an automated review and reported zero actionable comments, merge risk as minimal, and confirmed the PR body is consistent with the code. No inline review comments were posted. The PR description clearly states the bug (bumping any pin invalidated Vulkan-recorded examples) and the fix (key on vulkan only when available, with a fallback path).",
+    "security": "No security concerns. The change is a pure logic fix to a cache-keying function and a data file re-key. No new dependencies, no credential handling, no network calls, no code execution path changes.",
+    "tests": "The commit does not add unit tests for the pinned_backend() logic change. However, it is a docs/tooling fix (gen_api_boilerplate.py is used to generate API boilerplate for docs, not shipped code), and the 45 cache entries in api_examples_cache.json were re-keyed in the same commit — they represent the output of running the tool against current recipes. CI passing includes the 'Routing schema + fixtures' and 'backend-docs-drift' checks, which exercise the docs generation pipeline. For a docs-tooling bug fix that re-keys a data file, the absence of a dedicated unit test is reasonable."
+  },
+  "generation_seconds": 226.3,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-23T00:30:45Z",
+  "pr_number": 3946,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-23T00:36:22+00:00",
+  "reviewers": [
+    "@sawansri"
+  ],
+  "sha": "49e637903f56599b37ede440ea949b7f41d05902",
+  "shout_outs": [],
+  "subject": "fix(docs): key recorded API examples on the recipe's Vulkan pin only (#3946)",
+  "summary": "Keys recorded API examples on the recipe's Vulkan pin only instead of the entire backend_versions map, and re-keys the 45 existing cache entries to match.",
+  "verdict": "Clean",
+  "verdict_reason": "A targeted bug fix with an approved change, passing CI, and no release-surface impact — a pure internals fix to the docs tooling cache-keying logic."
+}
