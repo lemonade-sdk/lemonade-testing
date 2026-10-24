@@ -1,0 +1,32 @@
+{
+  "author": "@mike2307",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "04d6f0ff032ab42376adf36fbcfa855ae87cbf47",
+  "committed_at": "2026-10-24T18:00:54+00:00",
+  "evidence": {
+    "api_compatibility": "Not a breaking change. The /v1/stats response schema (in stats.cpp) already declared 'type': ['number', 'null'] for both timing fields. The PR replaces a false-zero (which was never a valid measured value for these fields per the bug report #3808) with the already-declared null. No existing consumer should break; the web app already handles null/non-positive gracefully.",
+    "documentation": "Documentation updated in three places: docs/api/lemonade.md field notes for /v1/stats, the /v1/stats response-schema descriptions in stats.cpp, and the Prometheus gauge HELP strings in prometheus_metrics.cpp. All correctly state that null is emitted when the backend reports no timing. Inline comments in wrapped_server.h were trimmed per reviewer feedback.",
+    "manual_release_testing": "This change modifies the JSON serialization of Telemetry::to_json(), which affects the GET /v1/stats endpoint and Prometheus gauge data. However, the /v1/stats response schema already declared null for both timing fields, the web app already renders non-positive values as unavailable ('—'), and the fix was verified locally with cmake and all test binaries passing. The behavior change is purely a representation fix (null instead of 0.0 for the same unmeasured state), not a new feature or API change that a tester would need to exercise by hand before release.",
+    "post_approval_commits": "Zero commits were added after the first (and only) approval at 2026-10-23T19:22:10Z. The merge-group queue contained only the single PR commit 928b3ec (squashed into 04d6f0f on merge).",
+    "review": "PR #3955 was reviewed by @fl0rianr (COLLABORATOR), who provided a changes-requested review early on, then a final approval ('Thanks, LGTM') at 2026-10-23T19:22:10Z on commit bc52c30d. @fl0rianr gave specific inline feedback: correcting wording on /v1/stats field descriptions to note that TPS can be calculated from streamed responses (not just backend-reported), asking for more minimal comments per project guidelines, and requesting minor text adjustments. The reviewer explicitly praised the reworked approach ('the new approach is clearly much better'). The PR author incorporated all feedback before merging. No reviewer with subject-area expertise in telemetry (@abn, per docs/dev/contribute.md) was required; the reviewer exercised sound judgment on a server-side data-format change.",
+    "security": "No security concerns. The change only affects JSON serialization of telemetry data. No credentials, network calls, permission changes, or supply-chain dependencies are involved.",
+    "tests": "Unit tests added in test/cpp/test_telemetry_helpers.cpp covering four scenarios: unmeasured Telemetry (default 0.0/0.0) renders null for both timing fields, negative values render null, measured values (0.25 / 40.0) render as numbers, and reset() restores the null state. Tests are minimal and targeted, exercising the to_json() path directly."
+  },
+  "generation_seconds": 161.0,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-24T18:41:54Z",
+  "pr_number": 3955,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-24T18:46:24+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "04d6f0ff032ab42376adf36fbcfa855ae87cbf47",
+  "shout_outs": [],
+  "subject": "fix(server): report unavailable ttft/tps as null when the backend reports no timing (#3955)",
+  "summary": "Render Telemetry::to_json() time_to_first_token and tokens_per_second as JSON null when they hold non-positive (unmeasured) values instead of false zeros, so OpenAI-compatible cloud upstreams that omit timing fields no longer poison per-model Prometheus gauges and /v1/stats with 0.0.",
+  "verdict": "Clean",
+  "verdict_reason": "A small, well-scoped fix with targeted unit tests, documentation updates, and no breaking changes, thoroughly reviewed with no post-approval churn."
+}
