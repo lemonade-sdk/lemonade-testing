@@ -1,0 +1,32 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "aea3a2b56d6d4d69cd3a4e23f2747ed92bc76e07",
+  "committed_at": "2026-10-26T20:22:29+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. This is a build config fix that only affects the compiler's build output (removing a warning). It does not change any API, CLI, config, or user-facing behavior.",
+    "documentation": "No documentation impact. This is an internal build fix. The PR body correctly marks 'Documentation is not affected by this change.'",
+    "manual_release_testing": "This commit touches only webpack configuration files. It suppresses a build-time warning and does not alter any user-visible behavior, API, CLI, config, or shipped artifact. CI already verifies the builds succeed. No manual release testing is needed.",
+    "post_approval_commits": "No post-approval commits. The PR contains a single commit (cd0d1c3) that was the only commit on the branch from creation to merge.",
+    "review": "PR #3938 was approved by @superm1 (admin maintainer) at 2026-10-26T18:37:27Z with a one-word approval. Two reviewers were requested — @kpoineal (GUI/app expertise) and @jeremyfowers (GUI design language) — but neither submitted a review. The change is a simple webpack config tweak (16 lines removed, 8 added across two files) with no new behavior, so @superm1's admin-level review is adequate. CodeRabbit gave it a Minimal risk assessment with no actionable comments. There were zero inline review comments.",
+    "security": "No security concern. The change adds a rule to prevent webpack from parsing a vendored third-party file and removes an unrelated warning filter. No supply-chain, credential, network, code execution, or permission changes are introduced.",
+    "tests": "This is a build configuration change with no runtime code to test. No new tests are expected. The project's CI includes build-and-smoke tests for amd64 and arm64 containers, App checks (docs, typecheck, runtime and UI tests), and vendored-asset-integrity — all passed. The change was locally tested by the author who built desktop and web-app bundles and verified GLB/3D model preview functionality."
+  },
+  "generation_seconds": 194.0,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-26T21:08:14Z",
+  "pr_number": 3938,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-26T21:13:23+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "aea3a2b56d6d4d69cd3a4e23f2747ed92bc76e07",
+  "shout_outs": [],
+  "subject": "fix(web): prevent webpack from parsing vendored model-viewer (#3938)",
+  "summary": "Prevents webpack from parsing the vendored vendor/model-viewer.min.js file in both the desktop app (src/app/webpack.config.js) and web-app (src/web-app/webpack.config.js) build configurations by adding a parser: { import: false } rule, and removes the now-unnecessary ignoreWarnings suppression filter.",
+  "verdict": "Clean",
+  "verdict_reason": "A small, correct build fix that eliminates a webpack critical dependency warning by properly excluding a vendored file from parsing, approved by an admin maintainer with all CI checks passing."
+}
