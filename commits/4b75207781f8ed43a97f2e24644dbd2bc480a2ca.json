@@ -1,0 +1,37 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "4b75207781f8ed43a97f2e24644dbd2bc480a2ca",
+  "committed_at": "2026-10-27T01:34:41+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking API changes. The server API endpoints are unchanged. URL routing changed from #/dashboard/* to #/monitor/* but this was never released to users. No config values, CLI flags, or persisted formats were altered.",
+    "documentation": "Not a breaking change to released docs. CSS comments, i18n keys (zh-CN updated), and code comments were updated as part of the rename. No external documentation changes were needed.",
+    "manual_release_testing": "This is a pre-release rename; the old dashboard routes were never shipped, so no legacy user data is broken. The server API endpoints (/api/v1/stats, etc.) are unchanged. The Tauri navigation-listener shim addresses a real logs-launch timing bug and may benefit from a quick manual verification that clicking the tray/CLI deep-link to logs opens Monitor Logs reliably, but this is a minor fix within an already-working flow.",
+    "post_approval_commits": "None. @meghsat's approval came at 01:07:56Z and the merge happened at 02:20:47Z with no intervening commits on the branch. The Tauri shim commit (5d37cd3) was authored by @meghsat and landed before approval.",
+    "review": "Single human approval from @meghsat (submitter of commit 5d37cd3 \"Shim to fix logs launch bug in Tauri\") at 2026-10-27T01:07:56Z. The only other human activity was @fl0rianr (author) responding inline to CodeRabbit bot comments. @meghsat is an admin maintainer; the project docs recommend subject-matter expertise for reviewers, and @fl0rianr holds GUI as his specialty, so the review relied on a non-GUI maintainer. No substantive human reviewer with GUI expertise (e.g., @kpoineal) signed off. CodeRabbit AI posted two review comment threads (one about legacy route mapping, one about query-parameter cleanup); both were addressed by the author in discussion, and the route-mapping concern was resolved by @fl0rianr noting the change was not yet released.",
+    "security": "No security concerns. The Tauri shim changes the listen API to return a { cleanup, ready } object instead of a bare unlisten function, which actually improves resource management by making the ready signal explicit and preventing dropped events during the async listen call.",
+    "tests": "All test files were comprehensively updated: features.spec.ts, a11y.spec.ts, design-system.spec.ts, inspect-interactions.spec.ts, inspect-persistence.spec.ts, global-model-settings.runtime.cjs, and monitor-throughput.runtime.cjs (renamed from dashboard-throughput.runtime.cjs). Tests verify deep links (view=logs, logs=true, view=monitor/telemetry), navigation between sections, a11y scans, contrast tokens, log filter modal behavior, and model settings integration. No tests were weakened or deleted."
+  },
+  "generation_seconds": 213.5,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-27T02:20:47Z",
+  "pr_number": 3934,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-27T02:26:06+00:00",
+  "reviewers": [
+    "@meghsat"
+  ],
+  "sha": "4b75207781f8ed43a97f2e24644dbd2bc480a2ca",
+  "shout_outs": [
+    {
+      "handle": "@meghsat",
+      "reason": "Co-authored the commit with the Tauri navigation-listener shim that fixes the logs-launch timing bug."
+    }
+  ],
+  "subject": "chore(app): rename Dashboard to Monitor (#3934)",
+  "summary": "Renames the internal \"dashboard\" workspace to \"monitor\" throughout the app (component names, routes, CSS classes, test references, and i18n keys) to match the user-facing Monitor label, and adds a Tauri navigation-listener shim to fix a logs-launch timing bug.",
+  "verdict": "Clean",
+  "verdict_reason": "Pre-release rename of the internal workspace with comprehensive test coverage, no post-approval changes, and a single maintainer review."
+}
