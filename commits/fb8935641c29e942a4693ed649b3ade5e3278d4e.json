@@ -1,0 +1,55 @@
+{
+  "author": "@bitgamma",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "fb8935641c29e942a4693ed649b3ade5e3278d4e",
+  "committed_at": "2026-10-27T19:57:39+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The PR adds checkpoint_status[], update_available, and include_paths=true to existing API surfaces — all additive. The register endpoint now echoes the model row (additive). It removes four one-line facade helpers (generation(), all_models(), has_alias(), checkpoints_complete()) that had no product callers per the author's census, but these were internal/test-only pass-throughs. The PR author declared no breaking changes.",
+    "documentation": "API documentation updated in docs/api/internal.md (new /internal/model-sources endpoint) and docs/api/openai.md (include_paths parameter). The PR also updates the spec document (docs/spec/model_manager.md) to match the shipped surface. Both doc generators report no drift. One reviewer questioned whether the generated-documentation note in docs/api/internal.md was necessary; the other clarified it serves as a quality constraint.",
+    "manual_release_testing": "The release surface includes: GET /v1/models now returns checkpoint_status[] with opt-in include_paths=true; GET /v1/models returns update_available on each model; POST /v1/models/register echoes the registered model row; GET /internal/model-sources is a new endpoint; aliases resolve on OpenAI, Ollama, and Anthropic API surfaces. None of these surfaces show evidence of being manually exercised by a human against a release candidate — CI tests exist but no end-to-end human verification is documented.",
+    "post_approval_commits": "The first approval was on 2026-10-22. The post-approval script reports zero commits were added after that approval. jeremyfowers' and fl0rianr's subsequent review comments on 2026-10-26/27 were comment-only — no new commits were pushed to address them before merge. This is unusual for a review-heavy PR and means the final merged state reflects the code as of the approval, not necessarily the latest reviewer feedback.",
+    "review": "The PR received one formal APPROVAL from @fl0rianr on 2026-10-22T16:00:40Z. @fl0rianr is listed in docs/dev/contribute.md under GUI, app, a11y, Windows, and LemonAIde — not under model manager, core C++, or store infrastructure. @jeremyfowers (admin maintainer, new endpoints/large features) left 16 inline review comments between 2026-10-26 and 2026-10-27 covering dead code, header reachability, config validation, test correctness, and the new /internal/model-sources documentation, but never submitted an APPROVAL. @ramkrishna2910 (new backends, vLLM, smart router) left one comment requesting additional test coverage for shared-repo deletion. The PR was merged on 2026-10-27, five days after approval, with no re-approval despite continued reviewer activity through the merge date. No reviewer with explicit model-manager subject matter expertise approved.",
+    "security": "The PR modifies http_client.cpp to control HTTP redirect handling per security policy — redirects walk one hop at a time with custom headers cut at cross-origin boundaries, preventing credential leakage to intermediate hosts. This is a security improvement. No supply-chain, credential, or obfuscation concerns detected.",
+    "tests": "The PR adds 1,099 check() call sites across 4 new C++ test binaries (test_store, test_store_snapshot, test_store_publication, test_model_sync_service) and 1 new Python test file (test_server_endpoints.py adds ~900 lines), raising C++ CI test count from 73 to 119. Tests cover store write/read isolation, publication correctness, concurrent reader/writer races, cache invalidation semantics, alias resolution, checkpoint_status, orphaned cache cleanup, and config validation. CI jobs (cpp-ci 119/119, cli2 73 OK, endpoints 178 OK, whisper 12 OK, app regression 136) all reported green. Seven dead-code functions were flagged in comments but not removed."
+  },
+  "generation_seconds": 311.1,
+  "maintainer_todos": [
+    {
+      "text": "Start the server and call GET /v1/models to confirm the response now includes a checkpoint_status[] array with entries containing type, present, and required fields, and verify that the query parameter ?include_paths=true adds an absolute path field to each present checkpoint entry."
+    },
+    {
+      "text": "Call GET /v1/models and verify that each model object now carries an update_available boolean field."
+    },
+    {
+      "text": "Call GET /internal/model-sources with the admin API key and confirm it returns a catalogs array listing each configured registry and catalog source with their descriptors (token, endpoint, cache layout)."
+    },
+    {
+      "text": "Register a model via POST /v1/models/register and verify the response body echoes back the registered model object including the checkpoint field."
+    },
+    {
+      "text": "Create an alias via POST /internal/aliases, then verify that calling GET /v1/models/{alias_name}, POST /api/chat with the alias model name, and POST /v1/messages with the alias all resolve to the target model."
+    }
+  ],
+  "merge_date": "2026-10-27T20:43:41Z",
+  "pr_number": 3828,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-27T20:50:42+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@jeremyfowers",
+    "@ramkrishna2910"
+  ],
+  "sha": "fb8935641c29e942a4693ed649b3ade5e3278d4e",
+  "shout_outs": [
+    {
+      "handle": "@fl0rianr",
+      "reason": "Co-author of the merge commit and provided the only approval; performed integration testing on GUI3 against a real server, verified Hugging Face cache compatibility, download cancellation, and :latest alias handling across multiple review rounds."
+    }
+  ],
+  "subject": "Model Manager refactoring (#3828)",
+  "summary": "Refactors the Model Manager according to RFC #3545, introducing a lock-free store snapshot, splitting the facade into smaller units (13 spec steps), adding checkpoint_status[] with opt-in include_paths=true, update_available, and a new /internal/model-sources endpoint, while touching every single file in the project (244 files, +30,446/-9,571 lines).",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The only formal approval came from @fl0rianr, who is listed under GUI/app/Windows expertise rather than model manager or core C++ infrastructure; @jeremyfowers left 16 substantive inline reviews across two days but never approved, and no reviewer with explicit model-manager subject matter expertise signed off."
+}
