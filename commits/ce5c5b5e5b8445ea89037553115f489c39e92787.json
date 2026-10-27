@@ -1,0 +1,34 @@
+{
+  "author": "@ramkrishs",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "ce5c5b5e5b8445ea89037553115f489c39e92787",
+  "committed_at": "2026-10-27T07:39:04+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking change. This commit only modifies the text of an error message thrown by assert_http_ok in the CLI client. There is no API, config, CLI flag, or persisted format change. Existing scripts and users are unaffected except for a more accurate message in edge cases.",
+    "documentation": "The PR body serves as adequate inline documentation with its error-code-to-message mapping table. No external docs or CLI help text need updating — the change is a bug fix to error messaging, not a new feature. The known limitation (read timeout and closed-connection sharing one message) is called out in the PR body.",
+    "manual_release_testing": "Not required — the change only alters error message text for two specific network error conditions (Read/Write vs. everything else). There is no new behavior, flag, endpoint, or config. The existing test suite exercises both code paths. Users upgrading will simply see a more accurate error message when the server drops a connection mid-request (e.g., during a backend load/unload).",
+    "post_approval_commits": "Two commits were added after the first approval (2026-10-26T15:18:18Z): (1) 253ef66d — drops the ConnectionTimeout branch and its explanatory comment so that only Read/Write errors get the new 'closed connection' message (this was @bitgamma's earlier nit about removing an unnecessary comment). (2) 4bc73b38 — a merge of main into the feature branch. The 253ef66d change narrows the behavior scope (removing the ConnectionTimeout-specific message) which is consistent with the PR's original intent and was covered by the subsequent approvals from @Geramy and @bitgamma. No commits were added after the latest approval at 2026-10-27T07:38:57Z.",
+    "review": "Three substantive approvals from @fl0rianr (approved first at 2026-10-26T15:18:18Z, subject area: cli), @Geramy (approved at 2026-10-27T03:36:09Z, subject area: sockets/tcp/ip), and @bitgamma (approved at 2026-10-27T07:38:57Z, subject area: cli). @bitgamma initially requested a comment removal (2026-10-26T17:48:40Z), which was addressed before re-approval. @Geramy commented to hold for @bitgamma before merge (2026-10-27T03:36:29Z). @jeremyfowers was requested as reviewer but did not respond. All three approving reviewers have CLI or networking subject area expertise per docs/dev/contribute.md. The PR description is thorough: it states the problem, the change with a clear error-code-to-message mapping, the tests, and a candid 'Not covered' section acknowledging that read timeouts share the same message as closed connections during a backend change.",
+    "security": "No security concern. The change only examines an httplib error enum to select an error message string. No credential handling, network calls, code execution, or permission changes.",
+    "tests": "Adds CLIConnectionErrorMessageTests in test/server_cli2.py with two cases: (1) a socket listener that accepts connections and immediately closes them — verifies the 'closed the connection' message appears and 'Make sure the server is running' does not. (2) an unused port — verifies the original 'Make sure the server is running' hint is preserved. Against the old code the first test fails and the second passes; with the change both pass. The tests are registered in the existing test suite via loader.loadTestsFromTestCase. No evidence of existing tests being weakened or deleted."
+  },
+  "generation_seconds": 191.0,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-27T08:20:44Z",
+  "pr_number": 3972,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-27T08:25:41+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@Geramy",
+    "@bitgamma"
+  ],
+  "sha": "ce5c5b5e5b8445ea89037553115f489c39e92787",
+  "shout_outs": [],
+  "subject": "fix(cli): distinguish a closed connection from a server that is not running (#3972)",
+  "summary": "fix(cli): distinguish a closed connection from a server that is not running (#3972)",
+  "verdict": "Clean",
+  "verdict_reason": "Well-scoped error-message fix with thorough tests, three approvals from reviewers with CLI expertise, and all CI checks passing."
+}
