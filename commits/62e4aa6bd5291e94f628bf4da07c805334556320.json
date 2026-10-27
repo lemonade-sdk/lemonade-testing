@@ -1,0 +1,44 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "62e4aa6bd5291e94f628bf4da07c805334556320",
+  "committed_at": "2026-10-27T02:21:51+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking change. This restores behavior (browser API key persistence) that existed before #3914. The only behavioral shift is that the 'Connected to...' notice text changed from 'API key saved in Lemonade app settings.' to 'API key saved on this device.' — the latter is more accurate and applies equally to browser and desktop clients. No CLI, server API, config file format, or protocol changes.",
+    "documentation": "docs/guide/app/README.md updated to clarify the distinction: browser clients save to the current origin's localStorage, desktop clients use native app settings. Includes a security warning about same-origin scripts. i18n strings in i18n.tsx updated to match the new notice text. No other user-facing documentation affected.",
+    "manual_release_testing": "No human was observed exercising the GUI with the actual Remember API key checkbox in a browser or desktop app before merge. The CodeRabbit AI flagged the localStorage security concern and the documentation was updated to warn about same-origin XSS, but no end-to-end run was recorded. CI checks (upload, validate_sdcpp, validate_llamacpp, cpp_server_build_test_release) all passed.",
+    "post_approval_commits": "No commits were added after the approval at 2026-10-24T18:46:26Z. The three PR commits (f266cd3e, 671f7c3b, 4bcb3d62) were all authored by @fl0rianr before the approval. No post-approval churn.",
+    "review": "PR #3967 received one substantive approval from @bitgamma who tested both with and without the patch. According to docs/dev/contribute.md, @bitgamma's subject areas are 'thenoise, cli, recipes, new backends, benchmarking, new models' — GUI is not listed. @fl0rianr (the author) has 'GUI' in their subject area but did not review their own PR. Two CodeRabbit AI suggestions were raised and addressed: (1) a security concern about storing an auth token in localStorage (inherent to browser storage, documented in the updated README with the warning 'Remember browser keys only on trusted devices'), and (2) reporting failed API key removal — both incorporated into the final commit.",
+    "security": "The PR deliberately stores an API key in browser localStorage, which is inherently readable by same-origin scripts. This risk is documented in the updated README with the warning 'Remember browser keys only on trusted devices, since scripts running on the same origin can access browser storage.' The code correctly isolates browser keys (localStorage) from desktop keys (native app settings) — desktop clients never read or write browser storage. CodeRabbit flagged the localStorage concern; the author documented it rather than hiding it. No credential leakage, no network calls, no supply-chain changes.",
+    "tests": "Comprehensive runtime regression test added in src/app/tests/browser-key-persistence.runtime.cjs (119 lines of new/modified test code). Covers: browser key surviving startup and not leaking into the web shim, new secrets persisting in localStorage, reloading after restart, un-checking remember removing the key, failed key removal throwing a descriptive error, connection settings clearing, native desktop client using native settings (not localStorage), standalone browser without a host shim, and storage-blocked browsers. The test mocks localStorage, removal, and window availability precisely to exercise every code path."
+  },
+  "generation_seconds": 186.2,
+  "maintainer_todos": [
+    {
+      "text": "Open the web GUI in a browser, navigate to Settings > Server, enter a server URL and an API key, check the 'Remember API key' checkbox, and confirm the notification says 'Connected to {url}. API key saved on this device.' (not the old 'Lemonade app settings' wording). After restarting the app, confirm the API key is pre-populated and the checkbox is checked."
+    },
+    {
+      "text": "In the same web GUI with a remembered key, uncheck 'Remember API key' and click Connect again; confirm the notification no longer mentions the key being saved and that the checkbox is unchecked after restart."
+    }
+  ],
+  "merge_date": "2026-10-27T03:08:54Z",
+  "pr_number": 3967,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-27T03:13:42+00:00",
+  "reviewers": [
+    "@bitgamma"
+  ],
+  "sha": "62e4aa6bd5291e94f628bf4da07c805334556320",
+  "shout_outs": [
+    {
+      "handle": "@bitgamma",
+      "reason": "Performed hands-on testing by building and running the code both with and without the patch, confirming the fix works end-to-end."
+    }
+  ],
+  "subject": "fix(gui): restore browser-local API key persistence (#3967)",
+  "summary": "Restores browser-local API key persistence in the GUI that was accidentally removed in #3914: the Remember API key checkbox now saves keys to localStorage for web clients and native app settings for desktop clients, reports failed key removal as an error instead of silently succeeding, and includes comprehensive runtime regression tests covering browser keys, native clients, no-host scenarios, and blocked-storage edge cases.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "All CI checks passed and post-approval commits are clean, but the reviewer with subject-matter GUI expertise (@fl0rianr) authored the PR and no other reviewer has listed GUI in their subject areas, and the browser localStorage change touches a user-visible security surface that should be exercised by hand before release."
+}
