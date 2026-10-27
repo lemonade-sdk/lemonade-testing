@@ -1,0 +1,32 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "131c93fd3fb19d7732a1a9c56f36ebbcd3deb86d",
+  "committed_at": "2026-10-27T21:10:40+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The change is confined to a test file and does not touch any production code, APIs, configs, or documented behavior. The author checked 'This PR does not introduce breaking changes.'",
+    "documentation": "Not applicable. The PR checks 'Documentation is not affected by this change.' The change is to a test file only; no user-facing docs, API specs, or guides are impacted.",
+    "manual_release_testing": "Not applicable. This is a test-only change (1 file, 1 insertion, 0 deletions) in src/app/tests/a11y.spec.ts. It does not affect any user-facing behavior, API, CLI, GUI, or documentation.",
+    "post_approval_commits": "None. The single commit c0b59755cbda78eae2d4dcdfc3c041204a8a066c was created before the approval and no commits were pushed after the review. The PR was merged 2.5 hours after approval via the merge queue.",
+    "review": "PR #3981 was approved by @kpoineal at 2026-10-27T19:07:23Z, just under two hours after creation. Per docs/dev/contribute.md, @kpoineal's subject areas include 'GUI, app, a11y, Windows, LemonAIde' — this is a direct subject-matter match for an accessibility test fix. CodeRabbit (automated) flagged a minor description quality issue (unclear summary wording) but no substantive code concerns. There were no inline review comments or follow-up discussion.",
+    "security": "No security concerns. The change is a single assertion-level line in a Playwright accessibility test. No new dependencies, network calls, credential handling, or execution paths are introduced.",
+    "tests": "CI status check rollup shows all relevant checks passed: CodeQL (C++, JS/TS, Python, Rust) all passed; Lemonade App checks (app-regression-tests, App docs/typecheck/runtime/UI tests, App vs C++ CI Lemonade Server) all passed; Docs And Style checks (pre-commit, app-regression-tests) passed. The author reports running 'npm run test, repeated A34 several times' locally. The change adds exactly one line: `await sheet.locator('.bottom-sheet__handle').hover();` inserted after the sheet opens and before the drag assertion in the reduced-motion mobile bottom-sheet test, resolving the race condition by ensuring the handle element is settled."
+  },
+  "generation_seconds": 149.4,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-27T21:56:35Z",
+  "pr_number": 3981,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-27T22:02:48+00:00",
+  "reviewers": [
+    "@kpoineal"
+  ],
+  "sha": "131c93fd3fb19d7732a1a9c56f36ebbcd3deb86d",
+  "shout_outs": [],
+  "subject": "test(a11y): wait for mobile sheet before drag assertion (#3981)",
+  "summary": "Adds one line to the A34 accessibility test in src/app/tests/a11y.spec.ts to hover over .bottom-sheet__handle before the drag assertion, fixing a flaky race condition in the CI run.",
+  "verdict": "Clean",
+  "verdict_reason": "A one-line test fix with clear intent, approved by a reviewer with a11y/GUI expertise, and no post-approval changes."
+}
