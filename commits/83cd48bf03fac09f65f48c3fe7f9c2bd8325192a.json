@@ -1,0 +1,62 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "83cd48bf03fac09f65f48c3fe7f9c2bd8325192a",
+  "committed_at": "2026-10-27T00:01:01+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking API changes. The commit only modifies App.tsx, ChatView.tsx, and two existing runtime tests. Three new callback props (dictationTarget, onDictationStart, onDictationEnd) are added to ChatView — this is additive, not breaking. The supportsDictation condition is broadened from `currentCapability === 'chat'` to include image, audio-generation, tts, and model3d text-mode — this adds capabilities, does not remove any.",
+    "documentation": "No external documentation updates needed. The behavior change is reflected in the UI: the mic button title and aria-label now read 'Dictate message' for non-chat modes and 'Dictate speech into the chat draft' for chat mode. The PR self-classifies as not affecting documentation, which is correct.",
+    "manual_release_testing": "The PR description lists five manual test items (npm run typecheck, npm run test:chat-audio, dictation without a loaded chat model, Image and Text-to-3D dictation, original model selection preserved, standalone Transcription unaffected) — all self-tests by the author @fl0rianr. No evidence exists that another human independently exercised dictation in any of the five new capability modes (Image, Audio Generation, TTS, Text-to-3D) or that the model-pinning behavior was validated under load/unload stress. CI is green (C++ Server Build, Validate New vLLM Release, Validate New stable-diffusion.cpp Release all passed), but none of these workflows exercise the app's microphone dictation path.",
+    "post_approval_commits": "The first and latest approval both occurred at 2026-10-26T23:58:48Z on commit c423dcfe (\"fix(app): track all router dependencies during dictation\"). No commits were added after approval. All nine commits were pushed before the final review cycle, and the approval landed on the merge commit itself — review was complete before merge.",
+    "review": "PR #3951 was requested to @kpoineal and @jeremyfowers for review. Only @meghsat (Satya Devineni) provided substantive review: one inline comment catching a router recipe matching bug (\"A router's recipe is collection.router, not router\") which @fl0rianr fixed promptly. @meghsat gave an approval review at 2026-10-26T23:58:48Z. @kpoineal and @jeremyfowers have no recorded review activity on this PR. @meghsat's subject area expertise covers smart router and orchestration, which is directly relevant to the router dependency tracking added in this PR. CodeRabbit posted three automated review cycles with functional correctness findings; all were addressed by the author in subsequent commits (stale dictationTarget handling in c3f35c1, router unload tracking in da878e2, realtime disconnect cleanup in 3561d7e).",
+    "security": "No security concerns. The change is entirely frontend React state management and callback wiring. No new network calls, credential handling, code execution, or permission broadening.",
+    "tests": "Two runtime assertion tests were updated. The existing chat-audio-capability.runtime.cjs was extended with assertions matching dictation state variables, model pinning logic, router dependency tracking, and onDictationEnd calls across all supported modes — but these are source-text matches, not executable tests that drive the dictation flow. A new router-load-regression.runtime.cjs test verifies that routerDependencies returns the expected candidate, classifier, and llm-router roles. CodeRabbit flagged that no executable test covers the dictation lifecycle (start, permission failure, post-connect failure, finish across all modes); the test suite passes while the state machine could still be broken in practice."
+  },
+  "generation_seconds": 230.3,
+  "maintainer_todos": [
+    {
+      "text": "Open the app with a loaded chat model and a microphone, tap the mic button in Chat mode, speak a sentence, then tap Stop — the text should appear in the composer draft and the model must still show as the chat model."
+    },
+    {
+      "text": "Switch to Image mode, tap the mic button, speak, then Stop — the text must appear in the image prompt composer, not as a separate chat message."
+    },
+    {
+      "text": "Switch to TTS mode, tap the mic button, speak, then Stop — the text must appear in the TTS input composer."
+    },
+    {
+      "text": "Switch to Text-to-3D mode with sourceMode set to text, tap the mic button, speak, then Stop — the text must appear in the 3D prompt composer."
+    },
+    {
+      "text": "Switch to Audio Generation mode, tap the mic button, speak, then Stop — the text must appear in the audio prompt composer."
+    },
+    {
+      "text": "With a loaded chat model active, start dictation in Chat mode, then unload the chat model while dictation is active — the composer must retain the previously selected model and not switch to standalone Transcription mode."
+    },
+    {
+      "text": "Start dictation in Chat mode, stop it, then manually select a different model — the dictation pin must be cleared and the new model must stick."
+    },
+    {
+      "text": "Open standalone Transcription mode (no chat model), tap the mic button, speak, then Stop — live transcription must still appear as overlay text without dictating into any composer draft."
+    }
+  ],
+  "merge_date": "2026-10-27T00:40:43Z",
+  "pr_number": 3951,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-27T00:46:18+00:00",
+  "reviewers": [
+    "@meghsat"
+  ],
+  "sha": "83cd48bf03fac09f65f48c3fe7f9c2bd8325192a",
+  "shout_outs": [
+    {
+      "handle": "@meghsat",
+      "reason": "Co-author of the commit who caught a router recipe matching bug during review (A router's recipe is collection.router, not router) and drove the fix."
+    }
+  ],
+  "subject": "fix(app): preserve composer mode during microphone dictation (#3951)",
+  "summary": "Preserves the selected composer model when Whisper/Moonshine ASR models load for microphone dictation, prevents unintended switching to standalone Transcription mode when no chat model is loaded, and enables editable microphone dictation (mic button speaks directly into the composer draft) in Chat, Image, Text-to-3D, TTS and Audio Generation capability modes, while keeping standalone live transcription behavior unchanged.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The PR introduces user-visible microphone dictation across five capability modes with no evidence that a human independently exercised any of them."
+}
