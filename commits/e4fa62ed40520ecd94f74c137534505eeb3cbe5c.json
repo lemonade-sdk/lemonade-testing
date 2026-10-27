@@ -1,0 +1,42 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "e4fa62ed40520ecd94f74c137534505eeb3cbe5c",
+  "committed_at": "2026-10-27T15:01:07+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. This is a pure CSS fix that removes an incorrect rule. It does not affect any API, CLI, config, or persisted format. Users on the previous release who had reduced motion enabled experienced a broken UI; this restores the intended behavior.",
+    "documentation": "Not affected. The PR body marks documentation as unchanged, and the change is a behavior bug fix in internal CSS, not a new feature or documented behavior change.",
+    "manual_release_testing": "The fix changes visible GUI behavior on mobile under a user-accessible setting (prefers-reduced-motion). No human is known to have exercised this path. The existing Playwright test drives the same interaction model a user would, but the merge-group workflow failure noted above means CI coverage is not fully reliable for this change.",
+    "post_approval_commits": "No commits were added after the first (and only) approval. The PR contains one content commit (63cdcf6) and one merge commit (8542787). The branch was updated via a rebase-merge of main at 2026-10-27T02:22:41Z, which preceded the approval.",
+    "review": "PR #3962 received one approval from @kpoineal at 2026-10-27T14:56:18Z with the comment '@fl0rianr this looks good.' The reviewer has subject-matter expertise (GUI, app, a11y) per docs/dev/contribute.md. The review itself was brief — no substantive discussion, no counter-questions about the CSS specificity or broader impact on other transformed elements. No inline review comments were left. The PR was requested from @meghsat and @jeremyfowers, but neither submitted a review.",
+    "security": "No security concerns. The change removes a CSS declaration. It does not touch authentication, permissions, network calls, code execution, credentials, telemetry, or any supply-chain dependency.",
+    "tests": "The Playwright A11y test A34 was expanded to cover the mobile bottom sheet at 390×844 with reduced motion enabled. It verifies: (1) the sheet has `aria-hidden='true'` initially and is positioned below the viewport edge, (2) the composer is focusable and receives focus, (3) opening the sheet via the mobile menu button works, (4) drag-to-dismiss moves the sheet down and restores `aria-hidden`, and (5) the Close button dismisses and refocuses the composer. The original pre-approval statusCheckRollup shows the related 'App docs, typecheck, runtime and UI tests' check passed (SUCCESS). However, the merge-group run of the 'Lemonade App checks' workflow concluded FAILURE. The PR was merged anyway, suggesting the failure was transient or bypassed. No evidence of human manual testing on a real device exists."
+  },
+  "generation_seconds": 180.8,
+  "maintainer_todos": [
+    {
+      "text": "Enable prefers-reduced-motion on a mobile-size viewport (390×844), confirm the closed Conversations sheet sits below the visible area and does not cover the composer, then tap the composer to verify focus returns."
+    },
+    {
+      "text": "Open the Conversations sheet, drag the handle downward, and confirm the sheet dismisses and the composer regains focus; repeat using the Close button on the sheet to verify both dismissal paths work under reduced motion."
+    },
+    {
+      "text": "Re-run the Lemonade App checks workflow on the merged commit to confirm the earlier failure was transient and does not recur."
+    }
+  ],
+  "merge_date": "2026-10-27T15:44:26Z",
+  "pr_number": 3962,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-27T15:49:13+00:00",
+  "reviewers": [
+    "@kpoineal"
+  ],
+  "sha": "e4fa62ed40520ecd94f74c137534505eeb3cbe5c",
+  "shout_outs": [],
+  "subject": "fix(gui3): keep mobile conversation sheet hidden with reduced motion (#3962)",
+  "summary": "Removes the conflicting `transform: none !important` override from the `prefers-reduced-motion: reduce` CSS block in both `styles.css` and `critical.generated.css`, so the mobile Conversations bottom sheet slides off-screen when closed instead of remaining visible and covering the chat composer; extends Playwright A11y test A34 at 390×844 to verify closed position, drag-to-dismiss, close-button dismissal, and composer focus return.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "This is a small, focused CSS fix with an approved reviewer who has GUI/a11y expertise and no post-approval churn, but it changes mobile GUI behavior under a specific accessibility setting without evidence of manual verification, and the merge-group run of the Lemonade App checks workflow failed before merge."
+}
