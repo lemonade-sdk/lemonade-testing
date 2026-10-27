@@ -1,0 +1,32 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "c89f59c1f4abacef22cffa4d90f06292057b43b7",
+  "committed_at": "2026-10-27T02:22:22+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. This PR changes display strings in the app's device summary output and system-info line rendering. It does not modify any API contract, CLI command, config schema, serialization format, or programmatic interface. The `physical_memory` field added to the summary object is new data, not a change to existing contract.",
+    "documentation": "No documentation changes required. The PR description notes 'Documentation is not affected by this change.' The change affects internal app display labels only — it does not expose a new CLI command, API endpoint, config option, or documented behavior to users.",
+    "manual_release_testing": "The change is a display fix that surfaces only in the app's model/system info view for users with AMD integrated GPUs. No one appears to have exercised this path on real hardware. However, the change is purely informational — it changes labels in a status display, not behavior, memory usage, or model loading decisions. It is not part of the critical release surface that would warrant a blocker or Needs Attention verdict.",
+    "post_approval_commits": "Zero commits were added after @meghsat's approval at 2026-10-27T01:19:18Z. The PR contained exactly two commits authored by @fl0rianr: the initial 'fix(app): model report shared GPU memory correctly' (sha 0f2bdb8, 2026-10-22) and the follow-up 'fix(app): ignore unavailable physical memory' (sha 6b5a5, 2026-10-27T01:10:50). Both were present before the approval, so there was no post-approval churn.",
+    "review": "PR #3944 was approved by @meghsat at 2026-10-27T01:19:18Z. @fl0rianr (the author) is a maintainer with subject area expertise in GUI/app (per docs/dev/contribute.md), but did not self-approve — @meghsat provided the sole human approval. The PR had no dedicated subject-matter reviewer assigned (expected reviewers per the maintainers table are @fl0rianr or @kpoineal for app/GUI), but the change is a one-file, twelve-line display fix, so the single approval is proportionate. CodeRabbit flagged two minor points: (1) suggesting `virtual_used_gb` instead of `virtual_mem_gb` for shared GPU memory display — the author clarified the intent was to show static capacity (matching other stats), and CodeRabbit withdrew the finding; (2) filtering the Windows 'Physical memory information not found.' sentinel — the author addressed this in a second commit. Both were resolved before approval.",
+    "security": "No security concerns. The change only affects how system information is formatted and displayed in the app UI. It reads system info that the app already collects and makes no network calls, credential handling, or permission changes. The CodeRabbit Windows sentinel fix prevents an error message from being displayed as a value, which is a correctness fix, not a security issue.",
+    "tests": "No unit or integration tests were added for this change. This is acceptable because the change modifies a display-formatting function (`summarizeDevice` and `summarizeSystemInfo` in `src/app/src/tools/lemonadeTools.ts`) that formats strings from system-info JSON. There is no existing test harness for this specific tooling path visible in the repo, and the fix is purely cosmetic display logic rather than behavior or API change."
+  },
+  "generation_seconds": 184.2,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-27T03:48:34Z",
+  "pr_number": 3944,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-27T03:53:27+00:00",
+  "reviewers": [
+    "@meghsat"
+  ],
+  "sha": "c89f59c1f4abacef22cffa4d90f06292057b43b7",
+  "shout_outs": [],
+  "subject": "fix(app): model report shared GPU memory correctly (#3944)",
+  "summary": "Fixes the Lemonade app model info display to report AMD integrated GPU memory as 'Unified memory (shared with system RAM)' with separate lines for reserved GPU memory and shared GTT capacity, and filters out the Windows sentinel string 'Physical memory information not found.' from system info output.",
+  "verdict": "Clean",
+  "verdict_reason": "A small, targeted display fix to AMD iGPU memory reporting with a single human approval, all automated checks passing, and no post-approval churn or security risk."
+}
