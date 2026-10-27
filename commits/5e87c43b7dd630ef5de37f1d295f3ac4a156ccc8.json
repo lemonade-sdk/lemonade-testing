@@ -1,0 +1,37 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "5e87c43b7dd630ef5de37f1d295f3ac4a156ccc8",
+  "committed_at": "2026-10-27T22:31:17+00:00",
+  "evidence": {
+    "api_compatibility": "No API compatibility concerns. This is a CSS-only change to color tokens; no CLI, config, API, or file format changes.",
+    "documentation": "No documentation changes required. The PR author checked 'Documentation is not affected by this change.' The visual difference is minor (slightly darker green/red) and does not alter user-facing text, commands, or configuration.",
+    "manual_release_testing": "None required. The changes are purely CSS token updates and new automated tests. The darkened tokens (#2C702F success, #C62828 danger) apply to both light and dark themes, and the existing dark-theme accessibility scan (A02) already exercises the same token values. The CI passes all workflows. However, if a tester wants a quick sanity check: open the app in light mode and confirm the success dot and error notices use visibly darker green/red than before.",
+    "post_approval_commits": "First and latest approval both at 2026-10-27T22:30:56Z. No commits were added after approval. The branch contained merge commits (34933be, 6b6953b) from merging main into the feature branch before the review, but these are standard housekeeping, not behavior changes. The final merge to main was handled by GitHub's readonly-queue mechanism.",
+    "review": "PR #3948 was authored by @fl0rianr and approved by @meghsat at 2026-10-27T22:30:56Z. CodeRabbit flagged two issues: (1) the critical generated stylesheet's connected-state color (#4CAF50) was out of sync with the new tokens.css value (#38833A), and (2) the Settings success notice contrast in light mode needed fixing. The author resolved both issues: the first was fixed in the initial commit (042603b) by synchronizing both tokens and the critical stylesheet, and the second was addressed in the follow-up commit (d3919d9, message 'test(app): cover stateful contrast and fix success color'). The CodeRabbit comment on the settings issue is marked as addressed in that commit. @meghsat reviewed the PR and approved after confirming the fixes. @meghsat has GUI and a11y as a listed subject area (docs/dev/contribute.md), so this had subject-matter expertise review.",
+    "security": "No security concerns. This is a UI styling fix — color token updates and test additions only. No credential handling, network calls, or supply-chain changes.",
+    "tests": "Two new test cases added to src/app/tests/a11y.spec.ts: A03 (text contrast checks in five primary views across both themes) and A03b (model rows and success notice contrast in both themes). A03b uses deterministic fixtures — mock /api/v1/models returning two model entries and mock /api/v1/health returning status ok — so the models list and connect view are rendered with predictable content before each axe scan. No existing tests were weakened or deleted."
+  },
+  "generation_seconds": 165.8,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-27T23:09:09Z",
+  "pr_number": 3948,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-27T23:20:31+00:00",
+  "reviewers": [
+    "@meghsat"
+  ],
+  "sha": "5e87c43b7dd630ef5de37f1d295f3ac4a156ccc8",
+  "shout_outs": [
+    {
+      "handle": "@meghsat",
+      "reason": "Co-author of the commit (meghasri.devineni@gmail.com); substantive code contribution beyond review."
+    }
+  ],
+  "subject": "test(app): add light theme contrast checks and fix accessibility issues (#3948)",
+  "summary": "Adds automated axe-core text contrast checks for both light and dark themes across five primary GUI views, and fixes two WCAG AA contrast violations in light mode by darkening the success green token (#4CAF50→#2C702F) and error red token (#f44336→#C62828) in both tokens.css and critical.generated.css.",
+  "verdict": "Clean",
+  "verdict_reason": "Small, well-scoped accessibility fix with passing CI, approved after the reviewer confirmed both automated findings were addressed, and no post-approval commits."
+}
