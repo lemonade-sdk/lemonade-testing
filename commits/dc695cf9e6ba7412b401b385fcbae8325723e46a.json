@@ -1,0 +1,45 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "dc695cf9e6ba7412b401b385fcbae8325723e46a",
+  "committed_at": "2026-10-28T02:26:49+00:00",
+  "evidence": {
+    "api_compatibility": "LemonadeAPI.systemInfo() gained an optional { afterPending?, maxAgeMs? } parameter with sensible defaults, so existing callers are unaffected. The new onSystemInfoChange() method is additive. _refreshBackendStatusAfterLoad() changed its signature to accept a recipe string and options object, but it is private and called only from loadModel() within the same file, which was updated accordingly. No breaking change.",
+    "documentation": "This is a bug fix for existing GUI behavior; no API spec, guide, or behavior-documentation update was needed or provided.",
+    "manual_release_testing": "The commit changes the GUI on the Models page (backend readiness badge) and the Backends page (install triggers). No human non-test harness exercised the Models page with a backend update scenario. A tester should verify the badge syncs as described in the maintainer to-dos.",
+    "post_approval_commits": "One commit (28943c0, by @fl0rianr) was pushed after @meghsat's sole approval at 01:01:11Z. It tightened the load-trigger refresh to only fire when the selected backend is not already installed, made the focus-refresh scope cover all stale backend states, and updated tests. The scope remained within the PR's stated purpose and risk profile. No re-approval was sought.",
+    "review": "PR #3977 was requested to @kpoineal (GUI, app, a11y) and @jeremyfowers (GUI design language). Neither left any human review comments. The only approval came from @meghsat, who co-authored the merge commit. The only human review activity was an automated bot (coderabbitai[bot]) that flagged four edge cases (stale responses after disconnect, request-ordering races, retry-on-failure, focus-refresh scope); the author addressed three and declined to add a retry scheduler, citing the tab-focus recovery path. Subject-area expertise was absent from the review.",
+    "security": "The change subscribes to /api/v1/system-info and /api/v1/downloads responses and updates React state from them. It does not introduce credential handling, network calls to external endpoints, code execution, or permission broadening. The generation-based stale-response guard prevents cross-connection state leaks when the user switches servers. No security concern.",
+    "tests": "New assertions were added to src/app/tests/model-state-deduplication.runtime.cjs: subscriber delivery across system-info snapshots, stale-request rejection via generation check, unsubscribe cleanup, maxAgeMs caching, pre-disconnect snapshot invalidation, /load-trigger refresh with backend-state awareness, and focus-refresh deduplication. The existing model-state-deduplication test was extended rather than weakened. Manual testing was reported by the author (npm run typecheck, npm run test:model-state, manual backend install → warning clears)."
+  },
+  "generation_seconds": 232.6,
+  "maintainer_todos": [
+    {
+      "text": "Open the Models page, click Load on a model, wait for it to start, then switch away and back: confirm the 'Engine update required' badge clears after the load completes without needing to press F5."
+    },
+    {
+      "text": "On the Backends page, install a backend for a model, return to the Models page and confirm the stale badge disappears immediately without F5."
+    },
+    {
+      "text": "Alt-Tab away from Lemonade then back: confirm only one /system-info request fires when no backend needs updating, and multiple requests fire when update_required backends are present."
+    }
+  ],
+  "merge_date": "2026-10-28T03:24:57Z",
+  "pr_number": 3977,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-28T03:30:39+00:00",
+  "reviewers": [],
+  "sha": "dc695cf9e6ba7412b401b385fcbae8325723e46a",
+  "shout_outs": [
+    {
+      "handle": "@meghsat",
+      "reason": "Co-authored the merge commit and submitted a substantive commit (4509cebe) that fixed three additional edge cases: backend updates triggered by /load not refreshing the badge, narrow focus-refresh scope, and redundant system-info requests on every window focus, along with tests."
+    }
+  ],
+  "subject": "fix(gui): sync model backend warnings after backend updates (#3977)",
+  "summary": "Adds an onSystemInfoChange subscriber to the Models page, subscribes ModelManager to completed backend downloads and window-focus events, and adds a generation-based stale-response guard to system-info calls — keeping the backend readiness badge in sync after backend updates without requiring F5.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The two requested GUI reviewers (@kpoineal, @jeremyfowers) left no substantive review comments; only an automated bot review and a co-author approval were obtained, despite the commit introducing a complex multi-file state-management change."
+}
