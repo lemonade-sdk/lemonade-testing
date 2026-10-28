@@ -1,0 +1,32 @@
+{
+  "author": "@sawansri",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "e830409ea0da9d5e442c6f2bbb5805a43e4ac592",
+  "committed_at": "2026-10-27T23:41:21+00:00",
+  "evidence": {
+    "api_compatibility": "No API, CLI, config, or behavioral change. Only a new entry in server_models.json. No existing setup is affected.",
+    "documentation": "No external documentation changes required. The model entry is self-describing within the catalog JSON with labels for chat, coding, reasoning, and tool-calling.",
+    "manual_release_testing": "This change is user-visible (a new model appears in the model list). However, it only changes a JSON catalog entry without any code, API, CLI, or configuration changes. The CodeRabbit backend compatibility concern was based on stale version pins — the actual Vulkan pin at merge was b11846 — and the PR author confirmed it works. No manual tester action is needed.",
+    "post_approval_commits": "None. Only one commit (de9012b6) existed on the PR branch, and no commits were added after the sole approval at 2026-10-27T23:39:23Z. The merge queue rebase does not introduce new content.",
+    "review": "PR #3940 was authored by @sawansri (maintainer with new models expertise) and approved once by @fl0rianr (LGTM, submitted 2026-10-27T23:39:23Z). @fl0rianr's subject areas are GUI, CI, and smart router — not llamacpp-specific. The PR author's own testing (Vulkan, b11819, ~52 tok/s, reasoning and tool-calling parsing correctly) provides basic validation, but no reviewer with llamacpp or new model expertise substantively reviewed the compatibility details. CodeRabbit bot raised a concern that the flint architecture may not be supported by the current llama.cpp pins (it referenced stale version numbers b11393/b11580/b1338/b11395), but the actual Vulkan pin at merge time was b11846 — the bot's data was outdated. No human reviewer flagged or verified backend architecture support.",
+    "security": "No security concerns. The change adds only a HuggingFace GGUF checkpoint path to a JSON catalog. No code execution, credential handling, or network logic changes.",
+    "tests": "No tests — this is a JSON data-only change to the model catalog. No unit tests exist for catalog entries, and none were added. The PR author reports successful live testing with Vulkan on their machine. This is acceptable for a catalog entry addition but provides no automated regression safety."
+  },
+  "generation_seconds": 200.1,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-28T00:41:56Z",
+  "pr_number": 3940,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-28T00:49:18+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "e830409ea0da9d5e442c6f2bbb5805a43e4ac592",
+  "shout_outs": [],
+  "subject": "Add Flint-GGUF to model registry (#3940)",
+  "summary": "Adds the Flint-GGUF model entry (unsloth/flint-GGUF:flint-UD-Q4_K_XL.gguf, llamacpp backend, Q4_K_XL quantization at 25.1 GB, chat/coding/reasoning/tool-calling labels) to src/cpp/resources/server_models.json.",
+  "verdict": "Clean",
+  "verdict_reason": "Data-only model registry addition with a single approval, all CI checks passing, no post-approval commits, and no breaking changes."
+}
