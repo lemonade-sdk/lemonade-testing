@@ -16,7 +16,7 @@
 
 ### Additional Improvements
 
-- `@meghsat` fixed model deletion so it removes the model's files from disk.
+- `@meghsat` fixed deleting a model that shares files with others in its family, such as the Anima models, so the shared files are removed once no downloaded model uses them.
 - `@sawansri` added LFM2.5-24B-A2B-GGUF to the model registry.
 - `@fl0rianr` improved automatic context sizing to reserve memory for runtime buffers, reducing GPU memory pressure.
 - `@bernardogv` fixed `*_bin` config options so pointing one at a directory finds the binary inside it.
