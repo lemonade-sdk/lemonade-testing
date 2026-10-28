@@ -6,5 +6,3 @@
 - LFM2.5-24B-A2B joins the model registry.
 
 ## Breaking Changes
-
-- None.
