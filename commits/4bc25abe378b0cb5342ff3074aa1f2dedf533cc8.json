@@ -1,0 +1,42 @@
+{
+  "author": "@bitgamma",
+  "branch": "main",
+  "bucket": "v2026.46",
+  "commit_sha": "4bc25abe378b0cb5342ff3074aa1f2dedf533cc8",
+  "committed_at": "2026-10-28T15:45:04+00:00",
+  "evidence": {
+    "api_compatibility": "The positional MODEL argument changed from required() to expected(1, -1), making it optional in the parser. The handle_bench_command function still checks for empty models and returns exit code 1, so this is backwards-compatible with existing scripts that provide a model name. The new --submit and --submit-file flags are additive. The merged code excludes --submit and --submit-file from --compare via CLI exclusions, consistent with the PR intent.",
+    "documentation": "docs/guide/cli.md was updated with table entries for --submit and --submit-file, plus a Submitting results section explaining the upload flow and the claim link.",
+    "manual_release_testing": "The --submit and --submit-file flags are user-visible CLI options that perform external HTTP POST requests to bench.lemonade-server.ai and print a claim URL to stderr. Neither flag was shown to be exercised end-to-end by a human. The submission path, claim link, and JSON output interaction need manual verification.",
+    "post_approval_commits": "No commits were added after the first and latest approval at 2026-10-28T15:12:17Z. The last branch commit (ac1f7a235 by George Sofianos) was made at 2026-10-28T15:07:58Z, before approval.",
+    "review": "@sofiageo (maintainer with subject-matter expertise in benchmarking per docs/dev/contribute.md) approved the PR with Works great! thanks and noted a code ordering fix. The PR was reviewed and all CI checks passed. Automated CodeRabbit comments flagged potential issues (JSON stdout ordering, missing id validation, submission failure propagation, compare-mode data disclosure); the merged code resolves the stdout ordering issue by flushing stdout before submission. The final commit (ac1f7a235, fix(bench): json output ordering) was authored by George Sofianos and was part of the PR branch history, not post-approval churn.",
+    "security": "The feature sends an HTTP POST to https://bench.lemonade-server.ai/api/benchmarks with local benchmark data (hardware specs, model names, scenario results, timestamps). The URL is hardcoded, not configurable. HTTPS is used throughout. A 60-second timeout is set. Input data is validated against a schema before submission. No credentials, tokens, or secrets are transmitted. No telemetry beyond what the user explicitly submits.",
+    "tests": "No unit or integration tests were added for the new submission feature. The PR body describes manual testing as run a benchmark with --submit or --submit-file. No test files were changed."
+  },
+  "generation_seconds": 206.4,
+  "maintainer_todos": [
+    {
+      "text": "Run lemonade bench <MODEL> --submit and confirm the command uploads results to https://bench.lemonade-server.ai/api/benchmarks, prints a claim link to stderr, and exits with code 0 on success."
+    },
+    {
+      "text": "Run lemonade bench --submit-file <benchmark.json> with an existing benchmark JSON file and confirm it uploads the file and prints a claim link to stderr."
+    },
+    {
+      "text": "Run lemonade bench <MODEL> --submit and redirect stdout to a file (lemonade bench <MODEL> --submit > results.json); confirm the file contains only valid JSON with no progress or status lines leaked from stderr."
+    }
+  ],
+  "merge_date": "2026-10-28T16:28:59Z",
+  "pr_number": 3284,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-28T16:37:31+00:00",
+  "reviewers": [
+    "@sofiageo"
+  ],
+  "sha": "4bc25abe378b0cb5342ff3074aa1f2dedf533cc8",
+  "shout_outs": [],
+  "subject": "add --submit/--submit-file to bench (#3284)",
+  "summary": "Adds --submit and --submit-file flags to the lemonade bench CLI command so users can upload benchmark results to https://bench.lemonade-server.ai/api/benchmarks and receive a claim link at https://bench.lemonade-server.ai/beta/benchmarks/claim/.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The new --submit and --submit-file flags are user-visible network features with no evidence of manual testing before merge."
+}
