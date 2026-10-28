@@ -1,0 +1,40 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "release-v2026.44",
+  "bucket": "v2026.44",
+  "cherry_picked_from": "57e63bff98463a4ee4d523ad860a343aa318ac7c",
+  "commit_sha": "69948a7d40afbf91f6ad990d8b863c83ce5cc71d",
+  "committed_at": "2026-10-28T15:39:24-04:00",
+  "evidence": {
+    "api_compatibility": "resolved_ctx_size in GET /v1/models/<id>/options schema changes from type [\"integer\", \"null\"] to type \"integer\" (removed null). The previous null value indicated the auto-tune could not find sufficient memory — a bug that caused models to be refused. The fix makes it always return a valid integer (auto-computed size or fallback). This restores the behavior of v2026.43.3. Client code that explicitly checks for null would need updating, but this is a bug correction, not a breaking design change.",
+    "documentation": "API docs updated: docs/api/openai.md (original PR) and docs/api/lemonade.md (backport) both have resolved_ctx_size description trimmed to remove the null case, matching the code change. The change is consistent across both doc files.",
+    "manual_release_testing": "This is a regression fix — users on 128 GB Strix Halo who upgraded from v2026.43.3 to v2026.44.0 had models refuse to load. The fix restores the old behavior. No evidence anyone manually exercised a load with auto-tuned ctx_size on the affected hardware before merge. The change does touch the GET /v1/models/<model-id>/options endpoint (resolved_ctx_size now always returns an integer instead of null), so verifying the endpoint is worthwhile.",
+    "post_approval_commits": "None. PR #3986 had one commit (8009cba) and @bitgamma's approval was submitted after that commit. PR #3994 (backport) was a single cherry-pick with no post-approval commits. CI passed on the merge commit.",
+    "review": "Original PR #3986 had one substantive approval from @bitgamma (expertise: new backends, benchmarking, new models), who called it a quick patch and noted the NPU edge case as remote. @fl0rianr raised a concern about the NPU safety guard when memory is known to be zero, but the author agreed this should be a follow-up. No reviewer with iGPU/ROCm expertise (per contribute.md: @superm1 for ROCm, @kenvandine for Nvidia CUDA/ARM) reviewed. No inline review comments beyond AI-bot suggestions.",
+    "security": "No security concerns. The change adds platform-specific memory total queries (/proc/meminfo on Linux, GlobalMemoryStatusEx on Windows) which read system info already available to the process. No credential handling, network calls, or permission changes.",
+    "tests": "Unit test in test_gpu_memory_selection.cpp updated: the ROCm iGPU pool assertion now expects physical_total_gb == 0.0 instead of 8.0, confirming the pool no longer reports its GTT window as physical RAM. No end-to-end or integration test evidence on actual Strix Halo hardware."
+  },
+  "generation_seconds": 246.6,
+  "maintainer_todos": [
+    {
+      "text": "On a 128 GB Strix Halo machine, start the server with a large model (e.g. gpt-oss-120b) using automatic context sizing and confirm the load succeeds and the model produces completions."
+    },
+    {
+      "text": "Call GET /v1/models/<model-id>/options with a model that has automatic context sizing (ctx_size = -1) and confirm the response field resolved_ctx_size is a non-null integer."
+    }
+  ],
+  "merge_date": "2026-10-28T19:39:25Z",
+  "pr_number": 3986,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-28T19:45:30+00:00",
+  "reviewers": [
+    "@bitgamma"
+  ],
+  "sha": "69948a7d40afbf91f6ad990d8b863c83ce5cc71d",
+  "shout_outs": [],
+  "subject": "fix(auto-tune): never refuse a load over a context estimate (#3986) (#3994)",
+  "summary": "Restores model loading on shared-memory (iGPU/APU) systems by fixing the context-size auto-tune to use total physical RAM instead of RAM-in-use for the iGPU pool cap, and resolves short memory budgets to the fallback context size (4096 or 8192 for embeddings) rather than throwing; fixes gpt-oss-120b, Qwen3-Next-80B and Qwen3-Coder-Next on a 128 GB Strix Halo.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The fix is sound and well-reviewed, but has no evidence of manual end-to-end testing on the affected hardware (128 GB Strix Halo with a large model) and shifts the resolved_ctx_size API value from nullable to always-integer."
+}
