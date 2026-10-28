@@ -1,0 +1,32 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "46a5d6048b5a1a8a87c17f08b94782f116404477",
+  "committed_at": "2026-10-28T02:12:05+00:00",
+  "evidence": {
+    "api_compatibility": "No API, CLI, config, or behavioral changes. This is a pure documentation navigation addition. Zero breaking risk.",
+    "documentation": "The change itself is a documentation fix — adding a missing nav entry for the Pi integration guide page that already exists. The link target (integrations/pi.md) was confirmed to exist in docs/integrations/pi.md. No additional documentation updates are needed.",
+    "manual_release_testing": "The change adds a nav entry to the MkDocs documentation site — user-visible but trivial. The markdown-link-check CI already exercised the link. No manual to-do required.",
+    "post_approval_commits": "None. The single commit (c86f569add332bf1a4bb6943b8252c5f774a84a5) predates the first approval at 2026-10-28T01:46:16Z, and no commits were added after approval.",
+    "review": "PR #3989 was approved by @sawansri with a single-line 'Thanks!' comment submitted 2026-10-28T01:46:16Z, approximately three minutes after the PR was opened. @sawansri's subject areas (agents, tui, cli, new backends, launch, vLLM, new models) do not include documentation or MkDocs configuration, so no reviewer with documentation-specific expertise reviewed the change. CodeRabbit pre-merge checks flagged 1 error (AI-generated PR body with no human-authored text) and 1 warning (missing required template sections), but the PR was merged regardless. For a single-line navigation change, this minimal review is proportionate.",
+    "security": "No security concerns. The change adds one line to mkdocs.yml — a static configuration file with no credential handling, network calls, code execution, or supply-chain impact.",
+    "tests": "No tests expected for a documentation nav change. The Docs And Style workflow's markdown-link-check check passed, verifying the link to integrations/pi.md resolves. The target file docs/integrations/pi.md exists in the repository (was added in a prior PR #3786). The vendored-asset-integrity and pre-commit checks also passed."
+  },
+  "generation_seconds": 174.5,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-28T02:49:05Z",
+  "pr_number": 3989,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-28T02:53:46+00:00",
+  "reviewers": [
+    "@sawansri"
+  ],
+  "sha": "46a5d6048b5a1a8a87c17f08b94782f116404477",
+  "shout_outs": [],
+  "subject": "Add Pi integration guide to mkdocs nav (#3989)",
+  "summary": "Adds a Pi entry to the App Integrations section of the MkDocs navigation in mkdocs.yml, linking to the existing integrations/pi.md page (docs/integrations/pi.md).",
+  "verdict": "Clean",
+  "verdict_reason": "A one-line documentation navigation addition with all CI passing, the target page verified to exist, and no behavioral or API risk."
+}
