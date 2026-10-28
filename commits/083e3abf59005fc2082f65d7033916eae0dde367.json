@@ -1,0 +1,40 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.46",
+  "commit_sha": "083e3abf59005fc2082f65d7033916eae0dde367",
+  "committed_at": "2026-10-28T21:25:12+00:00",
+  "evidence": {
+    "api_compatibility": "The /install route now normalizes the backend name via BackendManager::canonical_backend_name() before constructing the download job ID. This changes the internal job ID format from backend:<recipe>:<unresolved_backend> to backend:<recipe>:<normalized_backend> (e.g. backend:llamacpp:rocm instead of backend:llamacpp:rocm-stable in some paths). The normalized form is a superset of what clients already observe, and DownloadManager.start() deduplicates by job ID, so existing clients are not broken. No schema, protocol, or config changes. No breaking changes.",
+    "documentation": "No user-facing documentation is affected. The changes are internal UX improvements (progress indicator, backend install visibility) and do not modify documented CLI commands, API contracts, or user guides.",
+    "manual_release_testing": "The new ChatReadinessProgress component is user-visible: it renders below the model pill in the chat composer for all modalities and shows live progress for backend installation, model download, and model loading. No human reviewer explicitly exercised this path before approval. The backend install synchronization in DownloadManager::run_tracked() and the ROCm job ID unification in BackendManager are server-side changes that affect the /api/v1/load and /api/v1/install HTTP endpoints behavior but do not introduce API incompatibilities — they improve existing behavior. A manual verification of the progress indicator during model+backend load and the ROCm job unification is recommended.",
+    "post_approval_commits": "No commits were added after either approval. The five PR commits (c9406ce, efeda82, c3cc55a, ecf5b54, 1172726) were all created before the first approval at 17:52Z. The final commit 1172726 addressed the CodeRabbit ARIA concern noted in an inline comment. The branch was clean at merge.",
+    "review": "The PR received two human approvals. @superm1 (ROCm, linux packaging, llamacpp, security maintainer) submitted the first approval at 2026-10-28T17:52:54Z. @jeremyfowers (GUI design language, new CLI commands maintainer) approved at 2026-10-28T19:44:37Z with a positive comment on visual design. @superm1's subject area expertise covers the server-side backend install synchronization and ROCm job ID unification. @jeremyfowers covers the GUI component. Three CodeRabbit bot comments flagged: (1) backend recipe prefix matching in ChatReadinessProgress could show an unrelated backend install's progress; @fl0rianr acknowledged as a display-only edge case and declined to add server-side variant matching logic. (2) DownloadManager::start() with show_before_progress=false may cause force:true requests to silently reuse an existing job; @fl0rianr explained force primarily bypasses hardware compatibility filtering, not download, and the bot withdrew the finding. (3) ARIA aria-valuetext for determinate downloads; @fl0rianr addressed by using conditional aria-valuetext (the final commit diff shows the fix). All post-approval commits were pre-approval or during review — no commits were added after the latest approval.",
+    "security": "No credential handling, network calls to external services, code execution paths, permission changes, or obfuscated blobs. The backend install path reuses existing install_from_github infrastructure with added synchronization. The /load auto-install flow is bounded by the same backend installation logic already in use. No security concerns.",
+    "tests": "New tests were added: chat-readiness-progress.runtime.cjs (116 lines) validates estimatedModelLoadPercent and relevantChatDownload helper functions with edge cases, plus structural assertions on ChatReadinessProgress integration in ChatView and CSS layout. download-polling-lifecycle.runtime.cjs was extended with a watchForModelLoad() test that simulates a server-initiated backend install and verifies the download store discovers it without SSE events. No existing tests were weakened or deleted."
+  },
+  "generation_seconds": 205.2,
+  "maintainer_todos": [
+    {
+      "text": "Start Lemonade with a model that requires a backend install (e.g. vllm with rocm), send a chat message, and confirm the readiness progress bar appears below the model pill showing 'Installing backend' with live progress, then switches to 'Downloading model' or 'Loading model' with a smooth transition."
+    },
+    {
+      "text": "On an ROCm system, start Lemonade, send a chat message for a model requiring llamacpp:rocm, confirm the backend install job is unified under the canonical ID (e.g. backend:llamacpp:rocm) rather than splitting into rocm-stable and rocm-nightly entries."
+    }
+  ],
+  "merge_date": "2026-10-28T23:05:07Z",
+  "pr_number": 3992,
+  "range_start": "v2026.44.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-28T23:10:17+00:00",
+  "reviewers": [
+    "@superm1",
+    "@jeremyfowers"
+  ],
+  "sha": "083e3abf59005fc2082f65d7033916eae0dde367",
+  "shout_outs": [],
+  "subject": "fix(gui): show chat readiness and automatic backend install progress (#3992)",
+  "summary": "Shows a compact chat readiness progress indicator below the model pill for automatic backend installation, model download, and model loading with estimated percentages, and registers automatic backend installations triggered by /load in the server-side Download Manager so all GUI clients can discover them.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The PR adds a new user-visible GUI progress indicator and server-side backend install synchronization that should be manually verified before release, but no release-blocking issues were found."
+}
