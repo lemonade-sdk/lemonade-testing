@@ -1,0 +1,39 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "06cfa30653cc6aef48019b799ecfdfe3b513cf75",
+  "committed_at": "2026-10-28T00:03:22+00:00",
+  "evidence": {
+    "api_compatibility": "No API changes. The modification is entirely client-side localStorage preference handling and a UI default value. Existing user preferences are preserved via the null-check in loadChatHistoryPreference. Not a breaking change.",
+    "documentation": "Two docs updated: docs/dev/app.md now says 'browser chat history (enabled by default)' instead of 'opt-in browser chat history', and docs/guide/app/chat.md now states 'Chat history is client-side and is saved in this browser by default' with a pointer to disable it. Documentation is comprehensive and consistent with the implementation.",
+    "manual_release_testing": "Two user-facing surfaces were changed: the default value of the 'Save chat history in this browser' toggle in Settings > Chat (now on instead of off), and the reset behavior for Chat settings (now restores the enabled default). The author's local test is the only evidence of manual exercise; a release tester should verify both surfaces on a compiled candidate.",
+    "post_approval_commits": "No post-approval commits. The single commit (84cadd49) was the basis for the first and only approval at 2026-10-28T00:03:17Z; the PR was merged at 2026-10-28T01:22:41Z. The commit history is clean.",
+    "review": "PR #3984 received one substantive review from @jeremyfowers, who has subject-matter expertise in GUI design language per contribute.md. He approved with 'tested locally, works great, thank you!' after seeing only a single commit. CodeRabbit ran with no actionable comments and rated merge risk minimal. The PR follows spec-driven development and correctly self-classifies as non-breaking. No post-approval commits were added.",
+    "security": "No security concerns. The change only touches client-side localStorage persistence of chat messages; it does not introduce new network calls, credential handling, code execution, or permission broadening.",
+    "tests": "New test file src/app/tests/chat-history-default.runtime.cjs covers five cases: default-enabled for new clients, explicit opt-out survives reload, users can re-enable, invalid stored values do not accidentally opt in, and unavailable storage defaults to off without throwing. The PR author also notes local app testing. No existing tests were weakened or deleted."
+  },
+  "generation_seconds": 171.7,
+  "maintainer_todos": [
+    {
+      "text": "Open Settings > Chat > Save chat history in this browser on a fresh browser profile and confirm it is checked by default, then reload the app and verify conversations persist."
+    },
+    {
+      "text": "Toggle Settings > Chat > Save chat history in this browser to unchecked, reload the app, and confirm that no new conversations are saved while previously saved ones remain accessible."
+    }
+  ],
+  "merge_date": "2026-10-28T01:22:41Z",
+  "pr_number": 3984,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-28T01:27:23+00:00",
+  "reviewers": [
+    "@jeremyfowers"
+  ],
+  "sha": "06cfa30653cc6aef48019b799ecfdfe3b513cf75",
+  "shout_outs": [],
+  "subject": "chore(app): make browser chat persistant by default (#3984)",
+  "summary": "Makes browser chat history persistence enabled by default in the Lemonade desktop app, preserving existing user opt-outs and updating Settings reset to re-enable it.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The change modifies user-visible default behavior (chat history persistence) but the only evidence of manual testing is the author's local test, so a release tester should verify the settings toggle and opt-out preservation."
+}
