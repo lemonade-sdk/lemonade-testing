@@ -1,0 +1,32 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.46",
+  "commit_sha": "2d4bd75d89ad7af48b0ebdea392f58c3a8d415ff",
+  "committed_at": "2026-10-28T17:10:28+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The t() function is an internal i18n helper; its usage pattern was already established in ChatView.tsx for other strings. The Chinese translation record is a simple key/value addition. No API, CLI, config, protocol, or persistence format is affected.",
+    "documentation": "Not affected. This is a GUI bug fix for missing translations in the app. No API docs, user guides, or release notes are impacted. The PR body correctly checks 'Documentation is not affected by this change.' The Chinese translation additions are internal to the app's i18n resource file and do not constitute user-facing documentation.",
+    "manual_release_testing": "This change touches the GUI only. The EmptyState prompt chips and live transcription placeholder are user-reachable surfaces in a non-English locale, but the fallback behavior (showing the English source string) is visually evident and was already the existing broken state. No user setup is broken — the change only adds missing translations. No manual release testing to-do required.",
+    "post_approval_commits": "No commits were added after the first (and only) approval at 2026-10-28T16:27:27Z. Both PR commits — 'fix(gui): localize chat suggestion prompts on click' (cae93cc) and 'fix(gui): localize live transcription placeholder' (7df6cfc) — predate the approval by over five hours.",
+    "review": "PR #3990 was approved by @meghsat at 2026-10-28T16:27:27Z, well before the 18:01:47 merge. @meghsat is listed as a collaborator; @fl0rianr holds GUI subject-matter expertise per docs/dev/contribute.md, and the diff is a straightforward localization fix (9 insertions, 5 deletions across 2 files). CodeRabbit auto-review flagged no issues and assessed merge risk as minimal. The PR author is @fl0rianr who also holds GUI expertise, so subject-matter review coverage is solid. No inline review comments were raised.",
+    "security": "No security concerns. The change only adds translation function calls around existing string literals and new translation entries. No network calls, code execution, credential handling, or permission changes.",
+    "tests": "No new unit or integration tests accompany this change. The PR runs npm run typecheck and npm run test (existing suite), plus a visual check. This is appropriate for a localization fix: the change is purely wrapping strings with t() and adding translation keys in an existing record. The t() function is exercised by the app's existing test infrastructure, and no behavioral logic was altered."
+  },
+  "generation_seconds": 141.8,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-28T18:01:47Z",
+  "pr_number": 3990,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-28T18:05:54+00:00",
+  "reviewers": [
+    "@meghsat"
+  ],
+  "sha": "2d4bd75d89ad7af48b0ebdea392f58c3a8d415ff",
+  "shout_outs": [],
+  "subject": "fix(gui): missing translation gaps (#3990)",
+  "summary": "Wraps four empty-state prompt chip click payloads and the live transcription placeholder in ChatView.tsx with t() and adds the corresponding Chinese translations for all five strings in i18n.tsx.",
+  "verdict": "Clean",
+  "verdict_reason": "A minimal, well-scoped bug fix that wraps previously hardcoded English strings with the translation function and adds the missing Chinese translations; reviewed by a maintainer with GUI subject-matter expertise."
+}
