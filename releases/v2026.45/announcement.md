@@ -1,40 +1,41 @@
-## Lemonade v2026.45.0
+## Lemonade v2026.45.2
 
 ### ⚠️ These notes are AI generated and will be revised by a human ⚠️
 
-@everyone v2026.45 is out: a fully rewritten GUI3 with six workspaces and a visual router editor, several new models across chat, coding, and reasoning, the HTTP server refactored into a route-class architecture, and the model manager rebuilt for reliability.
+@everyone v2026.45.2 is here: GUI3 has landed as a full rewrite, auto-tuned context sizing got a runtime memory budget, several new models join the catalog, and the desktop app remembers your API key again.
 
 ### Breaking Changes
 
-- `resolved_ctx_size` returned by `GET /v1/models/{model}/options` can now be `null` instead of a number when automatic GPU sizing can't fit a valid context window — update your clients to handle the null case gracefully.
-- GET requests to previously-404 POST-only paths (`slots/{id}`, `jobs/{id}/pause|interrupt|resume`, `models/register`) now return 405 Method Not Allowed — clients checking for 404 on these endpoints will need to update their error handling.
-- A request missing the model field now raises `Missing model field in request` consistently across every model route (chat/completions, completions, embeddings, responses, rerank) — parsers relying on the previous inconsistent error messages will need a refresh.
-- Form-encoded requests with invalid field types (e.g. a non-numeric temperature on a transcription endpoint) now return 400 Bad Request instead of 500 — clients catching 500 for malformed form data will not see the error anymore.
-- Streaming responses include a cancel token that stops the server from sending data after a TCP disconnect — clients depending on the server continuing to flush buffered data after a disconnect will see the stream terminate early.
+- `GET /v1/models/{model}/options` now returns `null` for `resolved_ctx_size` when automatic GPU sizing can't fit a valid context window — clients that expect an integer should handle the null case.
+- GET on POST-only paths (`/slots/{id}`, `/jobs/{id}/pause|interrupt|resume`, `/models/register`) now returns 405 instead of 404 — if you were using 404 as a "not found" signal, update your error handling.
+- A request missing the model field now raises `Missing model field in request` consistently across every route (chat, completions, embeddings, responses, rerank) — if your error handling depended on route-specific messages, adjust accordingly.
+- Form-encoded requests with invalid field types return 400 instead of 500 — clients that expect 500 for malformed input should update their error handling.
+- Streaming responses now carry a cancel token so the server stops sending after a TCP disconnect — implement token-based cancellation for abandoned streams.
 
-### 🖥️ GUI3: six workspaces, visual router, Chinese
+### 🖥️ GUI3, the full desktop rewrite
 
-`@meghsat` merged a full rewrite of the desktop client — six workspaces (Chat, Models, Backends, Apps, Monitor, Settings), a model manager with multi-provider search, a visual router policy editor, and Chinese localization (`zh-CN`). Thanks to `@kpoineal` for the Chinese localization, and `@fl0hrnr` for the browser key persistence fix, accessibility improvements, and a bunch of polish along the way.
+`@meghsat` (with `@kpoineal`) shipped a complete desktop and web client overhauling the entire interface: six workspaces (Chat, Models, Backends, Apps, Monitor, Settings), model search across providers, a visual router policy editor, and Chinese localization.
 
-### 📦 New models: GPT-OSS 20B MXFP4, Qwen3-Coder 32B, K2-Horizon family, and more
+### 🧠 Auto-tuned context sizing with a runtime memory budget
 
-`@lucbruni-amd`, `@fl0hrnr`, `@ramkrishna2910`, `@sawansri`, and `@jeremyfowers` added GPT-OSS 20B MXFP4, Qwen3-Coder 32B, five K2-Horizon models (0.9B through MoVA-36B-A4B), Flint, and LFM2.5-24B-A2B to the catalog — grab them all with `lemonade pull`.
+`@fl0hrnr` taught the tuner to reserve runtime buffer memory for discrete and unified-memory GPUs, and when automatic sizing can't fit a valid context, `resolved_ctx_size` now returns null instead of guessing. A 128 GB Strix Halo fix also restored loading for gpt-oss-120b and Qwen3-Next-80B.
 
-### 🔀 HTTP server refactored into route-class architecture
+### 📦 Model catalog expands
 
-`@jeremyfowers` rebuilt the HTTP server with a route-class structure, drift-protected generated API docs, and a new `GET /internal/routes` inspection endpoint. Every route now has formalized arguments, errors, descriptions, and examples in schema-driven classes — with `@fl0hrnr` helping to keep it all in shape.
+`@sawansri` added LFM2.5-24B-A2B-GGUF and Flint-GGUF, `@ramkrishna2910` (with `@mvillmow`) added five K2-Horizon GGUF models, `@meghsat` added GRG-Halo GPU support, and `@lucbruni-amd` fixed the gpt-oss-20b-MXFP4 loader to stop picking up stale draft files.
 
-### 🔐 Model manager rebuilt for reliability
+### 💾 Chat history and API key persistence restored
 
-`@bitgamma` refactored the model manager with a lock-free store snapshot, checkpoint status tracking (`checkpoint_status[]` with `include_paths`), and a new `/internal/model-sources` endpoint for external consumers. Thanks to `@fl0hrnr` for the review.
+`@fl0hrnr` (with `@bitgamma`) made browser chat history the default and brought back API key persistence for both browser and native clients — your keys are remembered again, and the remembered checkbox actually remembers.
 
 ### Additional Improvements
 
 - `@meghsat` fixed model deletion so it no longer leaves orphaned files on disk.
-- `@sreeram-11` stopped Hugging Face rate limits from failing model pulls — returns a 503 with Retry-After headers instead.
-- `@fl0hrnr` fixed a v2026.44 regression on 128 GB Strix Halo where GPT-OSS and Qwen3 models refused to load by correcting the iGPU shared-memory cap.
-- `@fl0hrnr` preserved the composer model when Whisper/Moonshine ASR models load and enabled microphone dictation in non-chat modes.
-- `@ramkrishs` improved CLI error messages to distinguish a closed connection from a server that is not running.
-- `@bitgamma` added auto-install for `lemonade bench` backends and more actionable error messages when no backend is found.
+- `@sreeram-11` stopped Hugging Face rate limits from failing model pulls by returning 503 with Retry-After headers instead.
+- `@sreeram-11` re-enabled the sd-cpp ROCm backend on Windows with a full HIP runtime DLL bundle so model streaming on AMD integrated GPUs works.
+- `@sawansri` added `--mcp`, `--no-mcp`, and `--codemode` flags to `lemonade launch pi` for per-model context windows, image input, and tool-calling.
+- `@bernardogv` fixed `*_bin` directory resolution so pointing the config at a directory actually works as documented.
+- `@bernardogv` documented the systemd `ProtectHome=yes` restriction on `.deb`/`.rpm` packages with a drop-in solution.
+- `@jeremyfowers` and `@fl0hrnr` rewrote the HTTP server into a route-class architecture with generated API docs and drift checking.
 
-Grab v2026.45.0 from [GitHub Releases](https://github.com/lemonade-sdk/lemonade/releases) and let me know what you think — I'm in #general if anything feels off!
+Grab v2026.45.2 from [GitHub Releases](https://github.com/lemonade-sdk/lemonade/releases) — let me know in #general what you're thinking!
