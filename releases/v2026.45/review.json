@@ -11,36 +11,6 @@
   "candidate_issues": [],
   "checklist": [
     {
-      "author": "@meghsat",
-      "commit": "0100ec6ddd614bf8080d22ab3a74c648b0a4366a",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3765,
-      "priority": "P0",
-      "text": "Install a shared model family (e.g. Anima-aesthetic, Anima-base, Anima-turbo that share text encoder and VAE files), delete one variant, and confirm the shared text encoder and VAE files are also removed from the models cache directory."
-    },
-    {
-      "author": "@fl0rianr",
-      "commit": "333469dd036a457dbb3c24054c867cb0d617a9e0",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3862,
-      "priority": "P0",
-      "text": "Run the Lemonade server and load a model on a system with limited GPU memory (or simulate it) and confirm the /v1/models/{model}/options endpoint returns {\"resolved_ctx_size\": null} instead of a number."
-    },
-    {
-      "author": "@fl0rianr",
-      "commit": "333469dd036a457dbb3c24054c867cb0d617a9e0",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3862,
-      "priority": "P0",
-      "text": "Write a small HTTP client that calls /v1/models/{model}/options and verify it handles the null resolved_ctx_size without crashing, since existing clients may not expect a non-numeric value."
-    },
-    {
       "author": "@sreeram-11",
       "commit": "1ba79d48ff6945942e01abf8408dcc4741065d83",
       "platforms": [
@@ -49,16 +19,6 @@
       "pr_number": 3718,
       "priority": "P0",
       "text": "On a Windows machine with a Windows ROCm installation and an sd-cpp backend installed, start lemond with log_level=debug, load SD-Turbo with the rocm backend, and confirm the server log shows \"Initializing backend: ROCm0\" and the image generation completes in seconds rather than failing to the CPU."
-    },
-    {
-      "author": "@sawansri",
-      "commit": "3614598dc8190d0dc157598d3dea3fccc964d654",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3786,
-      "priority": "P0",
-      "text": "Run `lemonade launch pi --api-key mykey` and verify that pi's process environment contains LEMONADE_API_KEY set to mykey, while pi's models.json contains \"apiKey\": \"${LEMONADE_API_KEY}\" rather than the plaintext key."
     },
     {
       "author": "@meghsat",
@@ -91,6 +51,79 @@
       "text": "In the same web GUI with a remembered key, uncheck 'Remember API key' and click Connect again; confirm the notification no longer mentions the key being saved and that the checkbox is unchecked after restart."
     },
     {
+      "author": "@jeremyfowers",
+      "commit": "57e63bff98463a4ee4d523ad860a343aa318ac7c",
+      "platforms": [
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 3986,
+      "priority": "P0",
+      "text": "Start a 128 GB Strix Halo (AMD APU) system with default kernel settings, load gpt-oss-120b and confirm it loads with ctx 4096 and chats successfully."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "57e63bff98463a4ee4d523ad860a343aa318ac7c",
+      "platforms": [
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 3986,
+      "priority": "P0",
+      "text": "Start a 128 GB Strix Halo system, load Qwen3-Next-80B-A3B-Instruct and confirm it loads with ctx 114562 and chats successfully."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "57e63bff98463a4ee4d523ad860a343aa318ac7c",
+      "platforms": [
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 3986,
+      "priority": "P0",
+      "text": "Start a 128 GB Strix Halo system, load Qwen3-Coder-Next and confirm it loads with ctx 262144 and chats successfully."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "57e63bff98463a4ee4d523ad860a343aa318ac7c",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3986,
+      "priority": "P0",
+      "text": "Call GET /v1/models/<id> for a model with ctx_size=-1 on a system with known memory, confirm resolved_ctx_size is a non-null integer (not null)."
+    },
+    {
+      "author": "@meghsat",
+      "commit": "0100ec6ddd614bf8080d22ab3a74c648b0a4366a",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3765,
+      "priority": "P1",
+      "text": "Install a shared model family (e.g. Anima-aesthetic, Anima-base, Anima-turbo that share text encoder and VAE files), delete one variant, and confirm the shared text encoder and VAE files are also removed from the models cache directory."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "333469dd036a457dbb3c24054c867cb0d617a9e0",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3862,
+      "priority": "P1",
+      "text": "Run the Lemonade server and load a model on a system with limited GPU memory (or simulate it) and confirm the /v1/models/{model}/options endpoint returns {\"resolved_ctx_size\": null} instead of a number."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "333469dd036a457dbb3c24054c867cb0d617a9e0",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3862,
+      "priority": "P1",
+      "text": "Write a small HTTP client that calls /v1/models/{model}/options and verify it handles the null resolved_ctx_size without crashing, since existing clients may not expect a non-numeric value."
+    },
+    {
       "author": "@sreeram-11",
       "commit": "1ba79d48ff6945942e01abf8408dcc4741065d83",
       "platforms": [
@@ -119,6 +152,16 @@
       "pr_number": 3786,
       "priority": "P1",
       "text": "Run `lemonade launch pi --mcp --codemode` against a model and confirm the pi agent starts, pi's mcp.json contains a lemonade server entry with the correct URL, and pi's models.json includes contextWindow and maxTokens for the model."
+    },
+    {
+      "author": "@sawansri",
+      "commit": "3614598dc8190d0dc157598d3dea3fccc964d654",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3786,
+      "priority": "P1",
+      "text": "Run `lemonade launch pi --api-key mykey` and verify that pi's process environment contains LEMONADE_API_KEY set to mykey, while pi's models.json contains \"apiKey\": \"${LEMONADE_API_KEY}\" rather than the plaintext key."
     },
     {
       "author": "@sawansri",
@@ -324,9 +367,6 @@
       "author": "@fl0rianr",
       "commit": "e4fa62ed40520ecd94f74c137534505eeb3cbe5c",
       "platforms": [
-        "Windows",
-        "Ubuntu PPA",
-        "Snap",
         "macOS"
       ],
       "pr_number": 3962,
@@ -337,9 +377,6 @@
       "author": "@fl0rianr",
       "commit": "e4fa62ed40520ecd94f74c137534505eeb3cbe5c",
       "platforms": [
-        "Windows",
-        "Ubuntu PPA",
-        "Snap",
         "macOS"
       ],
       "pr_number": 3962,
@@ -365,16 +402,6 @@
       "pr_number": 3828,
       "priority": "P1",
       "text": "Call GET /v1/models and verify that each model object now carries an update_available boolean field."
-    },
-    {
-      "author": "@bitgamma",
-      "commit": "fb8935641c29e942a4693ed649b3ade5e3278d4e",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3828,
-      "priority": "P1",
-      "text": "Call GET /internal/model-sources with the admin API key and confirm it returns a catalogs array listing each configured registry and catalog source with their descriptors (token, endpoint, cache layout)."
     },
     {
       "author": "@bitgamma",
@@ -450,51 +477,32 @@
       "author": "@jeremyfowers",
       "commit": "57e63bff98463a4ee4d523ad860a343aa318ac7c",
       "platforms": [
-        "all"
-      ],
-      "pr_number": 3986,
-      "priority": "P1",
-      "text": "Start a 128 GB Strix Halo (AMD APU) system with default kernel settings, load gpt-oss-120b and confirm it loads with ctx 4096 and chats successfully."
-    },
-    {
-      "author": "@jeremyfowers",
-      "commit": "57e63bff98463a4ee4d523ad860a343aa318ac7c",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3986,
-      "priority": "P1",
-      "text": "Start a 128 GB Strix Halo system, load Qwen3-Next-80B-A3B-Instruct and confirm it loads with ctx 114562 and chats successfully."
-    },
-    {
-      "author": "@jeremyfowers",
-      "commit": "57e63bff98463a4ee4d523ad860a343aa318ac7c",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3986,
-      "priority": "P1",
-      "text": "Start a 128 GB Strix Halo system, load Qwen3-Coder-Next and confirm it loads with ctx 262144 and chats successfully."
-    },
-    {
-      "author": "@jeremyfowers",
-      "commit": "57e63bff98463a4ee4d523ad860a343aa318ac7c",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3986,
-      "priority": "P1",
-      "text": "Call GET /v1/models/<id> for a model with ctx_size=-1 on a system with known memory, confirm resolved_ctx_size is a non-null integer (not null)."
-    },
-    {
-      "author": "@jeremyfowers",
-      "commit": "57e63bff98463a4ee4d523ad860a343aa318ac7c",
-      "platforms": [
-        "all"
+        "Fedora",
+        "Debian"
       ],
       "pr_number": 3986,
       "priority": "P1",
       "text": "Open a file with known-zero memory (or mock available_gb to 0) and verify that POST /v1/load of a large NPU model reaches the expected behavior without driver hang — note that the NPU safety guard follow-up was deferred."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "aab9c362ebe0e506b1b70026621490d6b41d548b",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3957,
+      "priority": "P1",
+      "text": "Open Lemonade in the app, navigate to the Models view, select a downloaded model with update_available=true, click the Update button, and confirm a progress toast appears naming the model with a percentage."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "aab9c362ebe0e506b1b70026621490d6b41d548b",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3957,
+      "priority": "P1",
+      "text": "With the same model selected, click Update All and confirm the toast shows Updating… and names the model being synced."
     },
     {
       "author": "@jeremyfowers",
@@ -550,7 +558,9 @@
       "author": "@meghsat",
       "commit": "9653d0a8317b62b13c7b480acb9ccf4730d46eaa",
       "platforms": [
-        "all"
+        "Ubuntu PPA",
+        "Fedora",
+        "Debian"
       ],
       "pr_number": 3954,
       "priority": "P2",
@@ -567,6 +577,16 @@
       "text": "Re-run the Lemonade App checks workflow on the merged commit to confirm the earlier failure was transient and does not recur."
     },
     {
+      "author": "@bitgamma",
+      "commit": "fb8935641c29e942a4693ed649b3ade5e3278d4e",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3828,
+      "priority": "P2",
+      "text": "Call GET /internal/model-sources with the admin API key and confirm it returns a catalogs array listing each configured registry and catalog source with their descriptors (token, endpoint, cache layout)."
+    },
+    {
       "author": "@fl0rianr",
       "commit": "dc695cf9e6ba7412b401b385fcbae8325723e46a",
       "platforms": [
@@ -575,22 +595,32 @@
       "pr_number": 3977,
       "priority": "P2",
       "text": "Alt-Tab away from Lemonade then back: confirm only one /system-info request fires when no backend needs updating, and multiple requests fire when update_required backends are present."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "aab9c362ebe0e506b1b70026621490d6b41d548b",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3957,
+      "priority": "P2",
+      "text": "Disconnect the app from the server and reconnect; confirm the sync status toast disappears and no stale error or result persists."
     }
   ],
-  "commits_reviewed": 47,
+  "commits_reviewed": 49,
   "commits_unreviewed": 0,
   "evidence": {
-    "blockers": "The GUI3 desktop app has no evidence of manual end-to-end exercise by a human — the primary user-facing artifact ships with six new workspaces. The resolved_ctx_size null API change is unverified on a release candidate build and could break existing clients. The Windows ROCm sd-cpp path-length refusal and router configuration-error handling have not been manually tested. The NPU safety-guard follow-up from the 128 GB Strix Halo regression fix is still deferred.",
-    "breaking_changes": "Five documented breaking changes ship in this release: resolved_ctx_size can be null (clients must handle non-integer), four POST-only routes now return 405 instead of 404, missing model field errors are now consistent across all model routes, form-field type conversion errors return 400 instead of 500, and streaming responses now cancel on TCP disconnect. Clients consuming these endpoints should audit their error handling. The /v1/models endpoint gains checkpoint_status[], update_available, and an opt-in include_paths query parameter — these are additive but existing clients that ignore unknown fields should continue working.",
-    "coverage": "Reviewed the full range from v2026.43.3 to the release head (47 commits across PRs 3762–3989). Coverage spans server refactor (route-class architecture, model manager rewrite), GUI3 desktop launch, micro-features (microphone dictation, browser key persistence, chat history defaults), backend support (Windows ROCm, GRG-Halo, K2-Horizon models), API changes (resolved_ctx_size null, output_index in responses, checkpoint_status, model-sources endpoint), CI/workflow fixes, documentation, and a blog post. No gaps identified in the commit review evidence.",
-    "manual_testing": "The full GUI3 interface across all six workspaces (Chat, Models, Backends, Apps, Monitor, Settings) needs end-to-end exercise with a running server — no human has done this. The API key persistence restoration in the web GUI (Remember API key checkbox and removal) needs verification against a release build due to localStorage security implications. Windows ROCm sd-cpp loading on Strix Halo hardware must be validated. The 128 GB Strix Halo regression fix (gpt-oss-120b, Qwen3-Next-80B, Qwen3-Coder-Next loading) should be re-checked on target hardware. Microphone dictation across five capability modes has only been self-tested by the author.",
-    "security": "API key persistence was restored to browser localStorage (web GUI) with documented same-origin XSS warning; desktop clients remain isolated to native settings. The model delete fix reads actual disk state instead of trusting the JSON catalog, reducing trust in potentially stale catalog data. The Model Manager refactor improved HTTP redirect handling (custom headers cut at cross-origin boundaries). The Windows ROCm DLL staging mitigates DLL hijacking by placing known-good AMD runtimes alongside the executable. No new supply-chain risks, credential handling changes, or unexpected network calls observed."
+    "blockers": "Strix Halo models (57e63bf) must be verified on 128 GB APU hardware before ship — this is a v2026.44 regression fix. The Windows ROCm re-enablement (1ba79d4) needs a real ROCm-capable Windows machine. The full GUI3 workspace tour (9cfd620-1) and API key persistence (62e4aa6) need end-to-end exercise on a compiled candidate.",
+    "breaking_changes": "The resolved_ctx_size null change requires clients to handle non-numeric values; the GET→405 change affects scripts expecting 404; the consistent 'Missing model field' message replaces varied errors; form encoding returns 400 instead of 500; and streaming responses now carry cancel tokens that terminate the stream on disconnect.",
+    "coverage": "All 49 commits from v2026.43.3 to aab9c362 reviewed; 32 items rated from 12 commits with 'Needs Attention' verdicts plus 4 clean model additions, 2 CI-only fixes, 1 benchmark fix, 1 ROCm tag fix, and 10 other clean changes with no maintainer to-dos.",
+    "manual_testing": "Strix Halo systems (Fedora/Debian) for three large model loads and the resolved_ctx_size integer return. Windows ROCm machine for sd-cpp image generation and MAX_PATH refusal. Tauri desktop app with six workspaces and server connection. Web GUI with Remember API key checkbox in both checked and unchecked states. Microphone dictation across five capability modes. Model updates via the new Update button and Update All.",
+    "security": "No new credential handling, network calls, or supply-chain changes observed. The API key persistence (62e4aa6) stores keys in browser localStorage with documented same-origin XSS risk for web clients. The model deletion fix (0100ec6) reads from disk instead of trusting the JSON catalog, reducing trust in untrusted data. The ROCm DLL staging (1ba79d4) mitigates Windows DLL hijacking by bundling known-good runtime DLLs."
   },
-  "generation_seconds": 202.8,
-  "head_sha": "b25833400715a58e6076466da44706d9085b9209",
+  "generation_seconds": 185.1,
+  "head_sha": "aab9c362ebe0e506b1b70026621490d6b41d548b",
   "is_hotfix": false,
   "last_stable_tag": "",
   "range_start": "v2026.43.3",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-10-28T16:12:39+00:00"
+  "reviewed_at": "2026-10-28T19:01:57+00:00"
 }
