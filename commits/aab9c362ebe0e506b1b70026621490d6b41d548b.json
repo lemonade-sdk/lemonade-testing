@@ -1,0 +1,48 @@
+{
+  "author": "@fl0rianr",
+  "branch": "release-v2026.45",
+  "bucket": "v2026.45",
+  "cherry_picked_from": "cbd4d962b6f3adbf8de65557868c03ba690a46c2",
+  "commit_sha": "aab9c362ebe0e506b1b70026621490d6b41d548b",
+  "committed_at": "2026-10-28T11:50:19-07:00",
+  "evidence": {
+    "api_compatibility": "The health endpoint gains two new optional fields (models_generation, model_sync). The health schema in docs/api/lemonade.md is updated to describe them. The C++ server adds models_generation() to ModelManager and model_sync/models_generation to the health route response. All additions are backward compatible — existing clients that do not understand the new fields simply ignore them. The /internal/models/sync POST endpoint already existed (referenced in the PR as 'existing'). The /internal/models/sync/status endpoint is new but internal and admin-only. No breaking change.",
+    "documentation": "docs/api/lemonade.md was updated to describe the new models_generation and model_sync fields on the health endpoint, including the new /internal/models/sync/status endpoint details. The PR author marked 'Documentation is not affected' in the checklist, which is imprecise — the API spec was changed — but the actual spec update was done correctly.",
+    "manual_release_testing": "The PR description lists manual testing steps (typecheck, test, verify individual updates, verify sync progress/errors/duplicate-click prevention, verify recovery after reopening Models view). The author reports these were done locally but no evidence — screenshots, CI run, or tester report — shows the Update button or server-sync flow exercised on a release candidate. Two CI workflows (snap and launchpad-ppa) completed successfully; the C++ workflow was in_progress at the time of fetch. CI passing is not a substitute for a human exercising the GUI feature.",
+    "post_approval_commits": "One commit (efa7a2d3, 'fix(app): retry missed model sync results and reset state on disconnect') was added at 17:06:57Z, about 12 minutes after @meghsat's approval at 16:54:23Z. It changes three things in modelSyncStore.ts: (1) uses `this.baseline ?? sync.completed_sync_id` to avoid a null-comparison bug, (2) changes the error-retry guard from `this.state.active` to `api.isConnected` so a failed status poll is retried even after a sync has already finished, and (3) clears result and error state on disconnect. These are quality fixes that stay within the scope of the approved sync-state management; they do not add new behavior, change API/GUI contracts, or weaken tests (a corresponding test block was added). No renewed approval is on record.",
+    "review": "PR #3957 received one human approval from @meghsat (submitted 2026-10-28T16:54:23Z). @meghsat is not listed in docs/dev/contribute.md as a GUI subject-matter expert (that role belongs to @fl0rianr and @kpoineal), though she did author the 'edge cases fix: sync status and update reason' commit on the PR branch. The PR author @fl0rianr is a GUI expert and co-authored the cherry-pick. CodeRabbit posted four AI-only reviews flagging minor concerns around deduplication keys, initial-poll terminal handling, and retry conditions; none were substantive blockers. No second human reviewer with GUI expertise signed off.",
+    "security": "The new GUI features call admin-authenticated internal endpoints (/internal/models/sync and /internal/models/sync/status) with cache:no-store. No credentials, telemetry, code execution, or supply-chain changes are introduced. The server-side SyncService::log_outcome_locked() writes sync results to the server log at WARNING level when failures occur, which is appropriate for diagnostics. No security concerns.",
+    "tests": "A dedicated runtime test file (model-sync-store.runtime.cjs) with 155 lines exercises: initial-poll idle state, picking up external syncs from health alone, failure reporting, models-generation-driven refresh, own-sync tracking through success, retry after a failed first status poll, and state reset on disconnect. The runtime test in global-model-settings.runtime.cjs adds source-pattern assertions confirming the Update button renders correctly, the detail panel condition, the API endpoints, and that the manager delegates to modelSyncStore instead of the old pull loop. No Playwright E2E test was added for the rendered button click."
+  },
+  "generation_seconds": 191.9,
+  "maintainer_todos": [
+    {
+      "text": "Open Lemonade in the app, navigate to the Models view, select a downloaded model with update_available=true, click the Update button, and confirm a progress toast appears naming the model with a percentage."
+    },
+    {
+      "text": "With the same model selected, click Update All and confirm the toast shows Updating… and names the model being synced."
+    },
+    {
+      "text": "Disconnect the app from the server and reconnect; confirm the sync status toast disappears and no stale error or result persists."
+    }
+  ],
+  "merge_date": "2026-10-28T18:43:17Z",
+  "pr_number": 3957,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-28T18:58:49+00:00",
+  "reviewers": [
+    "@meghsat"
+  ],
+  "sha": "aab9c362ebe0e506b1b70026621490d6b41d548b",
+  "shout_outs": [
+    {
+      "handle": "@meghsat",
+      "reason": "Co-author of the cherry-picked commit (via Co-authored-by trailer) and author of the 'edge cases fix: sync status and update reason' commit that was merged into PR #3957, contributing substantive code beyond review."
+    }
+  ],
+  "subject": "fix(app): use server sync for individual and bulk model updates (#3957)",
+  "summary": "Adds an Update button to the individual model detail panel and delegates both per-model and bulk updates to the server's /internal/models/sync endpoint, replacing per-model /api/v1/pull calls with a single server-owned sync job that the GUI tracks via health polling.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "A commit was added after approval that changed retry and baseline logic, and no evidence shows anyone manually exercised the new Update button or server-sync flow on a release candidate before shipping."
+}
