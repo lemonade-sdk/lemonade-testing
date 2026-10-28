@@ -1,0 +1,33 @@
+{
+  "author": "@iswaryaalex",
+  "branch": "main",
+  "bucket": "v2026.46",
+  "commit_sha": "4124db6b5f25467bbf5193ef453d37c47f111809",
+  "committed_at": "2026-10-28T21:06:40+00:00",
+  "evidence": {
+    "api_compatibility": "Not applicable. The change adds a new `rocm_version` field to JSON output files (run files, leaderboard.json, history points). The schema is strictly additive: existing fields are untouched and older consumers will simply not recognize the new key. There are no breaking changes.",
+    "documentation": "The PR description explains the data source for each build type (nightly release notes, TheRock pin for stable, Vulkan gets null) and explicitly notes the dashboard does not yet display the field. The change is small, self-documenting, and does not require spec updates since it adds a field rather than changing behavior.",
+    "manual_release_testing": "This change is CI-only: it modifies the benchmark regression workflow script and the workflow YAML. No compiled artifact, CLI command, API endpoint, GUI, config option, or installed package is changed. The JSON output files it writes (run files, leaderboard.json, history) are internal artifacts consumed by CI and the dashboard — not user-facing release surface. The PR description notes the dashboard does not yet display the field, confirming no user-visible change. No manual release test is required.",
+    "post_approval_commits": "None. The two commits (283fbd3, ca4a68e) were both authored by @iswaryaalex. The first landed at 2026-10-28T18:37Z, the second at 2026-10-28T19:42Z. The first approval came at 2026-10-28T20:20Z. No commits were added after any approval.",
+    "review": "PR #3996 received two human approvals (@sreeram-11 at 2026-10-28T20:20:55Z and @ramkrishna2910 at 2026-10-28T20:25:40Z). Both approvals were submitted after the second commit (ca4a68e) that addressed CodeRabbit's findings. @ramkrishna2910 is listed as an admin maintainer with subject-matter expertise in new backends, benchmarking, and hardware vendor support, covering the area this PR touches. CodeRabbit flagged two issues: (1) Vulkan forks should return None before checking release notes, and (2) the TheRock pin for stable forks should come from the running lemond's packaged resource rather than the checkout's backend_versions.json. The author addressed both in the second commit. No human reviewer left substantive inline comments.",
+    "security": "Low risk. The resolve_rocm_version function calls the GitHub API with an optional token and reads a small set of local version files (.info/version, share/rocm/version, version). No credential handling, network calls to untrusted endpoints, code execution, or permission changes are present.",
+    "tests": "No new unit or integration tests were added, which is acceptable for a CI workflow and GitHub Actions script change. The diff touches only .github/scripts/validate_backend_bench.py (adding resolve_rocm_version, threading rocm_version through run_bench and update_leaderboard) and .github/workflows/benchmark-regression.yml (inserting rocm_version into the JSON payload and history). All required CI checks (C++ Server Build, Launchpad PPA, Validate stable-diffusion.cpp) passed on the merge commit."
+  },
+  "generation_seconds": 146.4,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-28T22:17:26Z",
+  "pr_number": 3996,
+  "range_start": "v2026.44.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-28T22:21:33+00:00",
+  "reviewers": [
+    "@sreeram-11",
+    "@ramkrishna2910"
+  ],
+  "sha": "4124db6b5f25467bbf5193ef453d37c47f111809",
+  "shout_outs": [],
+  "subject": "grabbing rocm versions per build (#3996)",
+  "summary": "Adds a `rocm_version` field to benchmark run files, leaderboard.json entries, and history points, resolving the version from nightly release notes or the running lemond's TheRock pin for stable builds.",
+  "verdict": "Clean",
+  "verdict_reason": "Two-person human review with subject-matter-relevant approver, both CodeRabbit findings addressed before approval, no post-approval commits, and the change is a backward-compatible JSON field addition with CI coverage."
+}
