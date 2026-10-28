@@ -1,0 +1,49 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "57e63bff98463a4ee4d523ad860a343aa318ac7c",
+  "committed_at": "2026-10-28T13:11:07+00:00",
+  "evidence": {
+    "api_compatibility": "resolved_ctx_size changed from type ['integer', 'null'] to 'integer' in the schema at src/cpp/server/services/model_options.cpp and the three GET /v1/models endpoints at docs/api/openai.md. This is technically a breaking change: existing clients that check for null to detect 'insufficient memory' will no longer receive null. However, the null case could not have been observed in practice because the old code threw a RuntimeError in Router::load_model before returning the model options with null, so no client would have seen a null resolved_ctx_size at runtime. The change is effectively a bug fix that improves the contract. The /v1/load endpoint also no longer throws 'Not enough free memory to load … with automatic context sizing' — it now resolves to the fallback context size instead. This is the intended regression fix.",
+    "documentation": "docs/api/openai.md updated all three GET /v1/models endpoint docs to remove the null case from the resolved_ctx_size description. The PR description clearly names the affected models, the hardware (128 GB Strix Halo), and the root cause (Linux amdgpu GTT size defaults to half RAM). The commit message is clear and the PR body includes a reproduction table. No separate release notes or blog post were produced as part of this PR.",
+    "manual_release_testing": "The PR description includes a detailed compatibility table showing three models (gpt-oss-120b, Qwen3-Next-80B, Qwen3-Coder-Next) on 128 GB Strix Halo with Ryzen AI Max+ 395 under default Linux kernel settings, with all three loading and chatting under this fix after refusing on v2026.44. The author reports having tested each model with one chat. However, this is a hardware-specific regression fix and the maintainer-to-do items cover manual verification on the target hardware. The NPU safety-guard deferred issue means a zero-memory NPU scenario is not tested.",
+    "post_approval_commits": "None. There is exactly one commit (8009cba) and no commits were added after the approval at 2026-10-28T08:00:20Z.",
+    "review": "PR #3986 received one approval from @bitgamma and one substantive comment from @fl0rianr. Per docs/dev/contribute.md, no reviewer has subject-matter expertise in the affected areas: auto-tune, system memory, llamacpp, or ROCm (@bitgamma covers thenoise, cli, recipes, benchmarking, new models; @fl0rianr covers LMX models, GUI, CI, smart router). @bitgamma's review was substantive and correctly identified the NPU guard as a deferred follow-up. @fl0rianr requested the NPU guard be fixed (distinguishing unknown from known-zero memory via memory_known_out) but deferred when the author agreed with @bitgamma. Both reviewers noted the change was acceptable as a targeted regression hotfix.",
+    "security": "No security concerns. The change reads /proc/meminfo on Linux and calls GlobalMemoryStatusEx on Windows for total RAM — both standard system APIs. No new network calls, credential handling, or permission broadening. The Co-authored-by trailer references Claude Opus 5.5 (an AI assistant), which is a bot and not a person to credit.",
+    "tests": "New test file test/cpp/test_gpu_memory_selection.cpp covers the iGPU pool physical_total_gb=0 change and unified memory semantics. New test file test/cpp/test_auto_tune.cpp covers budget estimation, clamp behavior, fallback logic, and the physical-RAM total cap. The test_auto_tune.cpp tests that 'known insufficient VRAM returns zero, not 4096' and that 'low but positive budget is not raised to a fallback', verifying the core auto_context_clamp_tokens behavior. No explicit unit test exercises the full resolve_auto_ctx_size → /v1/models endpoint path for the resolved_ctx_size null→integer change, and no test covers the NPU safety-guard scenario that was deferred."
+  },
+  "generation_seconds": 257.5,
+  "maintainer_todos": [
+    {
+      "text": "Start a 128 GB Strix Halo (AMD APU) system with default kernel settings, load gpt-oss-120b and confirm it loads with ctx 4096 and chats successfully."
+    },
+    {
+      "text": "Start a 128 GB Strix Halo system, load Qwen3-Next-80B-A3B-Instruct and confirm it loads with ctx 114562 and chats successfully."
+    },
+    {
+      "text": "Start a 128 GB Strix Halo system, load Qwen3-Coder-Next and confirm it loads with ctx 262144 and chats successfully."
+    },
+    {
+      "text": "Call GET /v1/models/<id> for a model with ctx_size=-1 on a system with known memory, confirm resolved_ctx_size is a non-null integer (not null)."
+    },
+    {
+      "text": "Open a file with known-zero memory (or mock available_gb to 0) and verify that POST /v1/load of a large NPU model reaches the expected behavior without driver hang — note that the NPU safety guard follow-up was deferred."
+    }
+  ],
+  "merge_date": "2026-10-28T14:35:08Z",
+  "pr_number": 3986,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-28T14:41:25+00:00",
+  "reviewers": [
+    "@bitgamma",
+    "@fl0rianr"
+  ],
+  "sha": "57e63bff98463a4ee4d523ad860a343aa318ac7c",
+  "shout_outs": [],
+  "subject": "fix(auto-tune): never refuse a load over a context estimate (#3986)",
+  "summary": "Fixes a v2026.44 regression on 128 GB Strix Halo where gpt-oss-120b, Qwen3-Next-80B, and Qwen3-Coder-Next refused to load: the iGPU shared-memory cap now uses MemTotal instead of subtracting from the GTT pool, and a short auto-context budget returns the 4096-token fallback instead of throwing.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "No reviewer with auto-tune or llamacpp subject-matter expertise (per docs/dev/contribute.md) approved, and the deferred NPU safety-guard follow-up should be logged before release."
+}
