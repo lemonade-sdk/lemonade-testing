@@ -1,0 +1,41 @@
+{
+  "author": "@ramkrishna2910",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "d98e62998768199906e68823e33ae482d61e8bb0",
+  "committed_at": "2026-10-28T02:41:47+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The change adds new catalog entries and does not modify existing models, config keys, CLI commands, or APIs. The doc fix changes *_bin example values from a directory path to a full executable path, which aligns with how Lemonade resolves *_bin settings (#3893) and does not break existing configurations.",
+    "documentation": "Two doc lines in docs/embeddable/backends.md were corrected to show full executable paths for *_bin overrides, which is consistent with #3893. The new catalog entries are self-documenting in the JSON structure. No separate guide or example was added for K2-Horizon models.",
+    "manual_release_testing": "No evidence a human exercised any of the five K2-Horizon models (0.9B, 3.7B, 7B, 32B, MoVA-36B-A4B) through the catalog before merge. These are user-visible model choices that appear in the model list and can be launched via the CLI or GUI.",
+    "post_approval_commits": "One commit (9d65d4a) by @sawansri merged origin/main after approval to resolve a merge conflict with the Flint-GGUF entry added on main in PR #3940. The merge kept both the K2-Horizon entries and Flint-GGUF. No new substantive behavior was added after approval; the merge was a standard conflict resolution.",
+    "review": "@sawansri reviewed substantively: commented asking why models were all BF16 and noting KV-cache growth at long contexts, then approved after the branch was updated to use Q4_K_M quants. The review had subject matter expertise (sawansri is listed in contribute.md as expert on new models, new backends, and vLLM). No inline review comments were raised; the feedback was a single PR comment and a final approval. CodeRabbit flagged two warnings (description template missing, PR body inconsistent with commit range) but these are process concerns, not code concerns.",
+    "security": "No security concerns. The change adds static JSON entries pointing to HuggingFace GGUF files and updates documentation. The backend pin to llama.cpp b11454 references a known upstream release that includes K2 Horizon model support. Metal/CPU/Vulkan assets are from official ggml-org/llama.cpp releases; ROCm/CUDA pins remain unchanged.",
+    "tests": "No new tests were added. The change adds JSON catalog entries (server_models.json) and fixes two doc lines (backends.md). Catalog entries are data, not code, so they do not typically have unit tests. CI checks (build, smoke test, CodeQL, Docker) all passed. No manual end-to-end run with a K2-Horizon model was evidenced."
+  },
+  "generation_seconds": 200.0,
+  "maintainer_todos": [
+    {
+      "text": "Run `lemonade run K2-Horizon-7B-GGUF` and confirm the model downloads from HuggingFace (IFM/K2-Horizon-7B-GGUF), loads without error, and accepts a chat request."
+    }
+  ],
+  "merge_date": "2026-10-28T04:00:56Z",
+  "pr_number": 3985,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-28T04:06:05+00:00",
+  "reviewers": [
+    "@sawansri"
+  ],
+  "sha": "d98e62998768199906e68823e33ae482d61e8bb0",
+  "shout_outs": [
+    {
+      "handle": "@mvillmow",
+      "reason": "Co-author of the commit (Co-authored-by trailer); authored the original three commits adding the K2-Horizon catalog entries, backend pin, and doc fixes."
+    }
+  ],
+  "subject": "models: add K2-Horizon llama.cpp catalog entries (#3985)",
+  "summary": "Adds five K2-Horizon GGUF model entries (0.9B, 3.7B, 7B, 32B, and MoVA-36B-A4B) with Q4_K_M quants to the llama.cpp server model catalog and pins Metal/CPU/Vulkan llama.cpp backends to b11454 for K2 Horizon support, plus fixes *_bin override examples in docs/embeddable/backends.md to use full executable paths.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "Five new catalog entries introduce user-visible model choices but there is no evidence a human exercised any K2-Horizon model end-to-end before merge."
+}
