@@ -1,0 +1,50 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.46",
+  "commit_sha": "cbd4d962b6f3adbf8de65557868c03ba690a46c2",
+  "committed_at": "2026-10-28T17:42:11+00:00",
+  "evidence": {
+    "api_compatibility": "The new models_generation and model_sync fields on GET /api/v1/health are additive and backwards-compatible; existing clients that do not understand them will simply ignore them. The new POST /internal/models/sync and GET /internal/models/sync/status endpoints are internal (not external API) and require admin auth. No existing API contract is broken.",
+    "documentation": "The health endpoint schema in src/cpp/server/routes/lemonade/system/health.cpp is updated with descriptions for the new model_sync and models_generation fields, cross-referencing GET /internal/models/sync/status. No user-facing documentation (README, guides, release notes) is affected per the PR description checklist. The API doc update is consistent with the code change.",
+    "manual_release_testing": "The PR changes two GUI surfaces: (1) a new per-model Update button shown when update_available=true, and (2) Update All now delegates to /internal/models/sync instead of issuing individual /api/v1/pull calls. It also adds a sync progress toast and a 'View logs' / dismiss UI for failures. No evidence shows a human exercised these GUI paths end-to-end — CI runs are sufficient for the TypeScript and C++ build but cannot validate the React UI interactions, progress toasts, or the corrected Update All behavior. The backend changes (models_generation in health API, sync outcome logging in C++) are also not manually validated.",
+    "post_approval_commits": "One commit was added after @meghsat's approval (2026-10-28T17:06:57Z): 'fix(app): retry missed model sync results and reset state on disconnect' (efa7a2d). This commit fixes the baseline null-coalescing in onModelState, changes the disconnect retry condition from checking this.state.active to api.isConnected, and ensures error/result state is cleared on disconnect. A test was added covering the new behavior. This is a small bug fix within the spirit of the approved PR; it adds one test but no new behavior beyond fixing an edge case.",
+    "review": "The PR was requested for review by @kpoineal and @jeremyfowers, but only @meghsat submitted an APPROVAL review. @fl0rianr has GUI listed as a subject area in docs/dev/contribute.md, which is appropriate. @meghsat contributed the co-authored 'edge cases fix' commit and appears to have hands-on familiarity with the sync store logic. CodeRabbit flagged a potential issue with handledModelSyncIds deduplication not distinguishing server restarts; this was addressed in a subsequent commit. There were no inline review comments from human reviewers on the main implementation.",
+    "security": "The new endpoints use admin authentication. The /internal/models/sync endpoint delegates to the existing SyncService, which was already available. The client-side modelSyncStore makes authenticated API calls and dispatches a window event to navigate to server logs. No new credential handling, network calls to third parties, or permission changes. CodeRabbit did not flag security concerns.",
+    "tests": "New test file model-sync-store.runtime.cjs (155 lines) tests the ModelSyncStore's start/poll/dismiss/reset cycle, including failure recovery, dismiss, and sync result tracking. A second test was added to global-model-settings.runtime.cjs (14 lines) as a bonus. The post-approval commit added inline tests for the retry-on-disconnect and missed-result scenarios. No existing tests were weakened or deleted."
+  },
+  "generation_seconds": 196.2,
+  "maintainer_todos": [
+    {
+      "text": "Open the Lemonade GUI, navigate to Models > a downloaded model with update_available=true, click the new Update button, and confirm the model updates and the toast shows progress."
+    },
+    {
+      "text": "In the Models list, click Update All on multiple downloaded models and confirm the server sync endpoint is called (single request) and progress is shown in the toast."
+    },
+    {
+      "text": "Navigate away from Models during a sync, then return and confirm the sync status is restored and the toast reflects the current state."
+    },
+    {
+      "text": "Verify the health API GET /api/v1/health returns the new model_sync and models_generation fields."
+    }
+  ],
+  "merge_date": "2026-10-28T18:43:17Z",
+  "pr_number": 3957,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-28T18:48:28+00:00",
+  "reviewers": [
+    "@meghsat"
+  ],
+  "sha": "cbd4d962b6f3adbf8de65557868c03ba690a46c2",
+  "shout_outs": [
+    {
+      "handle": "@meghsat",
+      "reason": "Co-author of the commit and contributor of the 'edge cases fix: sync status and update reason' commit that resolved sync state tracking issues."
+    }
+  ],
+  "subject": "fix(app): use server sync for individual and bulk model updates (#3957)",
+  "summary": "Adds a per-model Update button in the GUI model details panel and replaces Update All's per-model /api/v1/pull calls with a single /internal/models/sync endpoint, while adding models_generation and model_sync fields to the health API and a ModelSyncStore client feature to track server-side sync progress, errors, and failures.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The PR introduces new GUI surfaces — a per-model Update button and a changed Update All flow — but there is no evidence a human exercised these paths before merge."
+}
