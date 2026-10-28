@@ -1,0 +1,37 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "f7dc0513a01bbd7d07e543f04acb89310b498e06",
+  "committed_at": "2026-10-27T22:31:27+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The change only affects how the Lemonade app GUI cleans up URL query parameters during initialization. No CLI, config, API, or saved file format is modified. The PR explicitly states 'This PR does not introduce breaking changes.'",
+    "documentation": "No documentation impact. This is an internal GUI behavior fix — the URL cleanup is invisible to users beyond the corrected reload behavior. No API, CLI, or config changes to document.",
+    "manual_release_testing": "Not needed — this is a targeted bug fix for a clearly stated issue (#3976: 'lemonade logs' GUI opening was leading to logs upon reload). The fix behavior is fully covered by automated tests that drive the same user-reachable path (deep-link URLs with view/logs params). No new user-facing API, CLI, or GUI surface introduced.",
+    "post_approval_commits": "One commit was added after the first and latest approval at 2026-10-27T21:52:45Z: merge commit d10d9e06 at 2026-10-27T22:02:15Z, which merged main into the feature branch. This is a standard sync merge with no functional code changes — it does not alter the review scope or risk profile and does not require re-approval.",
+    "review": "PR #3978 was approved by @meghsat at 2026-10-27T21:52:45Z. @meghsat has subject area expertise in GUI, app, a11y, and Windows per docs/dev/contribute.md, which covers the App.tsx routing code. The PR body follows the spec-driven development template, links issue #3976, and clearly scopes the change. @meghsat identified a real edge case where an unknown view parameter stayed in the URL after startup, breaking browser Back navigation; the author acknowledged the fix. CodeRabbit performed 6 pre-merge checks, all passed, assessing merge risk as Minimal.",
+    "security": "No security concerns. The change is a pure URL manipulation using the Web API (URL constructor, searchParams, history.replaceState). No new dependencies, no credential handling, no network calls, no code execution paths modified.",
+    "tests": "All CI checks passed, including app-regression-tests, App docs/typecheck/runtime/UI tests (Lemonade App checks workflow). The PR adds a test suite '01a0b — deep-link params are consumed without losing history' that covers: navigation parameter cleanup (?view=monitor/telemetry, ?logs=true&keep=1), unrelated parameter preservation (keep=1 persists across reloads), browser Back behavior after deep-link cleanup, and unknown parameter handling (?view=unknown). No existing tests were weakened or deleted (one test regex adjusted to match expected URL format, which is a test correctness fix)."
+  },
+  "generation_seconds": 186.8,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-27T23:56:54Z",
+  "pr_number": 3978,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-28T00:01:46+00:00",
+  "reviewers": [
+    "@meghsat"
+  ],
+  "sha": "f7dc0513a01bbd7d07e543f04acb89310b498e06",
+  "shout_outs": [
+    {
+      "handle": "@meghsat",
+      "reason": "Co-author of the commit (Co-authored-by: Satya Devineni), contributed the bug fix for an edge case with unresolvable navigation parameters that was identified during review."
+    }
+  ],
+  "subject": "fix(app): consume navigation query params on route changes (#3978)",
+  "summary": "Adds a consumeNavigationQuery() function that strips view and logs query parameters from the URL during app initialization while preserving unrelated parameters, fixing stale deep-link parameters from overriding the selected view after a reload.",
+  "verdict": "Clean",
+  "verdict_reason": "Small, well-scoped bug fix with thorough test coverage, substantive review by a reviewer with relevant app/GUI expertise, and all CI checks passing."
+}
