@@ -1,38 +1,27 @@
 ## Lemonade v2026.44.1
 
-### ⚠️ These notes are AI generated and will be revised by a human ⚠️
+@everyone v2026.44 is out: MCP and code mode for `lemonade launch pi`, sd-cpp ROCm back on Windows, AMD GPU usage and VRAM reporting on Windows, and the new LFM2.5-24B-A2B model.
 
-@everyone v2026.44 is out: model loading on iGPU/APU systems is back, the stable diffusion ROCm backend works on Windows again, deleted models are properly cleaned up, and the new LFM2.5-24B model joins the server registry.
+### MCP and code mode for `lemonade launch pi`
 
-### Breaking Changes
+`@sawansri` added `--mcp` to `lemonade launch pi`, which connects pi to the Lemonade MCP server, and `--codemode`, which lets pi's scripts call Lemonade tools like image generation. pi also picks up each model's context window, accepts images on vision models, and keeps your API key out of its config. See the [pi guide](https://github.com/lemonade-sdk/lemonade/blob/main/docs/integrations/pi.md).
 
-- The `/v1/models/{model}/options` endpoint's `resolved_ctx_size` field can now return `null` when automatic GPU sizing can't fit a valid context — clients should handle that gracefully instead of expecting a number.
+### sd-cpp ROCm is back on Windows
 
-### 🖥️ Model loading on shared-memory systems fixed
+`@sreeram-11` re-enabled the sd-cpp ROCm backend on Windows. It was pulled because image generation could silently fall back to CPU, and staging the full HIP runtime next to `sd-server` fixes GPU detection.
 
-`@jeremyfowers` fixed the context-size auto-tune to use total physical RAM instead of RAM-in-use for the iGPU/APU pool cap, so you can now load larger models on shared-memory systems without them getting stuck.
+### AMD GPU usage and VRAM on Windows
 
-### 💾 Stable diffusion ROCm backend restored on Windows
-
-`@sreeram-11` re-enabled the sd-cpp ROCm backend on Windows by staging the full HIP runtime DLLs, so you're back to GPU acceleration instead of silently falling back to CPU.
-
-### 🗑️ Deleted models remove their files
-
-`@meghsat` fixed model deletion so the files actually get removed from disk instead of leaving orphaned checkpoints behind.
-
-### 🆕 LFM2.5-24B-A2B-GGUF in the registry
-
-`@sawansri` added the LFM2.5-24B-A2B-GGUF model to the server model registry with chat, reasoning, and tool-calling labels — about 14.9 GB.
+`@iswaryaalex` fixed Lemonade's reporting of AMD GPU usage and VRAM on Windows.
 
 ### Additional Improvements
 
-- `@sreeram-11` stopped Hugging Face rate limits from failing model pulls, now returning 503 with Retry-After headers instead.
-- `@sreeram-11` tightened the CI matrix to reduce GitHub Actions runner handoffs.
-- `@QuTosh` added 176 model-backed conformance test cases across L0a, L2, and L3 tiers, with thanks to `@fl0rianr`.
-- `@iswaryaalex` added the halo-box-strix backend fork to the benchmark regression CI.
-- `@bernardogv` documented the systemd ProtectHome=yes restriction on extra_models_dir when used under /home.
-- `@sawansri` added `--mcp`, `--no-mcp`, and `--codemode` flags to `lemonade launch pi`.
-- `@bernardogv` fixed `*_bin` config patterns pointing at directories so they resolve correctly.
-- `@jeremyfowers` published the auto-opt vision blog post and added a news-publishing workflow.
+- `@meghsat` fixed model deletion so it removes the model's files from disk.
+- `@sawansri` added LFM2.5-24B-A2B-GGUF to the model registry.
+- `@fl0rianr` improved automatic context sizing to reserve memory for runtime buffers, reducing GPU memory pressure.
+- `@bernardogv` fixed `*_bin` config options so pointing one at a directory finds the binary inside it.
+- `@bernardogv` documented the drop-in needed to use `extra_models_dir` under `/home` with the .deb and .rpm packages.
+- `@QuTosh` added model-backed conformance tests, `@iswaryaalex` added Strix Halo backend benchmarking, and `@sreeram-11` made CI more reliable against Hugging Face rate limits and runner handoffs.
+- `@jeremyfowers` published the auto-BKC vision blog post, and news posts now go live on the website as soon as they merge.
 
-Grab v2026.44.1 from [GitHub Releases](https://github.com/lemonade-sdk/lemonade/releases) and tell me what you think!
+Grab the latest release over on [GitHub Releases](https://github.com/lemonade-sdk/lemonade/releases) and drop your feedback in #general!
