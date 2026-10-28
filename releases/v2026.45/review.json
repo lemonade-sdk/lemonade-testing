@@ -1,0 +1,596 @@
+{
+  "branch": "release-v2026.45",
+  "breaking_changes": [
+    "The /v1/models/{model}/options endpoint's resolved_ctx_size field can now be null instead of always numeric when automatic context sizing cannot fit a valid context — clients parsing it as an integer will fail.",
+    "GET on previously-404 POST-only paths (slots/{id}, jobs/{id}/pause|interrupt|resume, models/register) now returns 405 instead of 404.",
+    "A request without the model field now raises 'Missing model field in request' consistently on every model route (chat/completions, completions, embeddings, responses, rerank), instead of the old inconsistent error messages.",
+    "Form-encoded requests with invalid field types (e.g. non-numeric temperature on transcription) return 400 instead of 500.",
+    "Streaming responses now carry a cancel token that stops the server from sending after a TCP disconnect."
+  ],
+  "bucket": "v2026.45",
+  "candidate_issues": [],
+  "checklist": [
+    {
+      "author": "@meghsat",
+      "commit": "0100ec6ddd614bf8080d22ab3a74c648b0a4366a",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3765,
+      "priority": "P0",
+      "text": "Install a shared model family (e.g. Anima-aesthetic, Anima-base, Anima-turbo that share text encoder and VAE files), delete one variant, and confirm the shared text encoder and VAE files are also removed from the models cache directory."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "333469dd036a457dbb3c24054c867cb0d617a9e0",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3862,
+      "priority": "P0",
+      "text": "Run the Lemonade server and load a model on a system with limited GPU memory (or simulate it) and confirm the /v1/models/{model}/options endpoint returns {\"resolved_ctx_size\": null} instead of a number."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "333469dd036a457dbb3c24054c867cb0d617a9e0",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3862,
+      "priority": "P0",
+      "text": "Write a small HTTP client that calls /v1/models/{model}/options and verify it handles the null resolved_ctx_size without crashing, since existing clients may not expect a non-numeric value."
+    },
+    {
+      "author": "@sreeram-11",
+      "commit": "1ba79d48ff6945942e01abf8408dcc4741065d83",
+      "platforms": [
+        "Windows"
+      ],
+      "pr_number": 3718,
+      "priority": "P0",
+      "text": "On a Windows machine with a Windows ROCm installation and an sd-cpp backend installed, start lemond with log_level=debug, load SD-Turbo with the rocm backend, and confirm the server log shows \"Initializing backend: ROCm0\" and the image generation completes in seconds rather than failing to the CPU."
+    },
+    {
+      "author": "@sawansri",
+      "commit": "3614598dc8190d0dc157598d3dea3fccc964d654",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3786,
+      "priority": "P0",
+      "text": "Run `lemonade launch pi --api-key mykey` and verify that pi's process environment contains LEMONADE_API_KEY set to mykey, while pi's models.json contains \"apiKey\": \"${LEMONADE_API_KEY}\" rather than the plaintext key."
+    },
+    {
+      "author": "@meghsat",
+      "commit": "9cfd620508a7820affecaaea074e20f7fce01a30",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3834,
+      "priority": "P0",
+      "text": "Launch the built Tauri desktop app and connect it to a running Lemonade server. Verify that each of the six workspaces (Chat, Models, Backends, Apps, Monitor, Settings) opens without errors and that the global search field is interactive."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "62e4aa6bd5291e94f628bf4da07c805334556320",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3967,
+      "priority": "P0",
+      "text": "Open the web GUI in a browser, navigate to Settings > Server, enter a server URL and an API key, check the 'Remember API key' checkbox, and confirm the notification says 'Connected to {url}. API key saved on this device.' (not the old 'Lemonade app settings' wording). After restarting the app, confirm the API key is pre-populated and the checkbox is checked."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "62e4aa6bd5291e94f628bf4da07c805334556320",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3967,
+      "priority": "P0",
+      "text": "In the same web GUI with a remembered key, uncheck 'Remember API key' and click Connect again; confirm the notification no longer mentions the key being saved and that the checkbox is unchecked after restart."
+    },
+    {
+      "author": "@sreeram-11",
+      "commit": "1ba79d48ff6945942e01abf8408dcc4741065d83",
+      "platforms": [
+        "Windows"
+      ],
+      "pr_number": 3718,
+      "priority": "P1",
+      "text": "On a Windows machine where LEMONADE_CACHE_DIR resolves to a path that, combined with the installed ROCm tree depth, exceeds 259 characters, start lemond and load any sd-cpp rocm model; confirm it fails with a ConfigurationException mentioning the cache directory length and that the error message suggests rocm_install_method=tarball."
+    },
+    {
+      "author": "@sreeram-11",
+      "commit": "1ba79d48ff6945942e01abf8408dcc4741065d83",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3718,
+      "priority": "P1",
+      "text": "Start lemond, load a model on the rocm backend, then attempt to load a second model with a deliberately invalid configuration; confirm the router throws the error immediately and the first loaded model remains active."
+    },
+    {
+      "author": "@sawansri",
+      "commit": "3614598dc8190d0dc157598d3dea3fccc964d654",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3786,
+      "priority": "P1",
+      "text": "Run `lemonade launch pi --mcp --codemode` against a model and confirm the pi agent starts, pi's mcp.json contains a lemonade server entry with the correct URL, and pi's models.json includes contextWindow and maxTokens for the model."
+    },
+    {
+      "author": "@sawansri",
+      "commit": "3614598dc8190d0dc157598d3dea3fccc964d654",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3786,
+      "priority": "P1",
+      "text": "Run `lemonade launch pi --model <a-vision-model>` and confirm pi's models.json sets \"input\": [\"text\", \"image\"] for that model, then verify the agent accepts an image paste."
+    },
+    {
+      "author": "@sawansri",
+      "commit": "3614598dc8190d0dc157598d3dea3fccc964d654",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3786,
+      "priority": "P1",
+      "text": "Run `lemonade launch pi --no-mcp` when a lemonade entry already exists in mcp.json and confirm the entry is removed and pi starts."
+    },
+    {
+      "author": "@meghsat",
+      "commit": "9cfd620508a7820affecaaea074e20f7fce01a30",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3834,
+      "priority": "P1",
+      "text": "In the Chat workspace, start a new conversation, send a message to a loaded model, and confirm the response streams. Then scroll up mid-stream to verify that auto-scroll stops and resumes when you scroll back near the bottom."
+    },
+    {
+      "author": "@meghsat",
+      "commit": "9cfd620508a7820affecaaea074e20f7fce01a30",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3834,
+      "priority": "P1",
+      "text": "In the Models workspace, use the task filter dropdown (Chat, Omni, Router, Image, Audio, Music & SFX, TTS, 3D, Embed, Classify) to narrow results, and confirm the model detail panel shows Configuration, README, and Files tabs with Get & Load, Download, Load, Unload, Pin, Favorite, and Delete actions."
+    },
+    {
+      "author": "@meghsat",
+      "commit": "9cfd620508a7820affecaaea074e20f7fce01a30",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3834,
+      "priority": "P1",
+      "text": "In the Monitor workspace, verify that the throughput charts show prompt/decode TPS, TTFT, and system vitals (CPU, RAM, GPU, VRAM), and confirm Pause / Resume freezes the refresh."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "9a9d43abc622e844525f9a6fa264100b9bfe928e",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3771,
+      "priority": "P1",
+      "text": "Hit every POST-only route with a GET request (slots/{id}, jobs/{id}/pause|interrupt|resume, models/register) and confirm each answers 405 instead of the old 404."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "9a9d43abc622e844525f9a6fa264100b9bfe928e",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3771,
+      "priority": "P1",
+      "text": "Send a model request to /v1/chat/completions, /v1/completions, /v1/embeddings, /v1/responses, and /v1/rerank without a model field and confirm each returns the consistent 'Missing model field in request' error."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "9a9d43abc622e844525f9a6fa264100b9bfe928e",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3771,
+      "priority": "P1",
+      "text": "Send a form-encoded request to a transcription endpoint with a non-numeric temperature (for example temperature=abc) and confirm it returns 400 instead of the old 500."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "9a9d43abc622e844525f9a6fa264100b9bfe928e",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3771,
+      "priority": "P1",
+      "text": "Open a streaming chat/completions SSE connection, then drop the TCP connection mid-stream and confirm the server stops sending and the client receives the cancel."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "9a9d43abc622e844525f9a6fa264100b9bfe928e",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3771,
+      "priority": "P1",
+      "text": "Load a model via an alias (for example user/my-model aliased to a registered model) and send a request through the alias name to /v1/chat/completions, confirming the alias resolves and the request reaches the correct model."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "fd71235a06db9022b8d04a368b58c952e3d343a1",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3926,
+      "priority": "P1",
+      "text": "Install the release candidate, uninstall an inference backend, then trigger an implicit install by loading a model that requires it, and confirm that the /system-info endpoint (or the GUI3/App backend status panel) reflects the installed status immediately — without needing a server restart."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "83cd48bf03fac09f65f48c3fe7f9c2bd8325192a",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3951,
+      "priority": "P1",
+      "text": "Open the app with a loaded chat model and a microphone, tap the mic button in Chat mode, speak a sentence, then tap Stop — the text should appear in the composer draft and the model must still show as the chat model."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "83cd48bf03fac09f65f48c3fe7f9c2bd8325192a",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3951,
+      "priority": "P1",
+      "text": "Switch to Image mode, tap the mic button, speak, then Stop — the text must appear in the image prompt composer, not as a separate chat message."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "83cd48bf03fac09f65f48c3fe7f9c2bd8325192a",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3951,
+      "priority": "P1",
+      "text": "Switch to TTS mode, tap the mic button, speak, then Stop — the text must appear in the TTS input composer."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "83cd48bf03fac09f65f48c3fe7f9c2bd8325192a",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3951,
+      "priority": "P1",
+      "text": "Switch to Text-to-3D mode with sourceMode set to text, tap the mic button, speak, then Stop — the text must appear in the 3D prompt composer."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "83cd48bf03fac09f65f48c3fe7f9c2bd8325192a",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3951,
+      "priority": "P1",
+      "text": "Switch to Audio Generation mode, tap the mic button, speak, then Stop — the text must appear in the audio prompt composer."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "83cd48bf03fac09f65f48c3fe7f9c2bd8325192a",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3951,
+      "priority": "P1",
+      "text": "With a loaded chat model active, start dictation in Chat mode, then unload the chat model while dictation is active — the composer must retain the previously selected model and not switch to standalone Transcription mode."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "83cd48bf03fac09f65f48c3fe7f9c2bd8325192a",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3951,
+      "priority": "P1",
+      "text": "Start dictation in Chat mode, stop it, then manually select a different model — the dictation pin must be cleared and the new model must stick."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "83cd48bf03fac09f65f48c3fe7f9c2bd8325192a",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3951,
+      "priority": "P1",
+      "text": "Open standalone Transcription mode (no chat model), tap the mic button, speak, then Stop — live transcription must still appear as overlay text without dictating into any composer draft."
+    },
+    {
+      "author": "@github-actions[bot]",
+      "commit": "56cc349e74416f7bb842bf10e92550d0cc538ab6",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3964,
+      "priority": "P1",
+      "text": "Start the server and send a request to the /v1/responses endpoint with streaming, then check that output_item.added and delta events include an output_index integer field in the event payload."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "e4fa62ed40520ecd94f74c137534505eeb3cbe5c",
+      "platforms": [
+        "Windows",
+        "Ubuntu PPA",
+        "Snap",
+        "macOS"
+      ],
+      "pr_number": 3962,
+      "priority": "P1",
+      "text": "Enable prefers-reduced-motion on a mobile-size viewport (390×844), confirm the closed Conversations sheet sits below the visible area and does not cover the composer, then tap the composer to verify focus returns."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "e4fa62ed40520ecd94f74c137534505eeb3cbe5c",
+      "platforms": [
+        "Windows",
+        "Ubuntu PPA",
+        "Snap",
+        "macOS"
+      ],
+      "pr_number": 3962,
+      "priority": "P1",
+      "text": "Open the Conversations sheet, drag the handle downward, and confirm the sheet dismisses and the composer regains focus; repeat using the Close button on the sheet to verify both dismissal paths work under reduced motion."
+    },
+    {
+      "author": "@bitgamma",
+      "commit": "fb8935641c29e942a4693ed649b3ade5e3278d4e",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3828,
+      "priority": "P1",
+      "text": "Start the server and call GET /v1/models to confirm the response now includes a checkpoint_status[] array with entries containing type, present, and required fields, and verify that the query parameter ?include_paths=true adds an absolute path field to each present checkpoint entry."
+    },
+    {
+      "author": "@bitgamma",
+      "commit": "fb8935641c29e942a4693ed649b3ade5e3278d4e",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3828,
+      "priority": "P1",
+      "text": "Call GET /v1/models and verify that each model object now carries an update_available boolean field."
+    },
+    {
+      "author": "@bitgamma",
+      "commit": "fb8935641c29e942a4693ed649b3ade5e3278d4e",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3828,
+      "priority": "P1",
+      "text": "Call GET /internal/model-sources with the admin API key and confirm it returns a catalogs array listing each configured registry and catalog source with their descriptors (token, endpoint, cache layout)."
+    },
+    {
+      "author": "@bitgamma",
+      "commit": "fb8935641c29e942a4693ed649b3ade5e3278d4e",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3828,
+      "priority": "P1",
+      "text": "Register a model via POST /v1/models/register and verify the response body echoes back the registered model object including the checkpoint field."
+    },
+    {
+      "author": "@bitgamma",
+      "commit": "fb8935641c29e942a4693ed649b3ade5e3278d4e",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3828,
+      "priority": "P1",
+      "text": "Create an alias via POST /internal/aliases, then verify that calling GET /v1/models/{alias_name}, POST /api/chat with the alias model name, and POST /v1/messages with the alias all resolve to the target model."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "06cfa30653cc6aef48019b799ecfdfe3b513cf75",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3984,
+      "priority": "P1",
+      "text": "Open Settings > Chat > Save chat history in this browser on a fresh browser profile and confirm it is checked by default, then reload the app and verify conversations persist."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "06cfa30653cc6aef48019b799ecfdfe3b513cf75",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3984,
+      "priority": "P1",
+      "text": "Toggle Settings > Chat > Save chat history in this browser to unchecked, reload the app, and confirm that no new conversations are saved while previously saved ones remain accessible."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "dc695cf9e6ba7412b401b385fcbae8325723e46a",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3977,
+      "priority": "P1",
+      "text": "Open the Models page, click Load on a model, wait for it to start, then switch away and back: confirm the 'Engine update required' badge clears after the load completes without needing to press F5."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "dc695cf9e6ba7412b401b385fcbae8325723e46a",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3977,
+      "priority": "P1",
+      "text": "On the Backends page, install a backend for a model, return to the Models page and confirm the stale badge disappears immediately without F5."
+    },
+    {
+      "author": "@ramkrishna2910",
+      "commit": "d98e62998768199906e68823e33ae482d61e8bb0",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3985,
+      "priority": "P1",
+      "text": "Run `lemonade run K2-Horizon-7B-GGUF` and confirm the model downloads from HuggingFace (IFM/K2-Horizon-7B-GGUF), loads without error, and accepts a chat request."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "57e63bff98463a4ee4d523ad860a343aa318ac7c",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3986,
+      "priority": "P1",
+      "text": "Start a 128 GB Strix Halo (AMD APU) system with default kernel settings, load gpt-oss-120b and confirm it loads with ctx 4096 and chats successfully."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "57e63bff98463a4ee4d523ad860a343aa318ac7c",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3986,
+      "priority": "P1",
+      "text": "Start a 128 GB Strix Halo system, load Qwen3-Next-80B-A3B-Instruct and confirm it loads with ctx 114562 and chats successfully."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "57e63bff98463a4ee4d523ad860a343aa318ac7c",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3986,
+      "priority": "P1",
+      "text": "Start a 128 GB Strix Halo system, load Qwen3-Coder-Next and confirm it loads with ctx 262144 and chats successfully."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "57e63bff98463a4ee4d523ad860a343aa318ac7c",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3986,
+      "priority": "P1",
+      "text": "Call GET /v1/models/<id> for a model with ctx_size=-1 on a system with known memory, confirm resolved_ctx_size is a non-null integer (not null)."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "57e63bff98463a4ee4d523ad860a343aa318ac7c",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3986,
+      "priority": "P1",
+      "text": "Open a file with known-zero memory (or mock available_gb to 0) and verify that POST /v1/load of a large NPU model reaches the expected behavior without driver hang — note that the NPU safety guard follow-up was deferred."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "10166a85ba53d1b4b8b9dec8179b1acdbeef03c2",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3846,
+      "priority": "P2",
+      "text": "Open https://lemonade-server.ai/news/auto-bkc-vision.html in a browser and verify the hero animation cycles through all four agent/model/engine combinations (Hermes+Qwen3.8-Flash-Next+Halogen, Pi+Gemma 4+llama.cpp, AnythingLLM+Qwen3.6+FastFlowLM, DeepSeek Harness+DeepSeek-V4-Flash+DwarfStar4) and the status text updates correctly for each cycle."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "10166a85ba53d1b4b8b9dec8179b1acdbeef03c2",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3846,
+      "priority": "P2",
+      "text": "Resize the browser window to under 620px width and confirm the layout collapses: the hero animation stacks into a single column, the enabling technology table hides its header and stacks cells, and the flow-track columns stack vertically."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "10166a85ba53d1b4b8b9dec8179b1acdbeef03c2",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3846,
+      "priority": "P2",
+      "text": "Open the page in a browser with prefers-reduced-motion enabled (or use Firefox's responsive design mode with reduced motion) and verify all animations and transitions are disabled — the hero animation should show a static final state, and the enabling technology board should be immediately visible without the scroll-triggered fade-in."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "10166a85ba53d1b4b8b9dec8179b1acdbeef03c2",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3846,
+      "priority": "P2",
+      "text": "Verify the news feed at the Lemonade home page lists the new blog post with the correct title, date (October 20, 2026), description, and image."
+    },
+    {
+      "author": "@meghsat",
+      "commit": "9cfd620508a7820affecaaea074e20f7fce01a30",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3834,
+      "priority": "P2",
+      "text": "Open Settings and switch the locale to Chinese to verify the runtime locale switch and that translated UI labels render correctly."
+    },
+    {
+      "author": "@meghsat",
+      "commit": "9653d0a8317b62b13c7b480acb9ccf4730d46eaa",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3954,
+      "priority": "P2",
+      "text": "Run the server on a GRG-Halo device (device name containing \"8065s\") with llamacpp-rocm and confirm the backend is listed instead of showing \"unsupported\"."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "e4fa62ed40520ecd94f74c137534505eeb3cbe5c",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3962,
+      "priority": "P2",
+      "text": "Re-run the Lemonade App checks workflow on the merged commit to confirm the earlier failure was transient and does not recur."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "dc695cf9e6ba7412b401b385fcbae8325723e46a",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3977,
+      "priority": "P2",
+      "text": "Alt-Tab away from Lemonade then back: confirm only one /system-info request fires when no backend needs updating, and multiple requests fire when update_required backends are present."
+    }
+  ],
+  "commits_reviewed": 47,
+  "commits_unreviewed": 0,
+  "evidence": {
+    "blockers": "The GUI3 desktop app has no evidence of manual end-to-end exercise by a human — the primary user-facing artifact ships with six new workspaces. The resolved_ctx_size null API change is unverified on a release candidate build and could break existing clients. The Windows ROCm sd-cpp path-length refusal and router configuration-error handling have not been manually tested. The NPU safety-guard follow-up from the 128 GB Strix Halo regression fix is still deferred.",
+    "breaking_changes": "Five documented breaking changes ship in this release: resolved_ctx_size can be null (clients must handle non-integer), four POST-only routes now return 405 instead of 404, missing model field errors are now consistent across all model routes, form-field type conversion errors return 400 instead of 500, and streaming responses now cancel on TCP disconnect. Clients consuming these endpoints should audit their error handling. The /v1/models endpoint gains checkpoint_status[], update_available, and an opt-in include_paths query parameter — these are additive but existing clients that ignore unknown fields should continue working.",
+    "coverage": "Reviewed the full range from v2026.43.3 to the release head (47 commits across PRs 3762–3989). Coverage spans server refactor (route-class architecture, model manager rewrite), GUI3 desktop launch, micro-features (microphone dictation, browser key persistence, chat history defaults), backend support (Windows ROCm, GRG-Halo, K2-Horizon models), API changes (resolved_ctx_size null, output_index in responses, checkpoint_status, model-sources endpoint), CI/workflow fixes, documentation, and a blog post. No gaps identified in the commit review evidence.",
+    "manual_testing": "The full GUI3 interface across all six workspaces (Chat, Models, Backends, Apps, Monitor, Settings) needs end-to-end exercise with a running server — no human has done this. The API key persistence restoration in the web GUI (Remember API key checkbox and removal) needs verification against a release build due to localStorage security implications. Windows ROCm sd-cpp loading on Strix Halo hardware must be validated. The 128 GB Strix Halo regression fix (gpt-oss-120b, Qwen3-Next-80B, Qwen3-Coder-Next loading) should be re-checked on target hardware. Microphone dictation across five capability modes has only been self-tested by the author.",
+    "security": "API key persistence was restored to browser localStorage (web GUI) with documented same-origin XSS warning; desktop clients remain isolated to native settings. The model delete fix reads actual disk state instead of trusting the JSON catalog, reducing trust in potentially stale catalog data. The Model Manager refactor improved HTTP redirect handling (custom headers cut at cross-origin boundaries). The Windows ROCm DLL staging mitigates DLL hijacking by placing known-good AMD runtimes alongside the executable. No new supply-chain risks, credential handling changes, or unexpected network calls observed."
+  },
+  "generation_seconds": 202.8,
+  "head_sha": "b25833400715a58e6076466da44706d9085b9209",
+  "is_hotfix": false,
+  "last_stable_tag": "",
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-28T16:12:39+00:00"
+}
