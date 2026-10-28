@@ -1,0 +1,33 @@
+{
+  "author": "@fl0rianr",
+  "branch": "release-v2026.45",
+  "bucket": "v2026.45",
+  "cherry_picked_from": "2d4bd75d89ad7af48b0ebdea392f58c3a8d415ff",
+  "commit_sha": "958f5d994db6c3fae37f550ffcb4017fc86d90a8",
+  "committed_at": "2026-10-28T11:50:19-07:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The change only affects client-side GUI string rendering through the existing translation infrastructure. No API, CLI, config, or data format is altered.",
+    "documentation": "Not affected. This is a GUI string localization fix with no user-facing behavior change. No documentation update was needed or provided.",
+    "manual_release_testing": "Not required. The commit wraps existing display text in the i18n t() function and adds Chinese translations. This is a localization fix, not new behavior. The displayed strings are the same English text at runtime for default-language users.",
+    "post_approval_commits": "None. The PR had 2 commits (cae93cc and 7df6cfc), both authored by fl0rianr, and the approval came after both were already on the branch. No commits were added after approval.",
+    "review": "PR #3990 was approved by @meghsat with an 'LGTM!' review at 2026-10-28T16:27:27Z. No inline comments or requested changes. The PR also had review requests to @kpoineal (GUI, a11y) and @jeremyfowers (GUI design language), but no substantive review from them was recorded. @meghsat does not appear in the docs/dev/contribute.md maintainer subject areas table, so the review lacked explicit GUI domain expertise per project guidelines, though the change is small enough that this is low risk.",
+    "security": "No security concerns. The change only wraps existing hardcoded strings in a translation call and adds translation entries. No network calls, credential handling, code execution paths, or permission changes.",
+    "tests": "The PR description states npm run typecheck and npm run test were run. The change touches ChatView.tsx and i18n.tsx (translation string wiring), so unit-level test coverage is not expected; the app-regression-tests and Lemonade App checks workflows (both passed) provide integration-level verification."
+  },
+  "generation_seconds": 152.1,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-28T18:01:47Z",
+  "pr_number": 3990,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-28T18:55:35+00:00",
+  "reviewers": [
+    "@meghsat"
+  ],
+  "sha": "958f5d994db6c3fae37f550ffcb4017fc86d90a8",
+  "shout_outs": [],
+  "subject": "fix(gui): missing translation gaps (#3990)",
+  "summary": "Wraps 5 hardcoded English strings in ChatView.tsx (live transcription placeholder and 4 empty-state suggestion chip click-strings) with t() calls and adds the corresponding zh-CN translations in i18n.tsx.",
+  "verdict": "Clean",
+  "verdict_reason": "A minimal, well-scoped GUI localization fix with a single approval, passing CI, and no post-approval changes."
+}
