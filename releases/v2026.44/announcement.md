@@ -1,37 +1,38 @@
-## Lemonade v2026.44.0
+## Lemonade v2026.44.1
 
 ### ⚠️ These notes are AI generated and will be revised by a human ⚠️
 
-@everyone v2026.44 is out: `lemonade launch pi` picks up MCP mode and code mode with image input and tool-calling, sd-cpp ROCm is back on Windows, auto-tuned context sizing gets smarter, and a new LFM2.5 model joins the registry.
+@everyone v2026.44 is out: model loading on iGPU/APU systems is back, the stable diffusion ROCm backend works on Windows again, deleted models are properly cleaned up, and the new LFM2.5-24B model joins the server registry.
 
 ### Breaking Changes
 
-- The `/v1/models/{model}/options` endpoint can now return `null` for `resolved_ctx_size` instead of a number — this happens when automatic GPU sizing can't fit a valid context window — so make sure your clients handle the null case gracefully.
+- The `/v1/models/{model}/options` endpoint's `resolved_ctx_size` field can now return `null` when automatic GPU sizing can't fit a valid context — clients should handle that gracefully instead of expecting a number.
 
-### 🤖 MCP and code mode for `lemonade launch pi`
+### 🖥️ Model loading on shared-memory systems fixed
 
-`@sawansri` added `--mcp`, `--no-mcp`, and `--codemode` flags to `lemonade launch pi`, so you can now run pi with per-model context windows, image input, tool-calling, and the API key stays off disk by referencing `${LEMONADE_API_KEY}` in the config.
+`@jeremyfowers` fixed the context-size auto-tune to use total physical RAM instead of RAM-in-use for the iGPU/APU pool cap, so you can now load larger models on shared-memory systems without them getting stuck.
 
-### 🟣 sd-cpp ROCm on Windows is back
+### 💾 Stable diffusion ROCm backend restored on Windows
 
-`@sreeram-11` re-enabled the sd-cpp ROCm backend on Windows with a full HIP runtime DLL bundle and MAX_PATH guard, so model streaming on AMD integrated GPUs works without silent CPU fallback. Thanks to `@ramkrishna2910` for testing along the way!
+`@sreeram-11` re-enabled the sd-cpp ROCm backend on Windows by staging the full HIP runtime DLLs, so you're back to GPU acceleration instead of silently falling back to CPU.
 
-### 🧠 Auto-tuned context sizing gets a memory budget
+### 🗑️ Deleted models remove their files
 
-`@fl0hrnr` taught the context size tuner to reserve runtime buffer memory for discrete GPUs, unified-memory GPUs, and host backends — the sizing is more accurate now, and when automatic sizing can't fit a valid context, `resolved_ctx_size` returns null instead of guessing.
+`@meghsat` fixed model deletion so the files actually get removed from disk instead of leaving orphaned checkpoints behind.
 
-### 🌟 LFM2.5-24B-A2B-GGUF joins the registry
+### 🆕 LFM2.5-24B-A2B-GGUF in the registry
 
-`@sawansri` added the LFM2.5-24B-A2B-GGUF model to the catalog with a 14.9 GB checkpoint and labels for chat, reasoning, and tool-calling — grab it with `lemonade pull`.
+`@sawansri` added the LFM2.5-24B-A2B-GGUF model to the server model registry with chat, reasoning, and tool-calling labels — about 14.9 GB.
 
 ### Additional Improvements
 
-- `@sreeram-11` stopped Hugging Face rate limits from failing model pulls by disabling per-repo startup checks in CI mode and returning a 503 with Retry-After headers instead.
-- `@sreeram-11` fixed a SIGPIPE race condition in the launchpad-ppa CI workflow that was causing spurious failures.
-- `@sreeram-11` restructured the self-hosted inference matrix from one job per test suite to one job per runner class, cutting down on runner handoffs and CI drops.
-- `@meghsat` fixed model deletion so it no longer leaves orphaned files on disk.
-- `@bernardogv` fixed `*_bin` directory resolution so pointing the config at a directory actually works as documented.
-- `@bernardogv` documented the systemd `ProtectHome=yes` restriction on `.deb`/`.rpm` packages when using `extra_models_dir` under `/home`, including a drop-in solution.
-- `@jeremyfowers` published the auto-BKC vision blog post as an HTML article and set up automatic news publishing so posts go live the moment they merge.
+- `@sreeram-11` stopped Hugging Face rate limits from failing model pulls, now returning 503 with Retry-After headers instead.
+- `@sreeram-11` tightened the CI matrix to reduce GitHub Actions runner handoffs.
+- `@QuTosh` added 176 model-backed conformance test cases across L0a, L2, and L3 tiers, with thanks to `@fl0rianr`.
+- `@iswaryaalex` added the halo-box-strix backend fork to the benchmark regression CI.
+- `@bernardogv` documented the systemd ProtectHome=yes restriction on extra_models_dir when used under /home.
+- `@sawansri` added `--mcp`, `--no-mcp`, and `--codemode` flags to `lemonade launch pi`.
+- `@bernardogv` fixed `*_bin` config patterns pointing at directories so they resolve correctly.
+- `@jeremyfowers` published the auto-opt vision blog post and added a news-publishing workflow.
 
-Grab v2026.44.0 from [GitHub Releases](https://github.com/lemonade-sdk/lemonade/releases) and I'd love to hear what you think — drop your feedback in #general!
+Grab v2026.44.1 from [GitHub Releases](https://github.com/lemonade-sdk/lemonade/releases) and tell me what you think!
