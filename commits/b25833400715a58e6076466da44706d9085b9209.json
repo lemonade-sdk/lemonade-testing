@@ -1,0 +1,32 @@
+{
+  "author": "@iswaryaalex",
+  "branch": "main",
+  "bucket": "v2026.45",
+  "commit_sha": "b25833400715a58e6076466da44706d9085b9209",
+  "committed_at": "2026-10-28T14:54:16+00:00",
+  "evidence": {
+    "api_compatibility": "No API, CLI, config, or behavior changes. This is a documentation-only change and introduces no breaking changes.",
+    "documentation": "This PR is itself a documentation change. It adds a Release Admin Access section listing four required permissions (SignPath, release branch push, release tag push, Discord #announcements) and clarifies that tools/release.py must be run locally with your own git credentials on origin. The new text is consistent with the rest of the release.md document. The CodeRabbit finding about --remote and version calculation is a valid observation about the script itself but falls outside the scope of this documentation update; the script would need a separate PR to fix.",
+    "manual_release_testing": "The change is purely to documentation. A human exercising the release process would encounter the clarified text, but no behavior change occurs. No manual testing is needed.",
+    "post_approval_commits": "No commits were added after approval. The PR contained a single commit (67f4945) which was the sole commit approved by @jeremyfowers. The merge commit (b258334) is the squash/merge of that single commit.",
+    "review": "The PR was approved by @jeremyfowers (admin maintainer with CI and governance subject-area expertise) on 2026-10-28T13:08:51Z with the comment 'Thanks for these updates, it will make things much smoother for the next person!' The review was appropriate — a subject-matter expert in CI/governance reviewed documentation changes to the release process. CodeRabbit flagged one concern: tools/release.py calculates versions from origin/main rather than the --remote-selected branch, meaning --remote could produce a tag number that diverges from the tested candidate. This is a pre-existing bug in the script that the documentation does not fix, but it is a corner case for operators using a non-default upstream remote and does not affect the standard workflow.",
+    "security": "No security concerns. The PR does not add or modify code, credentials handling, network calls, or permissions. It documents existing permissions that release admins must hold.",
+    "tests": "No automated tests apply to this PR — it changes only docs/dev/release.md (13 lines added, 1 removed). Documentation updates of this kind do not carry unit or integration tests."
+  },
+  "generation_seconds": 146.0,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-28T15:41:29Z",
+  "pr_number": 3979,
+  "range_start": "v2026.43.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-28T15:45:56+00:00",
+  "reviewers": [
+    "@jeremyfowers"
+  ],
+  "sha": "b25833400715a58e6076466da44706d9085b9209",
+  "shout_outs": [],
+  "subject": "update release process (#3979)",
+  "summary": "Enhances the release guide by documenting release admin access requirements (SignPath, release branch/tag push, Discord announcements) and clarifying that tools/release.py must be run locally on the machine rather than in CI, including a note about using --remote for non-default upstream remotes.",
+  "verdict": "Clean",
+  "verdict_reason": "This is a documentation-only PR that clarifies release admin permissions and local execution of the release script; it was reviewed by an admin maintainer with CI/governance expertise and merged with all CI checks passing."
+}
