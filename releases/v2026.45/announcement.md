@@ -1,41 +1,40 @@
-## Lemonade v2026.45.2
+## Lemonade v2026.45.3
 
 ### ⚠️ These notes are AI generated and will be revised by a human ⚠️
 
-@everyone v2026.45.2 is here: GUI3 has landed as a full rewrite, auto-tuned context sizing got a runtime memory budget, several new models join the catalog, and the desktop app remembers your API key again.
+@everyone v2026.45 is out: the Lemonade app gets a complete redesign with six workspaces and multi-provider model search, five new models land in the registry, 128 GB Strix Halo systems finally stop choking on big models, and update progress is visible right in the app.
 
 ### Breaking Changes
 
-- `GET /v1/models/{model}/options` now returns `null` for `resolved_ctx_size` when automatic GPU sizing can't fit a valid context window — clients that expect an integer should handle the null case.
-- GET on POST-only paths (`/slots/{id}`, `/jobs/{id}/pause|interrupt|resume`, `/models/register`) now returns 405 instead of 404 — if you were using 404 as a "not found" signal, update your error handling.
-- A request missing the model field now raises `Missing model field in request` consistently across every route (chat, completions, embeddings, responses, rerank) — if your error handling depended on route-specific messages, adjust accordingly.
-- Form-encoded requests with invalid field types return 400 instead of 500 — clients that expect 500 for malformed input should update their error handling.
-- Streaming responses now carry a cancel token so the server stops sending after a TCP disconnect — implement token-based cancellation for abandoned streams.
+- `GET /v1/models/{model}/options` can now return `null` for `resolved_ctx_size` when automatic context sizing has nothing valid to give — clients that assumed an integer will need to handle `null`.
+- Hitting POST-only paths with `GET` (like `slots/{id}` or `models/register`) now returns 405 instead of 404 — update any clients that depended on the 404.
+- A request missing the `model` field now raises `"Missing model field in request"` consistently across every route (chat, completions, embeddings, responses, rerank), so the old inconsistent messages are gone.
+- Form-encoded requests with invalid field types (e.g. a non-numeric temperature on transcription) return 400 instead of 500 — catch 400 for this case now.
+- Streaming responses carry a cancel token that stops the server from sending after a TCP disconnect.
 
-### 🖥️ GUI3, the full desktop rewrite
+### The Lemonade app, redesigned from scratch
 
-`@meghsat` (with `@kpoineal`) shipped a complete desktop and web client overhauling the entire interface: six workspaces (Chat, Models, Backends, Apps, Monitor, Settings), model search across providers, a visual router policy editor, and Chinese localization.
+`@meghsat` rebuilt the entire app as six workspaces — Chat, Models, Backends, Apps, Monitor, Settings — with multi-provider model search, a visual router policy editor, Chinese localization, and a whole lot of polish along the way.
 
-### 🧠 Auto-tuned context sizing with a runtime memory budget
+### Five new models for K2-Horizon and Flint
 
-`@fl0hrnr` taught the tuner to reserve runtime buffer memory for discrete and unified-memory GPUs, and when automatic sizing can't fit a valid context, `resolved_ctx_size` now returns null instead of guessing. A 128 GB Strix Halo fix also restored loading for gpt-oss-120b and Qwen3-Next-80B.
+`@ramkrishna2910` added five K2-Horizon GGUF models (0.9B, 3.7B, 7B, 32B, and MoVA-36B-A4B) and `@sawansri` added Flint-GGUF to the registry.
 
-### 📦 Model catalog expands
+### Strix Halo 128 GB models actually start now
 
-`@sawansri` added LFM2.5-24B-A2B-GGUF and Flint-GGUF, `@ramkrishna2910` (with `@mvillmow`) added five K2-Horizon GGUF models, `@meghsat` added GRG-Halo GPU support, and `@lucbruni-amd` fixed the gpt-oss-20b-MXFP4 loader to stop picking up stale draft files.
+`@jeremyfowers` fixed the shared-memory calculation so models like `gpt-oss-120b`, `Qwen3-Next-80B`, and `Qwen3-Coder-Next` load reliably on 128 GB Strix Halo systems — no more failing to start.
 
-### 💾 Chat history and API key persistence restored
+### See update progress right in the app
 
-`@fl0hrnr` (with `@bitgamma`) made browser chat history the default and brought back API key persistence for both browser and native clients — your keys are remembered again, and the remembered checkbox actually remembers.
+`@fl0rianr` replaced per-model pulls with server-owned sync jobs, so model and backend updates show progress directly in the app with a compact indicator in the model pill.
 
 ### Additional Improvements
 
-- `@meghsat` fixed model deletion so it no longer leaves orphaned files on disk.
-- `@sreeram-11` stopped Hugging Face rate limits from failing model pulls by returning 503 with Retry-After headers instead.
-- `@sreeram-11` re-enabled the sd-cpp ROCm backend on Windows with a full HIP runtime DLL bundle so model streaming on AMD integrated GPUs works.
-- `@sawansri` added `--mcp`, `--no-mcp`, and `--codemode` flags to `lemonade launch pi` for per-model context windows, image input, and tool-calling.
-- `@bernardogv` fixed `*_bin` directory resolution so pointing the config at a directory actually works as documented.
-- `@bernardogv` documented the systemd `ProtectHome=yes` restriction on `.deb`/`.rpm` packages with a drop-in solution.
-- `@jeremyfowers` and `@fl0hrnr` rewrote the HTTP server into a route-class architecture with generated API docs and drift checking.
+- `@fl0rianr` fixed telemetry to emit `null` instead of `0.0` for unmeasured timing fields, preventing upstream gauges from poisoning `Prometheus`.
+- `@meghsat` added the GRG-Halo GPU device name so it's recognized instead of reported as unsupported.
+- `@fl0rianr` added a compact progress indicator for backend installs and model downloads during chat preparation, and unified ROCm backend job IDs.
+- `@fl0rianr` fixed API key persistence in the browser, made chat history persistence enabled by default, and added an Update button to the model detail panel.
+- `@fl0rianr` added automated contrast checks across five primary views and fixed two WCAG AA violations in light mode.
+- `@ramkrishna2910` fixed `*_bin` override examples in the docs to show full executable paths, and `@ramkrishs` distinguished closed connections from server-not-running in the CLI.
 
-Grab v2026.45.2 from [GitHub Releases](https://github.com/lemonade-sdk/lemonade/releases) — let me know in #general what you're thinking!
+Grab v2026.45.3 from [GitHub Releases](https://github.com/lemonade-sdk/lemonade/releases) — I'll save a longer write-up for the blog, but tell me in #general what you think of the new look!
