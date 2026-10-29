@@ -1,0 +1,39 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.46",
+  "commit_sha": "c306b768e0bc185650e47b3560c6aa6228f7f941",
+  "committed_at": "2026-10-29T17:40:54+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The thenoise display_name was simplified from \"TheNoise ROCm\" to \"TheNoise\" and a new bin_variants entry `cuda` was appended to the existing `rocm`. The version pin for thenoise was bumped from 0.10.1 to 0.12.1 for both roc and cuda entries — this is a version upgrade, not a breaking API change, but the bump should be verified against the actual thenoise-0.12.1 release. The PR declares no breaking changes and the diff confirms backward-compatible additions only.",
+    "documentation": "Documentation is updated across five locations: README.md (CUDA row added to the image-generation table), docs/dev/backends-reference.md (CUDA backend tier table row and updated display name), docs/guide/cli.md (thenoise section heading updated), docs/guide/configuration/README.md (new `cuda_bin` config option documented), and src/cpp/resources/backend_versions.json (comment updated to describe the shared release asset naming convention). All doc changes are consistent with the code changes.",
+    "manual_release_testing": "The commit introduces two user-visible surfaces — the `thenoise` `cuda_bin` config option (defaulting to `builtin`) and the `cuda` backend variant for the thenoise recipe — but no evidence shows a non-author exercised either end-to-end before merge. CI passed (C++ build, Launchpad PPA, llama.cpp validation all green), but CI does not run TheNoise CUDA. The author tested locally on RTX 4090/5090 but used a TheNoise fork's assets; the release-qualified asset version was not available at the time of author testing, as the PR notes a merge dependency on the next official thenoise release containing the CUDA assets.",
+    "post_approval_commits": "One commit (03dc3485) was added after the first and only human approval at 2026-10-29T15:19:12Z. Its subject is 'fix(thenoise): restrict linux to x86'. It wraps the CUDA backend row in thenoise.h with `#if defined(__x86_64__)` guards, updates the install_params check from `__linux__` to `__linux__ && __x86_64__`, and tightens the error message and test preprocessor conditions accordingly. This is a narrow safety fix that prevents ARM64 or non-x86 hosts from attempting a CUDA install that would fail. It does not add new behavior, does not change the approved scope, and does not weaken tests.",
+    "review": "PR #4001 received a substantive review from @bitgamma, who is listed as a maintainer with thenoise subject-area expertise. @bitgamma initially requested changes, suggesting the PR be split into two PRs (version bump and device-argument addition). The author merged those changes back into a single PR and resubmitted. @bitgamma then approved with \"LGTM\". The PR was also reviewed by the automated CodeRabbit bot, which flagged several issues (CUDA architecture mismatch on mixed-architecture hosts, ROCm device-index validation, GPU probe performance on every upscale call); all were marked as addressed in subsequent commits. Only one human review is present and it spans the full diff. Requested reviewers @kpoineal and @jeremyfowers did not submit reviews.",
+    "security": "No security concerns. The commit adds no new network call paths, credential handling, or execution of untrusted input. It references the upstream `lemonade-sdk/thenoise` GitHub release for asset downloads, which is the established download pattern. The CUDA code path adds GPU-device-index validation and UUID-based `CUDA_VISIBLE_DEVICES` masking, which are hardening improvements.",
+    "tests": "The author reports local testing on RTX 4090 and RTX 5090 GPUs using CUDA assets from a TheNoise fork. The diff adds a C++ unit test in test/cpp/test_runtime_config_backend_validation.cpp that calls TheNoiseServer::get_install_params(\"cuda\", ...) on Linux x86_64 and verifies the correct archive filename, and on non-matching platforms verifies the call rejects with a runtime error. The test also adds config validation entries for `thenoise.cuda_bin`. No end-to-end test is present, which is typical for a new backend add-on."
+  },
+  "generation_seconds": 292.3,
+  "maintainer_todos": [
+    {
+      "text": "Run `lemonade thenoise --backend cuda` on a Linux x86_64 host with an NVIDIA GPU and confirm the server starts, loads a model, and completes an image-generation request without error."
+    },
+    {
+      "text": "Set `thenoise.cuda_bin` to `builtin` and `thenoise.backend` to `cuda` in the config file, then confirm the server selects the CUDA path on startup and the thenoise recipe works."
+    }
+  ],
+  "merge_date": "2026-10-29T19:00:43Z",
+  "pr_number": 4001,
+  "range_start": "v2026.44.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-29T19:07:29+00:00",
+  "reviewers": [
+    "@bitgamma"
+  ],
+  "sha": "c306b768e0bc185650e47b3560c6aa6228f7f941",
+  "shout_outs": [],
+  "subject": "feat(backends): add TheNoise CUDA support (#4001)",
+  "summary": "Adds TheNoise CUDA backend for Linux x86_64 using the portable NVIDIA bundle from the thenoise-0.12.1 release, while retaining existing ROCm support.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "A user-visible feature adding a new CUDA backend and a new config option was merged without evidence that a non-author manually exercised it end-to-end before release."
+}
