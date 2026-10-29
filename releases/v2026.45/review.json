@@ -11,16 +11,6 @@
   "candidate_issues": [],
   "checklist": [
     {
-      "author": "@sreeram-11",
-      "commit": "1ba79d48ff6945942e01abf8408dcc4741065d83",
-      "platforms": [
-        "Windows"
-      ],
-      "pr_number": 3718,
-      "priority": "P0",
-      "text": "On a Windows machine with a Windows ROCm installation and an sd-cpp backend installed, start lemond with log_level=debug, load SD-Turbo with the rocm backend, and confirm the server log shows \"Initializing backend: ROCm0\" and the image generation completes in seconds rather than failing to the CPU."
-    },
-    {
       "author": "@meghsat",
       "commit": "9cfd620508a7820affecaaea074e20f7fce01a30",
       "platforms": [
@@ -54,6 +44,8 @@
       "author": "@jeremyfowers",
       "commit": "57e63bff98463a4ee4d523ad860a343aa318ac7c",
       "platforms": [
+        "Ubuntu PPA",
+        "Snap",
         "Fedora",
         "Debian"
       ],
@@ -65,6 +57,8 @@
       "author": "@jeremyfowers",
       "commit": "57e63bff98463a4ee4d523ad860a343aa318ac7c",
       "platforms": [
+        "Ubuntu PPA",
+        "Snap",
         "Fedora",
         "Debian"
       ],
@@ -76,112 +70,14 @@
       "author": "@jeremyfowers",
       "commit": "57e63bff98463a4ee4d523ad860a343aa318ac7c",
       "platforms": [
+        "Ubuntu PPA",
+        "Snap",
         "Fedora",
         "Debian"
       ],
       "pr_number": 3986,
       "priority": "P0",
       "text": "Start a 128 GB Strix Halo system, load Qwen3-Coder-Next and confirm it loads with ctx 262144 and chats successfully."
-    },
-    {
-      "author": "@jeremyfowers",
-      "commit": "57e63bff98463a4ee4d523ad860a343aa318ac7c",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3986,
-      "priority": "P0",
-      "text": "Call GET /v1/models/<id> for a model with ctx_size=-1 on a system with known memory, confirm resolved_ctx_size is a non-null integer (not null)."
-    },
-    {
-      "author": "@meghsat",
-      "commit": "0100ec6ddd614bf8080d22ab3a74c648b0a4366a",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3765,
-      "priority": "P1",
-      "text": "Install a shared model family (e.g. Anima-aesthetic, Anima-base, Anima-turbo that share text encoder and VAE files), delete one variant, and confirm the shared text encoder and VAE files are also removed from the models cache directory."
-    },
-    {
-      "author": "@fl0rianr",
-      "commit": "333469dd036a457dbb3c24054c867cb0d617a9e0",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3862,
-      "priority": "P1",
-      "text": "Run the Lemonade server and load a model on a system with limited GPU memory (or simulate it) and confirm the /v1/models/{model}/options endpoint returns {\"resolved_ctx_size\": null} instead of a number."
-    },
-    {
-      "author": "@fl0rianr",
-      "commit": "333469dd036a457dbb3c24054c867cb0d617a9e0",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3862,
-      "priority": "P1",
-      "text": "Write a small HTTP client that calls /v1/models/{model}/options and verify it handles the null resolved_ctx_size without crashing, since existing clients may not expect a non-numeric value."
-    },
-    {
-      "author": "@sreeram-11",
-      "commit": "1ba79d48ff6945942e01abf8408dcc4741065d83",
-      "platforms": [
-        "Windows"
-      ],
-      "pr_number": 3718,
-      "priority": "P1",
-      "text": "On a Windows machine where LEMONADE_CACHE_DIR resolves to a path that, combined with the installed ROCm tree depth, exceeds 259 characters, start lemond and load any sd-cpp rocm model; confirm it fails with a ConfigurationException mentioning the cache directory length and that the error message suggests rocm_install_method=tarball."
-    },
-    {
-      "author": "@sreeram-11",
-      "commit": "1ba79d48ff6945942e01abf8408dcc4741065d83",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3718,
-      "priority": "P1",
-      "text": "Start lemond, load a model on the rocm backend, then attempt to load a second model with a deliberately invalid configuration; confirm the router throws the error immediately and the first loaded model remains active."
-    },
-    {
-      "author": "@sawansri",
-      "commit": "3614598dc8190d0dc157598d3dea3fccc964d654",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3786,
-      "priority": "P1",
-      "text": "Run `lemonade launch pi --mcp --codemode` against a model and confirm the pi agent starts, pi's mcp.json contains a lemonade server entry with the correct URL, and pi's models.json includes contextWindow and maxTokens for the model."
-    },
-    {
-      "author": "@sawansri",
-      "commit": "3614598dc8190d0dc157598d3dea3fccc964d654",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3786,
-      "priority": "P1",
-      "text": "Run `lemonade launch pi --api-key mykey` and verify that pi's process environment contains LEMONADE_API_KEY set to mykey, while pi's models.json contains \"apiKey\": \"${LEMONADE_API_KEY}\" rather than the plaintext key."
-    },
-    {
-      "author": "@sawansri",
-      "commit": "3614598dc8190d0dc157598d3dea3fccc964d654",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3786,
-      "priority": "P1",
-      "text": "Run `lemonade launch pi --model <a-vision-model>` and confirm pi's models.json sets \"input\": [\"text\", \"image\"] for that model, then verify the agent accepts an image paste."
-    },
-    {
-      "author": "@sawansri",
-      "commit": "3614598dc8190d0dc157598d3dea3fccc964d654",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3786,
-      "priority": "P1",
-      "text": "Run `lemonade launch pi --no-mcp` when a lemonade entry already exists in mcp.json and confirm the entry is removed and pi starts."
     },
     {
       "author": "@meghsat",
@@ -221,46 +117,6 @@
       ],
       "pr_number": 3771,
       "priority": "P1",
-      "text": "Hit every POST-only route with a GET request (slots/{id}, jobs/{id}/pause|interrupt|resume, models/register) and confirm each answers 405 instead of the old 404."
-    },
-    {
-      "author": "@jeremyfowers",
-      "commit": "9a9d43abc622e844525f9a6fa264100b9bfe928e",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3771,
-      "priority": "P1",
-      "text": "Send a model request to /v1/chat/completions, /v1/completions, /v1/embeddings, /v1/responses, and /v1/rerank without a model field and confirm each returns the consistent 'Missing model field in request' error."
-    },
-    {
-      "author": "@jeremyfowers",
-      "commit": "9a9d43abc622e844525f9a6fa264100b9bfe928e",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3771,
-      "priority": "P1",
-      "text": "Send a form-encoded request to a transcription endpoint with a non-numeric temperature (for example temperature=abc) and confirm it returns 400 instead of the old 500."
-    },
-    {
-      "author": "@jeremyfowers",
-      "commit": "9a9d43abc622e844525f9a6fa264100b9bfe928e",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3771,
-      "priority": "P1",
-      "text": "Open a streaming chat/completions SSE connection, then drop the TCP connection mid-stream and confirm the server stops sending and the client receives the cancel."
-    },
-    {
-      "author": "@jeremyfowers",
-      "commit": "9a9d43abc622e844525f9a6fa264100b9bfe928e",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3771,
-      "priority": "P1",
       "text": "Load a model via an alias (for example user/my-model aliased to a registered model) and send a request through the alias name to /v1/chat/completions, confirming the alias resolves and the request reaches the correct model."
     },
     {
@@ -277,7 +133,12 @@
       "author": "@fl0rianr",
       "commit": "83cd48bf03fac09f65f48c3fe7f9c2bd8325192a",
       "platforms": [
-        "all"
+        "Windows",
+        "Ubuntu PPA",
+        "Snap",
+        "macOS",
+        "Fedora",
+        "Debian"
       ],
       "pr_number": 3951,
       "priority": "P1",
@@ -287,7 +148,12 @@
       "author": "@fl0rianr",
       "commit": "83cd48bf03fac09f65f48c3fe7f9c2bd8325192a",
       "platforms": [
-        "all"
+        "Windows",
+        "Ubuntu PPA",
+        "Snap",
+        "macOS",
+        "Fedora",
+        "Debian"
       ],
       "pr_number": 3951,
       "priority": "P1",
@@ -297,7 +163,12 @@
       "author": "@fl0rianr",
       "commit": "83cd48bf03fac09f65f48c3fe7f9c2bd8325192a",
       "platforms": [
-        "all"
+        "Windows",
+        "Ubuntu PPA",
+        "Snap",
+        "macOS",
+        "Fedora",
+        "Debian"
       ],
       "pr_number": 3951,
       "priority": "P1",
@@ -307,7 +178,12 @@
       "author": "@fl0rianr",
       "commit": "83cd48bf03fac09f65f48c3fe7f9c2bd8325192a",
       "platforms": [
-        "all"
+        "Windows",
+        "Ubuntu PPA",
+        "Snap",
+        "macOS",
+        "Fedora",
+        "Debian"
       ],
       "pr_number": 3951,
       "priority": "P1",
@@ -317,7 +193,12 @@
       "author": "@fl0rianr",
       "commit": "83cd48bf03fac09f65f48c3fe7f9c2bd8325192a",
       "platforms": [
-        "all"
+        "Windows",
+        "Ubuntu PPA",
+        "Snap",
+        "macOS",
+        "Fedora",
+        "Debian"
       ],
       "pr_number": 3951,
       "priority": "P1",
@@ -327,7 +208,12 @@
       "author": "@fl0rianr",
       "commit": "83cd48bf03fac09f65f48c3fe7f9c2bd8325192a",
       "platforms": [
-        "all"
+        "Windows",
+        "Ubuntu PPA",
+        "Snap",
+        "macOS",
+        "Fedora",
+        "Debian"
       ],
       "pr_number": 3951,
       "priority": "P1",
@@ -337,7 +223,12 @@
       "author": "@fl0rianr",
       "commit": "83cd48bf03fac09f65f48c3fe7f9c2bd8325192a",
       "platforms": [
-        "all"
+        "Windows",
+        "Ubuntu PPA",
+        "Snap",
+        "macOS",
+        "Fedora",
+        "Debian"
       ],
       "pr_number": 3951,
       "priority": "P1",
@@ -347,7 +238,12 @@
       "author": "@fl0rianr",
       "commit": "83cd48bf03fac09f65f48c3fe7f9c2bd8325192a",
       "platforms": [
-        "all"
+        "Windows",
+        "Ubuntu PPA",
+        "Snap",
+        "macOS",
+        "Fedora",
+        "Debian"
       ],
       "pr_number": 3951,
       "priority": "P1",
@@ -367,7 +263,12 @@
       "author": "@fl0rianr",
       "commit": "e4fa62ed40520ecd94f74c137534505eeb3cbe5c",
       "platforms": [
-        "macOS"
+        "Windows",
+        "Ubuntu PPA",
+        "Snap",
+        "macOS",
+        "Fedora",
+        "Debian"
       ],
       "pr_number": 3962,
       "priority": "P1",
@@ -377,7 +278,12 @@
       "author": "@fl0rianr",
       "commit": "e4fa62ed40520ecd94f74c137534505eeb3cbe5c",
       "platforms": [
-        "macOS"
+        "Windows",
+        "Ubuntu PPA",
+        "Snap",
+        "macOS",
+        "Fedora",
+        "Debian"
       ],
       "pr_number": 3962,
       "priority": "P1",
@@ -447,7 +353,12 @@
       "author": "@fl0rianr",
       "commit": "dc695cf9e6ba7412b401b385fcbae8325723e46a",
       "platforms": [
-        "all"
+        "Windows",
+        "Ubuntu PPA",
+        "Snap",
+        "macOS",
+        "Fedora",
+        "Debian"
       ],
       "pr_number": 3977,
       "priority": "P1",
@@ -457,7 +368,12 @@
       "author": "@fl0rianr",
       "commit": "dc695cf9e6ba7412b401b385fcbae8325723e46a",
       "platforms": [
-        "all"
+        "Windows",
+        "Ubuntu PPA",
+        "Snap",
+        "macOS",
+        "Fedora",
+        "Debian"
       ],
       "pr_number": 3977,
       "priority": "P1",
@@ -467,7 +383,12 @@
       "author": "@ramkrishna2910",
       "commit": "d98e62998768199906e68823e33ae482d61e8bb0",
       "platforms": [
-        "all"
+        "Windows",
+        "Ubuntu PPA",
+        "Snap",
+        "macOS",
+        "Fedora",
+        "Debian"
       ],
       "pr_number": 3985,
       "priority": "P1",
@@ -477,6 +398,18 @@
       "author": "@jeremyfowers",
       "commit": "57e63bff98463a4ee4d523ad860a343aa318ac7c",
       "platforms": [
+        "all"
+      ],
+      "pr_number": 3986,
+      "priority": "P1",
+      "text": "Call GET /v1/models/<id> for a model with ctx_size=-1 on a system with known memory, confirm resolved_ctx_size is a non-null integer (not null)."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "57e63bff98463a4ee4d523ad860a343aa318ac7c",
+      "platforms": [
+        "Ubuntu PPA",
+        "Snap",
         "Fedora",
         "Debian"
       ],
@@ -488,7 +421,12 @@
       "author": "@fl0rianr",
       "commit": "aab9c362ebe0e506b1b70026621490d6b41d548b",
       "platforms": [
-        "all"
+        "Windows",
+        "Ubuntu PPA",
+        "Snap",
+        "macOS",
+        "Fedora",
+        "Debian"
       ],
       "pr_number": 3957,
       "priority": "P1",
@@ -498,51 +436,31 @@
       "author": "@fl0rianr",
       "commit": "aab9c362ebe0e506b1b70026621490d6b41d548b",
       "platforms": [
-        "all"
+        "Windows",
+        "Ubuntu PPA",
+        "Snap",
+        "macOS",
+        "Fedora",
+        "Debian"
       ],
       "pr_number": 3957,
       "priority": "P1",
       "text": "With the same model selected, click Update All and confirm the toast shows Updating… and names the model being synced."
     },
     {
-      "author": "@jeremyfowers",
-      "commit": "10166a85ba53d1b4b8b9dec8179b1acdbeef03c2",
+      "author": "@fl0rianr",
+      "commit": "aab9c362ebe0e506b1b70026621490d6b41d548b",
       "platforms": [
-        "all"
+        "Windows",
+        "Ubuntu PPA",
+        "Snap",
+        "macOS",
+        "Fedora",
+        "Debian"
       ],
-      "pr_number": 3846,
-      "priority": "P2",
-      "text": "Open https://lemonade-server.ai/news/auto-bkc-vision.html in a browser and verify the hero animation cycles through all four agent/model/engine combinations (Hermes+Qwen3.8-Flash-Next+Halogen, Pi+Gemma 4+llama.cpp, AnythingLLM+Qwen3.6+FastFlowLM, DeepSeek Harness+DeepSeek-V4-Flash+DwarfStar4) and the status text updates correctly for each cycle."
-    },
-    {
-      "author": "@jeremyfowers",
-      "commit": "10166a85ba53d1b4b8b9dec8179b1acdbeef03c2",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3846,
-      "priority": "P2",
-      "text": "Resize the browser window to under 620px width and confirm the layout collapses: the hero animation stacks into a single column, the enabling technology table hides its header and stacks cells, and the flow-track columns stack vertically."
-    },
-    {
-      "author": "@jeremyfowers",
-      "commit": "10166a85ba53d1b4b8b9dec8179b1acdbeef03c2",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3846,
-      "priority": "P2",
-      "text": "Open the page in a browser with prefers-reduced-motion enabled (or use Firefox's responsive design mode with reduced motion) and verify all animations and transitions are disabled — the hero animation should show a static final state, and the enabling technology board should be immediately visible without the scroll-triggered fade-in."
-    },
-    {
-      "author": "@jeremyfowers",
-      "commit": "10166a85ba53d1b4b8b9dec8179b1acdbeef03c2",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3846,
-      "priority": "P2",
-      "text": "Verify the news feed at the Lemonade home page lists the new blog post with the correct title, date (October 20, 2026), description, and image."
+      "pr_number": 3957,
+      "priority": "P1",
+      "text": "Disconnect the app from the server and reconnect; confirm the sync status toast disappears and no stale error or result persists."
     },
     {
       "author": "@meghsat",
@@ -555,10 +473,52 @@
       "text": "Open Settings and switch the locale to Chinese to verify the runtime locale switch and that translated UI labels render correctly."
     },
     {
+      "author": "@jeremyfowers",
+      "commit": "9a9d43abc622e844525f9a6fa264100b9bfe928e",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3771,
+      "priority": "P2",
+      "text": "Hit every POST-only route with a GET request (slots/{id}, jobs/{id}/pause|interrupt|resume, models/register) and confirm each answers 405 instead of the old 404."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "9a9d43abc622e844525f9a6fa264100b9bfe928e",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3771,
+      "priority": "P2",
+      "text": "Send a model request to /v1/chat/completions, /v1/completions, /v1/embeddings, /v1/responses, and /v1/rerank without a model field and confirm each returns the consistent 'Missing model field in request' error."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "9a9d43abc622e844525f9a6fa264100b9bfe928e",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3771,
+      "priority": "P2",
+      "text": "Send a form-encoded request to a transcription endpoint with a non-numeric temperature (for example temperature=abc) and confirm it returns 400 instead of the old 500."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "9a9d43abc622e844525f9a6fa264100b9bfe928e",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3771,
+      "priority": "P2",
+      "text": "Open a streaming chat/completions SSE connection, then drop the TCP connection mid-stream and confirm the server stops sending and the client receives the cancel."
+    },
+    {
       "author": "@meghsat",
       "commit": "9653d0a8317b62b13c7b480acb9ccf4730d46eaa",
       "platforms": [
+        "Windows",
         "Ubuntu PPA",
+        "Snap",
         "Fedora",
         "Debian"
       ],
@@ -590,37 +550,32 @@
       "author": "@fl0rianr",
       "commit": "dc695cf9e6ba7412b401b385fcbae8325723e46a",
       "platforms": [
-        "all"
+        "Windows",
+        "Ubuntu PPA",
+        "Snap",
+        "macOS",
+        "Fedora",
+        "Debian"
       ],
       "pr_number": 3977,
       "priority": "P2",
       "text": "Alt-Tab away from Lemonade then back: confirm only one /system-info request fires when no backend needs updating, and multiple requests fire when update_required backends are present."
-    },
-    {
-      "author": "@fl0rianr",
-      "commit": "aab9c362ebe0e506b1b70026621490d6b41d548b",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 3957,
-      "priority": "P2",
-      "text": "Disconnect the app from the server and reconnect; confirm the sync status toast disappears and no stale error or result persists."
     }
   ],
-  "commits_reviewed": 49,
+  "commits_reviewed": 35,
   "commits_unreviewed": 0,
   "evidence": {
-    "blockers": "Strix Halo models (57e63bf) must be verified on 128 GB APU hardware before ship — this is a v2026.44 regression fix. The Windows ROCm re-enablement (1ba79d4) needs a real ROCm-capable Windows machine. The full GUI3 workspace tour (9cfd620-1) and API key persistence (62e4aa6) need end-to-end exercise on a compiled candidate.",
-    "breaking_changes": "The resolved_ctx_size null change requires clients to handle non-numeric values; the GET→405 change affects scripts expecting 404; the consistent 'Missing model field' message replaces varied errors; form encoding returns 400 instead of 500; and streaming responses now carry cancel tokens that terminate the stream on disconnect.",
-    "coverage": "All 49 commits from v2026.43.3 to aab9c362 reviewed; 32 items rated from 12 commits with 'Needs Attention' verdicts plus 4 clean model additions, 2 CI-only fixes, 1 benchmark fix, 1 ROCm tag fix, and 10 other clean changes with no maintainer to-dos.",
-    "manual_testing": "Strix Halo systems (Fedora/Debian) for three large model loads and the resolved_ctx_size integer return. Windows ROCm machine for sd-cpp image generation and MAX_PATH refusal. Tauri desktop app with six workspaces and server connection. Web GUI with Remember API key checkbox in both checked and unchecked states. Microphone dictation across five capability modes. Model updates via the new Update button and Update All.",
-    "security": "No new credential handling, network calls, or supply-chain changes observed. The API key persistence (62e4aa6) stores keys in browser localStorage with documented same-origin XSS risk for web clients. The model deletion fix (0100ec6) reads from disk instead of trusting the JSON catalog, reducing trust in untrusted data. The ROCm DLL staging (1ba79d4) mitigates Windows DLL hijacking by bundling known-good runtime DLLs."
+    "blockers": "The Strix Halo regression fix (57e63bf) must be verified on 128 GB Strix Halo hardware — three large models that refused to load in v2026.44 must load and chat. The API key persistence restoration (62e4aa6) must be verified in a browser to confirm localStorage is populated correctly and desktop clients are not affected. The GUI3 workspace revamp (9cfd620) requires a full desktop app smoke test since no human exercised the six-workspace interface end-to-end.",
+    "breaking_changes": "Five documented breaking changes from the server refactor (#3771): 405 instead of 404 on POST-only paths, consistent missing-model error, stricter form-field validation (400 vs 500), streaming cancel tokens, and resolved_ctx_size schema change. Migration is minimal — clients expecting 404 on GET to POST-only routes see 405, and clients checking for null resolved_ctx_size will see it is now always an integer (the null case was never observable at runtime because the old code threw before returning it).",
+    "coverage": "All 35 commits in the release range v2026.44.1..a031de9 are represented in this digest. The 45 to-dos cover the 11 'Needs Attention' commits (9cfd620, 9a9d43a, fd71235, 9653d0a, 83cd48b, 62e4aa6, 56cc349, e4fa62e, fb89356, 06cfa30, dc695cf, d98e629, 57e63bf, aab9c36) plus 4 items from prior review cycles. The 24 'Clean' commits contribute no to-dos as their changes are test-only, docs-only, or trivial data fixes with no user-visible risk.",
+    "manual_testing": "Hardware-specific verification needed: Strix Halo 128 GB AMD APU for three model loads (57e63bf), GRG-Halo with '8065s' device name for ROCm recognition (9653d0a), and K2-Horizon model download and chat (d98e629). Browser localStorage exercise for API key persistence (62e4aa6) and chat history default toggle (06cfa30). Microphone dictation across five capability modes (83cd48b). The output_index field in /v1/responses streaming (56cc349) requires server-level verification since it was added post-approval without pre-merge testing.",
+    "security": "API key localStorage persistence (62e4aa6) was explicitly assessed — browser keys are isolated from desktop keys, and a same-origin XSS warning is documented. The model manager refactoring (fb89356) improves HTTP redirect handling by cutting custom headers at cross-origin boundaries. The streaming cancel token (9a9d43a-4) prevents resource waste on TCP disconnect but is not a new attack vector. No supply-chain or credential handling regressions observed."
   },
-  "generation_seconds": 185.1,
-  "head_sha": "aab9c362ebe0e506b1b70026621490d6b41d548b",
+  "generation_seconds": 162.2,
+  "head_sha": "a031de9ce240e3c44e2b711eb083ed07c4049c36",
   "is_hotfix": false,
   "last_stable_tag": "",
-  "range_start": "v2026.43.3",
+  "range_start": "v2026.44.1",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-10-28T19:01:57+00:00"
+  "reviewed_at": "2026-10-29T20:06:49+00:00"
 }
