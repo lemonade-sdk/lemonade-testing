@@ -1,0 +1,34 @@
+{
+  "author": "@fl0rianr",
+  "branch": "release-v2026.45",
+  "bucket": "v2026.45",
+  "cherry_picked_from": "083e3abf59005fc2082f65d7033916eae0dde367",
+  "commit_sha": "a031de9ce240e3c44e2b711eb083ed07c4049c36",
+  "committed_at": "2026-10-29T12:57:45-07:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The server-side change adds a `set_download_manager()` setter to `BackendManager` and a `visible` flag to `DownloadManager::Job`, both internal to the server. The `/install` route's display name changes from the raw backend value (e.g., `llamacpp:rocm`) to the normalized value (e.g., `llamacpp:rocm-stable`) — the diff shows this was already applied in the original commit. Client-side matching in `BackendManager.tsx` was updated to recognize both the normalized ID and its aliases (rocm-stable, rocm-nightly). No external API contract is changed.",
+    "documentation": "Not affected. The PR checklist declares documentation unchanged, and the diff touches no user-facing docs, CLI help, or API specs.",
+    "manual_release_testing": "This is a release-v2026.45 cherry-pick with no post-approval commits and all CI checks (Snap Release, Launchpad PPA) passing. The GUI changes (progress indicator, layout) and server changes (auto-install registration) were tested on main and cherry-picked cleanly.",
+    "post_approval_commits": "PR #3992 had no commits after the latest approval (@jeremyfowers, 19:44 UTC). The cherry-pick commit a031de9ce was pushed directly to release-v2026.45 by @meghsat at 19:57 UTC on 2026-10-29 and is the sole commit on that branch. It is a clean cherry-pick of 083e3abf59005fc2082f65d7033916eae0dde367.",
+    "review": "Original PR #3992 was merged after two substantive approvals: @superm1 (ROCm, llamacpp subject-area expertise) approved at 17:52 UTC and @jeremyfowers (GUI design language expertise) approved at 19:44 UTC on 2026-10-28. @superm1's review was empty, indicating clean signal. @jeremyfowers noted the progress bar might look better in the same row as the model, but explicitly said the UX improvement is significant enough not to block on visual iteration. The PR author requested @kpoineal (GUI, a11y) for review, and that reviewer was not needed — the scope was well-contained. CodeRabbit raised three points: (1) backend variant matching in the GUI uses a recipe prefix instead of the effective variant — author noted this is display-only and the GUI cannot reliably know the server's selected variant, and CodeRabbit withdrew; (2) /install job ID should use the normalized backend name — addressed in the diff via `BackendManager::canonical_backend_name`; (3) force: true during an existing install — author noted force primarily bypasses hardware compatibility filtering and does not guarantee a fresh download, and CodeRabbit withdrew. No substantive issues remain outstanding.",
+    "security": "No security concerns. The change adds no network calls, credential handling, or code execution paths beyond the existing download and install infrastructure. The `install_locks_` map adds serialization for concurrent backend installs, which is a correctness improvement.",
+    "tests": "Two new runtime tests: `chat-readiness-progress.runtime.cjs` (116 lines) exercises `estimatedModelLoadPercent` with boundary values (null for unknown/zero/negative sizes, capped at 99%, proportional for larger models) and `relevantChatDownload` with model/backend precedence, pause state, and foreign-job filtering. It also includes structural assertions verifying the readiness indicator's DOM placement, ARIA attributes, and CSS class usage in ChatView.tsx and styles.css. `download-polling-lifecycle.runtime.cjs` was extended (25 new lines) to verify `watchForModelLoad()` starts polling, discovers a server-owned backend download, and returns to idle after stop; idempotent double-stop was also verified."
+  },
+  "generation_seconds": 254.9,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-28T23:05:07Z",
+  "pr_number": 3992,
+  "range_start": "v2026.44.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-29T20:04:04+00:00",
+  "reviewers": [
+    "@superm1",
+    "@jeremyfowers"
+  ],
+  "sha": "a031de9ce240e3c44e2b711eb083ed07c4049c36",
+  "shout_outs": [],
+  "subject": "fix(gui): show chat readiness and automatic backend install progress (#3992)",
+  "summary": "Adds a compact progress indicator below the model pill that shows backend install and model download progress during chat preparation, registers automatic backend installations from /load in the server-side Download Manager, and unifies ROCm backend job IDs so both rocm-stable and rocm-nightly are matched as the same backend.",
+  "verdict": "Clean",
+  "verdict_reason": "The cherry-picked commit ships well-tested GUI and server changes that were thoroughly reviewed by subject-matter reviewers on the original PR with no post-approval commits on this release branch."
+}
