@@ -1,0 +1,41 @@
+{
+  "author": "@meghsat",
+  "branch": "main",
+  "bucket": "v2026.46",
+  "commit_sha": "f9004ca0a85f7107faa2d57693e10459770330b3",
+  "committed_at": "2026-10-29T17:21:53+00:00",
+  "evidence": {
+    "api_compatibility": "Three breaking changes are documented in the PR description: (1) residency conflicts now return HTTP 409 `router_residency_conflict` instead of falling back through `on_error` to `default_model` — a 400→409 change for the same scenario. (2) Router policy labels are now strictly validated (unique, non-blank, no control characters); a saved policy with invalid labels now fails to load at startup with every request returning 500. (3) The `/v1/classify` response always carries `truncated` from ort-server 0.4.0 onward; `labels` sent to a fixed-label model now returns 400 instead of being silently dropped. These are all documented in the PR and in the updated API docs (docs/api/lemonade.md, docs/api/router.md, docs/dev/router-policy.md).",
+    "documentation": "Comprehensive documentation updates across the PR: docs/api/lemonade.md (new `labels` parameter, `truncated` field, zero-shot model family), docs/api/openai.md (new `zero-shot` capability label), docs/api/router.md (new `zero_shot` condition, 409 error code), docs/dev/router-policy.md (new `zero_shot` type, `on_truncation` section, PII example with safety notes). The `truncated` sentence fix from CodeRabbit was applied. The author also clarified the PII detector limitation note in response to reviewer feedback. The ort-server PR #4 changelog is referenced. The only known gap is the GUI router editor, which cannot yet display or edit `zero_shot` classifiers — acknowledged by the author as a known gap.",
+    "manual_release_testing": "No human is recorded as exercising the new zero-shot classify endpoint or the router's `zero_shot` classifier condition end-to-end. CI runs unit and conformance tests but does not drive the actual API surface against a running server. The ort-server dependency (bumped from 0.3.7 to 0.4.0) was developed as ort-server PR #4 by the same author and validated with tokenization and score comparisons, but those checks were against a specific LFM2 model, not against a released ort-server 0.4.0 binary shipped to users.",
+    "post_approval_commits": "First approval: 2026-10-27T00:20:39Z (fl0rianr). Latest approval: 2026-10-29T08:00:16Z (Slawomir). After the latest approval the author added two commits: 'pr feedback: clarified on the PII detector' and a merge commit. Both directly address Slawomir's final feedback (the PII example note in router-policy.md). These are expected post-approval changes that refine existing content rather than introduce new behavior, and no re-approval was needed.",
+    "review": "PR #3952 was reviewed by three people with smart-router expertise: @fl0rianr (smart router subject area, approved 2026-10-27), @iswaryaalex (new models subject area, approved 2026-10-28), and @SlawomirNowaczyk (smart router subject area, approved 2026-10-29). Review was substantive across multiple rounds — Slawomir requested two rounds of changes (CI test coverage, PII example clarification, release-note entries), CodeRabbit flagged residency-document accuracy, fake-stub tracking, and a truncated sentence (all addressed). The PR author responded to every substantive comment. No reviewer had to chase the ort-server dependency pin bump (the author kept 0.3.7 initially, then bumped to released 0.4.0 after ort-server PR #4 landed). The only missing human reviewer from the subject-matter table is @eddierichter-amd (smart router), but two smart-router reviewers already approved.",
+    "security": "The ort-server dependency bump (0.3.7 → 0.4.0) is a supply-chain change. The new version replaces tokenizers-cpp with a Rust FFI over Hugging Face tokenizers 0.22.2. The PR author validated tokenization output and model scores against the old binary on five PII models across 20,001 cases with identical results. No credentials, network calls, or obfuscation are introduced. The new `classification_labels.h` validates label lists client-side before sending to the backend, which is a defense-in-depth measure.",
+    "tests": "Extensive new test coverage: 280 lines added to test/cpp/test_routing_classifier_services.cpp (zero-shot routing classifier integration), 106 lines to test/cpp/test_routing_policy_parser.cpp (label validation), 264 lines to test/cpp/test_routing_policy_registry.cpp (new test file for the policy registry), 145 lines to test/cpp/test_routing_policy_engine.cpp (engine changes), 168 lines to test/server_classify.py (Python classify server tests including zero-shot cases: label choice, PyTorch reference scores, missing labels, truncation). C++ conformance corpus entries were extended. The PR description instructs running `python test/server_classify.py --wrapped-server onnxruntime --backend cpu` and expects 17/17. CI checks (C++ build/test/release, stable-diffusion validation, llama.cpp validation) all passed on the merge commit."
+  },
+  "generation_seconds": 335.3,
+  "maintainer_todos": [
+    {
+      "text": "Start the server with a zero-shot model (LFM2.5-Encoder-350M-Prompt-Router-ONNX), send `POST /v1/classify` with `labels` and an input longer than about 8,000 characters, and confirm the response body contains `\"truncated\": true`."
+    },
+    {
+      "text": "Register a router policy that uses a `zero_shot` classifier condition, then call `POST /v1/routing/validate` and confirm the `route_trace` output includes a `zero_shot` entry with `truncated`."
+    }
+  ],
+  "merge_date": "2026-10-29T18:14:37Z",
+  "pr_number": 3952,
+  "range_start": "v2026.44.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-29T18:22:03+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@iswaryaalex",
+    "@SlawomirNowaczyk"
+  ],
+  "sha": "f9004ca0a85f7107faa2d57693e10459770330b3",
+  "shout_outs": [],
+  "subject": "Adding zero-shot classifier support (#3952)",
+  "summary": "Adds zero-shot classification support: a new `labels` parameter on `POST /v1/classify`, a new `zero_shot` classifier condition type for router policies with `on_truncation` handling, and pins the ort-server backend dependency to 0.4.0.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "Three documented breaking API changes and a backend dependency bump ship user-visible behavior that has no evidence of manual end-to-end exercise."
+}
