@@ -1,0 +1,47 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.46",
+  "commit_sha": "42bb552f363e1ad959e52c36d4a4602760006dc6",
+  "committed_at": "2026-10-30T03:18:17+00:00",
+  "evidence": {
+    "api_compatibility": "No API, CLI, config, or schema changes. The ?q= URL parameter is a new incoming contract from Firefox (not a breaking change). No existing setup is affected on upgrade.",
+    "documentation": "No documentation changes required per the PR checklist. The feature is user-facing but does not change any documented commands, API endpoints, or config files. A release note sentence about the Firefox sidebar prompt support would be appropriate.",
+    "manual_release_testing": "The change introduces a user-visible surface — the ?q= URL parameter — that was tested by the author but not by a second person. The post-approval commit (new chat discarding) has a Playwright test but was not re-reviewed. The reviewer's subject area expertise (hardware/backends) does not cover GUI/app interaction flows. Three maintainer to-dos are provided above to exercise the ?q= flow, the new-chat discard, and the existing-chat release.",
+    "post_approval_commits": "One commit (4614e65, 'pr feedback: new chat now discard a waiting firefox prompt') was added after the approval at 02:03:56Z — authored by @meghsat at 02:44:12Z. It modifies ChatView.handleNewChat to call dismissIncomingPrompt, and adds two tests (a Playwright E2E test for the new-chat discard flow and a runtime.cjs assertion for the same). The commit is authored by the same person who approved the PR, meaning the behavior change was never independently reviewed. The change is small and adds test coverage, but it alters user-visible behavior (what happens when a user starts a new chat while a prompt waits) without a fresh approval.",
+    "review": "Human review: @meghsat provided one APPROVE review at 2026-10-30T02:03:56Z on commit 1a4adf7. No other human reviewers participated. The project's contributing guide recommends having at least one reviewer with subject matter expertise; @kpoineal (subject area: GUI, app, a11y, Windows) is the app-area maintainer but did not review this PR. Automated CodeRabbit posted multiple review rounds with inline comments on ChatView.tsx, App.tsx, and browserPrompt.ts. Most were addressed in follow-up commits; one nitpick (add a Playwright test for edited prompts) was not addressed.",
+    "security": "The PR intentionally disables MCP and Omni tool execution for externally-supplied prompts by tracking fromBrowserPrompt on messages and checking hasBrowserPromptContext. This is the correct security posture for untrusted webpage content. No credential handling, network calls, or supply-chain changes. All changes are confined to the React frontend (src/app/src/).",
+    "tests": "Two new test files: browser-prompt.spec.ts (7 Playwright E2E tests covering auto-send, existing chat release, new chat discard, image attachment, starter prompt replacement, reload persistence, and edited prompt survival) and browser-prompt.runtime.cjs (Node runtime test that compiles the helper with TypeScript, tests sessionStorage/URL fallback behavior, and asserts source patterns in ChatView.tsx and App.tsx). All CI checks passed (Lemonade App checks, C++ Server Build, Validate New llama.cpp Release). No tests weakened or deleted."
+  },
+  "generation_seconds": 233.2,
+  "maintainer_todos": [
+    {
+      "text": "Open the app with a ?q= URL parameter (e.g. http://localhost:13305/?q=Summarize+this) and confirm the prompt fills the composer, the \"Imported webpage content\" hint appears, tools are greyed out with the message \"Unavailable for imported webpage context\", and the model auto-sends the prompt as a new conversation once loaded."
+    },
+    {
+      "text": "While the prompt waits for the model to load, click \"New chat\" and confirm the composer clears, the hint disappears, no request is sent, and the prompt draft is cleared from sessionStorage."
+    },
+    {
+      "text": "While the prompt waits for the model to load, click an existing conversation in the sidebar and confirm the prompt is dismissed, no request is sent, and the conversation's earlier messages are visible."
+    }
+  ],
+  "merge_date": "2026-10-30T04:01:57Z",
+  "pr_number": 3973,
+  "range_start": "v2026.44.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-30T04:07:37+00:00",
+  "reviewers": [
+    "@meghsat"
+  ],
+  "sha": "42bb552f363e1ad959e52c36d4a4602760006dc6",
+  "shout_outs": [
+    {
+      "handle": "@meghsat",
+      "reason": "Co-authored contributor who fixed edge cases where the prompt arrives while no model is loaded (commit 1a4adf7), added the dismissIncomingPrompt flow to handleNewChat so new chats discard waiting prompts (commit 4614e65), and added corresponding E2E and runtime tests."
+    }
+  ],
+  "subject": "fix(app): support Firefox chatbot sidebar prompts (#3973)",
+  "summary": "Adds support for Firefox chatbot sidebar prompts by accepting the ?q= URL parameter, automatically starting a new chat with the prompt text, and disabling MCP/Omni tool execution for externally-supplied prompts.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "All substantive changes were approved by @meghsat, but a post-approval commit (4614e65) authored by the same person added new behavior — discarding the waiting prompt on new chat — without re-review, and the final version lacks a second set of eyes on the full UI interaction surface."
+}
