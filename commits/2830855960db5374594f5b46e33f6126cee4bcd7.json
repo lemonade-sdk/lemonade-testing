@@ -1,0 +1,32 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.46",
+  "commit_sha": "2830855960db5374594f5b46e33f6126cee4bcd7",
+  "committed_at": "2026-10-30T14:28:48+00:00",
+  "evidence": {
+    "api_compatibility": "Not breaking. Adds new config keys; does not alter existing options, defaults, or behavior.",
+    "documentation": "docs/guide/configuration/README.md updated to include the new cuda_args, rocm_args, and vulkan_args entries with empty-string defaults.",
+    "manual_release_testing": "All three new *_args config options are exercised by the unit test through config.recipe_options(), and documentation was updated in the same commit. No residual manual test needed.",
+    "post_approval_commits": "None. The single PR commit (dc442c9) was present at approval time. The merge-group commit (2830855) is the squash/merge.",
+    "review": "One substantive approval from @bitgamma ('seems very well scoped and minimal') at 2026-10-30T13:48:14Z. @bitgamma has 'new backends' in their subject areas per docs/dev/contribute.md, which aligns with backend argument variant changes. No actionable inline comments from automated CodeRabbit review.",
+    "security": "No concerns. Only adds config option declarations and defaults; no credential handling, network calls, or execution path changes.",
+    "tests": "New unit test function expect_args_variant() plus three calls covering all newly added variants (llamacpp cuda, whispercpp vulkan, whispercpp rocm). Tests verify both default-key presence and runtime config resolution. No existing tests weakened or deleted."
+  },
+  "generation_seconds": 149.1,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-30T15:20:33Z",
+  "pr_number": 4021,
+  "range_start": "v2026.44.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-30T15:24:46+00:00",
+  "reviewers": [
+    "@bitgamma"
+  ],
+  "sha": "2830855960db5374594f5b46e33f6126cee4bcd7",
+  "shout_outs": [],
+  "subject": "fix(server): add missing backend args (#4021)",
+  "summary": "Adds missing backend argument configuration keys for llama.cpp CUDA (cuda_args) and whisper.cpp ROCm (rocm_args) and Vulkan (vulkan_args), including descriptor updates, defaults, documentation, and unit tests.",
+  "verdict": "Clean",
+  "verdict_reason": "The fix is minimal, self-contained, properly reviewed, well-tested, and introduces no breaking changes."
+}
