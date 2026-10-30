@@ -1,0 +1,48 @@
+{
+  "author": "@meghsat",
+  "branch": "main",
+  "bucket": "v2026.46",
+  "commit_sha": "d534dc9971a97ea07bba2d306c942f77ea57ff1c",
+  "committed_at": "2026-10-30T16:37:51+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking API changes. This is a client-side chat history persistence fix touching only the web app (src/app/) and its documentation (docs/guide/app/chat.md). The localStorage keys (lemonade:conversations, lemonade:persist_conversations) and data format are unchanged. The behavior change—retaining saved chats when saving is disabled instead of wiping them—is a bug fix for the existing feature and does not break any documented API contract. The i18n strings were updated and new strings added.",
+    "documentation": "docs/guide/app/chat.md was updated to clarify that disabling save chat history 'stops saving new messages, and conversations saved earlier stay until you delete them.' The update is consistent with the PR description and addresses the user-visible behavior change.",
+    "manual_release_testing": "No human was observed exercising the feature end-to-end in the release surface. The commit changes the behavior of Settings > Chat > Save chat history in this browser (a visible toggle), the ChatView UI (new error alert banner and retry button), and the beforeunload guard for unsaved conversations. These are user-facing behaviors that were not exercised by CI alone.",
+    "post_approval_commits": "All five PR commits (9592e21, 41c271d, 6fb97f4, 680d484, ce6fe52) were authored by @meghsat and @fl0rianr between 2026-10-30T03:20:00Z and 12:55:45Z. The final CodeRabbit review was submitted at 13:03:29Z, after all commits were already on the branch. The merge-queue squash commit d534dc99 was created at 16:37:51Z and merged at 17:24:02Z. The post-approval commits added the co-author trailer (fl0rianr), cross-tab session saving logic, legacy chat ID collision prevention, and failed write recovery—changes directly responding to CodeRabbit inline comments. They remain within the PR's stated scope (fixing chat history retention behavior) and did not introduce new unrelated behavior. However, @fl0rianr (the merge queue actor) made post-approval commits himself without a renewed human review pass.",
+    "review": "The PR had no human reviewer assigned or approving it. The only APPROVED review is from the CodeRabbit bot (submitted 2026-10-30T01:30:52Z). CodeRabbit posted 4 review batches with multiple actionable findings across the PR lifecycle, all marked as addressed in follow-up commits. The PR was requested for review by @jeremyfowers but no human review is recorded. The merge was triggered by @fl0rianr through GitHub's merge queue (event: merge_group), which automatically passed all CI checks. The project contributes.md states PRs should have 'at least one reviewer with subject area expertise' and warns against merging 'approved, but not thoroughly reviewed' PRs. @fl0rianr's subject areas include GUI and CI, which partially overlap with this PR's scope (GUI, chat persistence), but his involvement here is as a co-author addressing automated feedback, not as a designated reviewer.",
+    "security": "No security concerns. The change operates entirely within browser localStorage and the React UI. It does not introduce credential handling, network calls, code execution paths, or permission changes. The only new code touching user data is the chat history persistence logic, which improves data safety by preventing accidental data loss when the user toggles the saving preference.",
+    "tests": "Two new test files: src/app/tests/chat-history-opt-out.runtime.cjs (94 lines, runtime unit tests for historySettings.ts covering removeDeletedConversations, deletedConversationIds, storedConversationId, storedConversationIds, and conversationVersion) and src/app/tests/chat-history-opt-out.spec.ts (180 lines, Playwright E2E tests covering saved chats surviving reload, cross-tab deletion safety, legacy chat deletion, duplicate legacy chat deletion, failed deletion retry with Retry button, failed full save warning with beforeunload guard, failed preference-only write retry, and re-enabling saving). Tests comprehensively cover the main user flow and multiple edge cases including storage failures. No existing tests were weakened or deleted."
+  },
+  "generation_seconds": 444.3,
+  "maintainer_todos": [
+    {
+      "text": "Open Settings > Chat and toggle Save chat history off when one or more saved conversations exist; verify the conversations remain visible and survive a browser reload."
+    },
+    {
+      "text": "With saving off, delete one of the saved conversations; reload the page and confirm that the deleted conversation does not reappear."
+    },
+    {
+      "text": "With saving off, create a new conversation by sending a message; toggle saving back on and verify the new conversation is now persisted in localStorage."
+    },
+    {
+      "text": "With saving on, force localStorage to be full (or blocked) while editing a message, then refresh and confirm the browser shows an error alert and the Refresh warning triggers a beforeunload dialog."
+    }
+  ],
+  "merge_date": "2026-10-30T17:24:02Z",
+  "pr_number": 4012,
+  "range_start": "v2026.44.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-30T17:33:19+00:00",
+  "reviewers": [],
+  "sha": "d534dc9971a97ea07bba2d306c942f77ea57ff1c",
+  "shout_outs": [
+    {
+      "handle": "@fl0rianr",
+      "reason": "Co-authored-by trailer; authored four follow-up commits (41c271d, 6fb97f4, 680d484, ce6fe52) that addressed multiple CodeRabbit findings including multi-tab deletion safety, legacy chat ID collisions, failed write recovery, and cross-tab session handling."
+    }
+  ],
+  "subject": "fix(server): Turning off saved chats will retain the already saved chat sessions (#4012)",
+  "summary": "Turning off Settings > Chat > Save chat history in this browser stops saving new messages but retains previously saved chat sessions so they survive a page refresh, and adds cross-tab deletion safety with retry UI for failed writes.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "All automated review findings were addressed, but there is no human approver—the only approval is from the CodeRabbit bot, and the merge was initiated by @fl0rianr, who authored post-approval commits without evidence of a separate human review pass."
+}
