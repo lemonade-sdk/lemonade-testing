@@ -1,0 +1,37 @@
+{
+  "author": "@meghsat",
+  "branch": "main",
+  "bucket": "v2026.46",
+  "commit_sha": "01ab5ebcd1e466f89c1811660d95c208ee339179",
+  "committed_at": "2026-10-30T03:20:00+00:00",
+  "evidence": {
+    "api_compatibility": "This change is entirely internal to the browser GUI (src/app/src/components/ChatView.tsx). No API endpoints, CLI flags, config files, or persistence formats are affected. No breaking changes.",
+    "documentation": "No documentation update needed. This is a bug fix for internal GUI behavior; no new feature, config, or API is introduced.",
+    "manual_release_testing": "No human exercised this GUI behavior before merge. CI checks all passed (C++ Server Build, Server Download Registry Tests, Validate New stable-diffusion.cpp Release), but the Playwright test was added post-approval and CI did not have a chance to run it before merge. A manual test of the model handoff flow between the Models tab and Chat is warranted.",
+    "post_approval_commits": "After the latest approval (PCAssistSoftware at 2026-10-30T00:50:39Z), the author pushed commit eef57ca at 02:47 UTC titled 'pr feedback: added an actual playwright test instead of assertions'. This commit added a 130-line Playwright test file (src/app/tests/chat-model-handoff.spec.ts) and removed two outdated source-pattern assertions from src/app/tests/ui-regression-contracts.runtime.cjs. The new commit did not alter the fix itself and was authored by the PR author in direct response to the reviewer's suggestion. It is not re-reviewed — the branch moved after approval without a subsequent approval. Since this is purely a test addition and contract-assertion cleanup, the risk to the fix's correctness is minimal, but it technically violates the post-approval-review expectation.",
+    "review": "The fix was reviewed by @fl0rianr (subject-matter expert in GUI and CI per docs/dev/contribute.md) and @PCAssistSoftware. @fl0rianr provided a substantive review comment suggesting a functional Playwright test instead of source-pattern assertions. Both reviewers approved at 00:44–00:50 UTC. No inline review comments were filed. The fix is small and targeted, changing only src/app/src/components/ChatView.tsx (9 lines) with a new epoch-based override-clearing mechanism.",
+    "security": "No security concern. The change is a frontend React component modification with no credential handling, network call changes, code execution, or permission broadening.",
+    "tests": "The original PR had only source-pattern assertions. The post-approval commit added a comprehensive Playwright E2E test that mocks the server and exercises the full model-handoff flow: opens a restored conversation showing oldModel, loads newModel from the Models tab, verifies the composer placeholder updates, sends a message and asserts the completion request uses newModel, and verifies that manually reopening an older conversation restores oldModel. The test is well-structured with a realistic mock server. The CodeRabbit CI bot flagged two uncovered edge cases in the test: (1) the race between history hydration and a model load from Models, and (2) no assertion that the completion request uses the old model after reopening an older conversation. These are quality improvements, not blockers."
+  },
+  "generation_seconds": 175.9,
+  "maintainer_todos": [
+    {
+      "text": "Start Lemonade, open a saved conversation, switch to the Models tab, load a different model, switch back to Chat, and confirm the composer placeholder shows the newly loaded model."
+    }
+  ],
+  "merge_date": "2026-10-30T04:43:57Z",
+  "pr_number": 4013,
+  "range_start": "v2026.44.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-30T04:48:33+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@PCAssistSoftware"
+  ],
+  "sha": "01ab5ebcd1e466f89c1811660d95c208ee339179",
+  "shout_outs": [],
+  "subject": "fix(gui3): Chat showing the wrong model after loading one from the Models tab (issue #4011) (#4013)",
+  "summary": "Fixes a GUI bug where loading a model from the Models tab did not replace the model shown in the Chat composer — uses a new composerFocusEpoch counter to clear the old model override when a model is explicitly handed from the Models workspace.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "A Playwright test was added after the latest approval without evidence of renewed review."
+}
