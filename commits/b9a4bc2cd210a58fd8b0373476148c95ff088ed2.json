@@ -1,0 +1,32 @@
+{
+  "author": "@mike2307",
+  "branch": "main",
+  "bucket": "v2026.46",
+  "commit_sha": "b9a4bc2cd210a58fd8b0373476148c95ff088ed2",
+  "committed_at": "2026-10-30T23:39:49+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking change. The fix restores the documented option priority (load request overrides recipe_options.json, but now the load request correctly reflects what was saved). Models without a saved ctx_size load exactly as before. The omni exclusion and non-custom paths are unchanged.",
+    "documentation": "The PR declares documentation is not affected. The behavior change restores what was always documented (the option priority chain: load request → recipe_options.json → architecture defaults → global config) but was unreachable for GUI-initiated custom model loads. No docs needed for a bug fix that corrects implementation to match the spec.",
+    "manual_release_testing": "No manual release test to-do required. This is a bug fix restoring documented behavior (saved ctx_size from recipe_options.json), not a new feature. The bundled runtime regression test exercises the actual function under test with full webpack bundling, covering all edge cases that a user would encounter. The change is confined to a single client-side function in customModelStore.ts (10 lines changed, 1 deleted).",
+    "post_approval_commits": "No commits were added after the first (and only) approval at 2026-10-30T23:13:54Z. The PR had two commits — the fix and the regression test — both authored by @mike2307 and both present before approval.",
+    "review": "PR #4020 was opened by @mike2307 and approved by @fl0rianr at 2026-10-30T23:13:54Z with 'Thanks, nice fix. Approved.' CodeRabbit (bot) flagged a potential issue: the original draft used Number() coercion on recipe_options.ctx_size, which would treat the string 'Infinity' as valid. The author addressed this in the final commit by switching to typeof check plus Number.isInteger, which is even more robust. @fl0rianr's subject area includes GUI, so the reviewer had relevant expertise. Only one review comment from an automated bot was posted; no substantive human review comments were raised. The review was brief but the change is minimal and self-evident.",
+    "security": "No security concern. The change is a small logic fix in a TypeScript client-side function. It reads a numeric field from saved recipe options and applies a typeof/type guard. No credential handling, network calls, code execution, or permission changes.",
+    "tests": "New file src/app/tests/custom-load-options.runtime.cjs (93 lines) bundles customModelStore.ts via webpack and exercises customLoadOptions() with a comprehensive set of assertions: saved integer ctx_size survives max_context_window override, the -1 auto sentinel is preserved, missing ctx_size falls back to max_context_window, non-integer saved values (strings, booleans, null, NaN, 0, 12288.5) fall back to the default, omni models stay unaffected, and non-custom models keep the previous no-op. The test uses the same bundle approach as the existing router-store.runtime.cjs and is picked up by CI's npm run test:runtime (39/39 pass)."
+  },
+  "generation_seconds": 159.9,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-31T00:09:33Z",
+  "pr_number": 4020,
+  "range_start": "v2026.44.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-31T00:14:01+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "b9a4bc2cd210a58fd8b0373476148c95ff088ed2",
+  "shout_outs": [],
+  "subject": "fix(gui3): honor saved ctx_size when loading custom models (#4019) (#4020)",
+  "summary": "Fixes gui3 so that loading custom models from the web app honors the saved ctx_size from recipe_options.json instead of unconditionally overwriting it with the model's max_context_window.",
+  "verdict": "Clean",
+  "verdict_reason": "A well-scoped one-line logic fix with a thorough bundled regression test, reviewed by a GUI subject-matter expert, with all CI checks passing and no post-approval commits."
+}
