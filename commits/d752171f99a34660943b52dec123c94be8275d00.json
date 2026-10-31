@@ -1,0 +1,39 @@
+{
+  "author": "@Zorro-Zhang",
+  "branch": "main",
+  "bucket": "v2026.46",
+  "commit_sha": "d752171f99a34660943b52dec123c94be8275d00",
+  "committed_at": "2026-10-31T04:16:05+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The only API signature change is invalidate_models_cache(bool reset_pull_sources = false) gaining an optional parameter with a default value, preserving binary and source compatibility. The pull_source_default field is added to ModelInfo but is internal to the model store and not exposed as a public contract.",
+    "documentation": "The PR correctly notes that documentation is not affected. The fix changes runtime behavior of the default_model_source config option but does not alter documented configuration options, commands, or user-facing interfaces.",
+    "manual_release_testing": "No human reviewer exercised the default_model_source config path before merge. The author tested on their own machine with two specific models. A tester should verify with additional built-in Suggested models and confirm the fix works consistently across model types.",
+    "post_approval_commits": "The PR contained a single commit (27fb6775) which was the tip of the branch. Approval was submitted at 2026-10-31T04:15:57Z and the merge happened at 2026-10-31T04:52:17Z. No commits were added after approval.",
+    "review": "PR #4002 was approved by @superm1 (maintainer, subject areas: llamacpp, new backends, NPU) with no inline review comments and an empty approval body. The CodeRabbit bot flagged one minor finding about offline pulls of built-in collection entries not retaining the original registry_source before cache lookup, but the author did not address it. The PR body follows the spec-driven development template and correctly identifies #3991 as the issue. No substantive human inline comments were left.",
+    "security": "No security concerns. The change does not introduce credential handling, network call patterns, permission changes, or code execution paths that differ from existing model download behavior. It routes downloads to a different registry source (huggingface vs modelscope) based on a user-configurable setting.",
+    "tests": "New test added: test_a_suggested_pull_uses_the_default_source in test/cpp/test_pull_registry.cpp, which sets default_model_source=modelscope, downloads a built-in Suggested llamacpp model by name, and asserts the download originates from modelscope and the model resolves to the modelscope cache path. The test file was also refactored to use helper functions (lemon::registry_repo_cache_dir_name, lemon::registry_files::select_main_repo_files, lemon::backends::hf_cache::active_snapshot_path) for cache path computation, improving test reliability. The PR author reported local testing on an AMD HaloBox machine with Linux, confirming the behavior with Qwen3-0.6B-GGUF and SmolLM-135M-Instruct-Hybrid."
+  },
+  "generation_seconds": 211.3,
+  "maintainer_todos": [
+    {
+      "text": "Set default_model_source to modelscope via LEMONADE_DEFAULTS_PATH, search for a built-in Suggested model by name (e.g. Qwen3-0.6B-GGUF), trigger the download, and confirm the model lands under the modelscope cache directory rather than the huggingface cache directory."
+    },
+    {
+      "text": "Remove the LEMONADE_DEFAULTS_PATH environment variable and confirm that subsequent downloads of built-in models revert to pulling from huggingface as the default source."
+    }
+  ],
+  "merge_date": "2026-10-31T04:52:17Z",
+  "pr_number": 4002,
+  "range_start": "v2026.44.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-31T04:57:36+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "d752171f99a34660943b52dec123c94be8275d00",
+  "shout_outs": [],
+  "subject": "fix(server): apply default_model_source to built-in model downloads (#4002)",
+  "summary": "When default_model_source=modelscope is configured via LEMONADE_DEFAULTS_PATH, pulling a built-in Suggested model (e.g. Qwen3-0.6B-GGUF or SmolLM-135M-Instruct-Hybrid) by name now downloads from the configured source instead of always pulling from huggingface.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The bug fix is well-scoped and approved by a maintainer, but no human reviewer exercised the default_model_source config path before merge, so manual release testing is warranted."
+}
