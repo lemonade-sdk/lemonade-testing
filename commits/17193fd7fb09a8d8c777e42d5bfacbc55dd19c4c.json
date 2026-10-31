@@ -1,0 +1,33 @@
+{
+  "author": "@meghsat",
+  "branch": "main",
+  "bucket": "v2026.46",
+  "commit_sha": "17193fd7fb09a8d8c777e42d5bfacbc55dd19c4c",
+  "committed_at": "2026-10-31T19:06:35+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking external API changes. The `onModelSelect` callback signature was extended with an optional `navigate?: boolean` parameter — the parameter is optional so existing callers are unaffected. The `ModelDetailPanel` props changed from `loadingModel: string | null` and `loadError: { modelName; message } | null` to `busyModels: ReadonlySet<string>` and `loadErrors: ReadonlyMap<string, { message }>` — these are internal component props and do not constitute a public API. The behavior change (Chat no longer navigates from its fallback model-select path when the tab is hidden) is a fix, not a breaking change.",
+    "documentation": "No documentation changes required. The PR fixes user-visible GUI behavior (load banner state) but does not introduce new features, CLI commands, config options, or API endpoints that would warrant documentation updates. The author correctly checked 'Documentation is not affected by this change.'",
+    "manual_release_testing": "No manual release testing to-do required beyond CI. The author confirmed 'Built the GUI and tested the behavior from the web app.' @PCAssistSoftware verified on Windows 11. All CI checks (Lemonade App checks, Validate New vLLM Release, Validate New llama.cpp Release, Validate New stable-diffusion.cpp Release) passed on the merge-queue build. The changes are internal GUI state-management and do not alter external APIs, configs, or CLI surfaces.",
+    "post_approval_commits": "Three commits total in the PR. The first (4cca77fc) was approved by @PCAssistSoftware. Two follow-up commits (86c575ce and 0a0f24f) were added in response to reviewer feedback before @fl0rianr gave the final approval. The final commit changed loadErrors from Readonly<Record<string, ...>> to ReadonlyMap<string, ...> to address @fl0rianr's own-property lookup concern, and added an extra test assertion verifying that an earlier load finishing late does not displace the user's newer selection in Chat. No commits were added after the latest approval.",
+    "review": "PR #4030 was opened by @meghsat and reviewed by @PCAssistSoftware (first approval on 2026-10-30, tested on Windows 11) and @fl0rianr (who has GUI and app subject-area expertise per docs/dev/contribute.md). @fl0rianr raised specific concerns about concurrent loads overwriting model selection and error-timer identity during the first round of review; @meghsat addressed both in the 'pr feedback' commit. @fl0rianr's second review flagged a potential Object.prototype key issue with the loadErrors map — @meghsat addressed this by switching from Record<string, ...> to ReadonlyMap<string, ...> in the final commit. Two approvals were given, and there were zero commits after the latest approval at 2026-10-31T18:27:29Z.",
+    "security": "No security concerns. The change is confined to GUI component state management in React TypeScript files. No new network calls, credential handling, code execution paths, or permission changes.",
+    "tests": "Six new end-to-end Playwright tests in src/app/tests/features.spec.ts (tests 25h, 25j, 25i, 25k, 25l, 25m), each exercising a specific bug scenario with mocked API routes. Tests cover: (25h) unloading another model while a slow load is in-flight, (25j) reload notice staying bound to the correct model during mid-reload selection changes, (25i) failed unload reporting an error and freeing the button, (25k) out-of-order load completions preserving the latest user selection, (25l) overlapping load failures keeping independent error messages, and (25m) an older error-timer not clearing a newer error for the same model (uses Playwright's clock API). No existing tests were weakened or deleted."
+  },
+  "generation_seconds": 205.3,
+  "maintainer_todos": [],
+  "merge_date": "2026-10-31T19:44:00Z",
+  "pr_number": 4030,
+  "range_start": "v2026.44.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-10-31T19:49:07+00:00",
+  "reviewers": [
+    "@PCAssistSoftware",
+    "@fl0rianr"
+  ],
+  "sha": "17193fd7fb09a8d8c777e42d5bfacbc55dd19c4c",
+  "shout_outs": [],
+  "subject": "fix(gui3): Fixed bugs in Model load banners (#4030)",
+  "summary": "Fixed five GUI3 bugs in model load banners — the loading indicator now persists correctly across model switches, the Load button no longer gets swallowed during a different in-progress operation, the Unload button releases after a failed unload, the reload notice binds to the correct model when selected mid-reload, and the Load/Unload buttons stay disabled during an in-progress reload.",
+  "verdict": "Clean",
+  "verdict_reason": "The commit was thoroughly reviewed by two reviewers including a GUI-area subject-matter expert, adds six comprehensive end-to-end tests covering all five bug scenarios, and passed all CI checks with no post-approval churn after the final approval."
+}
