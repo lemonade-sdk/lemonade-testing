@@ -1,0 +1,38 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.46",
+  "commit_sha": "fc865d1535ae48914e6f204286b6b3d108ca2f2b",
+  "committed_at": "2026-11-02T22:28:57+00:00",
+  "evidence": {
+    "api_compatibility": "The internal C++ API select_main_repo_files() and related functions no longer accept a recipe parameter. This is an internal API change with no external contract — it is not a user-facing API, CLI flag, config key, or documented interface. No breaking change for users.",
+    "documentation": "The docs/dev/backends-reference.md note about duplicate checkpoint downloads for OpenMOSS was removed because the duplicate-collapsing behavior no longer applies (each file is now listed explicitly). This is appropriate. No new documentation was added; the change is primarily internal refactoring and the server_models.json edits are self-describing. The backend ops header was updated via the code removal of select_checkpoint_files.",
+    "manual_release_testing": "The model download path for ACE-Step-Music, ThinkSound-SFX, and Moonshine variants is user-reachable through the lemonade pull command or GUI model download. The change replaces backend-driven implicit selection (e.g. Moonshine downloading every file under a folder prefix, ThinkSound downloading a fixed set of bf16 files, OpenMOSS downloading a .extras.gguf sidecar) with explicit file listings in server_models.json. ACE-Step and ThinkSound list their companion files as named checkpoints, so the download check covers each file individually. No evidence in the PR or CI shows a human exercised the full download flow end-to-end on any affected model; CI tests the unit-level file selection logic but not the download + verify cycle.",
+    "post_approval_commits": "None. The last commit (ec5d96f, 'refactor(backends): remove the select_checkpoint_files hook') was the fourth of four PR commits; the first approval arrived at 2026-11-02T20:11:09Z, after all four commits were already on the branch. The commit that was already on main before the PR (17193fd7) is the merge-base; the PR added no new commits after approval.",
+    "review": "The PR received three approvals: @bitgamma (subject area includes 'new models') offered a high-level 'shape is good to me' review; @pwilkin (subject area includes 'ACE-Step, ThinkSound, OpenMOSS') and @sawansri (subject area includes 'new models') provided empty reviews. No reviewer with deep download-system expertise is immediately evident from the contribute.md mapping, though @pwilkin covers the affected backends. All reviews were submitted after the final commit, so the reviewers saw the complete PR. CodeRabbit raised two static-analysis concerns: (1) Moonshine folder-prefix matching changed from case-insensitive to case-sensitive, and (2) find_manifest climbs to the 'snapshots' parent directory which may not reach the revision-level manifest for deeply nested checkpoints. Neither concern is actionable from the diff alone without knowing the actual HF repo casing or the exact snapshot layout, but they are worth noting.",
+    "security": "No supply-chain changes, credential handling, network calls, code execution paths, auth changes, or suspicious blobs. The change is a model-download refactor that simplifies file selection logic and removes backend hooks. No security concern.",
+    "tests": "Tests were updated across four test files. test_hf_update_check.cpp adapts 8 call sites to the new select_main_repo_files signature (recipe parameter removed). test_pull_registry.cpp adapts one call site. test_model_download_state.cpp updates an expected error string from 'a .partial inside a directory checkpoint' to 'an interrupted download inside a directory checkpoint'. test_artifact_layout.cpp removes the test_the_policy_travels_with_the_source_not_the_address() test, which tested the now-removed select_checkpoint_files policy-dispatch behavior. No tests were weakened, deleted, or skipped inappropriately."
+  },
+  "generation_seconds": 233.3,
+  "maintainer_todos": [
+    {
+      "text": "Run lemonade pull on one of the affected models (ACE-Step-Music, ThinkSound-SFX, or a Moonshine variant) and confirm all companion files download correctly without errors or missing files."
+    }
+  ],
+  "merge_date": "2026-11-02T22:28:57Z",
+  "pr_number": 4041,
+  "range_start": "v2026.44.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-02T23:24:34+00:00",
+  "reviewers": [
+    "@bitgamma",
+    "@pwilkin",
+    "@sawansri"
+  ],
+  "sha": "fc865d1535ae48914e6f204286b6b3d108ca2f2b",
+  "shout_outs": [],
+  "subject": "refactor(models): list every model file in server_models.json (#4041)",
+  "summary": "Refactors model download to explicitly list every model file in server_models.json for ACE-Step and ThinkSound (using a new checkpoints object), removes the select_checkpoint_files backend hook from ACE-Step, ThinkSound, OpenMOSS and Moonshine, and fixes interrupted-folder-checkpoint detection by climbing the manifest search to the snapshot root.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The model download path is user-reachable and its behavior for ACE-Step, ThinkSound, and Moonshine changes from implicit backend selection to explicit file listing, but no evidence shows a human exercised the full download flow end-to-end before merge."
+}
