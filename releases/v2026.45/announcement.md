@@ -4,7 +4,12 @@
 
 ### The Lemonade app, redesigned from scratch
 
-The new app has six workspaces (Chat, Models, Backends, Apps, Monitor, Settings), multi-provider model search, a visual router policy editor, and Chinese translation. This was a true community effort: `@kpoineal`, `@fl0rianr`, `@meghsat`, `@jeremyfowers`, `@abn`, `@falabellamichael`, `@pwilkin`, `@sofiageo`, `@danielholanda`, `@apollo-2006`, `@popey`, `@siavashhub`, and `@boclifton-MSFT` all built it.
+The new app has six workspaces (Chat, Models, Backends, Apps, Monitor, Settings), multi-provider model search, a visual router policy editor, and Simplified Chinese. GUI3 was a true community effort, with 37 contributors who wrote code, tested, reviewed, and reported issues:
+
+`@kpoineal` `@fl0rianr` `@meghsat` `@PCAssistSoftware` `@jeremyfowers` `@falabellamichael` `@Geramy` `@abn` `@superm1` `@pwilkin` `@Rose22` `@bitgamma` `@danielholanda` `@dochoss` `@anditherobot` `@choppu` `@Davedave001` `@itomek` `@apollo-2006` `@boclifton-MSFT` `@mike2307` `@popey` `@ramkrishna2910` `@ckuethe` `@fanz-amd` `@iswaryaalex` `@sofiageo` `@andersmmg` `@blackdeathdrow` `@HyphenifyLimited` `@Jays-1111` `@programmin1` `@relaxedricky` `@siavashhub` `@Slackyster` `@soulafein83` `@storm1er`
+
+Special thanks to `@kpoineal` for starting GUI3 and to `@fl0rianr` for most of the polish. Thank you all!
+
 
 ### Rebuilt HTTP server and Model Manager
 
