@@ -1,40 +1,38 @@
 ## Lemonade v2026.45.3
 
-### ⚠️ These notes are AI generated and will be revised by a human ⚠️
-
-@everyone v2026.45 is out: the Lemonade app gets a complete redesign with six workspaces and multi-provider model search, five new models land in the registry, 128 GB Strix Halo systems finally stop choking on big models, and update progress is visible right in the app.
-
-### Breaking Changes
-
-- `GET /v1/models/{model}/options` can now return `null` for `resolved_ctx_size` when automatic context sizing has nothing valid to give — clients that assumed an integer will need to handle `null`.
-- Hitting POST-only paths with `GET` (like `slots/{id}` or `models/register`) now returns 405 instead of 404 — update any clients that depended on the 404.
-- A request missing the `model` field now raises `"Missing model field in request"` consistently across every route (chat, completions, embeddings, responses, rerank), so the old inconsistent messages are gone.
-- Form-encoded requests with invalid field types (e.g. a non-numeric temperature on transcription) return 400 instead of 500 — catch 400 for this case now.
-- Streaming responses carry a cancel token that stops the server from sending after a TCP disconnect.
+@everyone v2026.45 is out: a completely redesigned Lemonade app, a rebuilt HTTP server and Model Manager, seven new models, and big models finally loading on 128 GB Strix Halo.
 
 ### The Lemonade app, redesigned from scratch
 
-`@meghsat` rebuilt the entire app as six workspaces — Chat, Models, Backends, Apps, Monitor, Settings — with multi-provider model search, a visual router policy editor, Chinese localization, and a whole lot of polish along the way.
+The new app has six workspaces (Chat, Models, Backends, Apps, Monitor, Settings), multi-provider model search, a visual router policy editor, and Chinese translation. This was a true community effort: `@kpoineal`, `@fl0rianr`, `@meghsat`, `@jeremyfowers`, `@abn`, `@falabellamichael`, `@pwilkin`, `@sofiageo`, `@danielholanda`, `@apollo-2006`, `@popey`, `@siavashhub`, and `@boclifton-MSFT` all built it.
 
-### Five new models for K2-Horizon and Flint
+### Rebuilt HTTP server and Model Manager
 
-`@ramkrishna2910` added five K2-Horizon GGUF models (0.9B, 3.7B, 7B, 32B, and MoVA-36B-A4B) and `@sawansri` added Flint-GGUF to the registry.
+`@jeremyfowers` rebuilt the HTTP server around route classes, with consistent errors and generated API docs. `@bitgamma` refactored the Model Manager for reliability. `GET /v1/models` now reports `checkpoint_status` and `update_available`.
 
-### Strix Halo 128 GB models actually start now
+### Seven new models
 
-`@jeremyfowers` fixed the shared-memory calculation so models like `gpt-oss-120b`, `Qwen3-Next-80B`, and `Qwen3-Coder-Next` load reliably on 128 GB Strix Halo systems — no more failing to start.
+`@ramkrishna2910` added the K2-Horizon family (0.9B, 3.7B, 7B, 32B, and MoVA-36B-A4B). `@sawansri` added Flint and LFM2.5-24B-A2B. Try them with `lemonade pull`.
 
-### See update progress right in the app
+### Strix Halo 128 GB models start again
 
-`@fl0rianr` replaced per-model pulls with server-owned sync jobs, so model and backend updates show progress directly in the app with a compact indicator in the model pill.
+`@jeremyfowers` fixed a v2026.44 regression. `gpt-oss-120b`, `Qwen3-Next-80B`, and `Qwen3-Coder-Next` load again on 128 GB Strix Halo.
+
+### Breaking Changes
+
+- `GET` on POST-only paths (like `slots/{id}` or `models/register`) now returns 405 instead of 404.
+- A request without a `model` field returns `"Missing model field in request"` on every model route.
+- Form-encoded requests with invalid field types (for example, a non-numeric `temperature` on transcription) return 400 instead of 500.
 
 ### Additional Improvements
 
-- `@fl0rianr` fixed telemetry to emit `null` instead of `0.0` for unmeasured timing fields, preventing upstream gauges from poisoning `Prometheus`.
-- `@meghsat` added the GRG-Halo GPU device name so it's recognized instead of reported as unsupported.
-- `@fl0rianr` added a compact progress indicator for backend installs and model downloads during chat preparation, and unified ROCm backend job IDs.
-- `@fl0rianr` fixed API key persistence in the browser, made chat history persistence enabled by default, and added an Update button to the model detail panel.
-- `@fl0rianr` added automated contrast checks across five primary views and fixed two WCAG AA violations in light mode.
-- `@ramkrishna2910` fixed `*_bin` override examples in the docs to show full executable paths, and `@ramkrishs` distinguished closed connections from server-not-running in the CLI.
+- `@sawansri` improved `lemonade launch pi`: API keys go through an env var, and vision models and MCP are configured automatically.
+- `@sreeram-11` restored ROCm image generation on Windows.
+- `@meghsat` fixed model delete so shared files no longer stay on disk, and added GRG-Halo to the supported devices.
+- `@fl0rianr` added model and backend update progress in the app, mic dictation in every mode, the "Remember API key" option in the browser, and chat history on by default.
+- `@iswaryaalex` added AMD GPU usage and VRAM reporting on Windows.
+- `@mike2307` made telemetry report `null` instead of `0.0` for unmeasured timing.
+- `@bernardogv` made `*_bin` overrides accept a directory.
+- `@ramkrishs` made the CLI tell a closed connection apart from a server that isn't running.
 
-Grab v2026.45.3 from [GitHub Releases](https://github.com/lemonade-sdk/lemonade/releases) — I'll save a longer write-up for the blog, but tell me in #general what you think of the new look!
+Get v2026.45.3 from [GitHub Releases](https://github.com/lemonade-sdk/lemonade/releases/tag/v2026.45.3) and tell us in #general what you think of the new app!
