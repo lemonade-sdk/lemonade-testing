@@ -1,0 +1,52 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.46",
+  "commit_sha": "a5b414b7fb9e320da471b1e570e7d77f29625064",
+  "committed_at": "2026-11-03T15:45:14+00:00",
+  "evidence": {
+    "api_compatibility": "The PR drops the `enable_containers` config key, its validation, getter, and config effect (commit d3381e51). Any user or script that reads or sets `enable_containers` will encounter an unknown config key. The CLI's `lemonade backends install` and `lemonade run`/`load` commands no longer check `enable_containers` — they now unconditionally check setup prerequisites and refuse to proceed if setup fails. The `lemonade backends install --yes` flag is retained but its semantics change: it now skips the setup-prompt rather than an enable-prompt. The spec-driven development guide (RFC #3585) was approved before this PR.",
+    "documentation": "The PR updates the container spec, the llamacpp backend docs, the load guide, the Docker/Podman choice guide, and the GUI Setup panel. The container images are linked to their registry pages. The setup-check output fields (message, action, setup_checks) are documented in /system-info and the CLI output. The model-download refactoring (removing select_checkpoint_files) updates the backends-reference doc. No standalone user-facing release note entry is included.",
+    "manual_release_testing": "The PR ships a new container backend (llamacpp:nathanw) that users can install and load — a fully user-reachable surface. CI includes a Dispatch-based test and GitHub-hosted smoke tests for podman (rootless and rootful) and docker engine, but the smoke tests run on CI infrastructure, not on a release candidate installed by a tester. The container image (docker.io/kyuz0/amd-strix-halo-toolboxes:vulkan-radv-performance) is an external, community-built image; no evidence shows it was vetted or pulled manually on a release build. Two specific manual release tests are recommended: one on a clean Ubuntu 24.04 system with rootless Podman, and one under lemond.service (systemd) to verify the service-unit changes for PrivateTmp, XDG_RUNTIME_DIR, and network setup.",
+    "post_approval_commits": "There are no explicit approvals to measure churn against. The branch received roughly 30 individual commits over a three-week review period (Oct 21 – Nov 3), including a major refactor that dropped the enable_containers setting entirely (d3381e51), a startup-sweep removal (b83076d2), and a Docker detection overhaul using `docker info` instead of a hardcoded socket path. These are substantial behavior changes made during review rather than minor polish.",
+    "review": "The PR was merged without any formal approval. bitgamma submitted a CHANGES_REQUESTED review noting wrinkles on detection/help messages and concerns about NoNewPrivileges=yes / RestrictNamespaces=yes blocking rootless Podman, then later submitted a bare COMMENTED review (no body). superm1 provided six COMMENTED reviews with substantive feedback on packaging, Docker detection, and the enable_containers opt-in policy. sawansri contributed two COMMENTED reviews. No reviewer ever transitioned to an APPROVED state; the author merged the PR directly.",
+    "security": "Container backends run `podman run` or `docker run` with `--cap-drop=all --security-opt=no-new-privileges --pull=never`, which is a strong security posture. Container images are restricted to two allowlisted registries (docker.io/kyuz0/ and ghcr.io/peonist-ai/). The setup checks read device node access directly (instead of trusting group membership) and the OCI runtime (runc vs crun) is validated for rootless Podman — runc silently drops supplementary groups, causing GPU containers to fall back to CPU. The image pin uses a sha256 digest, not a mutable tag. The `allowed_image()` check is a simple prefix match with no glob or regex injection surface.",
+    "tests": "The PR adds a comprehensive C++ unit test suite (test_container_manager.cpp, 591 lines) that exercises the ContainerManager against a FakeHost — validating run_command, setup checks, network creation, rootful/CNI edge cases, OCI runtime selection, and name sanitization. It also adds a Python end-to-end smoke test (test/server_containers.py) that runs install, load, chat, unload, kill-lemond, and uninstall across podman/docker in rootless and rootful modes. The Docker detection change (`docker info` replacing the hardcoded `/var/run/docker.sock`) is covered in the C++ tests via the FakeHost's docker_info / docker_info_exit fields. The group-access change (reading /dev/kfd and renderD* nodes instead of checking video/render groups) is also covered. No evidence of test weakening or deletion."
+  },
+  "generation_seconds": 431.1,
+  "maintainer_todos": [
+    {
+      "text": "Run `lemonade backends install llamacpp:nathanw` on a fresh Ubuntu 24.04 or Fedora system with podman installed, then load a model using `llamacpp_backend=nathanw` and confirm inference works and a container named lemonade-<port>-llamacpp-nathanw-<model> appears."
+    },
+    {
+      "text": "Run the same install and load sequence under lemond.service (systemd) on a rootless-Podman host to confirm the container starts, the setup checks pass, and llama-server is reachable at the published port."
+    },
+    {
+      "text": "Run `lemonade backends uninstall llamacpp:nathanw` and confirm the container and its network are cleaned up, then reload the model and confirm a new container is created."
+    },
+    {
+      "text": "On a rootful-Podman host, load a model and confirm lemond reaches the container at its network address rather than through a published port."
+    }
+  ],
+  "merge_date": "2026-11-03T16:40:08Z",
+  "pr_number": 3709,
+  "range_start": "v2026.44.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-03T16:49:32+00:00",
+  "reviewers": [
+    "@superm1",
+    "@bitgamma",
+    "@sawansri"
+  ],
+  "sha": "a5b414b7fb9e320da471b1e570e7d77f29625064",
+  "shout_outs": [
+    {
+      "handle": "@sawansri",
+      "reason": "Credited as a co-author of the merge commit (sawan1210@gmail.com), having written part of the implementation."
+    }
+  ],
+  "subject": "feat(backends): run container backends through ContainerManager, starting with llamacpp:nathanw (#3709)",
+  "summary": "Adds the ContainerManager C++ class (replacing ad-hoc podman/docker calls), implements setup-check reporting, adds the llamacpp:nathanw container backend backed by docker.io/kyuz0/amd-strix-halo-toolboxes, refactors model-download file selection to remove select_checkpoint_files, and updates the frontend to track per-model loading/busy/error state.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The PR was merged without any formal approval — bitgamma requested changes and later commented without approving, and superm1 and sawansri never explicitly approved, so a maintainer should review before shipping."
+}
