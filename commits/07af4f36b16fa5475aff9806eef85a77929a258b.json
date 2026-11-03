@@ -1,0 +1,58 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.46",
+  "commit_sha": "07af4f36b16fa5475aff9806eef85a77929a258b",
+  "committed_at": "2026-11-03T17:25:45+00:00",
+  "evidence": {
+    "api_compatibility": "The native ds4:rocm binary is replaced by a container image. The backend descriptor changes BackendFormat from Native to Container for the rocm backend. This is a breaking change acknowledged by the author. Existing GGUF models and their checkpoints continue to work. The server_models.json gains a 'checkpoints' key alongside 'checkpoint' for models with DSpark drafts, which is additive. The select_checkpoint_files hook is removed from BackendOps — this is an internal API change that backends using it (ACE-Step, ThinkSound, Moonshine, OpenMoss) were updated in this PR. No external API endpoints or protocols change.",
+    "documentation": "The PR description includes a full testing report and a performance table. The author checked 'Documentation is affected and has been updated.' Changes touch docs/spec, docs/load, and container-backends.md. The breaking change (native binary replaced by container) is clearly called out. However, the three static-analysis-detected edge cases (SELinux, HIP indexing, /no_think scoping) have no documentation noting the behavior divergence or mitigation.",
+    "manual_release_testing": "The commit changes multiple user-reachable surfaces that need verification: the ds4:rocm backend installation and loading, the memory plan resident vs streaming decision based on GPU pool size, DSpark speculative decoding, GPU device selection, /no_think prefix stripping behavior, GGUF metadata-driven context auto-tune, and the multi-file checkpoint download path. The author's self-testing covers Strix Halo with Docker and a 62 GiB pool; the release must be tested on Podman (rootless and rootful), with Docker only (no Podman), and on hosts with SELinux enforcing. See Maintainer To-Do list for concrete items.",
+    "post_approval_commits": "No commits were added after the final approval (sawansri, 2026-11-02). The merge happened the same day the PR was closed (2026-11-03T18:06:52Z).",
+    "review": "Three substantive human reviews: @bitgamma (APPROVED 2026-10-30, new backends expertise), @superm1 (APPROVED 2026-10-31, containers/ROCm expertise), @sawansri (APPROVED 2026-11-02, containers/new backends expertise). The PR also required RFC #3585 approval per Spec Driven Development. The PR author is listed as a maintainer with 'new backends' expertise, and all three approvers cover the relevant subject areas. No commits were added after the final approval. CodeRabbit raised four issues (SELinux fail-closed, HIP KFD node indexing, /no_think prefix scoping, user-supplied --mtp-model) — none were addressed in the diff.",
+    "security": "The PR adds /dev/kfd device passthrough to the ds4 container and reads SELinux booleans from /sys/fs. It introduces an SELinux check that can block container startup on enforcing hosts — a positive security control. However, CodeRabbit flagged that the SELinux boolean check treats a missing file as enabled (fail-open). The container image comes from docker.io/kyuz0/strix-halo-ds4-toolbox, a third-party registry — this is a supply-chain change. The image was pinned by a separate commit in the stack. No credentials, telemetry, or network calls to unknown endpoints were introduced.",
+    "tests": "C++ unit tests cover the new memory_plan logic, HIP_VISIBLE_DEVICES device selection, SELinux checks, and model file download refactoring. The old ds4 install-param test was deleted (no longer applicable to a container backend). Python integration tests for server_llm.py were extended to pass DS4-specific extra_body fields. The author documented manual testing on a real Strix Halo box (Ubuntu 26.04, Docker 29.8): install, upgrade from native b0001, upgrade from previous image pin, 31 server_llm.py tests passing, auto-tuned context of 80,472 tokens, 3,100-token prompt in 212s, 77,770-token streamed prompt in 58.7 min, model eviction retry, and 0.4s unload. The author's self-testing on real hardware is strong, but the SELinux fail-closed edge case and /no_think prefix scoping were not demonstrated."
+  },
+  "generation_seconds": 394.2,
+  "maintainer_todos": [
+    {
+      "text": "On a Fedora host with SELinux enforcing, remove or empty /sys/fs/selinux/booleans/container_use_devices and confirm that ds4:rocm installation reports a failure with the step to enable it (the current code treats a missing file as enabled)."
+    },
+    {
+      "text": "On a Strix Halo box with an eGPU attached, load a DS4 model and confirm the container runs on the integrated GPU (the one ds4 validates) rather than the discrete GPU."
+    },
+    {
+      "text": "Send a chat completion with /no_think\\n as the first characters of an earlier (non-last) user message turn and confirm ds4-server receives the prefix in that earlier turn (the current code strips it from all user messages, not just the last one)."
+    },
+    {
+      "text": "Start the server with a 62 GiB GPU pool, load DeepSeek-V4-Flash-IQ2XXS-DS4, send a long prompt, and confirm the compositor does not crash from memory pressure (the plan should stream experts and leave ~25 GB free)."
+    },
+    {
+      "text": "Start the server on a Strix Halo with a 115+ GiB pool, load DeepSeek-V4-Flash-IQ2XXS-DS4, confirm it runs resident with DSpark (not streaming), and verify decode speed is above 12 tok/s."
+    },
+    {
+      "text": "Install ds4:rocm on a host with only Docker (no Podman), load a DS4 model, and confirm it runs correctly through Docker."
+    }
+  ],
+  "merge_date": "2026-11-03T18:06:52Z",
+  "pr_number": 3710,
+  "range_start": "v2026.44.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-03T18:15:48+00:00",
+  "reviewers": [
+    "@bitgamma",
+    "@sawansri",
+    "@superm1"
+  ],
+  "sha": "07af4f36b16fa5475aff9806eef85a77929a258b",
+  "shout_outs": [
+    {
+      "handle": "@sawansri",
+      "reason": "Co-authored substantial portions of the PR (multiple commits with Co-authored-by trailer) and provided an approval review."
+    }
+  ],
+  "subject": "feat(ds4): move ds4:rocm to a container backend (#3710)",
+  "summary": "Converts the ds4:rocm backend from a native binary to a container backend (docker.io/kyuz0/strix-halo-ds4-toolbox), adds a GPU-specific memory planning system that runs DS4 resident with DSpark speculative decoding when the GPU pool holds the model plus 16 GiB, adds HIP_VISIBLE_DEVICES for correct GPU selection, checks SELinux for /dev/kfd backends, populates GGUF metadata for DS4 auto-tune, adds ten new DS4 model variants, and removes the backend-specific select_checkpoint_files hook in favor of explicit multi-file checkpoints in server_models.json.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The PR is well-reviewed with appropriate subject-matter expertise and documented manual testing on real hardware, but three static-analysis-detected edge cases (SELinux fail-closed, HIP KFD node indexing, /no_think prefix scoping) warrant manual verification before release."
+}
