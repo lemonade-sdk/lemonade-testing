@@ -1,0 +1,51 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.46",
+  "commit_sha": "204f00df74c161a5baabdcdb5bd580977588a6b4",
+  "committed_at": "2026-11-03T18:54:14+00:00",
+  "evidence": {
+    "api_compatibility": "This commit introduces a new slot policy value 'exclusive_host' to the slot_policy enum in the system-info schema. Existing setups are unaffected — they simply see a new enum value in the API. The model registry gains a new 'Qwen3.8-Flash-Next-Halogen' entry. No existing API, config key, CLI flag, or persistence format is changed or removed.",
+    "documentation": "Docs updated: cli.md documents the --ctx-size option for the halogen recipe; container-backends.md adds the halogen:rocm row with its Linux 6.18.4+ and CONFIG_HSA_AMD_SVM requirement; custom-models.md adds 'halogen' to the generated recipe-values list. The backend descriptor, system-info schema, and server_models.json are all consistent. The docs/dev/adding-a-backend.md and backends-reference.md were also updated. The Halogen-specific hardware requirements (gfx1151, Linux version, SVM/CWSR kernel flags) are documented in the container-backends guide.",
+    "manual_release_testing": "No evidence that a human loaded the Halogen container on a gfx1151 Strix Halo device during review. Sawansri confirmed end-to-end testing on Ubuntu 24.04 but the host-exclusive eviction logic and the KFD kernel checks are hardware-specific. The container image pin (0.18.22) and the new model bundle are user-facing artifacts that should be exercised on target hardware before release.",
+    "post_approval_commits": "No commits were added after the first (and only) substantive human approval from @sawansri at 2026-11-03T14:30:28Z. The final merge commit at 2026-11-03T18:54:14+00:00 is a squash-merge of the entire PR branch. Post-approval activity was limited to CodeRabbit auto-reviews and minor comment threads.",
+    "review": "The PR was reviewed by @sawansri (subject-matter expertise: cli, new backends, new models per docs/dev/contribute.md) and @wenis (subject-matter expertise: new backends, smart router, per contributor context). Sawansri tested end-to-end on Ubuntu 24.04, raised a legitimate concern about `lemonade pull` interrupt behavior, and approved after the author addressed it. Wenis validated the kernel check, env contract, readiness probe, and host exclusivity against the project's spec, and raised a follow-up about relaying Anthropic Messages wire. The PR had 16 reviews total (including 8 from CodeRabbit auto-reviews). One label check failed on the merge commit but did not block the merge. CI checks were mostly green with two failures (label check and likely a non-blocking lint label).",
+    "security": "The container image is pinned by digest (sha256:273714...) which prevents supply-chain drift — good. The image is from an external registry (ghcr.io/peonist-ai). The model checkpoints come from HuggingFace via peonist-ai/ namespace. The new model_mounts function traverses local directories and resolves symlinks into container bind-mounts; dangling symlinks are silently skipped rather than reported (a CodeRabbit finding acknowledged but not fixed). The router's ExclusiveHost eviction is correctly gated on is_unmetered_recipe to exclude cloud models. No credential handling, telemetry, or network calls outside container runtime.",
+    "tests": "The PR adds a C++ unit test (test_halogen_kernel_check) exercising the KFD SVM and CWSR kernel checks with three cases: passing node, missing SVM capability, and incorrect CWSR size. It also adds an integration test (test_019b_host_exclusive) that verifies the ExclusiveHost eviction policy by loading a model then the host-exclusive model and checking that only the host-exclusive model remains. A capabilities config entry for 'halogen' registers the Qwen3.8-Flash-Next-Halogen test model with full support flags. No test covers the actual Halogen container startup and inference; the integration test requires host_exclusive support which only runs on gfx1151 hardware."
+  },
+  "generation_seconds": 424.6,
+  "maintainer_todos": [
+    {
+      "text": "On a Strix Halo with Linux 6.18.4 or newer, register the Qwen3.8-Flash-Next-Halogen model and confirm that loading it evicts every other local model and that the /health endpoint reports only the Halogen model."
+    },
+    {
+      "text": "Load a local model first, then load Qwen3.8-Flash-Next-Halogen and confirm the first model is evicted; then unload Halogen and load a second local model and confirm it starts normally."
+    },
+    {
+      "text": "Send a chat-completion request to the Halogen server (via the lemonade API or directly on its port) and verify it returns a non-empty completion with reasoning turned off."
+    },
+    {
+      "text": "Run `lemonade pull Qwen3.8-Flash-Next-Halogen` and confirm all 11 checkpoints download without error; then interrupt the download mid-way and retry to verify the model can be completed and loaded afterward."
+    }
+  ],
+  "merge_date": "2026-11-03T18:54:14+00:00",
+  "pr_number": 3712,
+  "range_start": "v2026.44.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-03T20:40:58+00:00",
+  "reviewers": [
+    "@sawansri",
+    "@wenis"
+  ],
+  "sha": "204f00df74c161a5baabdcdb5bd580977588a6b4",
+  "shout_outs": [
+    {
+      "handle": "@wenis",
+      "reason": "Conducted a thorough domain-level review validating kernel checks, the env contract, and /health readiness probe against the project's docs; flagged an incorrect MTP claim about the n-gram file and raised the strategic question of relaying Anthropic Messages wire through local backends."
+    }
+  ],
+  "subject": "feat(halogen): add the Halogen Flash container backend (#3712)",
+  "summary": "Adds the Halogen Flash container backend (peonyist-ai/halogen-flash-server:0.18.22) for the Qwen3.8-Flash-Next model on AMD gfx1151 Strix Halo, introducing a new ExclusiveHost slot policy that prevents any other local model from loading on the same machine.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "A large, user-visible backend was merged without any human exercising the end-to-end Halogen load path on gfx1151 hardware, and the new ExclusiveHost eviction policy and directory-mount expansion were not manually validated on a real device."
+}
