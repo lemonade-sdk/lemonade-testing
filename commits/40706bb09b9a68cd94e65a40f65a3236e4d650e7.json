@@ -1,0 +1,39 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.46",
+  "commit_sha": "40706bb09b9a68cd94e65a40f65a3236e4d650e7",
+  "committed_at": "2026-11-03T11:52:37+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The new upscale_factor parameter is optional (Support::Available) and defaults to 0.0 (pass-through to TheNoise for native behavior). Existing callers without the parameter are unaffected. The API documentation in docs/api/openai.md is updated with the new parameter table row and adjusted description.",
+    "documentation": "docs/api/openai.md updated: description changed from 'The model sets the upscale factor' to 'The model sets the default upscale factor; TheNoise models also accept an optional upscale_factor.' New table row documents the optional parameter. src/cpp/server/routes/openai/images/images_upscale.cpp route description also updated.",
+    "manual_release_testing": "No evidence of a human exercising the new /v1/images/upscale behavior with a custom upscale_factor before merge. The PR touches a live API endpoint with a new optional parameter, so manual smoke testing is warranted.",
+    "post_approval_commits": "Two commits total. First commit c4955cb (feat) authored by @fl0rianr. Second commit f30c77b (fix: recheck upscale recipe after model download) also by @fl0rianr, pushed at 2026-11-03T11:02:51Z — before the approval at 11:45:21Z. No commits were added after approval, so the approval covers the full diff.",
+    "review": "The PR was assigned reviewers @kpoineal and @jeremyfowers but received only one substantive human approval, from @bitgamma (approved 2026-11-03T11:45:21Z). @bitgamma is listed in docs/dev/contribute.md with subject-area expertise in thenoise, cli, recipes, and new backends — the right domain for this change. The approval comment acknowledged a valid concern about whether the feature is strictly necessary but accepted the implementation as-is. CodeRabbit raised three inline comments: precision loss in std::to_string (author declined, noting the output is integer), missing per-model native-scale validation (author declined as scope creep), and a post-download recipe recheck (author addressed with a second commit). All three were resolved before approval.",
+    "security": "No security concerns. The parameter is validated with a minimum of 1.0 in the route schema and rejected for non-TheNoise backends. The value is passed to a CLI flag without code execution or network interaction beyond the model's own operation.",
+    "tests": "No unit or integration tests for the new upscale_factor parameter. The author reports local testing (C++ build + API smoke test) in the PR description. CodeRabbit flagged the absence of native-scale validation but the author declined as scope creep — acceptable for a minimal feature addition, but the lack of automated tests means no regression guard exists for this new code path."
+  },
+  "generation_seconds": 165.7,
+  "maintainer_todos": [
+    {
+      "text": "Send a POST to /v1/images/upscale with model set to a TheNoise model (e.g. Remacri-4x-TheNoise) and upscale_factor set to 1.5, and confirm the request returns a valid upscaled image."
+    },
+    {
+      "text": "Send a POST to /v1/images/upscale with upscale_factor set on an sd-cpp model (e.g. RealESRGAN-x4plus) and confirm the response is a 400 error with the message that upscale_factor is supported only for TheNoise upscale models."
+    }
+  ],
+  "merge_date": "2026-11-03T12:37:27Z",
+  "pr_number": 4046,
+  "range_start": "v2026.44.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-03T12:42:01+00:00",
+  "reviewers": [
+    "@bitgamma"
+  ],
+  "sha": "40706bb09b9a68cd94e65a40f65a3236e4d650e7",
+  "shout_outs": [],
+  "subject": "feat(images): support optional upscale factor for TheNoise (#4046)",
+  "summary": "Adds an optional upscale_factor parameter to POST /v1/images/upscale, forwarding custom fractional scale factors to TheNoise CLI models while rejecting the parameter for sd-cpp models.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "All checks passed and a TheNoise-domain reviewer approved, but there is no evidence the new /v1/images/upscale endpoint with an upscale_factor was manually exercised."
+}
