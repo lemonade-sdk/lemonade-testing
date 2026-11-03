@@ -1,0 +1,41 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.46",
+  "commit_sha": "152f6fff35ddf6d891433535d40ac4da71c77235",
+  "committed_at": "2026-11-03T18:54:14+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. This PR adds a new backend recipe (rocmfpx), new CLI options (--ctx-size and --rocmfpx-args for the rocmfpx recipe), a new API config section (rocmfpx), and 3 new built-in model entries. Existing setups are unaffected. Custom arguments are validated against a reserved-flags set to prevent port/model/host conflicts.",
+    "documentation": "Comprehensive: README.md table updated with rocmfpx row (rowspan adjusted to 13), docs/api/internal.md adds rocmfpx config section, docs/assets/models.js registers rocmfpx in RECIPE_PRIORITY and RECIPE_DISPLAY_NAMES, docs/dev/backends-reference.md adds rocmfpx tier/format/CLI entries, docs/guide/cli.md documents --ctx-size and --rocmfpx-args, docs/guide/configuration/README.md adds rocmfpx config block, docs/guide/configuration/container-backends.md links the toolbox image, docs/guide/configuration/custom-models.md adds rocmfpx to --recipe values, src/cpp/resources/defaults.json adds the config section, and src/cpp/resources/server_models.json adds 3 model entries. All generated markers are consistent.",
+    "manual_release_testing": "sawansri tested e2e locally and reported success, but there is no evidence the tests ran on actual Strix Halo hardware (gfx1151). The backend targets AMD Strix Halo specifically; compatibility or performance issues on the exact chip are not ruled out. CI ran and passed, but CI rigs may not include a gfx1151 device. This is a user-reachable change: users with Strix Halo GPUs can run any of the 3 new models via `lemonade run` or the OpenAI-compatible API, with new CLI flags --ctx-size and --rocmfpx-args.",
+    "post_approval_commits": "None. The first and latest approvals share the same timestamp (2026-11-02T15:31:30Z), and no commits were added after approval. The branch was stable through merge.",
+    "review": "PR #3711 was approved by @sawansri (who has 'new backends' and 'new models' subject-matter expertise per docs/dev/contribute.md). @sawansri stated 'Tested e2e with Qwen3.6-35B-A3B-ROCmFP4-MTP and Qwen3.8-27B-ROCmFP4-STRIX-MTP. Both work well, thanks!' The PR was also reviewed by the AI bot coderabbitai[bot] which raised two nitpicks: (1) the non-MTP rocmfpx load path is not covered by the capabilities test suite, and (2) only Qwen3.8-27B appears in the capabilities test_models, leaving Gemma-4 and Qwen3.6 untested there. No human inline comments were posted. No one flagged the RFC-3585 dependency in the PR body as unmet.",
+    "security": "The commit pins the container image to a specific SHA256 digest (rocm-10.0-rocmfpx@sha256:4df326e907a469f4acc6091fa7fb68fb275c2d5a7136bacd8e47e7339a5c49f7), which is good practice. Custom user arguments are validated against a set of reserved flags (-c, --ctx-size, -m, --model, --host, --port, etc.) to prevent argument injection attacks. The container exposes /dev/dri and /dev/kfd to the GPU, which is standard for ROCm containers. No credential handling, network calls to external services, or obfuscated blobs are introduced.",
+    "tests": "The CI workflow cpp_server_build_test_release.yml gains a rocmfpx test job (install: rocmfpx:rocm, extra_args: --wrapped-server rocmfpx --backend rocm) and all CI checks passed. The test/utils/capabilities.py file adds a rocmfpx entry with full OpenAI API capability flags and maps llm to Qwen3.8-27B-ROCmFP4-STRIX-MTP. However, the capabilities test only covers the MTP model; the non-MTP load path for the other two models and the non-MTP model itself are not tested in the suite. coderabbit flagged this coverage gap. No unit tests for the new rocmfpx_server.cpp C++ code are present, consistent with how other backends are tested in this project."
+  },
+  "generation_seconds": 224.2,
+  "maintainer_todos": [
+    {
+      "text": "Run `lemonade run Qwen3.8-27B-ROCmFP4-STRIX-MTP`, `lemonade run Gemma-4-26B-A4B-it-ROCmFP4`, and `lemonade run Qwen3.6-35B-A3B-ROCmFP4-MTP` on an AMD Strix Halo device and confirm chat, tool calls, and vision responses succeed for each model."
+    }
+  ],
+  "merge_date": "2026-11-03T20:31:20Z",
+  "pr_number": 3711,
+  "range_start": "v2026.44.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-03T20:37:39+00:00",
+  "reviewers": [
+    "@sawansri"
+  ],
+  "sha": "152f6fff35ddf6d891433535d40ac4da71c77235",
+  "shout_outs": [
+    {
+      "handle": "@sawansri",
+      "reason": "Performed hands-on e2e testing of both Qwen3.6-35B-A3B-ROCmFP4-MTP and Qwen3.8-27B-ROCmFP4-STRIX-MTP, confirming they work well beyond what a static review can show."
+    }
+  ],
+  "subject": "feat(rocmfpx): add the ROCm FPX container backend (#3711)",
+  "summary": "Adds the ROCm FPX container backend (rocmfpx:rocm) with 3 models — Qwen3.8-27B-ROCmFP4-STRIX-MTP, Gemma-4-26B-A4B-it-ROCmFP4, and Qwen3.6-35B-A3B-ROCmFP4-MTP — on AMD Strix Halo (gfx1151) Linux, defaulting to 2048-token batches.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "A new backend and 3 models ship to users, but there is no evidence the backend was exercised on actual Strix Halo hardware before merge."
+}
