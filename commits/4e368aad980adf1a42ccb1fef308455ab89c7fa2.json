@@ -1,0 +1,41 @@
+{
+  "author": "@pwilkin",
+  "branch": "main",
+  "bucket": "v2026.46",
+  "commit_sha": "4e368aad980adf1a42ccb1fef308455ab89c7fa2",
+  "committed_at": "2026-11-03T02:14:36+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The trellis binary contract is unchanged (trellis-server --models <dir> --host 127.0.0.1 --port <p> --res 512, GET /health). ACE-Step routes and the ace-batch-boundary multipart response are unchanged. The API docs were re-recorded with new response sizes. The prefix-match change in the launch path is additive — existing \"cuda\" launches behave identically.",
+    "documentation": "README.md updated to list the trellis cuda12 row. docs/dev/backends-reference.md updated with the new cuda12 backend entry (experimental, native, linux/windows, nvidia_gpu sm_60–sm_72). docs/guide/configuration/README.md regenerated to include the trellis.cuda12_bin default. docs/api/lemonade.md re-recorded with new response sizes for ACE-Step audio and TRELLIS 3D generation examples.",
+    "manual_release_testing": "The trellis.cuda12 config key (trellis.cuda12_bin defaulting to builtin) is a new user-visible configuration option. The backend adds sm_60/sm_61/sm_62/sm_70/sm_72 as supported NVIDIA GPU architectures. The launch path in trellis_server.cpp was changed from backend == \"cuda\" to a prefix match (backend.rfind(\"cuda\", 0) == 0) to route cuda12 variants correctly. No evidence that a human exercised a cuda12 model load on real hardware before merging. CI passed on the merge group but CI does not cover a Pascal/Volta GPU.",
+    "post_approval_commits": "The PR head (f0482737b) was merged as-is into 4e368aad. The merge commit has one parent (fc865d153), confirming no additional commits landed after approval. The PR author addressed the CodeRabbit drift finding in commit 45359fb before the approval was cast, so the approved diff matches the merged diff.",
+    "review": "PR #3993 was approved by @jeremyfowers with a brief comment. @pwilkin is a maintainer with subject-area expertise for Trellis, ACE-Step, and ThinkSound per docs/dev/contribute.md. CodeRabbit flagged a generated-docs drift (trellis.cuda12_bin missing from the config-example block), which the author caught and fixed in a follow-up commit before approval. The review was light but appropriate for a routine version-bump chore.",
+    "security": "No security concerns. Only version numbers and SHA256 checksums for upstream release assets are updated. No new code execution paths, credential handling, or network calls. The sha256 values match GitHub's published release digests.",
+    "tests": "This is a version-bump and config-variant PR with no new application logic. The backend contracts are unchanged (same CLI flags, same API routes). SHA256 hashes were verified against GitHub release assets. No regression or integration tests are expected for a pure version bump."
+  },
+  "generation_seconds": 232.0,
+  "maintainer_todos": [
+    {
+      "text": "Start the server with trellis cuda12 selected (or auto on a Pascal/Volta card) and confirm a model loads and responds on GET /v1/3d/generations."
+    }
+  ],
+  "merge_date": "2026-11-03T02:50:26Z",
+  "pr_number": 3993,
+  "range_start": "v2026.44.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-03T02:56:25+00:00",
+  "reviewers": [
+    "@jeremyfowers"
+  ],
+  "sha": "4e368aad980adf1a42ccb1fef308455ab89c7fa2",
+  "shout_outs": [
+    {
+      "handle": "@jeremyfowers",
+      "reason": "Co-authored-by: Jeremy Fowers contributed to the trellis CUDA 12 variant implementation (co-author trailer in the merge commit)."
+    }
+  ],
+  "subject": "chore: bump pwilkin backend versions (#3993)",
+  "summary": "Bumps TRELLIS from v0.4.3 to v0.8.1 and ACE-Step from v0.1.1 to v0.1.2, and adds a trellis.cuda12 backend variant for NVIDIA Pascal/Volta GPUs (sm_60–sm_72) using the CUDA 12 build of TRELLIS v0.8.1.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The new trellis.cuda12 backend variant adds a user-reachable configuration option that was not exercised end-to-end before merging."
+}
