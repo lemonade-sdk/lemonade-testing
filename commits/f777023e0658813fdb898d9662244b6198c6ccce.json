@@ -1,0 +1,43 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.46",
+  "commit_sha": "f777023e0658813fdb898d9662244b6198c6ccce",
+  "committed_at": "2026-11-03T21:12:01+00:00",
+  "evidence": {
+    "api_compatibility": "No API changes. The only file changed in the diff is .github/workflows/validate_containers.yml (new file) and docs/dev/specs/container-backends.md (spec documentation update). No CLI, no HTTP API, no config schema, no persistence format changes.",
+    "documentation": "The spec at docs/dev/specs/container-backends.md is updated to reflect the new workflow: weekly schedule, PR-triggered pin lookup, versioned tag shape matching, and Devlab Dispatch validation of generated pin PRs. The spec claims each update PR is validated by test-container-backends on Devlab Dispatch runners, but the workflow code does not implement this — the label is never added and GITHUB_TOKEN does not trigger ci:backends jobs. This is a spec-vs-code mismatch that should be corrected.",
+    "manual_release_testing": "This PR changes only a CI workflow and spec documentation. There is no user-facing surface — no CLI flag, no API endpoint, no config option, no GUI change, no installed artifact, and no newly supported model or backend. The workflow itself runs on GitHub's ubuntu-latest runner, not on end-user systems. No manual release testing is warranted.",
+    "post_approval_commits": "No commits were added after the first (and only) approval at 2026-11-03T16:56:13Z. The approval was on commit 0244c27606e8c051bdaea04b1c5208b42f880470, which is the same as the PR head sha 0530a15f618fe33a69c3b659af44785890b0b755 (the merge commit squashes 110+ commits). No post-approval churn detected.",
+    "review": "The PR received one human approval from @sawansri (LGTM). @bitgamma and @kpoineal were requested but never reviewed. @sawansri is listed under agents/tui/cli/new_backends in the maintainers table, not containers; containers expertise belongs to @superm1, @siavashhub, and @jeremyfowers. The approval was brief with no substantive comments. Four CodeRabbit comments flagged real issues: (1) workflow_dispatch from a feature branch opens a PR with that branch's unmerged commits, (2) the branch name is hash-derived from backend_versions.json, so each weekly run opens a new PR instead of updating an existing one, (3) a failed gh pr create after git push leaves an orphaned branch that blocks future pushes, (4) the pin PR is created with GITHUB_TOKEN so the ci:backends label is never added and the Devlab Dispatch validation job never runs. @jeremyfowers replied about one CI failure being a HuggingFace rate limit, but the CodeRabbit findings were not addressed before merge.",
+    "security": "The workflow authenticates to Docker Hub and GHCR for read access using standard token-based registry auth — no credentials are embedded or passed to containers. Permissions are contents:write and pull-requests:write, which is standard for automation PRs. CodeRabbit flagged a minor maintainability issue (header comment explaining workflow behavior violates project comment guidelines). No supply-chain risk beyond standard GitHub Actions usage.",
+    "tests": "The new workflow file itself does not contain inline tests, but it follows the established pattern of validate_llamacpp.yml. The container pin PR it generates will be validated by the existing test-container-backends job when it finally runs. CodeRabbit flagged that this validation step is broken (see review evidence above). The broader container backends feature that this PR's commit message summarizes includes smoke tests in test/cpp/test_container_manager.cpp and CI jobs, but those were committed in separate prior merges."
+  },
+  "generation_seconds": 473.0,
+  "maintainer_todos": [
+    {
+      "text": "Open a PR that changes .github/workflows/validate_containers.yml (e.g., touch the file) and confirm that the container pin lookup workflow runs on it."
+    }
+  ],
+  "merge_date": "2026-11-03T22:34:30Z",
+  "pr_number": 3713,
+  "range_start": "v2026.44.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-03T22:44:39+00:00",
+  "reviewers": [
+    "@sawansri",
+    "@bitgamma",
+    "@kpoineal"
+  ],
+  "sha": "f777023e0658813fdb898d9662244b6198c6ccce",
+  "shout_outs": [
+    {
+      "handle": "@sawansri",
+      "reason": "Co-author who contributed four substantive fix commits (Podman DNS, AppArmor/Pasta, /var/lib/cni, PrivateTmp) with detailed root-cause analysis and verified fixes across the container backends feature."
+    }
+  ],
+  "subject": "ci: keep container backend images on the newest build of their tags (#3713)",
+  "summary": "Adds .github/workflows/validate_containers.yml, a weekly CI workflow that resolves the newest digest for every container backend image tag in backend_versions.json and opens a pull request with the updated pins, following the same pattern as validate_llamacpp.yml; also updates the container-backends spec to document the new workflow behavior, tag-shape matching for versioned tags, and Devlab Dispatch validation of generated pin PRs.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The generated container pin PRs do not trigger the Devlab Dispatch container backend validation that the spec describes, so future automated pin updates could merge unvalidated image digests."
+}
