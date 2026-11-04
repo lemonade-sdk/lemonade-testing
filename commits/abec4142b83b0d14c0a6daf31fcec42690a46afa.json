@@ -1,0 +1,33 @@
+{
+  "author": "@kenvandine",
+  "branch": "main",
+  "bucket": "v2026.46",
+  "commit_sha": "abec4142b83b0d14c0a6daf31fcec42690a46afa",
+  "committed_at": "2026-11-04T00:37:43+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The PR author checked 'This PR does not introduce breaking changes.' Only CI workflow files, a new helper script, and docs are modified. No API, CLI, config, or user-facing behavior changes.",
+    "documentation": "docs/dev/self-hosted-runners.md was updated: the cuda capability now lists the concrete workflow and job (was 'TBD'), the DGX Spark entry gained the sjlab-dgx-spark-01 hardware label, and the RTX 5070 x64 runner was added to the hardware labels table. Two review comments flagged minor consistency issues — machine names should use a placeholder pattern instead of literal hostnames, and the lite_only flag's approach was questioned — but these are documented decisions with follow-ups planned as separate PRs.",
+    "manual_release_testing": "This commit touches only CI workflow files and documentation. It does not introduce any user-visible surface — no API endpoints, CLI commands, GUI changes, config options, installed artifacts, or package behavior changes. The new CUDA validation jobs run on self-hosted hardware that is not part of the release user experience. No manual release testing to-do is needed.",
+    "post_approval_commits": "The first approval was 2026-10-01T05:36:13Z. Commits after that approval include: a black formatting pass on update_backend_versions.py (2026-10-08), multiple merge-from-main commits (rebase churn), and a credentials fix (persist-credentials: false) applied 2026-10-27, the same day @meghsat re-approved. The credentials fix was a CodeRabbit finding, addressed without further substantive review, but it is a security hardening change rather than behavioral change. The last merge-from-main landed 2026-11-03, then merge 2026-11-04. No new feature behavior was added after approval.",
+    "review": "The PR received inline comments from @meghsat (2026-09-30) covering stale notes removal, conditional fail-fast for merge_group, sm_121 addition, and CUDA in the results table. @meghsat APPROVED on 2026-10-01T05:36:13Z. @jeremyfowers posted two comment-only reviews on 2026-10-02 questioning the lite_only approach (suggesting VRAM-aware model filtering instead) and documentation consistency (machine names should use a placeholder), then DISMISSED his review to defer detailed review of a larger refactor not in this PR. @kenvandine acknowledged both comments, saying he would follow up separately. @meghsat re-APPROVED on 2026-10-27T01:20:58Z after a rebase and a credentials fix. @meghsat is listed in docs/dev/contribute.md with CI as a subject-area expertise, satisfying the expertise requirement.",
+    "security": "A CodeRabbit finding flagged missing persist-credentials: false in the checkout step of validate-linux, which could expose repository credentials to downstream dependency code or fork-based PRs. This was addressed by @kenvandine in a post-approval commit. No other security concerns identified. The workflow does not handle user credentials or secrets beyond standard GitHub Actions environment variables.",
+    "tests": "The CI workflow itself serves as the validation — the workflow is labeled ci:backends and triggers validation runs on self-hosted runners. All three check suites (Launchpad PPA, Validate New llama.cpp Release, C++ Server Build/Test/Release) passed on the merge commit. The validate_llamacpp.yml workflow includes a validation step that runs test/validate_llamacpp.py against the built binary, producing results artifacts. The PR author noted they only ran actionlint and pre-commit hooks locally, which is acceptable for CI-only changes."
+  },
+  "generation_seconds": 271.3,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-04T01:24:38Z",
+  "pr_number": 3714,
+  "range_start": "v2026.44.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-04T01:30:54+00:00",
+  "reviewers": [
+    "@meghsat",
+    "@jeremyfowers"
+  ],
+  "sha": "abec4142b83b0d14c0a6daf31fcec42690a46afa",
+  "shout_outs": [],
+  "subject": "ci: Add cuda backend validation for llama.cpp on Linux using self-hosted amd64 and arm64 runners (#3714)",
+  "summary": "Adds a Linux build (build-linux) and CUDA validation (validate-linux) job matrix for llama.cpp on the self-hosted DGX Spark ARM64 (sjlab-dgx-spark-01) and RTX 5070 x64 (sjlab-rtx-5070-fractal-01) runners in .github/workflows/validate_llamacpp.yml, including sm_121 (GB10) support, a new matrix.lite_only flag for the RTX 5070, an extracted update_backend_versions.py helper script, and updated docs/dev/self-hosted-runners.md.",
+  "verdict": "Clean",
+  "verdict_reason": "This is CI-only infrastructure work with no user-visible surface, all CI checks passed, and it was reviewed and approved by a maintainer with CI subject-area expertise."
+}
