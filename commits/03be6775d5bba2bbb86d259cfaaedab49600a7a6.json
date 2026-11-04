@@ -1,0 +1,32 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.46",
+  "commit_sha": "03be6775d5bba2bbb86d259cfaaedab49600a7a6",
+  "committed_at": "2026-11-04T00:42:37+00:00",
+  "evidence": {
+    "api_compatibility": "No API changes. This is a CSS-only visual fix inside the Tauri app frontend. No CLI, config, persistence format, or external contract is affected.",
+    "documentation": "No documentation affected. The PR author checked 'Documentation is not affected by this change.' Visual-only CSS adjustments do not require doc updates unless the user-facing behavior is documented in guides or release notes; this is a bug-fix-level visual correction.",
+    "manual_release_testing": "The author performed local testing with a screenshot and the reviewer approved. The change is a minor visual tweak (removing 3px margin, adding 30px min-height) that was manually verified on the author's machine before review. No further release-candidate verification needed.",
+    "post_approval_commits": "None. The branch had a single commit (2738166) which was the commit approved by @jeremyfowers. No commits were added after approval, and the merge-queue re-sha (03be6775d) is identical in content.",
+    "review": "PR #4053 was opened by @fl0rianr and approved by @jeremyfowers at 2026-11-03T20:51:44Z. @jeremyfowers is a maintainer with GUI design language expertise per docs/dev/contribute.md, satisfying the subject-matter review requirement. The approval review had an empty body — routine for a two-line CSS change. CodeRabbit flagged one minor discrepancy: the PR body claims the fix 'avoids align-items: center' but the diff does not change that property (the actual changes are the removed 3px margin and added 30px min-height). This is a PR-description accuracy issue, not a code-quality problem. No inline review comments from any reviewer.",
+    "security": "No security concerns. The change only touches CSS classes for layout alignment; no credential handling, network calls, code execution paths, or permission changes are involved.",
+    "tests": "This is a pure CSS change to src/app/src/styles/styles.css — no testable code was added or modified. The PR author claims local testing with a before/after screenshot (image in the PR body). CI ran the full Lemonade App checks (App docs, typecheck, runtime and UI tests — SUCCESS) and Docs And Style (app-regression-tests — SUCCESS). No tests were weakened or deleted."
+  },
+  "generation_seconds": 192.4,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-04T02:13:59Z",
+  "pr_number": 4053,
+  "range_start": "v2026.44.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-04T02:19:04+00:00",
+  "reviewers": [
+    "@jeremyfowers"
+  ],
+  "sha": "03be6775d5bba2bbb86d259cfaaedab49600a7a6",
+  "shout_outs": [],
+  "subject": "fix(gui): align chat toolbar controls (#4051) (#4053)",
+  "summary": "Fixes vertical misalignment of the chat model picker and toolbar toggle by removing the 3px top margin on .composer__toolbar > .composer__tools-toggle and adding a 30px min-height to .composer__model-button in src/app/src/styles/styles.css.",
+  "verdict": "Clean",
+  "verdict_reason": "Minimal CSS-only visual fix reviewed by a GUI design-language expert with no post-approval changes and all CI passing."
+}
