@@ -1,0 +1,51 @@
+{
+  "author": "@meghsat",
+  "branch": "main",
+  "bucket": "v2026.46",
+  "commit_sha": "d397a6e8fa5ef0357b2bf97bdf062d9a1ddb082f",
+  "committed_at": "2026-11-04T05:34:34+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. Adds POST /v1/systemone at /v1/systemone, /api/v0/, /api/v1/, and /v0/. Adds optional labels array to POST /v1/classify (previously only ONNX classification models were supported; decision models now require labels since they have no fixed label set). Adds systemone type to router classifier configs with a new question object schema (type: choice|noul|score, instructions, criteria). Adds src/cpp/resources/schemas/decision.schema.json for the decision-model API response. No existing config keys, CLI flags, or saved file formats are changed.",
+    "documentation": "PR body includes four worked examples (typed questions, image-only question, zero-shot labels, and a router policy with both systemone and zero_shot classifiers), a Mermaid flowchart, a table of question types, and a model compatibility table. docs/dev/router-policy.md updated with the systemone condition description and docs/api/lemonade.md, docs/api/llamacpp.md, and docs/api/openai.md updated for the new endpoint and parameters. The decision.schema.json schema file is new. The test-model capability additions in test/utils/capabilities.py document the Julia-1-GGUF and Laya-GGUF test models.",
+    "manual_release_testing": "Three new user-reachable surfaces have no evidence of manual release-candidate verification: POST /v1/systemone (new endpoint), labels parameter on POST /v1/classify (new parameter on existing endpoint), and the systemone classifier type in router policies (new router feature). Two of these require a GGUF decision model (Julia-1-GGUF or Laya-GGUF, both ~0.2–0.5 GB) to exercise.",
+    "post_approval_commits": "The get-post-approval-commits script reported 488 insertions across 19 files including Gufo backend, Halogen, ds4, packaging, and container changes, but git diff --name-only between the merge commit and its parent shows only 64 files, all SystemOne-related. No Gufo, Halobox, ds4, or packaging files appear in the actual merge. The script output is from the merge-queue branch context and does not reflect commits present in this merge commit. The actual commit diff is clean.",
+    "review": "Three human reviewers plus one approver. @fl0rianr performed two full review rounds (CHANGES_REQUESTED at 2026-10-23, then COMMENTED at 2026-10-27, then APPROVED at 2026-10-30) covering router validation, independent batch flags, and docs. @SlawomirNowaczyk (smart router subject-matter expert) reviewed and commented at 2026-11-01. @iswaryaalex and @ramkrishna2910 both APPROVED (2026-11-03 and 2026-11-01 respectively). @fl0rianr (smart router) and @SlawomirNowaczyk (smart router) both have subject-matter expertise. CodeRabbit identified four substantive issues — malformed answer-key injection, choice-criteria forwarding documentation, a model_exists/get_model_info race condition in classify.cpp, and missing control-character validation on systemone-derived labels — all addressed in follow-up commits 1ef9c7b and c2d1533.",
+    "security": "No obvious malicious patterns or supply-chain changes. CodeRabbit flagged two security-relevant findings: (1) answer key injection — score keys from a backend were parsed with std::stoul without rejecting non-digit keys like '0extra', allowing a malformed answer to drive a band decision; (2) control-character labels — systemone choice options and score levels become router labels but were not checked for control characters, violating the repository's label contract. Both were addressed in the PR. No credentials, network calls, or permission broadening detected.",
+    "tests": "C++ unit tests add 314 lines: test_routing_policy_registry.cpp gains test_make_systemone_classifier (covers choice/noul/score evaluation, label declarations, option-order preservation), test_systemone_choice_array_keeps_option_order, test_systemone_classifier_rejects_mismatched_answer (probability bounds, missing keys, empty answers), test_make_systemone_classifier_rejections (20+ rejection cases for missing fields, bad keys, control chars, duplicates), and test_systemone_on_truncation. test_routing_policy_parser.cpp adds 58 lines for systemone policy validation (model-type checks, serves_systemone checks, load-refusal checks). test_llamacpp_systemone.cpp adds systemone_residency_conflict propagation and other backend-level tests. New Python e2e test file server_systemone.py (605 lines, 20+ test cases) covers typed answers, long state (overflowing physical batch), classify with labels, router policy with both systemone and zero_shot classifiers, context-length exceeded, null state, label cut errors, truncation reporting, question cut errors, object-form choice refusal, and option-order verification against the model."
+  },
+  "generation_seconds": 583.1,
+  "maintainer_todos": [
+    {
+      "text": "Start lemond with llamacpp:cpu, register Julia-1-GGUF (or pull it), POST to /v1/systemone with state 'Customer message: I was charged twice' and a choice question with criteria billing and shipping, and confirm the response contains probabilities for both options that sum to approximately 1.0."
+    },
+    {
+      "text": "POST to /v1/classify with model Julia-1-GGUF, input 'I want to learn about baking so that I can make a cheesecake', and labels ['cooking', 'coding', 'personal data', 'travel'], and confirm the response returns a significantly higher score for 'cooking' than the other labels with all four labels present."
+    },
+    {
+      "text": "Register a collection.router policy with a systemone classifier (type noul, instructions 'Does the message contain personal data?', default_label true) and a zero_shot classifier (labels ['chit-chat', 'coding']), POST to /v1/routing/validate with prompt 'Hi, my SSN is 123-45-6789 please update my file', and confirm the systemone classifier fires and routes to the pii-local rule target."
+    },
+    {
+      "text": "POST to /v1/systemone with a state that is 100+ paragraphs long (overflowing the default physical batch of 512 tokens) and a choice question, and confirm the request succeeds (the model handles the oversized input without a 500 error)."
+    },
+    {
+      "text": "POST to /v1/classify with model Julia-1-GGUF, input 'hello', and no labels parameter, and confirm the response is a 400 error because decision models require labels."
+    }
+  ],
+  "merge_date": "2026-11-04T06:16:01Z",
+  "pr_number": 3956,
+  "range_start": "v2026.44.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-04T06:27:26+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@SlawomirNowaczyk",
+    "@iswaryaalex",
+    "@ramkrishna2910"
+  ],
+  "sha": "d397a6e8fa5ef0357b2bf97bdf062d9a1ddb082f",
+  "shout_outs": [],
+  "subject": "Add SystemOne decision models: /v1/systemone, GGUF zero-shot on /v1/classify, and the systemone router classifier (#3956)",
+  "summary": "Adds SystemOne decision models: a POST /v1/systemone endpoint that forwards one or more typed questions to a llama.cpp decision model, a GGUF-backed zero-shot path on /v1/classify when labels are provided, and a systemone router classifier type supporting choice/noul/score question types.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The commit introduces three user-reachable API surfaces — POST /v1/systemone, labels on POST /v1/classify, and the systemone router classifier type — that should be manually verified against a decision model before release."
+}
