@@ -1,0 +1,50 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.46",
+  "commit_sha": "f5b11c6ddd0dd7f36493e00843582c0d856baf65",
+  "committed_at": "2026-11-04T03:40:43+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. This is a new backend recipe (`gufo`), new models in server_models.json, and a bug fix in responses.cpp that makes the endpoint more permissive (accepting \"error\": null). Existing users are unaffected. The gufo_args reserved flags list (-m, --context, --mmproj, --speculative, --dflash-model, --mtp-model, --dspark-model, --host, --port, --api-key) prevents users from accidentally breaking Lemonade's proxy routing.",
+    "documentation": "Complete: README.md updated with gufo:rocm row in the backends table (rowspan bumped to 16). docs/dev/backends-reference.md adds gufo to both the backends table and the per-backend options table. docs/guide/cli.md documents --ctx-size and --gufo-args for the gufo recipe. docs/guide/configuration/README.md adds the gufo config section. docs/guide/configuration/container-backends.md adds the gufo image link. docs/guide/configuration/custom-models.md includes gufo in the generated --recipe values. docs/api/internal.md adds the gufo config key. docs/assets/models.js adds gufo to the priority list. src/cpp/resources/server_models.json registers three models (Qwen3.8-27B-Gufo, Qwen3.8-Flash-Next-Gufo, DeepSeek-V4-Flash-IQ2XXS-Gufo) with checkpoints, labels, and sizes. src/cpp/resources/defaults.json and backend_versions.json contain the gufo defaults and pinned image digest.",
+    "manual_release_testing": "CI runs the gufo:rocm smoke test on a self-hosted runner, but this is infrastructure CI rather than a human exercising the release candidate. The backend targets AMD Strix Halo (gfx1151) specifically, and the PR description benchmarks were run on nathanw's Strix Halo machine. The release surface includes the gufo:rocm container image from docker.io/kyuz0/amd-strix-halo-toolboxes (community-built), three new registered models with their GGUF checkpoints on Hugging Face, the --gufo-args CLI flag, the gufo config section, and the /v1/responses fix for backends returning full Responses objects. A human with a Strix Halo machine should verify at least the container image loads correctly and the models serve as expected on the release candidate build.",
+    "post_approval_commits": "No commits were added after the first (or only) approval at 2026-11-03T17:05:35Z. The branch was approved clean and merged by the author the following day. Zero post-approval commits, zero risk of scope creep.",
+    "review": "PR #4031 was reviewed and approved by @sawansri (who has subject-matter expertise in 'new backends' and 'new models' per docs/dev/contribute.md). The approval review was posted at 2026-11-10T17:05:35Z with no body text and no inline comments. @bitgamma and @kpoineal were requested as reviewers but did not comment or approve. CodeRabbit automated analysis passed. No inline review comments from any reviewer were found. The author squashed the branch into a single merge commit, so the diff is large (~488 lines across 19 files) and the single empty approval covers all changes without line-by-line discussion.",
+    "security": "The container image (docker.io/kyuz0/amd-strix-halo-toolboxes:rocm-10.0-gufo) is a community image on Docker Hub, not an official Lemonade or gufo-org image. The PR tags it as a 'guest' tier backend, consistent with other community backends in this repo. No credential handling, network calls beyond the GPU inference, or obfuscation concerns. The responses.cpp change is safe — it simply does not treat \"error\": null as an error.",
+    "tests": "The PR adds test_gufo_argv() in test/cpp/test_container_manager.cpp which exercises build_server_argv() for DFlash2, MTP, DSpark draft modes, validates speculative_mode() mapping from GGUF architecture, and confirms reserved flags (like --port) are rejected. The CI workflow cpp_server_build_test_release.yml gains a gufo:rocm entry in the test-container-backends matrix, and the job 'Test container backend - gufo' passed with SUCCESS. test/utils/capabilities.py gains the gufo test config block. No existing tests were weakened or deleted."
+  },
+  "generation_seconds": 406.1,
+  "maintainer_todos": [
+    {
+      "text": "On a Strix Halo machine, load Qwen3.8-27B-Gufo via `lemonade load gufo:rocm` and confirm the container starts, the model is listed as resident, and a chat request returns a valid response with the DFlash2 draft active."
+    },
+    {
+      "text": "On the same Strix Halo machine, load DeepSeek-V4-Flash-IQ2XXS-Gufo and confirm the resident path is taken (not the streaming path) and DSpark drafts are loaded."
+    },
+    {
+      "text": "Run `lemonade run Qwen3.8-Flash-Next-Gufo` with a tool-calling prompt and confirm the MTP draft works and the tool call completes without the model running out of tokens (the gufo fix for `--speculative` flag detection from GGUF architecture is exercised here)."
+    },
+    {
+      "text": "Run `lemonade run gufo:rocm` against a non-streaming /v1/responses endpoint and confirm no 500 error is returned (the bug fix for \"error\": null is validated)."
+    }
+  ],
+  "merge_date": "2026-11-04T04:20:33Z",
+  "pr_number": 4031,
+  "range_start": "v2026.44.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-04T04:29:04+00:00",
+  "reviewers": [
+    "@sawansri"
+  ],
+  "sha": "f5b11c6ddd0dd7f36493e00843582c0d856baf65",
+  "shout_outs": [
+    {
+      "handle": "@sawansri",
+      "reason": "Co-authored-by trailer credits Sawan Srivastava with substantive code contribution to the PR."
+    }
+  ],
+  "subject": "feat(gufo): add the Gufo container backend (#4031)",
+  "summary": "Adds the gufo:rocm container backend (guest, AMD Strix Halo/gfx1151) running gufo-org/gufo from kyuz0/amd-strix-halo-toolboxes, registers three models — Qwen3.8-27B-Gufo (with DFlash2 draft), Qwen3.8-Flash-Next-Gufo (with MTP shared sidecar), and DeepSeek-V4-Flash-IQ2XXS-Gufo (with DSpark support file) — and fixes /v1/responses returning 500 when a backend sends a full Responses object with \"error\": null.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "A new container backend with three registered models, a CLI flag, configuration section, and an API behavior fix introduces user-visible surface that has not been manually exercised by a human on the release candidate build."
+}
