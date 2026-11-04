@@ -1,0 +1,32 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.47",
+  "commit_sha": "4e238fcb8b1bfc6787b4bcef00800c495697d9af",
+  "committed_at": "2026-11-04T22:22:17+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The commit updates recorded example responses and cache keys in documentation files and the example cache JSON. No API endpoints, CLI commands, config values, schemas, or installed artifacts are changed. The cache keys changed because the Vulkan pin (b11846 → b12109) is baked into the key derivation, but this is a documentation tool concern, not a user-facing API.",
+    "documentation": "This is itself a documentation fix. The API examples across 5 markdown pages and the cache JSON were refreshed to match the backend pin. No additional docs or guides are needed for this change. The PR body explains the context and the tool used (gen_api_boilerplate.py). CodeRabbit noted the PR description omits required template sections (SDS, Scope, Testing, Breaking Changes), which is a process compliance issue but not a documentation quality problem for this data-only change.",
+    "manual_release_testing": "No user-reachable surface to test — this commit changes only the API example cache and documentation markdown files that are served as static documentation, not any installed behavior or API contract.",
+    "post_approval_commits": "None — the single commit (44b42b64) predates the first and only approval by @superm1 (2026-11-04T21:56:55Z, submitted ~28 minutes after the commit at 21:29:25Z).",
+    "review": "One approval from @superm1 (subject-area expertise in llamacpp per docs/dev/contribute.md). @sreeram-11 was requested as a reviewer but did not submit a review. @iswaryaalex left a supporting comment thanking the author. No inline review comments from humans. The PR description clearly explains the cause (#4057 bumped the Vulkan pin), the effect (36 stale examples, gen_api_boilerplate.py --check failures), and the fix (re-record on a fresh lemond build). CodeRabbit flagged two non-blocking issues: an AI-generated-canary in the description and missing template sections (SDS, Scope, Testing, Breaking Changes), neither of which is substantive for a data-only refresh.",
+    "security": "No security concerns. The diff changes only documentation content and example cache data — no code execution paths, no credential handling, no supply-chain changes, no network calls. The generated examples contain placeholder API response text and IDs; no real secrets or credentials are introduced.",
+    "tests": "The project has no unit tests for this change because it only touches generated documentation and example cache data. The backend-docs-drift CI job, which was the reason for the PR, validates correctness by running gen_api_boilerplate.py --check on the committed examples and failing when cache keys no longer match recorded responses. All CI checks passed (126+ check runs, all SUCCESS or SKIPPED)."
+  },
+  "generation_seconds": 267.6,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-04T23:02:28Z",
+  "pr_number": 4064,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-04T23:08:35+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "4e238fcb8b1bfc6787b4bcef00800c495697d9af",
+  "shout_outs": [],
+  "subject": "docs(api): re-record API examples for llama.cpp b12109 (#4064)",
+  "summary": "Re-records 36 llama.cpp-backed API documentation examples (across docs/api/llamacpp.md, openai.md, anthropic.md, ollama.md, lemonade.md and docs/tools/api_examples_cache.json) against the new Vulkan pin b12109 to fix the backend-docs-drift CI job broken by #4057.",
+  "verdict": "Clean",
+  "verdict_reason": "The PR is a data-only documentation refresh with a single substantive approval from a reviewer with llamacpp subject-area expertise, and all CI checks pass."
+}
