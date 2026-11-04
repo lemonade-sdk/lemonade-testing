@@ -1,0 +1,45 @@
+{
+  "author": "@bitgamma",
+  "branch": "main",
+  "bucket": "v2026.46",
+  "commit_sha": "6c5a26aeb8ab29c75aa6c12c29628c82377666bb",
+  "committed_at": "2026-11-04T13:21:01+00:00",
+  "evidence": {
+    "api_compatibility": "Breaking change. The /models response no longer includes `image_defaults` or `audio_defaults` keys. Any client reading those fields will find them absent. The PR author acknowledged this in the PR checklist. Values previously in those blocks are now under `recipe_options`, so clients must update their read path. The `user_configurable` flag is also new in the /system-info options list; consumers that assume all listed options are editable may show technical knobs to users.",
+    "documentation": "All affected docs updated: docs/api/lemonade.md, docs/api/openai.md, docs/assets/models.js, docs/dev/adding-a-backend.md, docs/dev/backends-reference.md, docs/guide/cli.md, docs/guide/configuration/custom-models.md, and docs/dev/specs/model-management.md. The API spec no longer lists `image_defaults` or `audio_defaults`. The website model table JS renders both legacy and new formats. Adding-a-backend.md documents the `user_configurable` flag. All changes are consistent with the code.",
+    "manual_release_testing": "The /models API response shape changed — external API clients that parse `image_defaults` or `audio_defaults` will break. No evidence of a downstream consumer being exercised. The GUI3 changes (hiding non-configurable fields) are user-reachable surface; no evidence of a human testing GUI3 against a running server with this change. The website docs/models.js rendering is user-reachable via docs/assets/models.js, which the reviewer flagged and the author fixed, but no one confirmed the rendered output against the live site.",
+    "post_approval_commits": "No commits were added after the first and only approval (2026-11-04T12:16:26Z). The final commit d07a46f was made at 2026-11-04T11:39:14Z. All post-approval commits are CI-only retrigger commits and did not change code or tests.",
+    "review": "Reviewed by @fl0rianr, who is a maintainer with subject-area expertise in GUI and CI per docs/dev/contribute.md. The review was substantive: on the first pass @fl0rianr raised 5 user-facing concerns — (1) non-configurable settings exposed as editable in GUI3, (2) `soft_pixel_cap` not actually used by GUI3 yet, (3) docs website still referencing old format, (4) legacy custom models losing implicit fallback defaults, (5) the API change not acknowledged as breaking. The author addressed all five through commits that introduced the `user_configurable` flag, updated the docs site, and preserved legacy block migration. A second round of comments caught that `recipeConfigurableOptionNames()` appended all saved keys regardless of `user_configurable`; the author fixed this with the `never show hidden fields` commit. The PR was approved after all comments were resolved and CI was retriggered. No human reviewer is confirmed to have tested the migrated `recipe_options` values against a running server or against a downstream client.",
+    "security": "No security concerns. No supply-chain changes, credential handling, network calls, or permission broadening. The `user_configurable` flag controls UI visibility only.",
+    "tests": "Comprehensive test coverage. C++ unit tests in test_json_catalog.cpp verify that retired `image_defaults` and `audio_defaults` blocks are consumed into `recipe_options` without leaking into extras. test_recipe_options_precedence.cpp adds 6 new test sections (D1–D6) covering typed reads (wrong type falls back to descriptor default, valid types return correctly, out-of-range ints fall back, stored_* never reaches descriptor default). Python endpoint tests in test_server_sd.py, test_server_thenoise.py, and test_server_tts_openmoss.py are updated to expect `recipe_options` instead of retired keys. The regression test in src/app/tests/non-configurable-recipe-options.runtime.cjs (new file) exercises the GUI path. No evidence of test weakening or deletion."
+  },
+  "generation_seconds": 270.6,
+  "maintainer_todos": [
+    {
+      "text": "Query GET /v1/models and verify that image models no longer contain the `image_defaults` or `audio_defaults` keys and instead surface their defaults under `recipe_options`."
+    },
+    {
+      "text": "Open GUI3 Model Configuration for an image model (e.g. SD-Turbo) and confirm that `soft_pixel_cap` is not rendered as an editable field, and for an openmoss model confirm `pcm_sample_rate` and `pcm_channels` are not editable."
+    },
+    {
+      "text": "Pull a custom model that specifies only `recipe_options` (no legacy `image_defaults` block) and verify that generation uses the documented defaults for missing keys."
+    },
+    {
+      "text": "Request GET /v1/models for a model whose registry row still has an `image_defaults` block (simulate an older tag) and confirm the website page renders generation parameters from that block via `recipe_options`."
+    }
+  ],
+  "merge_date": "2026-11-04T14:12:50Z",
+  "pr_number": 4049,
+  "range_start": "v2026.44.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-04T14:19:20+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "6c5a26aeb8ab29c75aa6c12c29628c82377666bb",
+  "shout_outs": [],
+  "subject": "Remove `image_defaults` and `audio_defaults` (#4049)",
+  "summary": "Removes the `image_defaults` and `audio_defaults` keys from the /models API response and folds their values into the single `recipe_options` object; adds a `user_configurable` boolean flag to backend descriptor options so the GUI can hide technical knobs like `soft_pixel_cap`, `pcm_sample_rate`, and `pcm_channels`.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "This is a breaking API change that removed `image_defaults` and `audio_defaults` from the /models response; the reviewer flagged this but no evidence shows any external client was exercised against the new shape."
+}
