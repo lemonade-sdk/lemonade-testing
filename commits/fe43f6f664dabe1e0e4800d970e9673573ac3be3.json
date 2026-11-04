@@ -1,0 +1,39 @@
+{
+  "author": "@superm1",
+  "branch": "main",
+  "bucket": "v2026.47",
+  "commit_sha": "fe43f6f664dabe1e0e4800d970e9673573ac3be3",
+  "committed_at": "2026-11-04T16:39:39+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The change only adds entries to backend_versions.json (therock.architectures and url_mapping) and bumps version pins. No CLI flags, config schema, API endpoints, or persisted formats are modified.",
+    "documentation": "No documentation changes. The PR marks documentation as not affected, which is appropriate for a config-only change. The release notes should mention gfx1170/gfx1171 support and the llama.cpp version bump.",
+    "manual_release_testing": "This commit adds user-visible surface — two new ROCm GPU targets (gfx1170, gfx1171) and bumps the shipped llama.cpp binary to b12109 across all backends (vulkan, rocm-stable, rocm-nightly, cuda, metal, cpu). No evidence a human with gfx117x hardware verified inference works. There is also a known gap: TheRock assets for gfx117X-all at version 10.1.0 are not yet published (HTTP 404 from stable.repo.amd.com), so runtime install on gfx1170/gfx1171 will fail until 10.3 is configured. This is acknowledged by the author but should be verified before shipping.",
+    "post_approval_commits": "None. The three PR commits (22a4673, 0fa61b2, dc5faa9) all predate the approval at 16:07:05Z. The merged commit fe43f6f is the squashed merge with no additional changes.",
+    "review": "PR #4057 had one human approval from @sreeram-11, submitted 2026-11-04T16:07:05Z on commit dc5faa9898e2b8ead386e726747af08a6d8c8463. No commits were added after approval. Per docs/dev/contribute.md, ROCm subject-matter experts are @superm1 and @kenvandine; neither provided independent review (@superm1 authored the PR, @kenvandine did not comment). The PR requested a review from @ramkrishna2910 (backends/vLLM/NPU expertise) but they never reviewed. CodeRabbit (bot) raised two findings: (1) gfx1170/gfx1171 should also appear in the therock.architectures list for exact-string matching in will_install_therock — the author added them to therock.architectures and url_mapping but the CodeRabbit suggestion to keep the gfx117X wildcard entry was already present in the merged code. (2) TheRock tarball for gfx117X-all at version 10.1.0 returns HTTP 404 and the wheel index has no rocm-sdk-device-gfx117x package; the author (@superm1) acknowledged this is 'currently expected' and will be fixed when upgrading to 10.3. No human reviewer flagged or discussed the known asset gap.",
+    "security": "No concerns. The diff changes only a JSON configuration file and version pins. No credential handling, network call changes, code execution paths, or permission modifications.",
+    "tests": "No new tests. CI runs four workflows that all passed: C++ Server Build/Test/Release, Validate New llama.cpp Release, Validate New stable-diffusion Release, Validate New vLLM Release. These confirm the new llama.cpp version (b12109) compiles and the backend_versions.json file is syntactically valid, but they do not exercise gfx117x GPU hardware or the ROCm runtime install path on those architectures."
+  },
+  "generation_seconds": 200.3,
+  "maintainer_todos": [
+    {
+      "text": "On a system with a gfx1170 or gfx1171 GPU, run lemond and confirm a model loads and serves inference through the ROCm backend."
+    },
+    {
+      "text": "On the same system, confirm the runtime install for the ROCm backend does not throw (gfx117X-all TheRock assets for version 10.1.0 are still absent and the author acknowledged this is expected to be fixed at 10.3)."
+    }
+  ],
+  "merge_date": "2026-11-04T18:41:04Z",
+  "pr_number": 4057,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-04T18:46:16+00:00",
+  "reviewers": [
+    "@sreeram-11"
+  ],
+  "sha": "fe43f6f664dabe1e0e4800d970e9673573ac3be3",
+  "shout_outs": [],
+  "subject": "Add gfx117x ROCm targets (#4057)",
+  "summary": "Adds gfx1170 and gfx1171 ROCm GPU targets to therock.architectures and url_mapping, and bumps llama.cpp stable from b11846/b11836 to b12109 and llamacpp-nightly from b1353 to b1365 to enable those targets.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "No ROCm subject-matter expert (per docs/dev/contribute.md: @superm1 and @kenvandine) independently reviewed the PR; the sole approval came from @sreeram-11 who is not listed as a maintainer and has no ROCm expertise."
+}
