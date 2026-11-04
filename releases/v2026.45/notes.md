@@ -1,10 +1,9 @@
 ## Headline
 
-- The Lemonade app is redesigned with six workspaces, a visual router policy editor, Chinese localization, and multi-provider model search.
+- The Lemonade desktop app and web ui are completely redesigned with built-in tools, an all-new model manager, a visual router policy editor, Chinese localization, mobile web ui, an LLM telemetry viewer, and much more.
+- Watch a deep dive of the new GUI here: https://youtu.be/mg2PqmRujMo
 - The HTTP server is rebuilt on a route-class architecture with consistent errors and generated API docs.
-- New models: K2-Horizon family (0.9B to MoVA-36B-A4B), Flint, and LFM2.5-24B-A2B.
-- Models that previously failed to load on 128 GB Strix Halo systems now start reliably with improved shared-memory management.
-- Model and backend update progress is visible directly in the app with server-owned sync jobs.
+- New models: K2-Horizon family (0.9B to MoVA-36B-A4B) and Flint.
 
 ## Breaking Changes
 
