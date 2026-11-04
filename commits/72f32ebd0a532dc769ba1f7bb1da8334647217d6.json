@@ -1,0 +1,33 @@
+{
+  "author": "@meghsat",
+  "branch": "main",
+  "bucket": "v2026.47",
+  "commit_sha": "72f32ebd0a532dc769ba1f7bb1da8334647217d6",
+  "committed_at": "2026-11-04T17:02:30+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The commit touches only `docs/assets/news-data.js`, a website data file. It does not affect any API, CLI, config, or installed artifact.",
+    "documentation": "The change is itself a documentation update — fixing a stale image reference in the news page data. No additional docs need updating. The PR correctly checked 'Documentation is not affected by this change' in its template, and the change is consistent with the stated scope.",
+    "manual_release_testing": "The change replaces the banner image shown on the top news entry at https://lemonade-server.ai/news/. No evidence shows a human visited the page to confirm `banner_03.png` renders correctly, but the risk is minimal: the old `banner.png` is already used as the default in many other entries and works fine; only one entry needed updating. A broken image would be a cosmetic issue, not a functional regression.",
+    "post_approval_commits": "None. The PR contains a single commit (7303fbfcb6380f079759c2b096d6acc831f97a77) authored 2026-10-23T18:00:51Z, before the first approval (2026-10-23T18:47:38Z) and before the latest approval (2026-10-23T19:35:38Z). No churn after approval.",
+    "review": "The PR received approvals from @fl0rianr (2026-10-23T18:47:38Z — subject area expertise in GUI, CI) and @jeremyfowers (2026-10-23T19:35:38Z — subject area expertise in website, GUI design language). @fl0rianr's approval included 'DO NOT merge yet. News is published with the push. We might want to make this in time with the stable release,' but the PR was merged later on 2026-11-04 without evidence of @fl0rianr re-approving. No commits were added after the latest approval. CodeRabbit produced a low-priority assessment with zero actionable comments. The PR author self-reviewed the full diff before submitting.",
+    "security": "No security concerns. The change updates an external image URL to another URL on the same GitHub CDN (`raw.githubusercontent.com`). No new dependencies, code execution paths, credential handling, or supply-chain changes are introduced.",
+    "tests": "Not applicable for a documentation asset change — there are no functional tests to add or weaken. The change modifies `docs/assets/news-data.js`, a static data file consumed by the website build. No existing tests were affected."
+  },
+  "generation_seconds": 189.7,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-04T19:32:14Z",
+  "pr_number": 3959,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-04T19:37:03+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@jeremyfowers"
+  ],
+  "sha": "72f32ebd0a532dc769ba1f7bb1da8334647217d6",
+  "shout_outs": [],
+  "subject": "Fixed the GUI3 banner in the news page (#3959)",
+  "summary": "Changes the banner image for the October 20, 2026 'Vision: your auto-optimizing local stack of agents, models, and engines' news entry on the Lemonade website from `banner.png` (GUI1) to `banner_03.png` (GUI3) in `docs/assets/news-data.js`.",
+  "verdict": "Clean",
+  "verdict_reason": "A single-line documentation-only change — swapping one external image URL for another — with two subject-matter-expert approvals and all CI checks passing."
+}
