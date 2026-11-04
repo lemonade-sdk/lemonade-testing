@@ -1,0 +1,38 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.46",
+  "commit_sha": "e9b9245c5a117025d469b25dd408959b358b90bf",
+  "committed_at": "2026-11-04T00:44:27+00:00",
+  "evidence": {
+    "api_compatibility": "The llamacpp_backend parameter in the POST /v1/models load endpoint now accepts 'halobox' as a new value (docs/api/lemonade.md, src/cpp/server/routes/lemonade/load/load.cpp). This is purely additive — existing API calls with other values are unaffected. No breaking changes.",
+    "documentation": "README.md updated with the halobox row in the GPU support table (llamacpp section now has 8 variants, up from 7). docs/api/lemonade.md updated with halobox in the llamacpp_backend enum. docs/dev/backends-reference.md updated in both the backend tier table and the backend details table. docs/guide/configuration/container-backends.md lists the halobox image link. docs/guide/configuration/llamacpp.md has a dedicated halobox subsection with platform, hardware, use case, installation, and enable instructions. RFC #3585 was approved per the PR checklist.",
+    "manual_release_testing": "The halobox container backend is a new user-reachable surface (installable via `lemonade backends install llamacpp:halobox` or loadable via `--backend halobox`). It targets Strix Halo (gfx1151) hardware specifically, which is a narrow audience. CI coverage (test-container-backends job) and local testing by the author and @sawansri provide reasonable confidence. The backend follows the same pattern as llamacpp:nathanw (guest tier, container, pinned image). No separate manual release test item required at this time.",
+    "post_approval_commits": "None. No commits were added after the first approval (2026-11-03T15:24:54Z) or the latest approval (2026-11-03T19:19:41Z). The branch was stable at merge time.",
+    "review": "Two approvals: @sawansri (expertise: agents, tui, cli, new backends) gave an e2e approval confirming the halobox container works well, and @pwilkin (expertise: Trellis, OpenMOSS, ACE-Step, ThinkSound, llamacpp) approved with 'LGTM'. No inline review comments. The PR had frequent revisions ('constantly on the move' per @pwilkin) but no commits were added after the first or latest approval, so no post-approval churn to flag. @pwilkin's llamacpp subject-matter expertise is particularly relevant here.",
+    "security": "The container image is from the same registry as other guest backends (kyuz0/amd-strix-halo-toolboxes), pinned by digest. It maps /dev/dri and /dev/kfd devices, consistent with other ROCm container backends. No new credential handling, network calls, or code execution paths beyond what existing container backends already do. No concerns.",
+    "tests": "The halobox backend was added to the test-container-backends CI matrix in cpp_server_build_test_release.yml (install: llamacpp:halobox, extra_args: --wrapped-server llamacpp --backend halobox). The PR author reports 32 local tests passing with Docker (3 skipped, same as every llamacpp backend). Test utilities updated in test/utils/capabilities.py. Benchmarks provided in the PR comparing halobox against nathanw, rocm, and vulkan for Qwen3.6-35B-A3B-MTP and Qwen3.8-27B models."
+  },
+  "generation_seconds": 272.3,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-04T03:01:16Z",
+  "pr_number": 4029,
+  "range_start": "v2026.44.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-04T03:07:33+00:00",
+  "reviewers": [
+    "@sawansri",
+    "@pwilkin"
+  ],
+  "sha": "e9b9245c5a117025d469b25dd408959b358b90bf",
+  "shout_outs": [
+    {
+      "handle": "@sawansri",
+      "reason": "Co-author of the PR (Co-authored-by trailer in merge commit) and performed end-to-end testing of the halobox container, confirming it works."
+    }
+  ],
+  "subject": "feat(llamacpp): add the halobox container backend (#4029)",
+  "summary": "Adds llamacpp:halobox, a guest container backend that runs the halo-box/strix-llama.cpp community fork of llama.cpp (ROCm) from the kyuz0/amd-strix-halo-toolboxes image (sha256:7d3844524fda1865a2ae60cc73eb232589626ccca245cc3c7bd2afb153bd9bd6), adding Strix Halo (gfx1151) GPU support with 2048-token batch defaults.",
+  "verdict": "Clean",
+  "verdict_reason": "Small, well-scoped new backend addition with two approvals from reviewers with relevant expertise (llamacpp and new backends), CI matrix coverage, and complete documentation updates."
+}
