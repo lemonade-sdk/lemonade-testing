@@ -1,0 +1,36 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.47",
+  "commit_sha": "7aab772545477c41ad8ca2e52a4f699b69dd2ca1",
+  "committed_at": "2026-11-05T19:29:42+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The modification is internal to the GUI component BackendManager.tsx — new entries in RECIPE_LABELS and ENGINE_LOGOS records, a minor rework of the className template to branch on logo.showName, and two new CSS classes. No API, CLI, config, or protocol surface is touched.",
+    "documentation": "No user-facing documentation changes required. This is a cosmetic GUI addition (logo images and display styling) and does not alter documented behavior, config options, CLI commands, or API contracts.",
+    "manual_release_testing": "No human has exercised this change. The PR depends on lemonade-sdk/assets#17 to supply the actual logo images; the PR body notes 'Requires to lemonade-sdk/assets#17 to merge before the assets will show up in the app.' CI is a build check, not end-to-end verification that the logos render in the GUI backends tab. The two new CSS classes (.backend-card__logo--icon with padding-block and 38px max-height) and the showName-driven class logic have not been visually confirmed on a live build.",
+    "post_approval_commits": "No commits were added after approval. The first and latest approval timestamps are both 2026-11-05T15:40:40Z. The branch contained four commits at the time of merge, all authored by @jeremyfowers with Claude Opus 5.5 co-authorship.",
+    "review": "One approval from @danielholanda with the comment 'Looks great. Just please make sure to merge the assets of first (no approval needed).' @danielholanda is not listed as a maintainer in docs/dev/contribute.md and has no listed subject area in GUI, app, or design language. Subject area expertise for GUI belongs to @kpoineal (GUI, app, a11y, Windows, LemonAIde) and @fl0rianr (GUI, ci). The PR was merged with only one approval from a non-expert reviewer, which does not meet the contribute.md guideline that 'PRs should have at least one reviewer with subject area expertise.'",
+    "security": "No security concerns. The change references external image URLs from the already-trusted raw.githubusercontent.com CDN path for engine logos. No credential handling, network calls, code execution, or supply-chain changes.",
+    "tests": "No tests are present. The change is purely UI display code (React component props and CSS class logic). There are no tests weakened or deleted; this category is N/A for a visual-only addition."
+  },
+  "generation_seconds": 134.1,
+  "maintainer_todos": [
+    {
+      "text": "Open the Lemonade app, navigate to the Backends tab, and confirm Halogen, Gufo, DwarfStar4, and TheNoise each show their logo image with the engine name beside it, and that the layout looks correct (icons are 38px tall with tighter padding, names are visible)."
+    }
+  ],
+  "merge_date": "2026-11-05T20:56:52Z",
+  "pr_number": 4072,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-05T21:00:51+00:00",
+  "reviewers": [
+    "@danielholanda"
+  ],
+  "sha": "7aab772545477c41ad8ca2e52a4f699b69dd2ca1",
+  "shout_outs": [],
+  "subject": "feat(gui): add Halogen, Gufo, DwarfStar4 and TheNoise backend logos (#4072)",
+  "summary": "Adds Halogen, Gufo, DwarfStar4 and TheNoise backend logos with icon-plus-name display styling to the backends tab in the GUI.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The PR was approved by a reviewer without subject area expertise in GUI or app code, and no human has confirmed the logos render correctly in the app before merge."
+}
