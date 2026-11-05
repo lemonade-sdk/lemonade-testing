@@ -1,0 +1,36 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.47",
+  "commit_sha": "54c0e9ff6ede0ac6716a11646dac4ef22138658d",
+  "committed_at": "2026-11-05T18:53:18+00:00",
+  "evidence": {
+    "api_compatibility": "No API, CLI, config, or data schema changes. The modification adds one entry to a JSON array in a static docs assets file. No breaking changes.",
+    "documentation": "The change itself is documentation (a news entry on the website). It follows the existing Phoronix entry format exactly -- same logo, same imageStyle, same type field. The PR description clearly states what was added and why.",
+    "manual_release_testing": "The change adds a visible news entry to the Lemonade website's news page. CI automated checks validated the URL and file format, but no human visually confirmed the entry renders correctly on the live site.",
+    "post_approval_commits": "No commits were added after the approval at 18:21:38Z. The branch contained exactly one commit (c118f6) which was approved as-is. No post-approval churn.",
+    "review": "PR #4075 received one approval from @sawansri (\"Thanks!\") at 2026-11-05T18:21:38Z, about four minutes after the PR was opened. No other human reviews or substantive inline comments. @sawansri's documented subject areas (agents, tui, cli, new backends, launch, vLLM, new models) do not specifically include website or documentation work, but they are a recognized collaborator. CodeRabbit ran an automated review with minimal risk assessment and confirmed the PR body matches the code.",
+    "security": "No code execution, network calls, credential handling, or supply-chain changes. The new entry references an external SVG image URL from the lemonade-sdk/assets repo and a Phoronix news URL. No security concerns.",
+    "tests": "All CI checks passed except an unrelated \"label\" workflow failure caused by an API billing problem. The \"News changes are in their own PR\" check passed, markdown-link-check passed, and app-regression-tests passed. The change is a pure data addition to docs/assets/news-data.js (9 insertions, 0 deletions) with no executable code to test."
+  },
+  "generation_seconds": 153.3,
+  "maintainer_todos": [
+    {
+      "text": "Open the Lemonade website news page and confirm the November 5, 2026 Phoronix entry for the 2026.45.3 release appears at the top of the list with the correct title, date, link, and Phoronix logo image."
+    }
+  ],
+  "merge_date": "2026-11-05T20:14:49Z",
+  "pr_number": 4075,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-05T20:19:06+00:00",
+  "reviewers": [
+    "@sawansri"
+  ],
+  "sha": "54c0e9ff6ede0ac6716a11646dac4ef22138658d",
+  "shout_outs": [],
+  "subject": "Add Phoronix Lemonade 2026.45.3 coverage to news page (#4075)",
+  "summary": "Adds a Phoronix news entry at the top of docs/assets/news-data.js covering the Lemonade 2026.45.3 release article titled \"AMD-Backed Lemonade Local AI Server Ships Redesigned Desktop App & Web UI\" with date November 5, 2026 and the Phoronix SVG logo.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "A simple documentation-only change with one approval and all CI passing, but the new news entry is user-visible on the website and was not manually exercised by a human before merge."
+}
