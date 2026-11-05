@@ -1,0 +1,36 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.47",
+  "commit_sha": "41558581aa3d31a7b7f2d36fbb5b55f32db9a12e",
+  "committed_at": "2026-11-05T14:34:13+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. POST /v1/load now returns a 400 for on-demand models, which is an additional rejection on top of the existing behavior — no previously-working request will fail that previously succeeded. The on-demand label is purely additive in server_models.json. API docs in docs/api/lemonade.md and docs/api/openai.md are updated to reflect the new behavior.",
+    "documentation": "API docs are updated in both docs/api/lemonade.md (load endpoint restrictions and new error) and docs/api/openai.md (new Execution labels table documenting \"on-demand\"). The documentation accurately reflects the code behavior. The CodeRabbit suggestion to also document a collection.router exception was correctly dismissed by the author as unnecessary.",
+    "manual_release_testing": "The commit changes user-visible behavior on two surfaces: POST /v1/load now returns a 400 for models labeled \"on-demand\", and the GUI hides the Load/Unload button for on-demand models while showing a Download button instead. The tray UI also excludes on-demand models from the downloaded list. No human was observed exercising either surface before merge.",
+    "post_approval_commits": "The final commit (02fa368) that fully replaced the upscaling check with the on-demand label check was approved before merge. No commits were added after the approval at 2026-11-05T13:58:36Z.",
+    "review": "PR #4047 received one substantive human review from @bitgamma, who has subject area expertise in recipes, new models, and benchmarking. @bitgamma approved at 2026-11-05T13:58:36Z. CodeRabbit raised several findings (upscaler alias resolution, router exception in docs, error message granularity) — the author addressed all of them: alias resolution was dismissed as out-of-scope (separate issue #4048 created), the router exception was dismissed as a virtual edge case, and the upscaler-specific error message was simplified to a generic one per @bitgamma's suggestion. The approach evolved iteratively from an initial \"upscaling\" label check to a general \"on-demand\" label, which @bitgamma reviewed and approved. No post-approval commits were added.",
+    "security": "No security concerns. The change restricts loading behavior and does not introduce new code execution paths, credential handling, network calls, or permission broadening.",
+    "tests": "No new tests were added. The change affects the /v1/load endpoint (C++), the tray UI (C++), and two React components (TypeScript). The new isOnDemandModelInfo() function and the label-based check in load.cpp and router.cpp have no test coverage. This is a correctness fix, not a feature, so the absence of tests is a minor gap rather than a blocker."
+  },
+  "generation_seconds": 158.3,
+  "maintainer_todos": [
+    {
+      "text": "Send a POST /v1/load request with a known upscaler model name and verify the response is a 400 error instead of proceeding with the load."
+    }
+  ],
+  "merge_date": "2026-11-05T16:10:23Z",
+  "pr_number": 4047,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-05T16:15:51+00:00",
+  "reviewers": [
+    "@bitgamma"
+  ],
+  "sha": "41558581aa3d31a7b7f2d36fbb5b55f32db9a12e",
+  "shout_outs": [],
+  "subject": "fix(images): prevent loading on-demand upscalers (#4047)",
+  "summary": "Prevents on-demand upscaler models from being loaded through POST /v1/load by introducing a new \"on-demand\" execution label, with corresponding GUI exclusions and documentation.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The /v1/load endpoint and GUI are user-reachable surfaces that change behavior but were not exercised by any human before merge."
+}
