@@ -1,0 +1,44 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.47",
+  "commit_sha": "835eb9145fdebe36658e9dbe184a6be99affd5ac",
+  "committed_at": "2026-11-05T16:00:55+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking API changes. The downloadBlob function was moved from exportStl.ts to a new download.ts module; it is re-imported by Model3DResult.tsx with the same signature. blobFromDataUrl was exported (visibility change only) and remains unchanged internally. The generatedImageNames array is a new optional Message field — existing conversations simply persist it as undefined (cleared in saveConversations). Download filenames now include call.id (e.g. 'Flux 2-abc123-1.png' instead of 'Flux 2-1.png'), which changes the saved filename but does not break any documented contract.",
+    "documentation": "docs/guide/app/chat.md was updated to mention the new Copy button on user messages and the download button on generated images. The PR is marked as non-breaking and documentation is affected. The changes are reflected in the documentation.",
+    "manual_release_testing": "This commit adds two user-reachable GUI behaviors — a download button on generated images and a Copy button on user messages — and neither has evidence of manual end-to-end exercise. Passing CI is not a substitute for a human exercising the new UI. A tester should open the Chat view, generate or edit an image, click the download button, and verify the file is saved with the correct extension and name. They should also send a user message and confirm the Copy button captures the message text. The post-approval error-handling path (download failure → retry state) cannot be reliably tested in CI and should be verified manually.",
+    "post_approval_commits": "One commit (b25749a by @fl0rianr) was added after the first and latest approval (2026-11-05T05:31:16Z, submitted at 05:31:16Z). That commit added a failedImageIndex state to show download errors and retry, changed the image download button icon from download to rotate-ccw on failure, and added call.id to AI-generated image filenames for uniqueness (e.g. Flux 2-abc123-1.png). CodeRabbit flagged this as addressing a comment about download error visibility. These are behavior-affecting changes — new UI state, new CSS, renamed download filenames — that did not trigger a re-approval.",
+    "review": "PR #4062 was approved by @meghsat with an empty review body. No other substantive human review comments are present beyond CodeRabbit bot inline suggestions (image download error state, align-self fix, filename extension matching) and an out-of-scope concern about the user-message Copy feature. The project's contribute.md recommends having a reviewer with subject-matter expertise and cautions against merging PRs that are approved but not thoroughly reviewed. @meghsat is not listed with GUI expertise in the maintainer table; GUI subject-area expertise belongs to @fl0rianr (the author) and @kpoineal.",
+    "security": "No security concerns. imageDownloadName sanitizes filenames by replacing all non-[a-z0-9._-] characters with dashes, which prevents directory traversal (the test asserts '../../evil/name.png' becomes '..-..-evil-name.png'). The downloadBlob utility uses a temporary in-memory blob URL and cleans it up after one second. The CopyButton uses aria-live=\"polite\" for accessibility. The fetch-based image download path checks response.ok before proceeding.",
+    "tests": "The new chat-message-actions.runtime.cjs regression checks verify that the CopyButton component, image download logic, generatedImageNames field, and CSS classes are present in the source. It executes imageDownloadExtension and imageDownloadName via transpiled Function() calls and asserts correct output (e.g. 'jpeg'→'jpg', '../../evil/name.png'→'..-..-evil-name.png'). The mcp-runtime-entry.ts fixture gains assertions for unique filenames (call.id inclusion). However, there are no functional or end-to-end tests that execute the React components or download flow. The post-approval error-handling changes (failedImageIndex state, retry icon) are checked only by static string assertions — no runtime path exercises the failure state."
+  },
+  "generation_seconds": 259.1,
+  "maintainer_todos": [
+    {
+      "text": "Open the Chat view, generate an image (e.g. via image-generation tool), and click the download button on the generated image to confirm the file downloads with the correct format extension and the expected filename stem."
+    },
+    {
+      "text": "Send a text message in Chat, click the new Copy button on the user message, and confirm the clipboard receives the exact message text."
+    }
+  ],
+  "merge_date": "2026-11-05T17:56:02Z",
+  "pr_number": 4062,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-05T18:02:08+00:00",
+  "reviewers": [
+    "@meghsat"
+  ],
+  "sha": "835eb9145fdebe36658e9dbe184a6be99affd5ac",
+  "shout_outs": [
+    {
+      "handle": "@meghsat",
+      "reason": "Co-authored-by trailer credits Satya Devineni for part of this PR."
+    }
+  ],
+  "subject": "feat(gui): add image download and user message copy actions (#4062)",
+  "summary": "Adds a download button to each generated or edited image in the Chat view, a Copy button to text user messages alongside Edit & resend, unique filenames for AI-generated images via call.id, image download error handling with retry, a shared downloadBlob utility, and regression tests.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "A substantive post-approval commit added image download error handling and changed AI-generated download filenames, but received no re-review before merge."
+}
