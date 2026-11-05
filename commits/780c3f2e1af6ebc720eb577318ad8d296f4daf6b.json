@@ -1,0 +1,32 @@
+{
+  "author": "@Bekhouche",
+  "branch": "main",
+  "bucket": "v2026.47",
+  "commit_sha": "780c3f2e1af6ebc720eb577318ad8d296f4daf6b",
+  "committed_at": "2026-11-05T11:45:14+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. This PR adds only test code. No API, config, CLI, or persistence format is modified or removed.",
+    "documentation": "Not applicable — this is test-only. No API changes or behavior changes shipped in this PR to document.",
+    "manual_release_testing": "No manual release testing required. This PR touches only test/server_mcp.py — it adds regression tests but introduces no user-visible behavior, API, CLI, config, or artifact. The underlying C++ fix is in #3828, which is the commit that ships.",
+    "post_approval_commits": "No new code commits were added after the final approval at 2026-10-08T09:19:32Z. The PR description was updated to reflect that the C++ fix was in #3828, but this is metadata only. The merge was squash-merged on 2026-11-05.",
+    "review": "PR #3536 was approved by @fl0rianr (subject-area expert in MCP per contribute.md) on 2026-10-08T09:19:32Z after two rounds of substantive inline comments: (1) requesting use of the admin API key for /internal/aliases registration — the author fixed this before the first approval; (2) flagging that tool_omni resolves its explicit model independently of resolve_model_for_tool, so the chat test alone could not protect omni — the author added test_032 to cover that path. CodeRabbit (bot) also flagged the admin-key issue and the author addressed it. The PR description was updated after approval to note the actual fix landed in #3828, but no new code commits followed approval. All CI checks (Launchpad PPA, Validate New llama.cpp Release, Docs And Style) passed on the merge commit.",
+    "security": "No security concerns. The test uses internal aliases endpoints for setup, and the admin-key fix ensures the test does not rely on coincidental key equality. No new credential handling, network calls, or code execution paths.",
+    "tests": "test_031 registers an alias targeting ENDPOINT_TEST_MODEL and calls lemonade_chat with that alias; it asserts the response has no error and isError is false, proving the alias was resolved. test_032 does the same through lemonade_omni, asserting isError is true (since the target is a plain LLM, not an Omni collection) and that the error text names the resolved target rather than the unresolved alias string — this is a strong regression signal. The PR author confirmed both tests fail with 'Model not found' before #3828 and pass with it."
+  },
+  "generation_seconds": 188.4,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-05T12:44:10Z",
+  "pr_number": 3536,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-05T12:49:03+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "780c3f2e1af6ebc720eb577318ad8d296f4daf6b",
+  "shout_outs": [],
+  "subject": "test(mcp): cover model aliases in gateway tool calls (#3536)",
+  "summary": "Adds regression tests for model alias resolution in MCP gateway tool calls (test_031 for lemonade_chat/lemonade_transcribe_audio/lemonade_generate_image via resolve_model_for_tool, and test_032 for lemonade_omni's independent alias path) to prevent the alias resolution bug fixed in #3828 from regressing.",
+  "verdict": "Clean",
+  "verdict_reason": "Regression tests cover both MCP alias resolution paths with clear assertions, reviewed by the MCP area expert who identified the separate omni path that needed its own test."
+}
