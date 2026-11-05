@@ -1,0 +1,60 @@
+{
+  "author": "meghsat",
+  "branch": "release-v2026.46",
+  "bucket": "v2026.46",
+  "commit_sha": "c2d3dbe5caa06af57a2cf154b656da851e45342a",
+  "committed_at": "2026-11-04T17:46:53-08:00",
+  "evidence": {
+    "api_compatibility": "The pin bump introduces breaking changes (documented in PR): `max_tokens` exactness shifts token counts; streamed `usage` is now opt-in; stricter 400 responses for previously-ignored invalid fields. These affect FLM clients. The new `/v1/systemone` and `/v1/classify` endpoints on the `flm` backend are new, not breaking. The `systemone` route description and OpenAPI spec were updated. The `classify` route doc was updated to mention FLM decision models.",
+    "documentation": "The PR updates in-code API descriptions for `/v1/systemone` and `/v1/classify`, and the OpenAPI spec in `docs/api/openai.md`. However, iswaryaalex flagged that the release notes need to capture the 1.0.7→1.0.11 breaking changes (max_tokens exactness, opt-in streaming usage, stricter validation), the `/v1/classify` example omits `truncated` despite the field being set, and the d3 models table lists five models but only `lite` is wired for this release.",
+    "manual_release_testing": "The flm pin bump from v1.0.7 to v1.0.11 changes several behaviors visible to existing FLM users: `max_tokens` now returns exactly N tokens instead of N+1; streamed `usage` requires `stream_options.include_usage` to appear, and without it lemond's `/api/v1/stats` records no token counts or TPS for FLM streams; stricter request validation returns 400 for invalid `tool_choice`, forced tool calls on Qwen3 up to 1.7B and Qwen3.5 0.8B, conversation history to `*-flash` models, and requests with no `messages` or `prompt`. These are user-visible behavior changes not confirmed by CI alone. The new `/v1/systemone` and `/v1/classify` paths on FLM (NPU) are user-reachable endpoints that CI did not exercise.",
+    "post_approval_commits": "All non-merge commits date to 2026-10-28 (last: `pr feedback: added max-length and 3 flag truncate flags`). No commits were added after the latest human approvals (fl0rianr on 2026-11-04, iswaryaalex on 2026-11-04). The branch was stable for review.",
+    "review": "fl0rianr provided substantive review on 2026-11-01 identifying three specific issues (ctx_size forwarding, long-input error codes, truncation reporting). All three were addressed in the PR. fl0rianr approved twice (2026-11-01 and 2026-11-04). iswaryaalex provided hands-on NPU testing on XDNA2 with real classification results and flagged additional concerns: only d3-lite-FLM is wired (not turbo/ultra at 16.6 GB), /v1/classify omits `truncated` in the example body while code sets it, `model` conditionally set but schema marks it required, and `context_length_refusal` deep-copies the full response per request. No Co-authored-by trailer found.",
+    "security": "No security concerns detected. The new `systemone_classify.cpp` is a pure classification helper. No credential handling, network calls beyond the existing backend API, or permission changes. The `ctx_size` stripping prevents an unexpected 422 from FLM — a minor robustness fix.",
+    "tests": "New unit test file `test/cpp/test_flm_model_labels.cpp` covering checkpoint-based mode classification. Updated `test/cpp/test_llamacpp_systemone.cpp` to test shared `systemone::` functions plus FLM context-length refusal and truncated marking. Updated `test/cpp/test_backend_mode_contract.cpp` with `flm + classification`, `flm + classification + systemone`, and `flm + systemone` contract entries. Added `test_514_classify_text_longer_than_window` and `test_515_ctx_size_is_not_forwarded` to `test/server_systemone.py`. Updated `test/server_whisper.py` to reflect new error naming. Updated `test/utils/capabilities.py` with FLM d3 model entries on npu backend. All CI checks passed (Launchpad PPA, Snap Release)."
+  },
+  "generation_seconds": 388.6,
+  "maintainer_todos": [
+    {
+      "text": "Install d3-lite-FLM on NPU hardware (`lemonade backends install flm:npu`, `lemonade pull d3-lite-FLM`), send a /v1/systemone request with choice, noul, and score questions, and confirm every answer contains `truncated: false`."
+    },
+    {
+      "text": "Send a /v1/classify request with an input exceeding ~37,000 tokens and confirm the response is 400 with code `context_length_exceeded`."
+    },
+    {
+      "text": "Stream a /v1/chat/completions request to an FLM chat model with and without `stream_options.include_usage: true`, and confirm token counts appear in /api/v1/stats only when include_usage is set."
+    },
+    {
+      "text": "Send a request with `max_tokens: 100` to an FLM model and verify it returns exactly 100 tokens (not 101), matching the documented breaking change."
+    },
+    {
+      "text": "Send an invalid tool_choice to an FLM model and confirm it returns 400 instead of ignoring the field as it did under v1.0.7."
+    },
+    {
+      "text": "Update release notes for the v1.0.7→v1.0.11 pin bump to capture max_tokens exactness, opt-in streaming usage, and stricter request validation."
+    },
+    {
+      "text": "In the d3 models table, note which model(s) were actually tested on NPU hardware and which (turbo, ultra at 16.6 GB) were not wired for this release."
+    }
+  ],
+  "merge_date": "2026-11-05T01:01:21Z",
+  "pr_number": 4037,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-05T01:56:19+00:00",
+  "reviewers": [
+    "fl0rianr",
+    "iswaryaalex"
+  ],
+  "sha": "c2d3dbe5caa06af57a2cf154b656da851e45342a",
+  "shout_outs": [
+    {
+      "handle": "iswaryaalex",
+      "reason": "Performed hands-on NPU validation on XDNA2 hardware: verified d3-lite-FLM loads, tested both /v1/systemone and /v1/classify endpoints, and benchmarked real PII classification scores (SSN 0.979, phone number 0.398), surfacing usability gaps that informed follow-up design."
+    }
+  ],
+  "subject": "feat(backend): FLM 1.0.11 decision models support (#4037)",
+  "summary": "Adds FastFlowLM 1.0.11 d3 decision model support on the NPU, wiring `flm serve --decision` to `POST /v1/systemone`, `POST /v1/classify`, and the router's `systemone`/`zero_shot` classifiers, while bumping the flm pin from v1.0.7 to v1.0.11.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The flm pin bump from v1.0.7 to v1.0.11 introduces multiple breaking changes (max_tokens now exact, streamed usage opt-in, stricter request validation) that must be verified before shipping, and the release notes need to be updated with the model behavior details and which d3 models were actually run."
+}
