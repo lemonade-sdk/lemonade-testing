@@ -1,0 +1,49 @@
+{
+  "author": "@meghsat",
+  "branch": "main",
+  "bucket": "v2026.47",
+  "commit_sha": "11a3ea0ac558ac10ba4835b0debf0f112a593efe",
+  "committed_at": "2026-11-05T00:01:33+00:00",
+  "evidence": {
+    "api_compatibility": "The FLM pin bump introduces breaking changes listed in the PR body: max_tokens now returns the exact requested count (one fewer than before), streamed usage is opt-in via stream_options.include_usage, and invalid requests that were silently ignored now get 400. These affect all FLM chat users, not just decision models. The /v1/classify API gains 'error' and 'message' fields in the answers schema (required by FLM's partial refusal behavior). The /v1/systemone schema adds the same error/message fields. The audio_transcriptions endpoint no longer mentions 'no segment timestamps' in its error text (kNoTimestamps → kNoSubtitles), which is a documentation-only change and not a contract break. The retired image_defaults block is removed from /models JSON output and migrated to recipe_options, which is a schema change that existing clients reading image_defaults will no longer find it — however, this is a pre-existing refactoring in the broader PR, not introduced by the FLM work.",
+    "documentation": "The /v1/systemone route description was updated to include FLM. The /v1/classify route description was updated to mention FLM decision models. The OpenAI API docs were updated with the error/message fields in answer schemas. docs/api/openai.md was updated for the FLM whisper error message change. However, CodeRabbit flagged that docs/api/openai.md still omits FLM from the /classify backend rules (line ~1802) and docs/dev/router-policy.md still describes systemone as llama.cpp-only — both are follow-ups left open. The /v1/systemone description's forwarding claim was noted as potentially misleading by CodeRabbit (claims 'unchanged forwarding' but ctx_size is stripped) — also deferred.",
+    "manual_release_testing": "The PR adds three user-reachable surfaces on the NPU that CI does not exercise for this PR: /v1/systemone with an FLM d3 model, /v1/classify with an FLM d3 model, and the router's systemone and zero_shot classifiers using d3-lite-FLM. It also bumps the FLM binary from v1.0.7 to v1.0.11, which changes max_tokens behavior (exact instead of +1), makes streamed usage opt-in, and introduces stricter request validation (400 on invalid tool_choice, response_format, forced tool calls, single-turn history, missing messages). None of these FLM client-facing changes are covered by dedicated NPU CI in this PR — iswaryaalex's hardware test confirmed the decision-model endpoints but did not verify the chat-level breaking changes (max_tokens, streamed usage, strict requests). The to-do list covers the decision-model endpoints.",
+    "post_approval_commits": "Commit b3b9f42 (\"CI bugs\", 2026-11-04T10:57:22) was added after iswaryaalex's first approval (05:07:02) but before fl0rianr's re-approval (19:12:34). It addressed CodeRabbit's disconnect-scope suggestion, corrected a whisper error message, and renamed the error constant from kNoTimestamps to kNoSubtitles. The changes stayed within the PR's scope and were covered by the second approval. The FLM version check for prefer_system (suggested by CodeRabbit) was not added — an older system FLM binary would fail at model load rather than with a clear error. All other CodeRabbit comments (schema alignment, encoder context prefix, probability-sum check) were deferred as follow-ups.",
+    "review": "fl0rianr (NPU / FastFlowLM subject-matter expert per docs/dev/contribute.md) reviewed initially, identified three concrete items (ctx_size stripping, max_length_exceeded → 400, truncated: false), approved at 2026-11-01T19:46:57Z, and re-approved after follow-up at 2026-11-04T19:12:34Z. iswaryaalex tested on XDNA2 hardware, verified d3-lite-FLM loads, labels resolve, and both /v1/systemone and /v1/classify answer; approved at 2026-11-04T05:07:02Z. CodeRabbit posted actionable comments on disconnect cancellation, version checks, and schema gaps — the disconnect scope was addressed in a post-approval commit (b3b9f42) and re-approved. fl0rianr's review applied the project philosophy (user error as bug) by surfacing context-length errors as 400 rather than 500, and by ensuring truncated reporting is consistent across backends.",
+    "security": "No security concerns identified. The new systemone_classify.cpp moves classification logic into a shared namespace but does not alter access controls, credential handling, or network call patterns. The disconnect cancellation scope (b3b9f42) improves stability by canceling in-flight backend requests on client disconnect, which also prevents resource leaks — a minor security-positive change. FLM's stricter request validation (400 on invalid inputs) closes a surface where malformed requests were silently accepted.",
+    "tests": "New unit test test_flm_model_labels.cpp validates checkpoint-name classification for decision, whisper, embed, and chat models. test_llamacpp_systemone.cpp was updated to use the new systemone namespace and gained FLM context-length refusal tests. test_backend_mode_contract.cpp added flm + classification and flm + classification + systemone mode entries. server_systemone.py gained tests for classify text too-long (514) and ctx_size not forwarded (515). However, the server_whisper.py changes are only a comment cleanup — there is no dedicated FLM whisper test added here. The systemone-flm CI lane was added in a separate PR (#4000) that landed after this merge, so the NPU decision-model path shipped without CI coverage in this merge. The server_endpoints.py test for pull preserving merged recipe_options (test_021a) was modified but the assertion that recipe_options steps=40 overrides image_defaults steps=4 was dropped in the final diff."
+  },
+  "generation_seconds": 434.7,
+  "maintainer_todos": [
+    {
+      "text": "Start the server with an FLM decision model (d3-lite-FLM) and run a /v1/systemone request with three choice questions and one noul question; confirm the response contains type, probabilities, confidence, truncated: false for each answer and a usage block with input_tokens and output_tokens."
+    },
+    {
+      "text": "Send the same /v1/systemone request but with a state over 32,000 tokens; confirm the response is 400 with error code context_length_exceeded and the refusal message includes the token count (e.g. 36892 tokens)."
+    },
+    {
+      "text": "Post to /v1/classify with a text longer than the model's context window and labels [\"finance\", \"cooking\"]; confirm the response is 400 with error code context_length_exceeded."
+    },
+    {
+      "text": "Post to /v1/systemone with two questions where only one overflows; confirm the response is 200, the overflowing answer contains \"error\": \"max_length_exceeded\", and the other answer is scored normally."
+    },
+    {
+      "text": "Run /v1/classify with labels [\"sports\", \"cooking\"] on a short input and confirm truncated is present and set to false in the response."
+    }
+  ],
+  "merge_date": "2026-11-05T01:01:21Z",
+  "pr_number": 4037,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-05T01:10:19+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@iswaryaalex"
+  ],
+  "sha": "11a3ea0ac558ac10ba4835b0debf0f112a593efe",
+  "shout_outs": [],
+  "subject": "feat(backend): FLM 1.0.11 decision models support (#4037)",
+  "summary": "Adds FastFlowLM 1.0.11 d3 decision model support to the flm backend, enabling /v1/systemone, /v1/classify, and the router's systemone and zero_shot classifiers on the NPU; bumps FLM npu pin from v1.0.7 to v1.0.11 and consolidates shared classification logic into a new systemone namespace.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The PR adds user-reachable FLM decision-model endpoints on the NPU but does not ship a dedicated FLM whisper path test and the systemone-flm CI lane was added in a later PR (#4000) rather than here, so the NPU decision-model path shipped without its own CI coverage in this merge."
+}
