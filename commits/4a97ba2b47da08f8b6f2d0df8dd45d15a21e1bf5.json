@@ -1,0 +1,41 @@
+{
+  "author": "@meghsat",
+  "branch": "main",
+  "bucket": "v2026.47",
+  "commit_sha": "4a97ba2b47da08f8b6f2d0df8dd45d15a21e1bf5",
+  "committed_at": "2026-11-05T15:00:31+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking API changes. The SlotData.cache_tokens field is now optional (was always absent in current llama.cpp), and the frontend fallback to n_prompt_tokens is a graceful recovery, not a breaking change. The C++ CpuStats struct was unconditionally available for Linux/Windows but is now also available on macOS — this is additive, not breaking.",
+    "documentation": "No documentation updates needed — this is a GUI bug fix restoring previously broken display values. No API, CLI, config, or behavior change is exposed in user-facing docs.",
+    "manual_release_testing": "The change modifies the Monitor page's CPU Usage gauge (now populated on macOS) and the KV Cache gauge (now showing real usage on all platforms). CI passes but no evidence shows a human ran the Monitor page with an active model to confirm the gauges display correctly. This is a user-visible behavior change that should be exercised by hand before shipping.",
+    "post_approval_commits": "@fl0rianr committed a fix (\"fix(macos): serialize CPU sampling with stats mutex\") after the first and only approval. The change is minimal and directly addresses the reviewer's own concern, so no re-approval is strictly required, but the approved diff did not include the mutex before the Mach API call — the lock was moved to cover host_statistics(). This changes the lock scope of the approved code. The commit message and change are within the spirit of the original PR, but the reviewer should confirm the broader lock is acceptable for the polling frequency.",
+    "review": "Reviewer @fl0rianr approved with subject-matter expertise (GUI, macOS — listed in docs/dev/contribute.md). The review was substantive: @fl0rianr pushed an additional commit (183263c) on the PR branch to fix a concurrency race condition flagged by CodeRabbit — moving std::lock_guard to acquire before the Mach host_statistics call. The PR was squashed into the merge commit. Only @fl0rianr submitted a review; @kpoineal and @jeremyfowers were requested but did not review. No inline human review comments were left beyond the approval.",
+    "security": "The macOS code uses standard Mach APIs (host_statistics, mach_port_deallocate) with no credential handling, network calls, or code execution. The Mach tick counters are 32-bit and can wrap; the code handles wrapping correctly with uint32_t subtraction, though a gap longer than the wrap period (~weeks on many-core machines) could produce an inflated delta — this is a functional correctness concern, not a security issue.",
+    "tests": "Adds 5 assertions for getCacheTokenCount covering legacy schema fields (n_cache_tokens, cache_tokens, cache_tokens array), n_prompt_tokens fallback, and a fresh slot with no cache fields. Adds 4 assertions for percentDigits covering 0, sub-1, integer, and normal values. No corresponding C++ unit tests for the macOS metrics platform change. The existing test suite does exercise server.cpp and the macOS metrics code paths."
+  },
+  "generation_seconds": 181.8,
+  "maintainer_todos": [
+    {
+      "text": "Review the final metrics_macos.cpp code to confirm the mutex now protects the Mach host_statistics call (not just the delta calculation) and that holding the lock through the Mach API call is acceptable for the polling frequency used by the Monitor UI."
+    }
+  ],
+  "merge_date": "2026-11-05T17:03:28Z",
+  "pr_number": 4069,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-05T17:10:05+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "4a97ba2b47da08f8b6f2d0df8dd45d15a21e1bf5",
+  "shout_outs": [
+    {
+      "handle": "@fl0rianr",
+      "reason": "Co-author of the commit and added a post-approval fix to serialize CPU sampling under the stats mutex, addressing a race condition that concurrent metrics requests could trigger."
+    }
+  ],
+  "subject": "fix(gui3): show CPU usage on macOS and KV cache usage on all platforms (#4069)",
+  "summary": "Restores CPU usage display on the Monitor page for macOS by implementing host_statistics(HOST_CPU_LOAD_INFO) sampling and fixes the KV Cache gauge on all platforms by reading n_prompt_tokens from llama.cpp slot data instead of the deprecated cache_tokens fields.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "Reviewer @fl0rianr added a substantive commit after approval that moved the mutex acquisition from after the Mach host_statistics call to before it, changing the lock scope of the approved code."
+}
