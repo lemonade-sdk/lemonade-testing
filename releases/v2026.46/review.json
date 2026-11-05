@@ -2,21 +2,14 @@
   "branch": "release-v2026.46",
   "breaking_changes": [
     "The /models API response no longer includes image_defaults or audio_defaults keys; values that were under those keys are now under recipe_options, so external clients reading the old fields will find them absent.",
-    "The /models response now includes a user_configurable boolean flag on backend descriptor options; consumers that assumed all listed options are editable may show technical knobs like soft_pixel_cap, pcm_sample_rate, and pcm_channels to users."
+    "The /models response now includes a user_configurable boolean flag on backend descriptor options; consumers that assumed all listed options are editable may show technical knobs like soft_pixel_cap, pcm_sample_rate, and pcm_channels to users.",
+    "FLM v1.0.11 (bumped from v1.0.7) returns max_tokens exactly as requested rather than max_tokens+1, so chat completions that relied on the extra token will now stop one token early.",
+    "FLM v1.0.11 streams token usage counts only when stream_options.include_usage is set; without it the server's /api/v1/stats endpoint records no token counts or throughput for FLM streams.",
+    "FLM v1.0.11 returns 400 for previously-accepted invalid fields including invalid tool_choice, forced tool calls on small Qwen3 models (up to 1.7B), conversation history on *-flash models, and requests with no messages or prompt."
   ],
   "bucket": "v2026.46",
   "candidate_issues": [],
   "checklist": [
-    {
-      "author": "@meghsat",
-      "commit": "01ab5ebcd1e466f89c1811660d95c208ee339179",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 4013,
-      "priority": "P0",
-      "text": "Start Lemonade, open a saved conversation, switch to the Models tab, load a different model, switch back to Chat, and confirm the composer placeholder shows the newly loaded model."
-    },
     {
       "author": "@meghsat",
       "commit": "d534dc9971a97ea07bba2d306c942f77ea57ff1c",
@@ -101,9 +94,7 @@
       "author": "@fl0rianr",
       "commit": "c306b768e0bc185650e47b3560c6aa6228f7f941",
       "platforms": [
-        "Ubuntu PPA",
-        "Fedora",
-        "Debian"
+        "all"
       ],
       "pr_number": 4001,
       "priority": "P1",
@@ -151,6 +142,16 @@
     },
     {
       "author": "@meghsat",
+      "commit": "01ab5ebcd1e466f89c1811660d95c208ee339179",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4013,
+      "priority": "P1",
+      "text": "Start Lemonade, open a saved conversation, switch to the Models tab, load a different model, switch back to Chat, and confirm the composer placeholder shows the newly loaded model."
+    },
+    {
+      "author": "@meghsat",
       "commit": "d534dc9971a97ea07bba2d306c942f77ea57ff1c",
       "platforms": [
         "all"
@@ -173,9 +174,7 @@
       "author": "@pwilkin",
       "commit": "4e368aad980adf1a42ccb1fef308455ab89c7fa2",
       "platforms": [
-        "Ubuntu PPA",
-        "Fedora",
-        "Debian"
+        "all"
       ],
       "pr_number": 3993,
       "priority": "P1",
@@ -206,9 +205,7 @@
       "commit": "a5b414b7fb9e320da471b1e570e7d77f29625064",
       "platforms": [
         "Ubuntu PPA",
-        "Docker",
-        "Fedora",
-        "Debian"
+        "Fedora"
       ],
       "pr_number": 3709,
       "priority": "P1",
@@ -218,10 +215,7 @@
       "author": "@jeremyfowers",
       "commit": "a5b414b7fb9e320da471b1e570e7d77f29625064",
       "platforms": [
-        "Ubuntu PPA",
-        "Docker",
-        "Fedora",
-        "Debian"
+        "Ubuntu PPA"
       ],
       "pr_number": 3709,
       "priority": "P1",
@@ -232,9 +226,7 @@
       "commit": "a5b414b7fb9e320da471b1e570e7d77f29625064",
       "platforms": [
         "Ubuntu PPA",
-        "Docker",
-        "Fedora",
-        "Debian"
+        "Fedora"
       ],
       "pr_number": 3709,
       "priority": "P1",
@@ -245,9 +237,7 @@
       "commit": "a5b414b7fb9e320da471b1e570e7d77f29625064",
       "platforms": [
         "Ubuntu PPA",
-        "Docker",
-        "Fedora",
-        "Debian"
+        "Fedora"
       ],
       "pr_number": 3709,
       "priority": "P1",
@@ -267,9 +257,7 @@
       "author": "@jeremyfowers",
       "commit": "07af4f36b16fa5475aff9806eef85a77929a258b",
       "platforms": [
-        "Ubuntu PPA",
-        "Fedora",
-        "Debian"
+        "Fedora"
       ],
       "pr_number": 3710,
       "priority": "P1",
@@ -279,9 +267,7 @@
       "author": "@jeremyfowers",
       "commit": "07af4f36b16fa5475aff9806eef85a77929a258b",
       "platforms": [
-        "Ubuntu PPA",
-        "Fedora",
-        "Debian"
+        "all"
       ],
       "pr_number": 3710,
       "priority": "P1",
@@ -291,9 +277,7 @@
       "author": "@jeremyfowers",
       "commit": "07af4f36b16fa5475aff9806eef85a77929a258b",
       "platforms": [
-        "Ubuntu PPA",
-        "Fedora",
-        "Debian"
+        "Fedora"
       ],
       "pr_number": 3710,
       "priority": "P1",
@@ -303,9 +287,7 @@
       "author": "@jeremyfowers",
       "commit": "07af4f36b16fa5475aff9806eef85a77929a258b",
       "platforms": [
-        "Ubuntu PPA",
-        "Fedora",
-        "Debian"
+        "Fedora"
       ],
       "pr_number": 3710,
       "priority": "P1",
@@ -315,10 +297,7 @@
       "author": "@jeremyfowers",
       "commit": "07af4f36b16fa5475aff9806eef85a77929a258b",
       "platforms": [
-        "Ubuntu PPA",
-        "Docker",
-        "Fedora",
-        "Debian"
+        "Docker"
       ],
       "pr_number": 3710,
       "priority": "P1",
@@ -328,9 +307,7 @@
       "author": "@jeremyfowers",
       "commit": "152f6fff35ddf6d891433535d40ac4da71c77235",
       "platforms": [
-        "Ubuntu PPA",
-        "Fedora",
-        "Debian"
+        "Fedora"
       ],
       "pr_number": 3711,
       "priority": "P1",
@@ -340,9 +317,7 @@
       "author": "@jeremyfowers",
       "commit": "204f00df74c161a5baabdcdb5bd580977588a6b4",
       "platforms": [
-        "Ubuntu PPA",
-        "Fedora",
-        "Debian"
+        "Fedora"
       ],
       "pr_number": 3712,
       "priority": "P1",
@@ -352,9 +327,7 @@
       "author": "@jeremyfowers",
       "commit": "204f00df74c161a5baabdcdb5bd580977588a6b4",
       "platforms": [
-        "Ubuntu PPA",
-        "Fedora",
-        "Debian"
+        "Fedora"
       ],
       "pr_number": 3712,
       "priority": "P1",
@@ -364,9 +337,7 @@
       "author": "@jeremyfowers",
       "commit": "204f00df74c161a5baabdcdb5bd580977588a6b4",
       "platforms": [
-        "Ubuntu PPA",
-        "Fedora",
-        "Debian"
+        "Fedora"
       ],
       "pr_number": 3712,
       "priority": "P1",
@@ -376,9 +347,7 @@
       "author": "@jeremyfowers",
       "commit": "204f00df74c161a5baabdcdb5bd580977588a6b4",
       "platforms": [
-        "Ubuntu PPA",
-        "Fedora",
-        "Debian"
+        "all"
       ],
       "pr_number": 3712,
       "priority": "P1",
@@ -388,9 +357,7 @@
       "author": "@jeremyfowers",
       "commit": "f5b11c6ddd0dd7f36493e00843582c0d856baf65",
       "platforms": [
-        "Ubuntu PPA",
-        "Fedora",
-        "Debian"
+        "Fedora"
       ],
       "pr_number": 4031,
       "priority": "P1",
@@ -400,9 +367,7 @@
       "author": "@jeremyfowers",
       "commit": "f5b11c6ddd0dd7f36493e00843582c0d856baf65",
       "platforms": [
-        "Ubuntu PPA",
-        "Fedora",
-        "Debian"
+        "Fedora"
       ],
       "pr_number": 4031,
       "priority": "P1",
@@ -412,9 +377,7 @@
       "author": "@jeremyfowers",
       "commit": "f5b11c6ddd0dd7f36493e00843582c0d856baf65",
       "platforms": [
-        "Ubuntu PPA",
-        "Fedora",
-        "Debian"
+        "Fedora"
       ],
       "pr_number": 4031,
       "priority": "P1",
@@ -479,6 +442,56 @@
       "pr_number": 3956,
       "priority": "P1",
       "text": "POST to /v1/classify with model Julia-1-GGUF, input 'hello', and no labels parameter, and confirm the response is a 400 error because decision models require labels."
+    },
+    {
+      "author": "meghsat",
+      "commit": "c2d3dbe5caa06af57a2cf154b656da851e45342a",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4037,
+      "priority": "P1",
+      "text": "Install d3-lite-FLM on NPU hardware (`lemonade backends install flm:npu`, `lemonade pull d3-lite-FLM`), send a /v1/systemone request with choice, noul, and score questions, and confirm every answer contains `truncated: false`."
+    },
+    {
+      "author": "meghsat",
+      "commit": "c2d3dbe5caa06af57a2cf154b656da851e45342a",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4037,
+      "priority": "P1",
+      "text": "Send a /v1/classify request with an input exceeding ~37,000 tokens and confirm the response is 400 with code `context_length_exceeded`."
+    },
+    {
+      "author": "meghsat",
+      "commit": "c2d3dbe5caa06af57a2cf154b656da851e45342a",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4037,
+      "priority": "P1",
+      "text": "Stream a /v1/chat/completions request to an FLM chat model with and without `stream_options.include_usage: true`, and confirm token counts appear in /api/v1/stats only when include_usage is set."
+    },
+    {
+      "author": "meghsat",
+      "commit": "c2d3dbe5caa06af57a2cf154b656da851e45342a",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4037,
+      "priority": "P1",
+      "text": "Send a request with `max_tokens: 100` to an FLM model and verify it returns exactly 100 tokens (not 101), matching the documented breaking change."
+    },
+    {
+      "author": "meghsat",
+      "commit": "c2d3dbe5caa06af57a2cf154b656da851e45342a",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4037,
+      "priority": "P1",
+      "text": "Send an invalid tool_choice to an FLM model and confirm it returns 400 instead of ignoring the field as it did under v1.0.7."
     },
     {
       "author": "@meghsat",
@@ -549,22 +562,42 @@
       "pr_number": 4049,
       "priority": "P2",
       "text": "Request GET /v1/models for a model whose registry row still has an `image_defaults` block (simulate an older tag) and confirm the website page renders generation parameters from that block via `recipe_options`."
+    },
+    {
+      "author": "meghsat",
+      "commit": "c2d3dbe5caa06af57a2cf154b656da851e45342a",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4037,
+      "priority": "P2",
+      "text": "Update release notes for the v1.0.7→v1.0.11 pin bump to capture max_tokens exactness, opt-in streaming usage, and stricter request validation."
+    },
+    {
+      "author": "meghsat",
+      "commit": "c2d3dbe5caa06af57a2cf154b656da851e45342a",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4037,
+      "priority": "P2",
+      "text": "In the d3 models table, note which model(s) were actually tested on NPU hardware and which (turbo, ultra at 16.6 GB) were not wired for this release."
     }
   ],
-  "commits_reviewed": 25,
+  "commits_reviewed": 26,
   "commits_unreviewed": 0,
   "evidence": {
-    "blockers": "Four P0 items must pass: model download path for ACE-Step/ThinkSound/Moonshine, the /models API shape change with recipe_options migration, GUI model-switching from Models tab to Chat composer, and chat history opt-out retaining previously saved conversations.",
-    "breaking_changes": "The /models response dropped image_defaults and audio_defaults, folding their contents into recipe_options. The user_configurable flag was added to backend descriptor options. The breaking change is documented in PR 4049; external API clients must update their /models response parsing. No CLI, config, or persistence format changes.",
-    "coverage": "All 25 commits from v2026.45.3..6c5a26a reviewed; 25 commit digests with 49 to-dos rated. No gaps in the range.",
-    "manual_testing": "Multiple container backends need hardware exercise: thenoise CUDA on NVIDIA GPUs, ds4:rocm on Strix Halo with SELinux and Docker-only setups, rocmfpx:rocm on gfx1151, Halogen exclusive-host eviction on gfx1151, and gufo:rocm on Strix Halo. SystemOne decision models and zero-shot classify need a GGUF decision model on a host. Benchmark submission exercises external HTTP POST to bench.lemonade-server.ai.",
-    "security": "Container image pins are digest-based across all container backends. SELinux checks add a guard on Fedora for ds4:rocm. The Firefox ?q= prompt feature disables MCP and Omni tool execution for untrusted webpage content. Label validation in zero-shot and systemone classifiers rejects control characters and duplicate entries."
+    "blockers": "Three P0 items need clearing before release: (1) the /models response must verify that image_defaults and audio_defaults are fully migrated to recipe_options and that no external API clients break; (2) disabling save chat history must not erase previously saved conversations; (3) model downloads for ACE-Step, ThinkSound, and Moonshine variants must complete without missing files after the explicit-file-listing refactoring. Strix Halo hardware needed for ds4, gufo, halogen, rocmfpx backends; NVIDIA Linux x86_64 for TheNoise CUDA; SELinux-enforcing Fedora for ds4 edge case.",
+    "breaking_changes": "The /models response shape changed: image_defaults and audio_defaults removed, values folded into recipe_options, and user_configurable flag added. External clients reading the old keys will break until updated. FLM v1.0.7→1.0.11 pin changes max_tokens exactness, makes streamed usage opt-in via stream_options.include_usage, and enforces stricter request validation returning 400 for previously-accepted invalid fields. Both require FLM clients to update.",
+    "coverage": "Reviewed all 26 commits across the release range from v2026.45.3 to c2d3dbe. Coverage includes all backend additions (thenoise cuda, container backends for ds4, rocmfpx, halogen, gufo, llamacpp:nathanw, llamacpp:halobox), API changes (zero-shot classification, systemone decision models, /models response refactor, /v1/images/upscale parameter), GUI fixes (model handoff, chat history save toggle, load banners, Firefox sidebar prompt), model download refactoring (ACE-Step, ThinkSound, Moonshine explicit file listings), FLM pin bump to v1.0.11, and CI-only changes (validate_containers workflow, self-hosted runner matrix, benchmark rocm_version field).",
+    "manual_testing": "NPU hardware required for FLM d3 decision model verification (c2d3dbe). Strix Halo (Fedora) hardware needed for ds4:rocm, gufo:rocm, halogen, rocmfpx backends. NVIDIA Linux x86_64 for TheNoise CUDA backend. SELinux-enforcing Fedora host for ds4 installation edge case. Docker-only host (no Podman) for ds4 compatibility. Ubuntu PPA and Fedora for llamacpp:nathanw container backend install/load/uninstall. Multiple platforms tested: Fedora, Ubuntu PPA, Windows, Snap, Docker, macOS, Debian.",
+    "security": "Container backends use pinned image digests, allowlisted registries, and --cap-drop=all with no-new-privileges. The ort-server dependency bump (0.3.7→0.4.0) replaces tokenizers-cpp with Rust FFI over Hugging Face tokenizers, validated with 20,001 identical test cases. Control-character label validation added for systemone classifiers. The /no_think prefix scoping fix and SELinux fail-closed check are defensive hardening. No new credential handling or supply-chain risks beyond standard community container images."
   },
-  "generation_seconds": 369.0,
-  "head_sha": "6c5a26aeb8ab29c75aa6c12c29628c82377666bb",
+  "generation_seconds": 356.3,
+  "head_sha": "c2d3dbe5caa06af57a2cf154b656da851e45342a",
   "is_hotfix": false,
   "last_stable_tag": "",
   "range_start": "v2026.45.3",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-11-04T16:13:50+00:00"
+  "reviewed_at": "2026-11-05T02:02:18+00:00"
 }
