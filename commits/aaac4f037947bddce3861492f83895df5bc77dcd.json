@@ -1,0 +1,32 @@
+{
+  "author": "@github-actions[bot]",
+  "branch": "main",
+  "bucket": "v2026.47",
+  "commit_sha": "aaac4f037947bddce3861492f83895df5bc77dcd",
+  "committed_at": "2026-11-06T21:04:23+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The only modified file is src/cpp/resources/backend_versions.json, which defines container image digests used internally by Lemonade's container backend system. This is an implementation detail — no API, CLI, config format, or user-facing behavior changes.",
+    "documentation": "The PR description contains a complete table mapping each backend to its old and new pin, including the held nathanw digest. The commit message explains the nathanw regression in detail. backend_versions.json is the single touched file and serves as the authoritative record of pins. No external documentation, spec, or user guide changes are needed for internal container pin updates.",
+    "manual_release_testing": "This PR changes only a single JSON file (src/cpp/resources/backend_versions.json) — internal container image pins used by the build/release pipeline. None of the affected backends (ds4, gufo, halogen, halobox, nathanw) are user-facing release artifacts; they are internal CI/testing infrastructure containers. The llamacpp:halobox pin points to an AMD ROCm toolbox image, and halogen points to the Halogen flash server — both are infrastructure. There is no user-reachable surface (no CLI flag, endpoint, config option, or shipped artifact changes), so manual release testing is not required.",
+    "post_approval_commits": "No commits were added after @sawansri's approval. The fix commit (9183d005d) — 'hold llamacpp:nathanw on its previous image' — was part of the original PR and merged in the same review cycle. The PR has two commits: the initial pin update from github-actions[bot], followed by the nathanw hold fix co-authored by @sawansri and Claude Opus 5.5. All checks passed before merge.",
+    "review": "PR #4083 was opened by github-actions[bot] (an automated image-pin updater) and assigned to @sawansri. @sawansri submitted an APPROVE review at 2026-11-06T19:29:57Z. @sawansri is listed in docs/dev/contribute.md as a subject-matter expert for Docker, containers, and ROCm — this is exactly his domain. The PR description included a clear table of old vs. new pins for all five backends. @sawansri also added an inline comment explaining the nathanw hold: the new vulkan-radv-performance digest rebuilt the same llama.cpp (build 11001) but added 11,309 zmm (AVX-512) instructions to libggml-cpu.so init paths, causing SIGILL on non-AVX-512 smoke-test runners. Real users are unaffected because nathanw is gated to gfx1151 hardware (which has AVX-512). The review was timely and substantive.",
+    "security": "No security concerns. The commit changes only sha256 image digest pins — immutable references to already-published container images. No supply-chain exposure, credential handling, code execution, or network changes. The nathanw hold was a preventive measure against a CPU architecture mismatch (AVX-512), not a security issue.",
+    "tests": "All CI checks passed (55 checks total, 0 failures). Relevant passing checks include 'Build and smoke test (amd64)', 'Build and smoke test (arm64)', 'docker-smoke-test', 'Container smoke test - docker (rootful)', 'Container smoke test - podman (rootful)', and 'Container smoke test - podman (rootless)'. The nathanw smoke test was previously failing due to the AVX-512 issue, and the fix commit held nathanw on its previous digest so the smoke test could pass. No tests were weakened, deleted, or skipped inappropriately."
+  },
+  "generation_seconds": 166.7,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-06T21:51:03Z",
+  "pr_number": 4083,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-06T21:55:29+00:00",
+  "reviewers": [
+    "@sawansri"
+  ],
+  "sha": "aaac4f037947bddce3861492f83895df5bc77dcd",
+  "shout_outs": [],
+  "subject": "Update container backend image pins (#4083)",
+  "summary": "Updates container backend image pins for ds4:rocm, gufo:rocm, halogen:rocm, and llamacpp:halobox, and holds llamacpp:nathanw on its previous digest after the new vulkan-radv-performance rebuild introduced AVX-512 instructions that crash llama-server on non-AVX-512 CPUs.",
+  "verdict": "Clean",
+  "verdict_reason": "Automated container-pin update with a timely, well-explained hotfix for an AVX-512 compatibility regression; reviewed by a containers/ROCm subject-matter expert with all CI passing and no post-approval changes."
+}
