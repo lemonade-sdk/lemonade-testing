@@ -1,0 +1,32 @@
+{
+  "author": "@sawansri",
+  "branch": "main",
+  "bucket": "v2026.47",
+  "commit_sha": "a5380f7a7e7b1426ceffcd53fe1e7e58d7c689df",
+  "committed_at": "2026-11-06T22:12:21+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The PR adds two new entries to server_models.json and adds architecture names to the allowlist header. Existing models, CLI commands, and APIs are unaffected.",
+    "documentation": "PR author checked 'Documentation is not affected by this change.' The change adds model entries to server_models.json which is consumed at runtime; no API spec or user-facing docs need updating.",
+    "manual_release_testing": "The author reports running both models with Vulkan, so the path has been exercised. No separate human release-critical verification is needed.",
+    "post_approval_commits": "The PR had two commits by @sawansri. The first approval from @fl0rianr came at 2026-11-05T18:48:19Z. Both commits predate the approval (committed 2026-11-02 and 2026-11-05). No commits were added after approval. Zero post-approval churn.",
+    "review": "One substantive approval from @fl0rianr (state: APPROVED, submitted 2026-11-05T18:48:19Z). No inline review comments. A Coderabbit bot review was also filed (COMMENTED) but carries no human weight. @fl0rianr's subject areas are GUI, CI, and smart router; the llamacpp / new models areas belong to @superm1 and @pwilkin, so subject-matter expertise on llamacpp model registration was not present in the reviewer pool. The changes are minimal — two model entries in server_models.json and one regenerated header file — which may explain why no dedicated reviewer was needed, but this is still a deviation from the guideline that PRs should have at least one reviewer with subject area expertise.",
+    "security": "No security concerns. The change adds model metadata (checkpoint URLs, sizes, labels) to a JSON registry and updates an architecture allowlist header. Checkpoint URLs point to HuggingFace paths (LiquidAI/LFM3-*-GGUF). No credential handling, network calls, code execution paths, or supply-chain changes introduced.",
+    "tests": "CI checks all pass: build, app-regression-tests, macOS builds, backend-docs-drift, pre-commit, server download registry tests, vendor asset integrity, and llamacpp/sdcpp validation workflows. The PR description includes local testing details — the author rebuilt with llamacpp b12109 (Vulkan), ran lemond, and verified chat, reasoning, tool-calling, and vision modalities on both models. ctest results for llamacpp_systemone, HfVariantsTest, HfUpdateCheckTest, and GfxArchGatingTest are reported as passing. No tests weakened or deleted."
+  },
+  "generation_seconds": 156.9,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-06T22:54:25Z",
+  "pr_number": 4044,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-06T22:58:45+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "a5380f7a7e7b1426ceffcd53fe1e7e58d7c689df",
+  "shout_outs": [],
+  "subject": "Add LFM3-1.7B and LFM3-VL-2B (#4044)",
+  "summary": "Adds LFM3-1.7B-GGUF (Q4_K_M, labels chat / reasoning / tool-calling) and LFM3-VL-2B-GGUF (Q4_K_M + F16 mmproj, labels chat / reasoning / vision) to the model registry and regenerates llamacpp_architectures_generated.h to cover b12109 pins, which #4057 left stale.",
+  "verdict": "Clean",
+  "verdict_reason": "Straightforward model registry addition with local testing, all CI checks passing, and no post-approval churn."
+}
