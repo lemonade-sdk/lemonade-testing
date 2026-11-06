@@ -1,0 +1,44 @@
+{
+  "author": "@danielholanda",
+  "branch": "main",
+  "bucket": "v2026.47",
+  "commit_sha": "b0e01c7bf411c7fb15b3a55fcd7be78e0c5a9dc6",
+  "committed_at": "2026-11-05T23:57:45+00:00",
+  "evidence": {
+    "api_compatibility": "The /system-info API gains five new optional fields (description, author, publisher, license, project_url) on backend entries. Existing consumers will not break; they simply see additional fields. The CLI gains a new `backends info` subcommand without modifying any existing subcommand's signature or behavior. No breaking changes.",
+    "documentation": "docs/api/lemonade.md is updated with schema descriptions for the five new fields, and the upstream-binary caveat is placed in the route schema (system_info.cpp) so API regeneration preserves it. The PR follows the project's docs/tools/gen_api_boilerplate.py convention correctly.",
+    "manual_release_testing": "The PR introduces a new CLI subcommand (`lemonade backends info RECIPE:BACKEND`) and new visual elements on the app's backend cards (format badges, author links, descriptions, provenance lines). CI passes but no evidence shows a human exercised the new command or inspected the GUI cards before merge. The maintainer to-do list addresses this.",
+    "post_approval_commits": "Two commits landed after the merge-queue approval window (2026-11-05T21:51:26Z): cb47bb2 \"Apply batched suggestions from code review\" (co-authored by @jeremyfowers) modified description text in 5 backend descriptor headers (fastflowlm, hrx, llamacpp, sdcpp, whispercpp); 2bc1134 \"Shorten project_url schema text and drop 'most' from Vulkan descriptions\" (co-authored by Cursor) touched 6 files. A third commit ed8dfd9 is the merge of main into dholanda/backend_names, bringing in PR #4072 (Halogen, Gufo, DwarfStar4, TheNoise backend logos) and PR #4066 (NVIDIA CUDA driver gating). These post-approval changes are all description/label text adjustments or merges of unrelated PRs already reviewed and approved in their own PRs, so they do not materially alter the scope or risk of PR #4059.",
+    "review": "Three reviewers were requested (@bitgamma, @kpoineal, @iswaryaalex) but none submitted a review. @fl0rianr provided a structured review listing four points (CLI status reporting, CLI metadata fallback, GUI license display, and system-info test coverage) and @jeremyfowers commented on the halogen description and suggested adding the format field to the API docs; @wenis also left inline comments. The PR was merged without any formal APPROVED review — all 30 reviews in the API returned state=COMMENTED. The merge happened via the GitHub merge queue, which auto-merged after checks passed; the post-approval-commits script reports first approval at 2026-11-05T21:51:26Z and latest at 2026-11-05T22:23:00Z, but those timestamps appear to be the merge-queue window rather than a human approval. The PR author addressed all inline comments (see discussion thread) but did not reopen a review to signal readiness.",
+    "security": "The change is purely metadata display — adding description/author/license/project_url strings to descriptors, the API schema, and the GUI. No new network paths, credential handling, code execution, or permission changes. The only data flow is reading static metadata from C++ headers and passing it through the API. No supply-chain or obfuscation concerns. The project_url fields are validated to be https:// in the test suite.",
+    "tests": "BackendContractsTest gains a new backend_about suite that asserts every support row has a non-empty description, author, publisher, https project_url, and that no about entry references a non-existent backend. The Python CLI test suite adds test_043_backends_info (verifying the CLI subcommand output and /system-info fields) and test_044_backends_info_unknown_backend (verifying error on unknown backends). The test files touched are test/cpp/test_backend_contracts.cpp and test/server_cli2.py."
+  },
+  "generation_seconds": 321.1,
+  "maintainer_todos": [
+    {
+      "text": "Run `lemonade backends info llamacpp:rocm` on a system with ROCm and confirm the output shows Author ggml-org, Publisher lemonade-sdk, and License MIT."
+    },
+    {
+      "text": "Open the app on a Linux system with ROCm, navigate to the Backends tab, and confirm the llamacpp:rocm card displays a \"Container\" format badge, the author \"ggml-org\" next to the version, and \"License: MIT\"."
+    },
+    {
+      "text": "Run `lemonade backends info llamacpp:no-such-backend` and confirm it exits non-zero with an error about an unknown backend."
+    }
+  ],
+  "merge_date": "2026-11-06T00:46:24Z",
+  "pr_number": 4059,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-06T00:53:39+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@jeremyfowers",
+    "@wenis"
+  ],
+  "sha": "b0e01c7bf411c7fb15b3a55fcd7be78e0c5a9dc6",
+  "shout_outs": [],
+  "subject": "feat(backends): Add description and author metadata to backends for display in the CLI and GUI (#4059)",
+  "summary": "Adds description, author, publisher, license, and project_url metadata fields to every backend descriptor; exposes them on the /system-info API, prints them with the new lemonade backends info RECIPE:BACKEND CLI subcommand, and shows them on the app's backend cards alongside a new format badge (native / python / container).",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The PR merged without any formal APPROVED review — both substantive reviewers left comments but never submitted an approval, and the three requested reviewers never reviewed at all — and two post-approval commits (one of them squashed with main) were added after the merge-queue approval window."
+}
