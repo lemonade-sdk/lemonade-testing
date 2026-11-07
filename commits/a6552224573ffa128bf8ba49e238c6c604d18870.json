@@ -1,0 +1,32 @@
+{
+  "author": "@AaronStGeorge",
+  "branch": "main",
+  "bucket": "v2026.47",
+  "commit_sha": "a6552224573ffa128bf8ba49e238c6c604d18870",
+  "committed_at": "2026-11-07T13:46:12+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The new resolve_runtime_options() method is additive — it appends --spec-type draft-mtp only when a model carries the 'mtp' label. Non-MTP models are unaffected. The backend version pin changed from hrx-b99 to hrx-b129 (a daily-built llamacpp-rocm artifact upgrade), which is a routine backend refresh documented in backend_versions.json. The model catalog gains one entry; no existing models are modified.",
+    "documentation": "Model catalog entry for Qwen3.5-35B-A3B-HRX includes labels (chat, tool-calling, mtp), size, and a suggested flag. The backend_versions.json version pin is an internal detail. No user-facing documentation changes needed per the PR author's assessment. The MTP auto-enable is discoverable through the model's 'mtp' label in the catalog.",
+    "manual_release_testing": "The PR author included a screenshot showing the model loaded successfully in the Lemonade app, which is evidence of manual testing. The contract tests exercise the code path without HRX hardware, but the actual end-to-end MTP behavior on HRX hardware (the qualified bundle) was claimed tested. No concerns about incomplete testing of the release surface beyond the acknowledged lack of inference-level tests.",
+    "post_approval_commits": "None. The first and latest approval both occurred at 2026-11-03T00:21:50Z, and no commits were added after that timestamp. All four commits predate the final approval.",
+    "review": "PR #4014 was reviewed by @fl0rianr, who has subject matter expertise in ROCm and llamacpp per docs/dev/contribute.md. Review began with a changes-requested review on 2026-10-31 that identified a wrong checkpoint path (suggested the MTP-specific GGUF repo), test coverage gaps (manual label vs. catalog-level test), and the stale hrx-b99 reference in tests. The author addressed all feedback in a follow-up commit on 2026-11-02: fixed the checkpoint to unsloth/Qwen3.5-35B-A3B-MTP-GGUF, updated the version constant to hrx-b129, and added check_catalog_mtp_contract() exercising the catalog-to-resolution path. @fl0rianr approved on 2026-11-03T00:21:50Z with LGTM. The CodeRabbit bot also provided automated nitpick comments on test maintainability. The review applied the project's design-for-agility tenet by adding a label-driven auto-config path rather than per-model config.",
+    "security": "No security concerns. The change adds label-based argument resolution in a C++ backend module. No new network calls, credential handling, code execution paths, or permission changes. The model checkpoint points to a known Unsloth GGUF on Hugging Face.",
+    "tests": "New tests in test/cpp/test_hrx_contract.cpp: (1) check_catalog_mtp_contract() loads Qwen3.5-35B-A3B-HRX from the model catalog, parses it to ModelInfo, calls resolve_runtime_options(), and asserts the resulting hrx_args contain --spec-type draft-mtp. (2) check_mtp_contract() exercises resolve_runtime_options() directly with a mock ModelInfo labeled 'mtp', verifies the flag appears in the launch argv, checks that repeated resolution does not duplicate arguments, verifies explicit speculative arguments are preserved, confirms merge_args=false disables auto defaults, and ensures non-MTP models keep their original args. The PR author noted heavyweight inference tests were intentionally omitted. CI passed on all four workflows: Release, Lemonade App checks, Server Download Registry Tests, and C++ Server Build/Test/Release."
+  },
+  "generation_seconds": 157.8,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-07T14:33:36Z",
+  "pr_number": 4014,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-07T14:37:56+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "a6552224573ffa128bf8ba49e238c6c604d18870",
+  "shout_outs": [],
+  "subject": "feat(hrx): Enable MPT + add MTP capable model (#4014)",
+  "summary": "Enables automatic MTP (speculative decoding) for HRX models by detecting the `mtp` label in model catalogs and appending `--spec-type draft-mtp` to HRX launch args, and adds the Qwen3.5-35B-A3B-HRX model entry with the MTP label and pin updates to the hrx-b129 backend.",
+  "verdict": "Clean",
+  "verdict_reason": "Well-scoped changes with thorough contract tests, substantive review by an ROCm/llamacpp expert, and no post-approval commits or security concerns."
+}
