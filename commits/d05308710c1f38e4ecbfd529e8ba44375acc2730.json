@@ -1,0 +1,41 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.47",
+  "commit_sha": "d05308710c1f38e4ecbfd529e8ba44375acc2730",
+  "committed_at": "2026-11-07T11:04:28+00:00",
+  "evidence": {
+    "api_compatibility": "The SystemStatsData interface gains optional fields primary_gpu_id and gpus (SystemGpuStats[]). These are additive to an existing JSON schema and do not break existing consumers. The gpuById field added to HistoryPoint is also additive. The MonitorView key change (api.baseUrl + connectionEpoch) is internal and does not affect external APIs. No breaking change.",
+    "documentation": "The PR declares 'Documentation is not affected'. zh-CN i18n catalog entries were added for the new labels. The feature is self-describing through the UI and does not require user-facing docs.",
+    "manual_release_testing": "This is a GUI feature — the Monitor panel now shows a new GPU selector component with per-GPU gauges, threshold markers, and chart selection — that changes user-visible behavior. The regression test uses server-side rendering and does not exercise the full React DOM, event handling, or layout. CI checks all passed (C++ server, routing schema tests), but no human was seen exercising the Monitor with multiple GPUs. This warrants a manual verification step before release.",
+    "post_approval_commits": "None. @meghsat approved at 2026-11-07T02:40:39Z and the PR branch had no commits after approval. The final merge went through the merge group at 2026-11-07T11:57:18Z.",
+    "review": "Only one human review was submitted: @meghsat (Satya Devineni), who has GUI expertise per docs/dev/contribute.md. @kpoineal and @jeremyfowers were requested but did not submit reviews. @meghsat is also listed as a co-author on the merge commit and contributed substantive code changes (threshold tickers, memory formatting). CodeRabbit bot raised several comments covering GPU selection fallback, i18n completeness, memory-label correctness, and CSS contrast; @fl0rianr addressed the valid ones. No substantive reviewer issues were missed.",
+    "security": "No security concerns. The change is a client-side GUI rendering feature that consumes existing telemetry data. No new network calls, credential handling, code execution paths, or permission changes.",
+    "tests": "The PR adds a dedicated runtime regression test (src/app/tests/monitor-multi-Gpu.runtime.cjs) that renders MonitorGpuVitals with Node's renderToStaticMarkup, verifies GPU count rendering, aria-pressed states, memory formatting (dedicated/shared/unknown types), threshold tick placement and over-threshold coloring, multi-GPU limits, five-GPU overflow, and zh-CN i18n entries. It also checks source text for Monitor.tsx and MonitorView.tsx key patterns. A minor improvement: GPU selection reaches the chart only via source-text assertions rather than a rendered DOM interaction test, but this is a quality gap, not a correctness defect."
+  },
+  "generation_seconds": 314.7,
+  "maintainer_todos": [
+    {
+      "text": "Open the Monitor view with a machine that has two or more GPUs, select a GPU other than GPU 0 on the GPU card, and confirm the history chart switches to show that GPU's utilization."
+    }
+  ],
+  "merge_date": "2026-11-07T11:57:18Z",
+  "pr_number": 4025,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-07T12:04:12+00:00",
+  "reviewers": [
+    "@meghsat"
+  ],
+  "sha": "d05308710c1f38e4ecbfd529e8ba44375acc2730",
+  "shout_outs": [
+    {
+      "handle": "@meghsat",
+      "reason": "Co-authored with @fl0rianr; merged main twice to keep the feature branch current; authored commits addressing PR feedback (missing threshold tickers and memory formatting); reviewed and approved the final PR."
+    }
+  ],
+  "subject": "fix(gui): add multi GPU monitor (#4025)",
+  "summary": "Adds a multi-GPU monitor to the GUI that displays per-GPU utilization and memory usage with selectable GPU history charts for 2–4 GPUs, while preserving the existing single-GPU System Vitals layout.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "A GUI feature visible to users was merged without evidence of manual release testing, though code review was substantive and tests are solid."
+}
