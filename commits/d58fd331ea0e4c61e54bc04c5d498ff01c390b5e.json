@@ -1,0 +1,45 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.47",
+  "commit_sha": "d58fd331ea0e4c61e54bc04c5d498ff01c390b5e",
+  "committed_at": "2026-11-07T12:02:00+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The imageEdit API in src/app/src/api.ts changed from accepting a single data URL string to accepting string | Blob | readonly (string | Blob)[] — existing callers with a single data URL are compatible. The analyze_image tool added new error messages ('Vision model returned no analysis', 'Image IDs are unavailable in this session', 'Image URLs are not accepted from the planner') and a new fast path that bypasses api.chatCompletionOnce when the chat model matches the vision model — this changes behavior but does not break the API contract. Image IDs and imageMessageId fields are added to the Message type but are explicitly never persisted (set to undefined in saveConversations). The tool-call result payload for image generation/edits now optionally includes JSON with image_ids and image_registration_warning, but this is additive and parsers that ignore unknown fields are unaffected.",
+    "documentation": "PR author stated 'Documentation is not affected by this change. Apart from updated tool descriptions and guidance for image references and analysis.' The i18n.tsx change adds 3 strings, suggesting localized strings for error messages and new behavior. The PR does not update API specs or release notes. Given the scope — new tool behavior (direct VLM analysis, multi-image references), new user-visible error messages, and behavioral change to analyze_image — a release note or behavior changelog entry would be appropriate. No spec file or user guide was modified.",
+    "manual_release_testing": "The PR introduces user-visible features: conversation-scoped image IDs visible in tool-call results, the ability to select earlier images by ID in edit/analysis, direct VLM analysis (which changes behavior when the chat model supports vision), and new error messages when vision models return empty results. The new conversation-image-direct, conversation-image-refs, and image-registry-safety runtime tests exercise the logic in isolation, but no end-to-end GUI test drives these paths with actual image generation/editing/analysis. All three CI checks passed (C++ Server Build, Server Download Registry Tests, Validate New stable-diffusion.cpp Release), but CI does not exercise the GUI image-handling code paths. See Maintainer To-Do for manual verification steps.",
+    "post_approval_commits": "Three commits total: d79d3c0 (main feature), c4758b4 (fix: improving and simplify image tools — addressed CodeRabbit suggestions on memory limits, preview URLs, fallback analysis bounds, and per-request edit byte limits), dcdacec (fix: imge display size bug — typo fix). All three were committed before the first approval at 2026-11-07T12:00:35Z. No post-approval commits were added, so no review-scope drift is present.",
+    "review": "PR #4082 requested reviews from @kpoineal (GUI, app, a11y, Windows) and @jeremyfowers (new endpoints, large new features, GUI design language) per docs/dev/contribute.md. Neither provided a human review. @bitgamma (thenoise, cli, recipes, new backends, benchmarking, new models) approved on 2026-11-07T12:00:35Z with 'I confirm this works well for me too. Works even with thinking disabled' — outside their subject-matter expertise. CodeRabbit (bot) raised 15 actionable comments across imageRegistry.ts, ChatView.tsx, omniTools.ts, and directImageAnalysis.ts, all marked as addressed in subsequent commits. The first approval came at 2026-11-07T12:00:35Z, after which no additional commits were added to the PR branch. The PR was authored by @fl0rianr, who is also the maintainer listed for GUI — self-merged without independent GUI review.",
+    "security": "The new ConversationImageRegistry enforces a 512 MiB per-conversation memory limit, a 64 MiB per-image limit, and a 128 MiB per-request edit limit (applied to sum of all Blob sizes including repeated IDs). Analysis input is capped at 1024px edge length with canvas resizing for large images. Blob validation checks MIME type prefix; CodeRabbit flagged that MIME-type-only validation may not catch mislabeled files, but validateUploadBytes (which uses createImageBitmap) is called in the test harness and the browser path in the registry handles decode failures gracefully. No new external dependencies, credential handling, network calls, or code execution paths. Image data is never persisted to chat history or localStorage.",
+    "tests": "New: conversation-image-direct.runtime.cjs (213 lines — direct VLM analysis, already-visible dedup, multi-image follow-up, cancellation, isolated MCP case with VLM self-call prevention, seven-image batch without arbitrary cutoff), conversation-image-refs.runtime.cjs (232 lines — registry lifecycle, conversation isolation, multi-image edit transport with per-request byte limits, integration guard assertions), image-registry-safety.runtime.cjs (171 lines — branch pruning, atomic memory limits, cancellation, browser resize, upload validation, oversized fallback rejection, preview lifecycle). Modified: chat-audio-capability.runtime.cjs (updated regex for omniRuntime exclusion), chat-streaming-abort.runtime.cjs (loaded directImageAnalysis module in streaming harness), tool-loop-hook.runtime.cjs (loaded production directImageFollowupContent). No tests were weakened, deleted, or relaxed."
+  },
+  "generation_seconds": 322.0,
+  "maintainer_todos": [
+    {
+      "text": "In the GUI with a vision-capable chat model, upload an image, then invoke analyze_image (e.g., via the MCP tool) and confirm the model sees the image directly rather than returning a degraded text description."
+    },
+    {
+      "text": "Generate an image, then edit it by selecting the generated image as a reference and confirm the edited version appears and the original is preserved."
+    },
+    {
+      "text": "Start a new conversation, generate multiple images (at least three), then open the image-edit mode and verify all generated images are available for selection as edit references."
+    },
+    {
+      "text": "Send an image in a text-only model chat and confirm the UI blocks the image from reaching the backend with an appropriate error rather than crashing or sending corrupted data."
+    }
+  ],
+  "merge_date": "2026-11-07T12:50:48Z",
+  "pr_number": 4082,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-07T12:57:59+00:00",
+  "reviewers": [
+    "@bitgamma"
+  ],
+  "sha": "d58fd331ea0e4c61e54bc04c5d498ff01c390b5e",
+  "shout_outs": [],
+  "subject": "feat(gui): add conversation image references and direct Vision LLM analysis (#4082)",
+  "summary": "Adds conversation-scoped image references (img_u/img_g IDs) for uploaded, generated, and edited images, enabling multi-image editing and explicit image selection via image_id, plus direct Vision LLM analysis when the active chat model supports vision.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "No GUI subject-matter expert reviewed the PR despite being requested; the only human approval came from a maintainer whose expertise area does not cover GUI or frontend architecture."
+}
