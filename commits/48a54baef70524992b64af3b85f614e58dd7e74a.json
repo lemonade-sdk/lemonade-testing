@@ -1,0 +1,32 @@
+{
+  "author": "@festeraeb",
+  "branch": "main",
+  "bucket": "v2026.47",
+  "commit_sha": "48a54baef70524992b64af3b85f614e58dd7e74a",
+  "committed_at": "2026-11-08T22:24:52+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The beacon UDP port remains 13305. The server payload retains the same keys (service, hostname, url) and the same ordering via nlohmann::ordered_json; only the serialization method changed to properly escape special characters. The app's socket binding behavior is an internal detail with no external contract.",
+    "documentation": "The PR body has a minor inconsistency — it states SO_REUSEPORT is enabled on Unix while the code excludes Solaris and illumos (src/app/src-tauri/src/beacon.rs lines 76-77). This is a documentation fix for the PR, not user-facing documentation. No API or CLI documentation needs updating.",
+    "manual_release_testing": "None required. Both changes fix latent bugs that were not exercising a user-visible failure path — the app already worked when nothing else held the beacon port, and the server already worked with normal hostnames. The fixes restore correct behavior under those edge cases.",
+    "post_approval_commits": "All three commits (916a30b, 7654fed, f0b4cc6) were authored before the first approval at 2026-11-08T18:30:02Z. No commits were added after approval.",
+    "review": "One human approval from @Geramy at 2026-11-08T18:30:02Z on commit f0b4cc6 ('Looks good.'). Geramy's documented subject areas include sockets, TCP/IP, UDP, and macOS — directly relevant to this PR. CodeRabbit posted one actionable comment (port-isolate the test) which the author addressed in commit f0b4cc6, and four nitpick comments (mostly about comment style) which were not addressed but are harmless. One failed pre-merge check — 'Inconsistent PR Body' — notes the PR body states SO_REUSEPORT is enabled on Unix while the code excludes Solaris and illumos; this is a documentation inconsistency, not a code issue.",
+    "security": "No security concerns. The nlohmann::json change prevents a parsing failure caused by hostile hostnames (quotes or backslashes), which is a robustness improvement. The socket2 dependency is small, already present in the tree as a transitive via tokio, and only used for set_reuse_address / set_reuse_port / set_broadcast / set_nonblocking.",
+    "tests": "New test two_listeners_can_share_the_beacon_port() in src/app/src-tauri/src/beacon.rs exercises the shared-port path by binding two sockets to a dynamically allocated port (port 0) and asserting the second bind succeeds. The existing parse_beacon_message test with a hostile hostname confirms the server-side JSON escaping works. No existing tests were weakened or deleted. CI checks all passed (Validate New stable-diffusion.cpp Release, Validate New llama.cpp Release, C++ Server Build/Test/Release)."
+  },
+  "generation_seconds": 145.8,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-08T23:09:29Z",
+  "pr_number": 4094,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-08T23:13:35+00:00",
+  "reviewers": [
+    "@Geramy"
+  ],
+  "sha": "48a54baef70524992b64af3b85f614e58dd7e74a",
+  "shout_outs": [],
+  "subject": "Beacon fixes: share the beacon port, escape the hostname (#4094)",
+  "summary": "Adds SO_REUSEADDR and SO_REUSEPORT to the app's beacon UDP listener so it shares port 13305 with other listeners, and switches the server's beacon payload from string concatenation to nlohmann::json so hostnames containing quotes or backslashes no longer produce unparsable datagrams.",
+  "verdict": "Clean",
+  "verdict_reason": "Two focused bug fixes with a human expert review, passing CI, adequate new tests, and no user-facing behavior changes."
+}
