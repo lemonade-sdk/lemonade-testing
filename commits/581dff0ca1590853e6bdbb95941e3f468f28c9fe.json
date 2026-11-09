@@ -1,0 +1,32 @@
+{
+  "author": "@julianxhokaxhiu",
+  "branch": "main",
+  "bucket": "v2026.47",
+  "commit_sha": "581dff0ca1590853e6bdbb95941e3f468f28c9fe",
+  "committed_at": "2026-11-09T11:06:54+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The diff touches only test files; no public API, CLI, config, or persistence format is affected.",
+    "documentation": "Not affected. The PR correctly marks 'Documentation is not affected by this change.' No user-facing behavior changed.",
+    "manual_release_testing": "None required. This commit touches only test code and does not change any user-reachable surface — no CLI commands, no API endpoints, no config options, no GUI, no installed artifacts, and no documentation.",
+    "post_approval_commits": "None. The PR contains exactly one commit (82df87a719e59a3a131d5d8f803ce76415fcbb66), which was approved at 2026-11-09T11:06:25Z and merged at 2026-11-09T11:55:30Z. No commits were added after approval.",
+    "review": "PR #4109 has one substantive approval from @fl0rianr, who is listed in docs/dev/contribute.md as having subject-matter expertise in CI — directly relevant to a build-fix PR. The approval comment reads 'Thanks for this focused fix, approved.' There were no inline review comments and no post-approval commits; the single commit was approved before merging.",
+    "security": "No security concerns. The changes are purely test-variable renames and lambda capture additions in test/cpp/. No supply-chain, credential, network, or auth changes.",
+    "tests": "The author ran ctest on Visual Studio 2026 for all three affected tests — CatalogReadsTest, ModelAliasTest, and RegistryDocumentsTest — and all passed. The PR's three-file diff is test-only: test/cpp/test_catalog_reads.cpp (4/4 lines changed), test/cpp/test_model_alias.cpp (1/1), and test/cpp/test_registry_documents.cpp (1/1). The fixes are mechanical and correct: renaming a variable to avoid a Windows SDK macro collision, and adding the missing `kPerWriter` capture to two thread lambdas."
+  },
+  "generation_seconds": 140.0,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-09T11:55:30Z",
+  "pr_number": 4109,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-09T11:59:34+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "581dff0ca1590853e6bdbb95941e3f468f28c9fe",
+  "shout_outs": [],
+  "subject": "fix(test): Fix build for MSVC (Visual Studio 2026) (#4109)",
+  "summary": "Fixes three MSVC/Visual Studio 2026 build failures in test code: renames the `small` variable to `small_body` in test/cpp/test_catalog_reads.cpp to avoid a collision with a Windows SDK macro, and explicitly captures `kPerWriter` by value in lambdas in test/cpp/test_model_alias.cpp and test/cpp/test_registry_documents.cpp.",
+  "verdict": "Clean",
+  "verdict_reason": "A minimal, test-only fix that resolves MSVC compile errors with no user-visible surface, no API changes, and was approved by a reviewer with CI subject-area expertise."
+}
