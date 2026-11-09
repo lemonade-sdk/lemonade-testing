@@ -11,26 +11,6 @@
   "candidate_issues": [],
   "checklist": [
     {
-      "author": "@meghsat",
-      "commit": "d534dc9971a97ea07bba2d306c942f77ea57ff1c",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 4012,
-      "priority": "P0",
-      "text": "Open Settings > Chat and toggle Save chat history off when one or more saved conversations exist; verify the conversations remain visible and survive a browser reload."
-    },
-    {
-      "author": "@jeremyfowers",
-      "commit": "fc865d1535ae48914e6f204286b6b3d108ca2f2b",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 4041,
-      "priority": "P0",
-      "text": "Run lemonade pull on one of the affected models (ACE-Step-Music, ThinkSound-SFX, or a Moonshine variant) and confirm all companion files download correctly without errors or missing files."
-    },
-    {
       "author": "@bitgamma",
       "commit": "6c5a26aeb8ab29c75aa6c12c29628c82377666bb",
       "platforms": [
@@ -39,6 +19,16 @@
       "pr_number": 4049,
       "priority": "P0",
       "text": "Query GET /v1/models and verify that image models no longer contain the `image_defaults` or `audio_defaults` keys and instead surface their defaults under `recipe_options`."
+    },
+    {
+      "author": "@github-actions",
+      "commit": "50ffee11e74faa214b2c1b6a2dd1e72ba6361490",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4083,
+      "priority": "P0",
+      "text": "Pull the new halogen image (ghcr.io/peonist-ai/halogen-flash-server:0.19.1) and launch the halogen backend, confirming it starts correctly and serves inference requests."
     },
     {
       "author": "@bitgamma",
@@ -94,7 +84,11 @@
       "author": "@fl0rianr",
       "commit": "c306b768e0bc185650e47b3560c6aa6228f7f941",
       "platforms": [
-        "all"
+        "Ubuntu PPA",
+        "Snap",
+        "Docker",
+        "Fedora",
+        "Debian"
       ],
       "pr_number": 4001,
       "priority": "P1",
@@ -104,7 +98,11 @@
       "author": "@fl0rianr",
       "commit": "c306b768e0bc185650e47b3560c6aa6228f7f941",
       "platforms": [
-        "all"
+        "Ubuntu PPA",
+        "Snap",
+        "Docker",
+        "Fedora",
+        "Debian"
       ],
       "pr_number": 4001,
       "priority": "P1",
@@ -158,6 +156,16 @@
       ],
       "pr_number": 4012,
       "priority": "P1",
+      "text": "Open Settings > Chat and toggle Save chat history off when one or more saved conversations exist; verify the conversations remain visible and survive a browser reload."
+    },
+    {
+      "author": "@meghsat",
+      "commit": "d534dc9971a97ea07bba2d306c942f77ea57ff1c",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4012,
+      "priority": "P1",
       "text": "With saving off, delete one of the saved conversations; reload the page and confirm that the deleted conversation does not reappear."
     },
     {
@@ -171,10 +179,44 @@
       "text": "With saving off, create a new conversation by sending a message; toggle saving back on and verify the new conversation is now persisted in localStorage."
     },
     {
+      "author": "@Zorro-Zhang",
+      "commit": "d752171f99a34660943b52dec123c94be8275d00",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4002,
+      "priority": "P1",
+      "text": "Set default_model_source to modelscope via LEMONADE_DEFAULTS_PATH, search for a built-in Suggested model by name (e.g. Qwen3-0.6B-GGUF), trigger the download, and confirm the model lands under the modelscope cache directory rather than the huggingface cache directory."
+    },
+    {
+      "author": "@Zorro-Zhang",
+      "commit": "d752171f99a34660943b52dec123c94be8275d00",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4002,
+      "priority": "P1",
+      "text": "Remove the LEMONADE_DEFAULTS_PATH environment variable and confirm that subsequent downloads of built-in models revert to pulling from huggingface as the default source."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "fc865d1535ae48914e6f204286b6b3d108ca2f2b",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4041,
+      "priority": "P1",
+      "text": "Run lemonade pull on one of the affected models (ACE-Step-Music, ThinkSound-SFX, or a Moonshine variant) and confirm all companion files download correctly without errors or missing files."
+    },
+    {
       "author": "@pwilkin",
       "commit": "4e368aad980adf1a42ccb1fef308455ab89c7fa2",
       "platforms": [
-        "all"
+        "Ubuntu PPA",
+        "Snap",
+        "Docker",
+        "Fedora",
+        "Debian"
       ],
       "pr_number": 3993,
       "priority": "P1",
@@ -204,8 +246,7 @@
       "author": "@jeremyfowers",
       "commit": "a5b414b7fb9e320da471b1e570e7d77f29625064",
       "platforms": [
-        "Ubuntu PPA",
-        "Fedora"
+        "all"
       ],
       "pr_number": 3709,
       "priority": "P1",
@@ -215,7 +256,7 @@
       "author": "@jeremyfowers",
       "commit": "a5b414b7fb9e320da471b1e570e7d77f29625064",
       "platforms": [
-        "Ubuntu PPA"
+        "all"
       ],
       "pr_number": 3709,
       "priority": "P1",
@@ -225,8 +266,7 @@
       "author": "@jeremyfowers",
       "commit": "a5b414b7fb9e320da471b1e570e7d77f29625064",
       "platforms": [
-        "Ubuntu PPA",
-        "Fedora"
+        "all"
       ],
       "pr_number": 3709,
       "priority": "P1",
@@ -236,8 +276,7 @@
       "author": "@jeremyfowers",
       "commit": "a5b414b7fb9e320da471b1e570e7d77f29625064",
       "platforms": [
-        "Ubuntu PPA",
-        "Fedora"
+        "all"
       ],
       "pr_number": 3709,
       "priority": "P1",
@@ -257,7 +296,7 @@
       "author": "@jeremyfowers",
       "commit": "07af4f36b16fa5475aff9806eef85a77929a258b",
       "platforms": [
-        "Fedora"
+        "all"
       ],
       "pr_number": 3710,
       "priority": "P1",
@@ -277,7 +316,7 @@
       "author": "@jeremyfowers",
       "commit": "07af4f36b16fa5475aff9806eef85a77929a258b",
       "platforms": [
-        "Fedora"
+        "all"
       ],
       "pr_number": 3710,
       "priority": "P1",
@@ -287,7 +326,7 @@
       "author": "@jeremyfowers",
       "commit": "07af4f36b16fa5475aff9806eef85a77929a258b",
       "platforms": [
-        "Fedora"
+        "all"
       ],
       "pr_number": 3710,
       "priority": "P1",
@@ -297,7 +336,7 @@
       "author": "@jeremyfowers",
       "commit": "07af4f36b16fa5475aff9806eef85a77929a258b",
       "platforms": [
-        "Docker"
+        "all"
       ],
       "pr_number": 3710,
       "priority": "P1",
@@ -444,6 +483,26 @@
       "text": "POST to /v1/classify with model Julia-1-GGUF, input 'hello', and no labels parameter, and confirm the response is a 400 error because decision models require labels."
     },
     {
+      "author": "@bitgamma",
+      "commit": "6c5a26aeb8ab29c75aa6c12c29628c82377666bb",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4049,
+      "priority": "P1",
+      "text": "Open GUI3 Model Configuration for an image model (e.g. SD-Turbo) and confirm that `soft_pixel_cap` is not rendered as an editable field, and for an openmoss model confirm `pcm_sample_rate` and `pcm_channels` are not editable."
+    },
+    {
+      "author": "@bitgamma",
+      "commit": "6c5a26aeb8ab29c75aa6c12c29628c82377666bb",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4049,
+      "priority": "P1",
+      "text": "Pull a custom model that specifies only `recipe_options` (no legacy `image_defaults` block) and verify that generation uses the documented defaults for missing keys."
+    },
+    {
       "author": "meghsat",
       "commit": "c2d3dbe5caa06af57a2cf154b656da851e45342a",
       "platforms": [
@@ -494,6 +553,16 @@
       "text": "Send an invalid tool_choice to an FLM model and confirm it returns 400 instead of ignoring the field as it did under v1.0.7."
     },
     {
+      "author": "@github-actions",
+      "commit": "50ffee11e74faa214b2c1b6a2dd1e72ba6361490",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4083,
+      "priority": "P1",
+      "text": "Pull the new ds4, gufo, and halobox container images and confirm each starts correctly and reports its version."
+    },
+    {
       "author": "@meghsat",
       "commit": "d534dc9971a97ea07bba2d306c942f77ea57ff1c",
       "platforms": [
@@ -504,26 +573,6 @@
       "text": "With saving on, force localStorage to be full (or blocked) while editing a message, then refresh and confirm the browser shows an error alert and the Refresh warning triggers a beforeunload dialog."
     },
     {
-      "author": "@Zorro-Zhang",
-      "commit": "d752171f99a34660943b52dec123c94be8275d00",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 4002,
-      "priority": "P2",
-      "text": "Set default_model_source to modelscope via LEMONADE_DEFAULTS_PATH, search for a built-in Suggested model by name (e.g. Qwen3-0.6B-GGUF), trigger the download, and confirm the model lands under the modelscope cache directory rather than the huggingface cache directory."
-    },
-    {
-      "author": "@Zorro-Zhang",
-      "commit": "d752171f99a34660943b52dec123c94be8275d00",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 4002,
-      "priority": "P2",
-      "text": "Remove the LEMONADE_DEFAULTS_PATH environment variable and confirm that subsequent downloads of built-in models revert to pulling from huggingface as the default source."
-    },
-    {
       "author": "@jeremyfowers",
       "commit": "f777023e0658813fdb898d9662244b6198c6ccce",
       "platforms": [
@@ -532,26 +581,6 @@
       "pr_number": 3713,
       "priority": "P2",
       "text": "Open a PR that changes .github/workflows/validate_containers.yml (e.g., touch the file) and confirm that the container pin lookup workflow runs on it."
-    },
-    {
-      "author": "@bitgamma",
-      "commit": "6c5a26aeb8ab29c75aa6c12c29628c82377666bb",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 4049,
-      "priority": "P2",
-      "text": "Open GUI3 Model Configuration for an image model (e.g. SD-Turbo) and confirm that `soft_pixel_cap` is not rendered as an editable field, and for an openmoss model confirm `pcm_sample_rate` and `pcm_channels` are not editable."
-    },
-    {
-      "author": "@bitgamma",
-      "commit": "6c5a26aeb8ab29c75aa6c12c29628c82377666bb",
-      "platforms": [
-        "all"
-      ],
-      "pr_number": 4049,
-      "priority": "P2",
-      "text": "Pull a custom model that specifies only `recipe_options` (no legacy `image_defaults` block) and verify that generation uses the documented defaults for missing keys."
     },
     {
       "author": "@bitgamma",
@@ -584,20 +613,20 @@
       "text": "In the d3 models table, note which model(s) were actually tested on NPU hardware and which (turbo, ultra at 16.6 GB) were not wired for this release."
     }
   ],
-  "commits_reviewed": 26,
+  "commits_reviewed": 27,
   "commits_unreviewed": 0,
   "evidence": {
-    "blockers": "Three P0 items need clearing before release: (1) the /models response must verify that image_defaults and audio_defaults are fully migrated to recipe_options and that no external API clients break; (2) disabling save chat history must not erase previously saved conversations; (3) model downloads for ACE-Step, ThinkSound, and Moonshine variants must complete without missing files after the explicit-file-listing refactoring. Strix Halo hardware needed for ds4, gufo, halogen, rocmfpx backends; NVIDIA Linux x86_64 for TheNoise CUDA; SELinux-enforcing Fedora for ds4 edge case.",
-    "breaking_changes": "The /models response shape changed: image_defaults and audio_defaults removed, values folded into recipe_options, and user_configurable flag added. External clients reading the old keys will break until updated. FLM v1.0.7→1.0.11 pin changes max_tokens exactness, makes streamed usage opt-in via stream_options.include_usage, and enforces stricter request validation returning 400 for previously-accepted invalid fields. Both require FLM clients to update.",
-    "coverage": "Reviewed all 26 commits across the release range from v2026.45.3 to c2d3dbe. Coverage includes all backend additions (thenoise cuda, container backends for ds4, rocmfpx, halogen, gufo, llamacpp:nathanw, llamacpp:halobox), API changes (zero-shot classification, systemone decision models, /models response refactor, /v1/images/upscale parameter), GUI fixes (model handoff, chat history save toggle, load banners, Firefox sidebar prompt), model download refactoring (ACE-Step, ThinkSound, Moonshine explicit file listings), FLM pin bump to v1.0.11, and CI-only changes (validate_containers workflow, self-hosted runner matrix, benchmark rocm_version field).",
-    "manual_testing": "NPU hardware required for FLM d3 decision model verification (c2d3dbe). Strix Halo (Fedora) hardware needed for ds4:rocm, gufo:rocm, halogen, rocmfpx backends. NVIDIA Linux x86_64 for TheNoise CUDA backend. SELinux-enforcing Fedora host for ds4 installation edge case. Docker-only host (no Podman) for ds4 compatibility. Ubuntu PPA and Fedora for llamacpp:nathanw container backend install/load/uninstall. Multiple platforms tested: Fedora, Ubuntu PPA, Windows, Snap, Docker, macOS, Debian.",
-    "security": "Container backends use pinned image digests, allowlisted registries, and --cap-drop=all with no-new-privileges. The ort-server dependency bump (0.3.7→0.4.0) replaces tokenizers-cpp with Rust FFI over Hugging Face tokenizers, validated with 20,001 identical test cases. Control-character label validation added for systemone classifiers. The /no_think prefix scoping fix and SELinux fail-closed check are defensive hardening. No new credential handling or supply-chain risks beyond standard community container images."
+    "blockers": "Two P0 items: the halogen 0.18.22→0.19.1 container image bump shipped without any Docker/containers subject-matter-expert review or manual verification on real hardware, and the /models API response shape changed (image_defaults/audio_defaults removed) which will silently break external clients that read those fields. The remaining items are P1 user-facing feature checks or P2 documentation/tooling items.",
+    "breaking_changes": "The /models response drops image_defaults and audio_defaults in favor of recipe_options; the /models response gains a user_configurable boolean on backend options. FLM v1.0.11 changes max_tokens exactness, makes streaming usage opt-in, and returns 400 for previously-accepted invalid request fields. All changes are documented but unverified against external clients.",
+    "coverage": "All 59 to-dos from 18 commit reviews across the v2026.45.3→50ffee1 range are rated. The review covers benchmark submission, zero-shot classification, TheNoise CUDA backend, Firefox sidebar prompts, chat history opt-out, modelscope defaults, model download refactoring, TRELLIS CUDA 12, images/upscale, container manager, DS4 ROCm, ROCm FPX, Halogen Flash, CI container pin workflow, Gufo ROCm, SystemOne decision models, recipe_options migration, FLM NPU, and container image pin updates.",
+    "manual_testing": "Tester needs hardware-specific verification: Strix Halo (Fedora) for Halogen, Gufo, ROCm FPX, and DS4 container backends; NVIDIA GPU (Docker, Ubuntu PPA, Snap, Fedora, Debian) for TheNoise CUDA and TRELLIS cuda12 backends; NPU hardware for FLM d3 models; and any platform for the /models API regression, benchmark submission, and container manager installation flows.",
+    "security": "No new credential handling, network calls to unknown endpoints, or supply-chain risks beyond the standard container image pins (all SHA-256 digested). The halogen image pin update is the only supply-chain change in this bucket; the nathanw hold-down avoids an AVX-512 SIGILL regression. The Firefox sidebar prompt correctly disables MCP/Omni tools for untrusted webpage content."
   },
-  "generation_seconds": 356.3,
-  "head_sha": "c2d3dbe5caa06af57a2cf154b656da851e45342a",
+  "generation_seconds": 271.2,
+  "head_sha": "50ffee11e74faa214b2c1b6a2dd1e72ba6361490",
   "is_hotfix": false,
   "last_stable_tag": "",
   "range_start": "v2026.45.3",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-11-05T02:02:18+00:00"
+  "reviewed_at": "2026-11-09T21:38:12+00:00"
 }
