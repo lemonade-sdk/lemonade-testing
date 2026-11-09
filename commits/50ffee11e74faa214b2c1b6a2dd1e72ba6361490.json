@@ -1,0 +1,44 @@
+{
+  "author": "@github-actions",
+  "branch": "release-v2026.46",
+  "bucket": "v2026.46",
+  "commit_sha": "50ffee11e74faa214b2c1b6a2dd1e72ba6361490",
+  "committed_at": "2026-11-09T13:26:13-08:00",
+  "evidence": {
+    "api_compatibility": "No breaking API changes. The commit modifies only a JSON config file (backend_versions.json). No CLI, HTTP endpoint, config schema, or persistence format changes.",
+    "documentation": "No project-facing documentation is changed. The PR body includes a table showing old→new pins for each backend, which serves as a reasonable inline changelog for this type of infra change.",
+    "manual_release_testing": "Four container images are updated in this commit, all of which are user-reachable if a user has those backends configured. The halogen image version bump (0.18.22→0.19.1) is the highest-risk change — a major/minor version jump that could alter API, flags, or behavior. No evidence that any human pulled and exercised the new images before merge.",
+    "post_approval_commits": "No commits were added after the single approval at 2026-11-06T19:29:57Z. The nathanw fix (commit 9183d005 by @sawansri) was pushed at 19:18:53Z, before the approval. The squash merge commit (50ffee11e) preserves the approved content faithfully.",
+    "review": "Only one reviewer (@sawansri) approved the PR with no comments. Per docs/dev/contribute.md, containers/Docker subject-matter-expertise belongs to @superm1 and @siavashhub, neither of whom reviewed or were pinged. sawansri's listed subject areas (agents, tui, cli, new backends, launch, vLLM, new models) do not include Docker/containers. sawansri did author the nathanw hold-fix commit and merged the PR himself, but the review gap on container image changes remains.",
+    "security": "Image pins are updated to new SHA-256 digests, which is the correct approach for supply-chain safety. No new external dependencies or network call paths introduced. The nathanw hold-down is a deliberate rollback to avoid a behavioral regression. No security concerns.",
+    "tests": "No tests accompany this change — it touches only src/cpp/resources/backend_versions.json (4 lines changed, 4 lines added). CI launched four workflows for the release branch (Launchpad PPA succeeded; C++ server build/test and container build/push were in_progress at time of check). There is no automated test that pulls the new container images."
+  },
+  "generation_seconds": 277.2,
+  "maintainer_todos": [
+    {
+      "text": "Pull the new halogen image (ghcr.io/peonist-ai/halogen-flash-server:0.19.1) and launch the halogen backend, confirming it starts correctly and serves inference requests."
+    },
+    {
+      "text": "Pull the new ds4, gufo, and halobox container images and confirm each starts correctly and reports its version."
+    }
+  ],
+  "merge_date": "2026-11-06T21:51:03Z",
+  "pr_number": 4083,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-09T21:33:38+00:00",
+  "reviewers": [
+    "@sawansri"
+  ],
+  "sha": "50ffee11e74faa214b2c1b6a2dd1e72ba6361490",
+  "shout_outs": [
+    {
+      "handle": "@sawansri",
+      "reason": "Co-authored the commit and wrote the critical fix holding llamacpp:nathanw on its previous image to prevent an AVX-512 SIGILL regression."
+    }
+  ],
+  "subject": "Update container backend image pins (#4083)",
+  "summary": "Updates container backend image pins for ds4:rocm, gufo:rocm, halogen:rocm (0.18.22→0.19.1), and llamacpp:halobox; holds llamacpp:nathanw on its previous image to avoid an AVX-512 SIGILL regression on CPUs without AVX-512.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "No Docker/containers subject-matter-expert reviewed this change, and the halogen version bump from 0.18.22 to 0.19.1 introduces a new version that should be manually verified before shipping."
+}
