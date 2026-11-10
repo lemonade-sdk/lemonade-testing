@@ -1,0 +1,36 @@
+{
+  "author": "@MrAnayDongre",
+  "branch": "main",
+  "bucket": "v2026.47",
+  "commit_sha": "0ca5189874c216da8478353b719fa55cd644f237",
+  "committed_at": "2026-11-10T07:24:52+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The CLI error message text changed (more helpful), and subcommand help text gained a footer line. Existing scripts, configs, and integrations are unaffected. No API contracts were modified.",
+    "documentation": "The change is a UX improvement that makes the CLI self-documenting — users reading the error or running --help now see how to pass the API key. No external docs, release notes, or spec updates were needed. The behavior is documented inline by the error message itself.",
+    "manual_release_testing": "No human manually exercised the new error message or the subcommand footer before merge. CI validates the auth-failure code path but does not confirm the human-readable text is correct. This is a user-visible change to CLI output that should be verified on a release candidate.",
+    "post_approval_commits": "One commit (b711e20, \"Remove the response body check from the 401 error\") was added after the first approval (2026-11-09T07:53:33Z). It drops the `res->body.find(\"Invalid or missing\")` condition from the 401 branch so the hint is shown for all 401s, not just the server's own message. This simplified the change, was suggested in @bitgamma's inline feedback, and the reviewer re-approved the final code. No new behavior, scope creep, or risk was introduced.",
+    "review": "PR #4103 was reviewed by @bitgamma, who has CLI subject-matter expertise per docs/dev/contribute.md. @bitgamma submitted a CHANGES_REQUESTED review requesting minor edits, responded to each, and gave two approvals (first on 2026-11-09T07:53:33Z with \"one last wrinkle and we are good to go\", second on 2026-11-10T07:01:28Z with \"LGTM. Thank you!\"). CodeRabbit raised several suggestions across the 401 handling and footer logic; @bitgamma dismissed the more elaborate ones in inline comments (noting the body-check approach was unnecessary and fragile, and that a test pinning the footer text was over-kill). The review was thorough on the scope of the PR, though CodeRabbit's suggestions about distinguishing provider 401s and handling nested commands were left as future work.",
+    "security": "No security concern. The change only touches CLI error messaging and help text. No credential handling, network behavior, permissions, or code execution paths were altered.",
+    "tests": "The CLI API key smoke test (test/server_cli_apikey.py) exercises `lemonade status` against a server with LEMONADE_API_KEY and without, confirming the CLI fails. The subcommand help pointer test (test/server_cli2.py) checks that --api-key appears in subcommand help. The test no longer pins the exact error text (review feedback removed it), but still validates the overall auth-failure path. Full C++ CI (112/112 tests) passed. The author confirmed local testing against a server with LEMONADE_API_KEY. No Windows/macOS local testing was performed."
+  },
+  "generation_seconds": 220.2,
+  "maintainer_todos": [
+    {
+      "text": "Start the server with LEMONADE_API_KEY set and run `lemonade status` without passing --api-key to confirm the error message names both --api-key and LEMONADE_API_KEY."
+    }
+  ],
+  "merge_date": "2026-11-10T08:04:25Z",
+  "pr_number": 4103,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-10T08:09:44+00:00",
+  "reviewers": [
+    "@bitgamma"
+  ],
+  "sha": "0ca5189874c216da8478353b719fa55cd644f237",
+  "shout_outs": [],
+  "subject": "Fix unhelpful API key error in the CLI (#4103)",
+  "summary": "Changes the CLI 401 error message from \"Forbidden by the server. Did you set the API key?\" to \"Unauthorized (401): the server requires a valid API key. Use --api-key KEY or LEMONADE_API_KEY.\" and adds a footer line to every subcommand's --help that points users to `lemonade --help` for the global --host, --port, and --api-key options.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The CLI now prints a more helpful error message and help text, but the improvement was not manually exercised by a human before merge."
+}
