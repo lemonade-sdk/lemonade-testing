@@ -1,0 +1,32 @@
+{
+  "author": "@DigitalFlow",
+  "branch": "main",
+  "bucket": "v2026.47",
+  "commit_sha": "d718189de3cf263b2983ef6a8696c26fa5ab1a87",
+  "committed_at": "2026-11-10T16:45:49+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The RPM dependency resolution syntax `(libcurl or libcurl4)` is a backward-compatible enhancement: on Fedora/RHEL the original `libcurl` name resolves as before; on openSUSE the `libcurl4` name resolves. Existing Fedora/RHEL setups see identical behavior. No CLI, API, config, or persistence format is affected.",
+    "documentation": "No user-facing documentation is affected. The PR description itself documents the change. The comments added to CPackRPM.cmake describe the dual-name format for future maintainers. No spec updates needed for a build-system-only change.",
+    "manual_release_testing": "This commit changes only a build-time CMake variable (CPACK_RPM_PACKAGE_REQUIRES) that affects RPM dependency declarations. It does not expose any user-visible surface — no CLI command, no API endpoint, no config option, no installed binary behavior change. The RPM dependency syntax `(A or B)` is standard RPM and resolves whichever name exists on the target distro, so no manual testing is required.",
+    "post_approval_commits": "No commits were added after the approval. The single commit (sha 0b08d38) was authored on 2026-11-07T06:13:02Z and approved on 2026-11-07T13:24:59Z. The merge commit was created by GitHub's merge queue on 2026-11-10. No post-approval churn to flag.",
+    "review": "PR #4091 was approved by @superm1 (admin maintainer, subject-area expertise in 'linux packaging, system info, security, Docker, containers') on 2026-11-07T13:24:59Z — six hours after the PR was opened. @superm1 was explicitly tagged in the PR body by the author as a Linux/packaging maintainer. CodeRabbit flagged one pre-merge check — 'Inconsistent Pr Body' — noting the PR description says Fedora names are tried first with openSUSE as fallbacks, while the RPM `or` syntax treats both alternatives equally without priority. This is a description precision issue, not a code defect: the resulting behavior (either name resolving on whichever distro installs it) is exactly what the author wanted. No inline review comments were left. The reviewer applied subject-matter expertise by approving a packaging change without requesting further iteration.",
+    "security": "No security concerns. The change modifies only dependency package names in a build configuration file. No network calls, credential handling, code execution paths, or permission changes are introduced.",
+    "tests": "The change touches only one build file (src/cpp/CPackRPM.cmake) and contains no new testable application behavior. CI ran the full 'C++ Server Build, Test, and Release' workflow including 'Build Lemonade .rpm - Fedora' (skipped — PR-only run, not release), 'Build Lemonade Server Installer' (success), and many other checks, all passing. The author self-tested by building and installing the RPM on openSUSE Tumbleweed, which is appropriate manual verification for a packaging fix of this scope."
+  },
+  "generation_seconds": 172.9,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-10T21:49:33Z",
+  "pr_number": 4091,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-10T21:54:12+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "d718189de3cf263b2983ef6a8696c26fa5ab1a87",
+  "shout_outs": [],
+  "subject": "Fix rpm creation issues on OpenSUSE (#4091)",
+  "summary": "Adds OpenSUSE package name alternatives to RPM runtime dependencies (libcurl4, libopenssl3, libz1, libgomp1) so the rpm build succeeds on openSUSE Tumbleweed while remaining backward-compatible with Fedora/RHEL.",
+  "verdict": "Clean",
+  "verdict_reason": "Small, well-scoped build fix approved by a packaging maintainer, fully tested by the author on openSUSE, with all CI checks passing and no post-approval changes."
+}
