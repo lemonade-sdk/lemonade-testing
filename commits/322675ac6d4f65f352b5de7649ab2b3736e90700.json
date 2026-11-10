@@ -1,0 +1,36 @@
+{
+  "author": "@pwilkin",
+  "branch": "main",
+  "bucket": "v2026.47",
+  "commit_sha": "322675ac6d4f65f352b5de7649ab2b3736e90700",
+  "committed_at": "2026-11-10T15:25:59+00:00",
+  "evidence": {
+    "api_compatibility": "The /files endpoint for a multi-shard model returns a different number of entries (N shards instead of 1). A client that iterated the previous response and assumed a single main-file entry may need updating. The PR author asserts no breaking change; the old behavior was arguably a bug (missing shard data), so the fix is correct, but clients with hard-coded expectations about the response shape may be surprised.",
+    "documentation": "No documentation updates required per the author's checklist; the change fixes internal behavior without altering documented user-facing behavior or introducing a new feature.",
+    "manual_release_testing": "The /files API behavior changed for multi-shard models: previously one entry, now one per shard. CI ran (Validate New vLLM Release, Launchpad PPA, Validate New llama.cpp Release, Docs And Style) — all passed — but no evidence of a human exercising the /files endpoint with a real multi-shard GGUF model. This is a user-visible surface change.",
+    "post_approval_commits": "None. The single commit (aa8d0ced) was the head of the PR at time of merge; no commits were added after the first and latest approval on 2026-11-09T12:46:28Z.",
+    "review": "One human reviewer (@fl0rianr) approved on 2026-11-09 with an LGTM. The reviewer's subject areas per docs/dev/contribute.md are LMX omni models, GUI, CI, and smart router — not gguf_shard_utils or model file inventory — so subject-matter expertise for this specific component is marginal. CodeRabbit flagged a functional-correctness issue: std::sort on shard filenames orders non-zero-padded indices lexicographically (shard 10 before shard 2), which is a real bug. The reviewer acknowledged this point but did not address it before merging, stating it was \"worth addressing, but I wouldn't consider it a merge blocker.\"",
+    "security": "No new dependencies, credential handling, network calls, or permission changes. The change is confined to file enumeration and path handling within existing code paths.",
+    "tests": "New C++ unit test test_list_sharded_model_files creates a 3-shard model with zero-padded indices (model-00001-of-00003.gguf, etc.), registers it via the manager, and asserts list_model_files returns all shards with correct sizes and existence flags. An existing-shard deletion case is also covered. The Python endpoint test test_021ub_extra_subdir_sharded_size_sums_shards_but_files_stay_per_file was updated from expecting one main file to expecting two. The zero-padded test names mask the numeric-sorting bug that CodeRabbit flagged for non-zero-padded names, so the test suite does not exercise that edge case."
+  },
+  "generation_seconds": 167.9,
+  "maintainer_todos": [
+    {
+      "text": "Register a multi-shard GGUF model whose shard filenames lack zero-padding (e.g., model-1-of-10.gguf, model-10-of-10.gguf), call the /files endpoint, and confirm that shard 1 appears before shard 10 in the response."
+    }
+  ],
+  "merge_date": "2026-11-10T17:48:28Z",
+  "pr_number": 4108,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-10T17:53:01+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "322675ac6d4f65f352b5de7649ab2b3736e90700",
+  "shout_outs": [],
+  "subject": "fix(models): list every shard in model file inventory (#4108)",
+  "summary": "For multi-shard GGUF models in extra_models_dir, the /files endpoint (via ModelArtifactStore::list_files) now enumerates every shard file instead of only the first one.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "All CI checks passed and the change is well-scoped, but the reviewer acknowledged a numeric-shard-sorting bug flagged by CodeRabbit without fixing it, and the change touches the /files API surface without manual release testing evidence."
+}
