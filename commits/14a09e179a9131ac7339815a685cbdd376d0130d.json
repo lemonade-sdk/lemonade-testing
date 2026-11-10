@@ -1,0 +1,32 @@
+{
+  "author": "@sreeram-11",
+  "branch": "main",
+  "bucket": "v2026.47",
+  "commit_sha": "14a09e179a9131ac7339815a685cbdd376d0130d",
+  "committed_at": "2026-11-10T09:31:32+00:00",
+  "evidence": {
+    "api_compatibility": "No user-facing API compatibility impact. All changes are within the test/ directory. The pull_model_with_retry function was already present in test/utils/server_base.py (verified at 14a09e179a9131ac7339815a685cbdd376d0130d~1) — this PR only changes callers to use it. No API, CLI flag, config value, persistence format, or contract is affected.",
+    "documentation": "No user-facing documentation changes. The PR description itself is thorough and serves as adequate internal documentation of what was changed and why. The project's docs/dev/contribute.md was not consulted directly but the changes conform to general test-maintenance practices consistent with the repo's test cleanup history.",
+    "manual_release_testing": "This PR changes only test infrastructure and test data. It does not modify any user-facing code, API, CLI command, GUI, config option, or installed artifact. No manual release testing is needed. The changes are internal to the test suite: how Ollama tests pull models, how Whisper tests locate audio, and how the test harness cleans up lemond processes.",
+    "post_approval_commits": "No post-approval commits exist. This PR is a single commit that was merged directly; fl0rianr's approval applies to the sole commit. There were no commits added after approval.",
+    "review": "The PR was reviewed by fl0rianr who responded with an LGTM (approved). CodeRabbit bot also posted a comment but did not request changes. The author (sreeram-11) self-reviewed and removed unrelated changes before submission, consistent with the project guideline that PRs should be reviewed in full. No other human reviewers engaged substantively; the scope was limited enough that a single approval was appropriate. The PR description explicitly cites three real merge-queue ejects (#3979, #4021, #4053, #4058, #4001) that this fixes, providing strong justification for the changes.",
+    "security": "The Whisper test previously downloaded a WAV file from raw.githubusercontent.com on every test run; this is replaced with an embedded file in the repo, which is a security improvement (eliminates a transient external dependency that could be manipulated). The Ollama model pull still reaches the Ollama registry, but this was already the case and is unchanged in behavior. No supply-chain changes, no new credential handling, no code execution paths, no obfuscation or suspicious blobs. The new WAV file is a simple audio test asset. No security concerns.",
+    "tests": "The commit modifies four test files and one test utility: test/server_endpoints.py, test/server_whisper.py, test/test_ollama.py, test/utils/test_models.py, and adds test/test_speech_whisper.wav (352 KB WAV, SHA-256 59dfb9a4…). The author verified the WAV's SHA against the original URL. CI passed on all platforms — Test CLI/Endpoints on ubuntu-24.04, windows-latest, and macos-latest all passed (14m56s, 8m10s, and 29m4s respectively). Test ollama (ubuntu-24.04-arm) passed (15m1s). Test endpoints (ubuntu-24.04-arm) passed (15m49s). No tests were weakened or deleted; the Whisper test's setUpClass/tearDownClass were replaced with a local file reference, which is a correctness improvement. The server_endpoints.py changes add logging (_print_log_tail) but do not alter test outcomes."
+  },
+  "generation_seconds": 2266.9,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-10T11:12:39Z",
+  "pr_number": 4116,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-10T11:52:14+00:00",
+  "reviewers": [
+    "fl0rianr"
+  ],
+  "sha": "14a09e179a9131ac7339815a685cbdd376d0130d",
+  "shout_outs": [],
+  "subject": "test: remove network and cleanup flakiness from Ollama, Whisper and endpoint tests (#4116)",
+  "summary": "Removes network dependencies from Ollama, Whisper, and endpoint tests by using pull_model_with_retry for model pulls, embedding test/test_speech_whisper.wav (352 KB) in the repo instead of downloading from raw.githubusercontent.com on every run, and improving _running_lemond shutdown cleanup logging so that a lemond that ignores shutdown requests prints its log tail instead of raising TimeoutExpired and hiding real test failures.",
+  "verdict": "Clean",
+  "verdict_reason": "A well-scoped test-only cleanup that eliminates three real merge-queue-ejection failures with clear, targeted changes, approved by fl0rianr, and confirmed passing on all CI platforms."
+}
