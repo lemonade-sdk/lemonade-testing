@@ -1,0 +1,42 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.47",
+  "commit_sha": "5440e3e9c7bd10006a126f70cfbc155961f9a2ac",
+  "committed_at": "2026-11-10T15:19:20+00:00",
+  "evidence": {
+    "api_compatibility": "This is a breaking change for misconfigured installations. If a user has LEMONADE_API_KEY set to a non-empty value and LEMONADE_ADMIN_API_KEY explicitly set to an empty string, requests that previously succeeded without authentication will now return 401. The PR author correctly flagged this in the Breaking Changes section: 'Only misconfigured installations with a non-empty LEMONADE_API_KEY and an explicitly empty LEMONADE_ADMIN_API_KEY are affected.' No other configurations are changed. This is a correct tightening of security, not an API regression.",
+    "documentation": "The PR states documentation is not affected, which is correct: this is a bug fix that tightens existing authentication behavior. No public-facing API contract or configuration guide change is needed. The breaking change is well-documented in the PR description with precise scope.",
+    "manual_release_testing": "No evidence of manual end-to-end testing on a built server image. All CI checks passed (CodeQL, C++ unit tests, API key tests on ubuntu-latest and windows-latest, container smoke tests, build and packaging). The regression test is a unit-level test that starts the server in-process; it does not exercise a release candidate binary the way a tester would. Manual release testing is recommended (see to-dos).",
+    "post_approval_commits": "No commits were added after the first (and only) approval. The PR contained a single commit (b2dd529) that matches the merge commit. No churn or scope creep.",
+    "review": "One review from @superm1, submitted 2026-11-10T15:19:10Z, with APPROVED decision. @superm1 is a repository admin maintainer with subject area expertise in security and Docker/containers, matching the security nature of this fix. No inline comments; review body was empty but the approval was substantive given the reviewer's domain. No post-approval commits were added to the PR.",
+    "security": "This is a security vulnerability fix. The previous code treated an empty LEMONADE_ADMIN_API_KEY the same as unset, which caused it to fall back to LEMONADE_API_KEY. However, the authentication check then allowed an empty auth_token to match against admin_api_key_ (which was an empty std::string), effectively bypassing authentication on API and metrics routes. The fix adds a guard: if admin_api_key_ is empty, the condition short-circuits to true (reject). Additionally, the environment variable is now checked for non-empty content (*admin_api_key_env) before being used, preventing the fallback to an empty string. CodeQL analysis passed with no findings. This is the right fix for the vulnerability.",
+    "tests": "New regression test test_000_empty_admin_key_does_not_bypass_http_auth() added to test/server_websocket_auth.py. It sets LEMONADE_ADMIN_API_KEY='' and LEMONADE_API_KEY=correct, then exercises /api/v1/health and /internal/routes with three credential scenarios (no header, empty Bearer, wrong Bearer) expecting 401, plus the correct key expecting 200. The existing test suite also covers the admin-only configuration (LEMONADE_API_KEY empty, LEMONADE_ADMIN_API_KEY set). No existing tests were weakened or deleted."
+  },
+  "generation_seconds": 163.1,
+  "maintainer_todos": [
+    {
+      "text": "Start the server with LEMONADE_API_KEY set to a non-empty value and LEMONADE_ADMIN_API_KEY explicitly empty, then send a GET request to /api/v1/health without an Authorization header and confirm it returns HTTP 401."
+    },
+    {
+      "text": "With the same configuration, send a GET request to /internal/routes with Authorization: Bearer wrong-key and confirm it returns HTTP 401."
+    },
+    {
+      "text": "With the same configuration, send a GET request to /api/v1/health with Authorization: Bearer matching the LEMONADE_API_KEY value and confirm it returns HTTP 200."
+    }
+  ],
+  "merge_date": "2026-11-10T15:56:36Z",
+  "pr_number": 4122,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-10T16:01:13+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "5440e3e9c7bd10006a126f70cfbc155961f9a2ac",
+  "shout_outs": [],
+  "subject": "fix(server): prevent auth bypass with an empty admin API key (#4122)",
+  "summary": "Prevents authentication bypass when LEMONADE_ADMIN_API_KEY is explicitly set to an empty string while LEMONADE_API_KEY is configured, by treating an empty admin key as unset and falling back to the regular API key.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "This is a security fix that changes authentication behavior for a misconfiguration; although the diff and tests are small and correct, no human exercised the empty admin key path on a built server before merge."
+}
