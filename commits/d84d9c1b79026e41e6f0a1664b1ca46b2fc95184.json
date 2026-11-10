@@ -1,0 +1,32 @@
+{
+  "author": "@sreeram-11",
+  "branch": "main",
+  "bucket": "v2026.47",
+  "commit_sha": "d84d9c1b79026e41e6f0a1664b1ca46b2fc95184",
+  "committed_at": "2026-11-10T15:57:23+00:00",
+  "evidence": {
+    "api_compatibility": "No user-facing API changes. The change is confined to a single C++ test file and does not touch any headers, source, config, or contract that existing users depend on.",
+    "documentation": "No documentation impact. The change does not affect any public API, CLI behavior, config format, or documented user-facing functionality. The PR description correctly checks that documentation is not affected.",
+    "manual_release_testing": "N/A — this is a test-only change. It does not add, modify, or remove any user-facing behavior (no CLI commands, no API endpoints, no config changes, no GUI changes, no new models or backends, no installed artifacts). The DirectoryWatcher source code is untouched; only the test harness was made more resilient to CI load.",
+    "post_approval_commits": "The PR has two commits. The first (5293528, authored 2026-11-09T17:58:59Z) contains the actual test fix. The second (d9cdd828, authored 2026-11-10T15:00:30Z) is a merge of main into the feature branch, submitted after @superm1's approval at 2026-11-09T21:17:05Z. This is a routine CI sync merge — it does not introduce new behavior, alter tests, or change the review scope. No substantive post-approval commits were added.",
+    "review": "@superm1 approved the PR on 2026-11-09T21:17:05Z. superm1 is listed in docs/dev/contribute.md with subject-matter expertise in ROCm, Linux packaging, and system-level areas, which covers the DirectoryWatcher domain. No inline comments or requested changes were filed. CodeRabbit skipped substantive review (no reviewable changes detected), but the single-file, 16-insertion change is straightforward. The PR description is well-structured with Spec Driven Development checkboxes, scope validation, testing details, and documentation/breaking-change assessments.",
+    "security": "No security concerns. The change only touches a test file. It introduces no network calls, no new dependencies, no credential handling, no code execution paths, and no permission changes.",
+    "tests": "The change modifies only test/cpp/test_directory_watcher.cpp (16 insertions, 8 deletions), specifically the test_nonexistent_dir function. The author reports building with MSVC (8/8 pass, folder detected on first write) and running both old and new versions 25 times each under 2x CPU oversubscription with zero failures. All CI checks passed for the merge commit: C++ unit tests, CodeQL, all build workflows, and end-to-end tests on Windows, Linux, and macOS. The change does not weaken or delete any existing tests; it improves one existing test's robustness."
+  },
+  "generation_seconds": 297.3,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-10T19:45:52Z",
+  "pr_number": 4117,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-10T19:52:31+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "d84d9c1b79026e41e6f0a1664b1ca46b2fc95184",
+  "shout_outs": [],
+  "subject": "test: wait for DirectoryWatcher detection instead of fixed sleeps (#4117)",
+  "summary": "Replaces fixed sleeps with a retry loop (up to 5 attempts, 3-second poll deadline each) in the test_nonexistent_dir DirectoryWatcher unit test to handle macOS race conditions on busy CI runners.",
+  "verdict": "Clean",
+  "verdict_reason": "A focused test-only fix for a flaky CI test with clear root-cause analysis, adequate local validation, and an approval from a reviewer with systems expertise."
+}
