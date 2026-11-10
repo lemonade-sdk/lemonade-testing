@@ -1,0 +1,40 @@
+{
+  "author": "@meghsat",
+  "branch": "main",
+  "bucket": "v2026.47",
+  "commit_sha": "13ed8c91bff5e5cc1931a41f86e871e5162f3006",
+  "committed_at": "2026-11-10T15:58:15+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The /v1/classify response format is unchanged. The /v1/pull endpoint accepts a new 'llamacpp' recipe for classification with 'zero-shot' labels. The existing 'zero_shot' router condition and ONNX zero-shot models continue to work without modification.",
+    "documentation": "docs/api/lemonade.md updated with GGUF router registration syntax, rulehead.bin download behavior, local-path registration, token-per-token scoring, text truncation window (2048 tokens), and -np/-kv-unified slot-sharing behavior. The classify.cpp route description was updated to list llama.cpp prompt-router encoders alongside ONNX and FLM models.",
+    "manual_release_testing": "Reviewer @sawansri confirmed that setting ctx_size to 0 (or omitting it) breaks the router with 'n_batch and n_ubatch cannot both be zero'; this bug is not fixed. The PR adds a new user-facing feature (registering GGUF zero-shot routers and classifying with them via /v1/classify) but no human is shown to have exercised it end-to-end with a real GGUF model.",
+    "post_approval_commits": "Two commits were added after the first approval (2026-11-09T21:40:00Z): 'misleading directory checkpoint error' (improved folder-checkpoint error message, added -np/-kv-unified split-slot context logic) and 'pr feedback: scheme prefixed checkpoints and early label size guard' (added scheme-prefix stripping, relative-path rejection, early label-size guard). Both were reviewed inline by @fl0rianr in his 2026-11-09T22:20:18Z comment and the PR was re-approved; neither commit changed the risk profile or introduced new behavior outside the approved scope.",
+    "review": "Two substantive human reviews: @fl0rianr provided five review iterations (P1 architectural boundary, P2 checkpoint resolution, P2 local GGUF registration, P2 remote rule-head errors, P2 scheme-prefixed checkpoints and label-size guard) and approved on 2026-11-10T00:30:21Z. @sawansri identified a blocker — local GGUF + remote rulehead incorrectly triggers an internet download — and approved on 2026-11-09T21:40:00Z. Both reviewers have subject-matter expertise: @fl0rianr covers smart router, @sawansri covers new backends and new models. The PR body followed spec-driven development and acknowledged the scope. CodeRabbit automated review comments were addressed by the author. Three CodeRabbit inline comments on exception translation, temp-directory collision, and API description were resolved.",
+    "security": "No security concerns. The new scheme-prefix handling (hf://, ms://) prevents a repository-named-after-scheme attack by stripping the scheme and setting the registry source explicitly. Relative local paths are rejected at registration time. All rule-head weights are validated for non-finite values.",
+    "tests": "Extensive new unit tests: test/cpp/test_llamacpp_rulehead.cpp (407 lines) covering input building, token grouping, scoring with identity and asymmetric heads, byte-span handling of split UTF-8 characters, text fitting with truncation, context-size defaults, local/remote head resolution, mixed-source rejection, and logit-scale capping. test/cpp/test_config_default_source.cpp gained tests for rooted-path registry detection, scheme-prefix stripping (hf://, ms://), and scheme-source conflicts. test/cpp/test_pull_registry.cpp gained four ModelManager integration tests: local GGUF registration with sibling head, pull of local files with no registry call, scheme-prefixed download from repository, and relative-path refusal. test/cpp/test_backend_mode_contract.cpp and test/cpp/test_llamacpp_systemone.cpp gained classification mode and split-slot batch-plan tests. All CI checks passed (C++ Server Build, Validate New vLLM Release, Launchpad PPA). Reviewers repeatedly noted the unit tests are strong but requested one end-to-end run with a real GGUF through /v1/classify against the reference implementation; no such test or manual-run evidence appears in the PR."
+  },
+  "generation_seconds": 379.7,
+  "maintainer_todos": [
+    {
+      "text": "Start the server with a GGUF zero-shot router model (classification + zero-shot labels) and send a POST to /v1/classify with a few labels and a short input string; confirm the response carries label scores and truncated: false."
+    },
+    {
+      "text": "Start the server with a GGUF zero-shot router and set ctx_size to 0 (or omit it); send a classify request and confirm the model loads and responds instead of failing with 'n_batch and n_ubatch cannot both be zero'."
+    }
+  ],
+  "merge_date": "2026-11-10T20:38:09Z",
+  "pr_number": 4096,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-10T20:46:14+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@sawansri"
+  ],
+  "sha": "13ed8c91bff5e5cc1931a41f86e871e5162f3006",
+  "shout_outs": [],
+  "subject": "Add GGUF zero-shot routers on llama.cpp: encoder in llama-server, rule head in lemond (#4096)",
+  "summary": "Adds GGUF zero-shot prompt-router models to llama.cpp: the GGUF encoder runs inside llama-server on GPU, and the rule-head scoring vector runs in lemond, producing the same /v1/classify JSON response as the ONNX zero-shot implementation.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "Reviewers repeatedly requested a manual end-to-end comparison using a real GGUF through /v1/classify against the reference implementation and no such test evidence exists; additionally, a reviewer confirmed that ctx_size = 0 breaks the router and no fix is present."
+}
