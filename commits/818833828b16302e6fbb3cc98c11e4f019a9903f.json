@@ -1,0 +1,40 @@
+{
+  "author": "@danielholanda",
+  "branch": "main",
+  "bucket": "v2026.47",
+  "commit_sha": "818833828b16302e6fbb3cc98c11e4f019a9903f",
+  "committed_at": "2026-11-09T23:54:23+00:00",
+  "evidence": {
+    "api_compatibility": "No API, CLI, config, or protocol changes. The change is purely the Backends tab card layout inside the Tauri app GUI. No breaking changes.",
+    "documentation": "No documentation updates needed. This is an internal layout improvement to the Backends tab; it does not change user-facing commands, configuration, or behavior described in docs.",
+    "manual_release_testing": "The reviewer approved based on screenshots in the PR and comments, but there is no evidence that anyone ran the app and exercised the Backends tab layout with the final code. This is user-visible GUI behavior that should be manually verified before release.",
+    "post_approval_commits": "No commits were added after the approval at 2026-11-09T19:59:46Z. The merge commit is the approved state.",
+    "review": "PR #4084 was reviewed by @jeremyfowers (GUI design language subject expert) and @fl0rianr (GUI/app subject expert). @jeremyfowers requested changes (card max width, vertical alignment of full-engine cards), which @danielholanda addressed. @fl0rianr flagged that the bottom padding on '.backend-card__variant:last-child' was being overridden and noted a keyboard focus-order issue from CodeRabbit; the author addressed both before re-requesting review. @jeremyfowers approved on the second review with 'it looks great to me now'. CodeRabbit flagged subgrid compatibility and footer tab-order concerns on the first commit; the author replaced subgrid with independent columns and addressed footer ordering before the second review, so both concerns were resolved. All substantive reviewer comments were addressed.",
+    "security": "No security concerns. The change is purely visual CSS/React layout. No network calls, no credential handling, no new dependencies.",
+    "tests": "No unit or integration tests were added for the new BackendCardColumns component. The change is purely visual (React component + CSS), so automated tests are not a blocker, but there is no evidence of end-to-end visual testing."
+  },
+  "generation_seconds": 203.1,
+  "maintainer_todos": [
+    {
+      "text": "Open the Backends tab in the GUI and resize the window from narrow to wide; confirm cards reflow from one column to two or three columns and that each card keeps its natural height without clipping."
+    },
+    {
+      "text": "Confirm the bottom padding under action buttons on backend cards is visible (buttons should not touch the card bottom border) on both single-backend and multi-backend cards."
+    }
+  ],
+  "merge_date": "2026-11-10T01:14:15Z",
+  "pr_number": 4084,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-10T01:19:33+00:00",
+  "reviewers": [
+    "@jeremyfowers",
+    "@fl0rianr"
+  ],
+  "sha": "818833828b16302e6fbb3cc98c11e4f019a9903f",
+  "shout_outs": [],
+  "subject": "fix(gui): pack backend cards into an aligned grid (#4084)",
+  "summary": "Replaces the single-column Backends catalog layout with a dynamic multi-column grid that fits 300–400px-wide cards into independent columns, letting wide windows add columns and keeping each card at its natural height.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The layout change is sound and adequately reviewed, but the Backends tab rendering was never exercised manually at merge time so a quick visual regression check is needed before shipping."
+}
