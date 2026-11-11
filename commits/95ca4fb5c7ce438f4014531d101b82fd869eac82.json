@@ -1,0 +1,32 @@
+{
+  "author": "@sreeram-11",
+  "branch": "main",
+  "bucket": "v2026.47",
+  "commit_sha": "95ca4fb5c7ce438f4014531d101b82fd869eac82",
+  "committed_at": "2026-11-11T00:21:21+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. Changes are limited to .github/workflows/*.yml and .github/actions/*.yml files. No API, CLI, config, or user-facing behavior is affected. Author checked 'does not introduce breaking changes'.",
+    "documentation": "No documentation affected. Author checked 'Documentation is not affected'. This is correct — these are CI infrastructure changes with no user-visible behavior.",
+    "manual_release_testing": "This is a CI-only change. No user-reachable surface is introduced or modified. Server log retention is extended from 7 to 30 days, but that is a passive storage change a user cannot exercise. No manual release testing needed.",
+    "post_approval_commits": "One commit (44f0e09, 'ci: only treat an enabled bleeding-edge PPA as present in install-lemonade-deb') was added after the first approval by @fl0rianr. It addresses @fl0rianr's own review comment about narrowing the PPA grep to the active bleeding-edge PPA. The change is a targeted fix that tightens the diagnostic message only — it does not add new behavior, weaken tests, or alter risk. No commits were added after the second (latest) approval. The post-approval commit is well within the approved scope.",
+    "review": "PR was requested for review by @jeremyfowers (admin maintainer with CI listed as a subject area) but he did not submit any review or comment. @fl0rianr (subject area includes 'ci') provided substantive review: approved on 2026-11-09T22:16:37Z after verifying Launchpad ARM64 logs showed no tzdata prompts, and flagged that the PPA grep matched any lemonade-team source including stable or disabled entries. The author amended the check to target ppa:lemonade-team/bleeding-edge via apt-cache policy (commit 44f0e09, 2026-11-10T15:03:07Z), and @fl0rianr approved again on 2026-11-10T15:56:03Z. No reviews after the latest approval exist.",
+    "security": "No security concerns. The changes add timeout guards and error-handling to CI scripts. The disk-usage step uses safe commands (df, du with timeout, docker system df). The PPA diagnostic reads from apt-cache policy and /etc/os-release. No credential handling, network calls to external services, or code execution paths are introduced.",
+    "tests": "Author tested install-lemonade-deb dependency block in 6 cases (root, sudo, no sudo, missing PPA, other apt failure, non-Ubuntu), confirming every success path behaves as before and the PPA message appears only when the PPA is truly missing. Tested disk-usage script with and without HF_HOME, and without Docker — always exits 0. Checked on main that noble ARM64 job still shows the tzdata prompt (falling back to Teletype). No automated test coverage for the workflow changes themselves; the author un-checked a box about checking the workflow run logs, which is understandable for CI-only changes."
+  },
+  "generation_seconds": 154.0,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-11T02:24:20Z",
+  "pr_number": 4115,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-11T02:28:37+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "95ca4fb5c7ce438f4014531d101b82fd869eac82",
+  "shout_outs": [],
+  "subject": "ci: harden workflows against tzdata hangs, artifact upload errors and unprovisioned runners (#4115)",
+  "summary": "Adds DEBIAN_FRONTEND=noninteractive and a 30-minute timeout to the launchpad-ppa.yml ARM64 Ubuntu container job; adds continue-on-error and extends artifact retention from 7 to 30 days in capture-server-logs; adds a disk-usage reporting step with timeout guards in cpp_server_build_test_release.yml; and refactors install-lemonade-deb to check apt-cache policy for ppa:lemonade-team/bleeding-edge when runtime dependency resolution fails, printing a targeted error instead of a generic apt error.",
+  "verdict": "Clean",
+  "verdict_reason": "Focused CI hardening with five small changes each backed by a concrete failure case, thoroughly reviewed with a follow-up patch addressing a reviewer suggestion before final approval, and all CI checks passed through the merge queue."
+}
