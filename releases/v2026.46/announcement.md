@@ -2,15 +2,22 @@
 
 ### ⚠️ These notes are AI generated and will be revised by a human ⚠️
 
-@everyone v2026.46.2 is out: you can now submit benchmark results to the public leaderboard with a single `--submit` flag, new classification and decision-model endpoints are live, image generation expands to CUDA on older NVIDIA GPUs, and five new container backends bring AMD Strix Halo to new model families.
+@everyone v2026.46.2 is out: Gufo, Halogen, strix-llama.cpp, nathanw, rocmfpx and DwarfStar4 join Lemonade as container backends! You can now submit benchmark results to the public leaderboard with a single `--submit` flag, new classification and decision-model endpoints are live, and TheNoise adds CUDA support.
 
 ### Breaking Changes
 
+- The native backend for DwarfStar4 has been replaced by the container backend. 
 - **`/models` no longer returns `image_defaults` or `audio_defaults`** — those values are now nested under `recipe_options`, so clients reading the old keys will find them absent.
 - **Backend descriptor options now carry a `user_configurable` flag** — filter on it to hide technical knobs like `soft_pixel_cap`, `pcm_sample_rate`, and `pcm_channels` from users.
 - **FLM v1.0.11 returns `max_tokens` exactly as requested** — no more `max_tokens+1`, so chat completions that relied on the extra token will now stop one token early.
 - **FLM v1.0.11 streams token usage counts only when `stream_options.include_usage` is set** — without it, `/api/v1/stats` records no token counts or throughput for FLM streams.
 - **FLM v1.0.11 returns 400 for previously-accepted invalid fields** — invalid `tool_choice`, forced tool calls on small Qwen3 models (up to 1.7B), conversation history on `*-flash` models, and requests with no messages or prompt are all rejected now.
+
+### 🐳 Six new AMD Strix Halo container backends
+
+`@jeremyfowers` `@sawansri` `@superm1` `@iswaryaalex` `@abn` `@Geramy` `@kyuz0` `@wenis` `@francescobozzo` `@Nathanw1014` `@pwilkin` `@LaurentZuijdwijk` shipped six new container backends for AMD Strix Halo: Gufo, Halogen, strix-llama.cpp, nathanw, rocmfpx and DwarfStar4.
+
+> Note: support for container backends on Windows, Lemonade's docker, and Snap are planned for the future.
 
 ### 📊 Benchmark leaderboard submission
 
@@ -23,10 +30,6 @@
 ### 💥 CUDA image generation on Linux + older NVIDIA GPUs
 
 `@fl0rianr` brought TheNoise CUDA backend to Linux x86_64 alongside the existing ROCm support, and `@pwilkin` added a CUDA 12 variant for older NVIDIA Pascal and Volta GPUs — so those cards can now generate images too. TheNoise models also accept a custom fractional `upscale_factor` on `POST /v1/images/upscale`, letting you dial in exactly how much you want to scale.
-
-### 🐳 Five new AMD Strix Halo container backends
-
-`@jeremyfowers` shipped five new container backends for AMD Strix Halo — DS4 with DSpark speculative decoding, ROCm FP4, Halogen Flash, Gufo, and the community llama.cpp fork — bringing a wave of new model families to the platform. Thanks `@sawansri` for the container support, `@wenis` for Halogen Flash, and `@iswaryaalex` for the container backend work.
 
 ### Additional Improvements
 
