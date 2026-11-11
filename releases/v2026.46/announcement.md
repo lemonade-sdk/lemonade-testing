@@ -17,6 +17,8 @@
 
 `@jeremyfowers` `@sawansri` `@superm1` `@iswaryaalex` `@abn` `@Geramy` `@kyuz0` `@wenis` `@francescobozzo` `@Nathanw1014` `@pwilkin` `@LaurentZuijdwijk` shipped six new container backends for AMD Strix Halo: Gufo, Halogen, strix-llama.cpp, nathanw, rocmfpx and DwarfStar4.
 
+Learn more on YouTube: https://youtu.be/zfFuFRdyWgg
+
 > Note: support for container backends on Windows, Lemonade's docker, and Snap are planned for the future.
 
 ### 📊 Benchmark leaderboard submission
