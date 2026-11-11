@@ -1,0 +1,32 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.47",
+  "commit_sha": "a8d538c06ac69cd69440ba9d8b13c56e3675ac13",
+  "committed_at": "2026-11-11T01:44:26+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. `generation_info` is added as an optional property to each data item in the response. Existing clients that do not recognize the field will simply ignore it. The image upscaling route is explicitly left on the old `image_response_schema()` and is unaffected.",
+    "documentation": "docs/api/openai.md is updated in three sections (images/generate, images/edit, images/variation) to describe the new optional `generation_info` field. The generated API boilerplate check (`gen_api_boilerplate.py --check`) passes, confirming the docs and code are in sync.",
+    "manual_release_testing": "The `generation_info` field is optional and only appears when the image backend supplies it. No human is shown to have exercised the endpoint to confirm the field surfaces. However, because the change is purely additive to the JSON schema and existing responses remain fully compatible, this does not constitute a release risk. The change does not ship anything a user can reach that would break on upgrade.",
+    "post_approval_commits": "No post-approval commits. The PR contains a single commit (be93c49) that was approved before merging.",
+    "review": "PR #4125 received one approval from @sreeram-11 at 2026-11-10T16:57:46Z. @sreeram-11 is listed as a COLLABORATOR in the PR but does not appear in the maintainers table in docs/dev/contribute.md, so they lack documented subject-matter expertise. For this trivial documentation-only change the gap is inconsequential, but the project guideline advises targeting at least one reviewer with relevant expertise.",
+    "security": "No security concerns. The change adds metadata to a JSON response and updates documentation. No credential handling, network calls, or permission changes.",
+    "tests": "No unit tests accompany the change, which is expected for a documentation/schema addition. The author reports a smoke test of image generation as local testing. The C++ unit test CI job passes. The new `image_generation_response_schema()` function in image_responses.cpp is a thin wrapper over `image_response_schema()` that appends one field — it is not separately tested, but its implementation is trivially correct."
+  },
+  "generation_seconds": 135.2,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-11T03:14:49Z",
+  "pr_number": 4125,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-11T03:18:45+00:00",
+  "reviewers": [
+    "@sreeram-11"
+  ],
+  "sha": "a8d538c06ac69cd69440ba9d8b13c56e3675ac13",
+  "shout_outs": [],
+  "subject": "fix(docs/api): describe optional image generation metadata (#4125)",
+  "summary": "Adds an optional `generation_info` field to the OpenAI-compatible images/generate, images/edit, and images/variation API response schemas, and documents it in docs/api/openai.md.",
+  "verdict": "Clean",
+  "verdict_reason": "Small, well-scoped documentation and schema-only change that adds an optional field, was approved by a single reviewer with no post-approval commits, and passes all CI checks."
+}
