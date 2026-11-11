@@ -1,0 +1,36 @@
+{
+  "author": "@meghsat",
+  "branch": "main",
+  "bucket": "v2026.47",
+  "commit_sha": "8560a810db0b6c4cdf92c0b88133e12213b12e8b",
+  "committed_at": "2026-11-11T06:50:07+00:00",
+  "evidence": {
+    "api_compatibility": "No API changes. This is a website asset update — only HTML meta og:image tags and a JavaScript data file reference changed. No CLI, server API, config format, or binary contract is affected.",
+    "documentation": "The PR itself is the documentation change — it updates image references in the news listing and three article pages. No separate developer docs, API specs, or guides are affected. The change is consistent with issue #3041 (replacing GUI2 graphics with GUI3).",
+    "manual_release_testing": "No human verified the banner_03.png image renders correctly on the news pages. The CodeRabbit inconclusive check noted it could not inspect the linked assets repository (lemonade-sdk/assets) to confirm the GUI3 banner content. The banner images are served from raw.githubusercontent.com, so a broken or incorrect asset would manifest as a missing image on the website.",
+    "post_approval_commits": "None. The single commit 1a87227e09a0214def7e3de85c7017a32c47d593 was present before and at the time of approval. No post-approval churn.",
+    "review": "The PR had one approval review from @iswaryaalex at 2026-11-11T06:48:22Z, submitted 51 minutes after the PR was opened. @iswaryaalex is listed as a CONTRIBUTOR but is not a maintainer with GUI expertise. The project's contribute.md identifies @jeremyfowers (GUI design language), @fl0rianr (GUI, CI), @kpoineal (GUI, app, a11y), and @sofiageo (GUI design language, benchmarking) as maintainers with GUI subject-matter expertise. @fl0rianr was requested as a reviewer but submitted no review. No inline review comments were posted. CodeRabbit automated review rated merge risk as Minimal and confirmed the new banner URL is reachable, but flagged one inconclusive check because the linked assets repository could not be inspected to verify the GUI3 content. The PR body follows the required template, checks self-review, and explicitly notes no breaking changes.",
+    "security": "No new external dependencies or code execution paths. Images continue to load from the same GitHub raw content CDN (raw.githubusercontent.com/lemonade-sdk/assets). The banner file is in a separate repository; the inconclusive CodeRabbit check noted the linked repo content could not be verified, but the URL scheme and domain are unchanged from the prior banner.png reference.",
+    "tests": "No automated tests for asset URL changes — expected for a documentation/asset PR. The change is a straightforward string replacement across 4 files (24 insertions, 24 deletions) replacing banner.png with banner_03.png in 15 image references. CI runs (49 check suites) all passed: CodeQL, docs-and-style, routing-schema, publish-news, C++ build/test/release, and all platform builds completed successfully."
+  },
+  "generation_seconds": 196.8,
+  "maintainer_todos": [
+    {
+      "text": "Open https://lemonade-server.ai/news/auto-opt-vision.html, https://lemonade-server.ai/news/muse-glimmer.html, and https://lemonade-server.ai/news/vllm-rocm.html in a browser and confirm the new GUI3 banner image loads and renders correctly in the page header and in social sharing previews."
+    }
+  ],
+  "merge_date": "2026-11-11T07:44:27Z",
+  "pr_number": 4130,
+  "range_start": "v2026.45.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-11T07:49:24+00:00",
+  "reviewers": [
+    "@iswaryaalex"
+  ],
+  "sha": "8560a810db0b6c4cdf92c0b88133e12213b12e8b",
+  "shout_outs": [],
+  "subject": "upgrading banners to GUI3 assets (#4130)",
+  "summary": "Replaces all banner image references (15 occurrences across 4 files) from banner.png to banner_03.png across the news listing data (docs/assets/news-data.js) and three article pages (auto-opt-vision.html, muse-glimmer.html, vllm-rocm.html) as part of the GUI3 asset migration tracking in issue #3041.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "No GUI subject-matter expert reviewed this GUI3 asset migration, and the banner image content in the linked assets repository was not human-verified before merge."
+}
