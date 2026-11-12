@@ -1,0 +1,311 @@
+{
+  "branch": "release-v2026.47",
+  "breaking_changes": [
+    "LEMONADE_ADMIN_API_KEY explicitly set to empty string no longer bypasses authentication; requests to API and metrics routes return 401 unless LEMONADE_API_KEY is provided (affects misconfigured installations only).",
+    "/files endpoint for multi-shard GGUF models in extra_models_dir now returns one entry per shard instead of a single aggregated entry; clients that assumed a single response may need updating."
+  ],
+  "bucket": "v2026.47",
+  "candidate_issues": [],
+  "checklist": [
+    {
+      "author": "@jeremyfowers",
+      "commit": "d4f53e7dd39336dbd81151f2964cde5ad750d6f7",
+      "platforms": [
+        "Windows",
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 4066,
+      "priority": "P0",
+      "text": "Run lemond on a system with an NVIDIA GPU and either no driver or an old driver (e.g. 516.94 on Windows, 515.105.01 on Linux), open the web UI or query the device info endpoint, and confirm that llamacpp:cuda reports 'unsupported' or 'action_required' with the correct message and that auto backend selection falls through to Vulkan."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "5440e3e9c7bd10006a126f70cfbc155961f9a2ac",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4122,
+      "priority": "P0",
+      "text": "Start the server with LEMONADE_API_KEY set to a non-empty value and LEMONADE_ADMIN_API_KEY explicitly empty, then send a GET request to /api/v1/health without an Authorization header and confirm it returns HTTP 401."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "5440e3e9c7bd10006a126f70cfbc155961f9a2ac",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4122,
+      "priority": "P0",
+      "text": "With the same configuration, send a GET request to /internal/routes with Authorization: Bearer wrong-key and confirm it returns HTTP 401."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "5440e3e9c7bd10006a126f70cfbc155961f9a2ac",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4122,
+      "priority": "P0",
+      "text": "With the same configuration, send a GET request to /api/v1/health with Authorization: Bearer matching the LEMONADE_API_KEY value and confirm it returns HTTP 200."
+    },
+    {
+      "author": "@superm1",
+      "commit": "fe43f6f664dabe1e0e4800d970e9673573ac3be3",
+      "platforms": [
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 4057,
+      "priority": "P1",
+      "text": "On a system with a gfx1170 or gfx1171 GPU, run lemond and confirm a model loads and serves inference through the ROCm backend."
+    },
+    {
+      "author": "@superm1",
+      "commit": "fe43f6f664dabe1e0e4800d970e9673573ac3be3",
+      "platforms": [
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 4057,
+      "priority": "P1",
+      "text": "On the same system, confirm the runtime install for the ROCm backend does not throw (gfx117X-all TheRock assets for version 10.1.0 are still absent and the author acknowledged this is expected to be fixed at 10.3)."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "41558581aa3d31a7b7f2d36fbb5b55f32db9a12e",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4047,
+      "priority": "P1",
+      "text": "Send a POST /v1/load request with a known upscaler model name and verify the response is a 400 error instead of proceeding with the load."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "d05308710c1f38e4ecbfd529e8ba44375acc2730",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4025,
+      "priority": "P1",
+      "text": "Open the Monitor view with a machine that has two or more GPUs, select a GPU other than GPU 0 on the GPU card, and confirm the history chart switches to show that GPU's utilization."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "d58fd331ea0e4c61e54bc04c5d498ff01c390b5e",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4082,
+      "priority": "P1",
+      "text": "In the GUI with a vision-capable chat model, upload an image, then invoke analyze_image (e.g., via the MCP tool) and confirm the model sees the image directly rather than returning a degraded text description."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "d58fd331ea0e4c61e54bc04c5d498ff01c390b5e",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4082,
+      "priority": "P1",
+      "text": "Generate an image, then edit it by selecting the generated image as a reference and confirm the edited version appears and the original is preserved."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "d58fd331ea0e4c61e54bc04c5d498ff01c390b5e",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4082,
+      "priority": "P1",
+      "text": "Send an image in a text-only model chat and confirm the UI blocks the image from reaching the backend with an appropriate error rather than crashing or sending corrupted data."
+    },
+    {
+      "author": "@pwilkin",
+      "commit": "322675ac6d4f65f352b5de7649ab2b3736e90700",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4108,
+      "priority": "P1",
+      "text": "Register a multi-shard GGUF model whose shard filenames lack zero-padding (e.g., model-1-of-10.gguf, model-10-of-10.gguf), call the /files endpoint, and confirm that shard 1 appears before shard 10 in the response."
+    },
+    {
+      "author": "@meghsat",
+      "commit": "13ed8c91bff5e5cc1931a41f86e871e5162f3006",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4096,
+      "priority": "P1",
+      "text": "Start the server with a GGUF zero-shot router model (classification + zero-shot labels) and send a POST to /v1/classify with a few labels and a short input string; confirm the response carries label scores and truncated: false."
+    },
+    {
+      "author": "@meghsat",
+      "commit": "13ed8c91bff5e5cc1931a41f86e871e5162f3006",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4096,
+      "priority": "P1",
+      "text": "Start the server with a GGUF zero-shot router and set ctx_size to 0 (or omit it); send a classify request and confirm the model loads and responds instead of failing with 'n_batch and n_ubatch cannot both be zero'."
+    },
+    {
+      "author": "@meghsat",
+      "commit": "4a97ba2b47da08f8b6f2d0df8dd45d15a21e1bf5",
+      "platforms": [
+        "macOS"
+      ],
+      "pr_number": 4069,
+      "priority": "P2",
+      "text": "Review the final metrics_macos.cpp code to confirm the mutex now protects the Mach host_statistics call (not just the delta calculation) and that holding the lock through the Mach API call is acceptable for the polling frequency used by the Monitor UI."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "835eb9145fdebe36658e9dbe184a6be99affd5ac",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4062,
+      "priority": "P2",
+      "text": "Open the Chat view, generate an image (e.g. via image-generation tool), and click the download button on the generated image to confirm the file downloads with the correct format extension and the expected filename stem."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "835eb9145fdebe36658e9dbe184a6be99affd5ac",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4062,
+      "priority": "P2",
+      "text": "Send a text message in Chat, click the new Copy button on the user message, and confirm the clipboard receives the exact message text."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "54c0e9ff6ede0ac6716a11646dac4ef22138658d",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4075,
+      "priority": "P2",
+      "text": "Open the Lemonade website news page and confirm the November 5, 2026 Phoronix entry for the 2026.45.3 release appears at the top of the list with the correct title, date, link, and Phoronix logo image."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "7aab772545477c41ad8ca2e52a4f699b69dd2ca1",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4072,
+      "priority": "P2",
+      "text": "Open the Lemonade app, navigate to the Backends tab, and confirm Halogen, Gufo, DwarfStar4, and TheNoise each show their logo image with the engine name beside it, and that the layout looks correct (icons are 38px tall with tighter padding, names are visible)."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "d4f53e7dd39336dbd81151f2964cde5ad750d6f7",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4066,
+      "priority": "P2",
+      "text": "Replace the PR body summary with a human-written sentence explaining what the PR changes, why the minimum driver versions were chosen, and how a user sees the result."
+    },
+    {
+      "author": "@danielholanda",
+      "commit": "b0e01c7bf411c7fb15b3a55fcd7be78e0c5a9dc6",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4059,
+      "priority": "P2",
+      "text": "Run `lemonade backends info llamacpp:rocm` on a system with ROCm and confirm the output shows Author ggml-org, Publisher lemonade-sdk, and License MIT."
+    },
+    {
+      "author": "@danielholanda",
+      "commit": "b0e01c7bf411c7fb15b3a55fcd7be78e0c5a9dc6",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4059,
+      "priority": "P2",
+      "text": "Open the app on a Linux system with ROCm, navigate to the Backends tab, and confirm the llamacpp:rocm card displays a \"Container\" format badge, the author \"ggml-org\" next to the version, and \"License: MIT\"."
+    },
+    {
+      "author": "@danielholanda",
+      "commit": "b0e01c7bf411c7fb15b3a55fcd7be78e0c5a9dc6",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4059,
+      "priority": "P2",
+      "text": "Run `lemonade backends info llamacpp:no-such-backend` and confirm it exits non-zero with an error about an unknown backend."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "d58fd331ea0e4c61e54bc04c5d498ff01c390b5e",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4082,
+      "priority": "P2",
+      "text": "Start a new conversation, generate multiple images (at least three), then open the image-edit mode and verify all generated images are available for selection as edit references."
+    },
+    {
+      "author": "@danielholanda",
+      "commit": "818833828b16302e6fbb3cc98c11e4f019a9903f",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4084,
+      "priority": "P2",
+      "text": "Open the Backends tab in the GUI and resize the window from narrow to wide; confirm cards reflow from one column to two or three columns and that each card keeps its natural height without clipping."
+    },
+    {
+      "author": "@danielholanda",
+      "commit": "818833828b16302e6fbb3cc98c11e4f019a9903f",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4084,
+      "priority": "P2",
+      "text": "Confirm the bottom padding under action buttons on backend cards is visible (buttons should not touch the card bottom border) on both single-backend and multi-backend cards."
+    },
+    {
+      "author": "@MrAnayDongre",
+      "commit": "0ca5189874c216da8478353b719fa55cd644f237",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4103,
+      "priority": "P2",
+      "text": "Start the server with LEMONADE_API_KEY set and run `lemonade status` without passing --api-key to confirm the error message names both --api-key and LEMONADE_API_KEY."
+    },
+    {
+      "author": "@meghsat",
+      "commit": "8560a810db0b6c4cdf92c0b88133e12213b12e8b",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4130,
+      "priority": "P2",
+      "text": "Open https://lemonade-server.ai/news/auto-opt-vision.html, https://lemonade-server.ai/news/muse-glimmer.html, and https://lemonade-server.ai/news/vllm-rocm.html in a browser and confirm the new GUI3 banner image loads and renders correctly in the page header and in social sharing previews."
+    }
+  ],
+  "commits_reviewed": 30,
+  "commits_unreviewed": 0,
+  "evidence": {
+    "blockers": "Three P0 items: the NVIDIA driver-gating path on real hardware (d4f53e7-2) must work or an existing setup silently breaks; the empty-admin-key auth bypass fix (5440e3e-1/2/3) must be verified on a built server since it is a security vulnerability. The ctx_size=0 router bug (13ed8c9-2) is P1 — a default-configuration break for the new GGUF zero-shot router, but users can work around it by explicitly setting ctx_size.",
+    "breaking_changes": "The empty LEMONADE_ADMIN_API_KEY security fix tightens authentication — misconfigured setups with a non-empty LEMONADE_API_KEY and explicitly empty LEMONADE_ADMIN_API_KEY will start receiving 401 where they previously had no auth requirement. The /files endpoint now lists every shard individually instead of returning one entry, which could surprise clients that iterate the response assuming a single main-file entry.",
+    "coverage": "All 30 commits in the release range were reviewed. This rating covers all 28 to-dos from those reviews. No commits were omitted.",
+    "manual_testing": "A human with a gfx1170 or gfx1171 GPU must verify model loading and inference (fe43f6f-1/2). The NVIDIA driver gating must be tested on a system with a missing or old NVIDIA driver to confirm the unsupported/action_required states and Vulkan fallback (d4f53e7-2). The auth bypass fix must be exercised against a built server binary (5440e3e-1/2/3). The multi-GPU monitor requires a two-or-more-GPU machine (d053087-1). The GGUF zero-shot router needs a real model through /v1/classify (13ed8c9-1) and the ctx_size=0 path (13ed8c9-2).",
+    "security": "This release contains one security fix (5440e3e): empty LEMONADE_ADMIN_API_KEY no longer bypasses auth. It was reviewed and a regression test was added. The fix must be manually verified on a built server before shipping. No other security concerns were observed in the commit reviews."
+  },
+  "generation_seconds": 134.5,
+  "head_sha": "8560a810db0b6c4cdf92c0b88133e12213b12e8b",
+  "is_hotfix": false,
+  "last_stable_tag": "",
+  "range_start": "v2026.46.2",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-12T15:12:30+00:00"
+}
