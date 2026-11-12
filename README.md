@@ -46,3 +46,15 @@ the dashboard's verdict and tester plan come from.
 ## Fixing a bad file
 
 Delete it. The next run rewrites it from lemonade's history.
+
+## How lemonade runs repo-manager
+
+`runner/` is the whole recipe. Lemonade's workflow clones this repository to `./state`,
+clones lemonade to `./checkout`, and runs `bash state/runner/run.sh "<command>"`; it pins
+nothing itself. `runner/pin.env` holds every version — the repo-manager release, the model,
+Lemonade, and the tools — and `runner/run.sh` installs them, serves the model, and runs the
+command.
+
+To move to a new repo-manager release, tag it in repo-manager and change
+`REPO_MANAGER_VERSION` in `runner/pin.env`. When a release changes how repo-manager is
+installed or invoked, change `run.sh` in the same commit. Lemonade's next run picks both up.
