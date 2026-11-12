@@ -1,8 +1,8 @@
-## Lemonade v2026.46.2
+## Lemonade v2026.46.2 🚀 🚀
 
-### ⚠️ These notes are AI generated and will be revised by a human ⚠️
+@everyone v2026.46.2 is out: https://github.com/lemonade-sdk/lemonade/releases/tag/v2026.46.2
 
-@everyone v2026.46.2 is out: Gufo, Halogen, strix-llama.cpp, nathanw, rocmfpx and DwarfStar4 join Lemonade as container backends! You can now submit benchmark results to the public leaderboard with a single `--submit` flag, new classification and decision-model endpoints are live, and TheNoise adds CUDA support.
+Gufo, Halogen, strix-llama.cpp, nathanw, rocmfpx and DwarfStar4 join Lemonade as container backends! You can now submit benchmark results to the public leaderboard with a single `--submit` flag, new classification and decision-model endpoints are live, and TheNoise adds CUDA support.
 
 ### Breaking Changes
 
@@ -19,15 +19,13 @@
 
 Learn more on YouTube: https://youtu.be/zfFuFRdyWgg
 
-> Note: support for container backends on Windows, Lemonade's docker, and Snap are planned for the future.
-
 ### 📊 Benchmark leaderboard submission
 
 `@bitgamma` added `--submit` and `--submit-file` flags to `lemonade bench` so you can push results to the public leaderboard and get a claim link for others to verify your setup. Thanks `@iswaryaalex` for adding ROCm version tracking to the benchmark data so AMD runners are properly represented.
 
 ### 🏷️ Classification and decision models
 
-`@meghsat` added zero-shot text classification via `POST /v1/classify` with a `labels` parameter — just pass the labels and let Lemonade sort it out. `@meghsat` also introduced SystemOne decision models on `POST /v1/systemone`, so you can send typed or image-based questions to a llama.cpp decision model and get back structured answers. Both show up as new router classifier types for your policy engine.
+`@meghsat` dropped SystemOne decision models (`POST /v1/systemone`) and zero-shot text classification (`POST /v1/classify`) — now running across CPU, GPU, and NPU. D3 decision models run on Ryzen AI NPU via FLM v1.0.11. Both show up as new router classifier types for your policy engine.
 
 ### 💥 CUDA image generation on Linux + older NVIDIA GPUs
 
@@ -35,15 +33,15 @@ Learn more on YouTube: https://youtu.be/zfFuFRdyWgg
 
 ### Additional Improvements
 
-- `@fl0rianr` made the web app accept `?q=` prompts from the Firefox chatbot sidebar, starting a new chat with the prompt text and disabling MCP tool execution for external prompts.
-- `@fl0rianr` added missing `cuda_args`, `rocm_args`, and `vulkan_args` configuration keys for llama.cpp CUDA and whisper.cpp ROCm/Vulkan backends.
+- `@fl0rianr` made the web app accept `?q=` prompts from the Firefox chatbot sidebar.
+- `@fl0rianr` added missing `cuda_args`, `rocm_args`, and `vulkan_args` configuration keys.
 - `@fl0rianr` fixed vertical misalignment of the chat model picker and toolbar toggle.
 - `@jeremyfowers` revamped model downloads to explicitly list every checkpoint file, fixing interrupted-folder detection for ACE-Step, ThinkSound, and OpenMOSS.
-- `@mike2307` fixed custom model loading in the web app to honor `ctx_size` from `recipe_options.json` instead of unconditionally overwriting it.
-- `@meghsat` fixed model load banner state across model switches — the loading indicator now persists correctly and buttons release after failed operations.
-- `@meghsat` made disabling "Save chat history in this browser" stop saving new messages while keeping previously saved sessions alive, and added cross-tab deletion safety with retry UI.
-- `@Zorro-Zhang` made pulling built-in Suggested models from the configured `modelsource` (for example, modelscope) instead of always defaulting to Hugging Face.
-- `@kenvandine` expanded the llama.cpp CI validation to ARM64 (DGX Spark) and RTX 5070 runners, including sm_121 (GB10) support.
-- `@jeremyfowers` added a weekly CI workflow that validates container backend image tags and opens pin PRs automatically.
+- `@mike2307` fixed custom model loading to honor `ctx_size` from `recipe_options.json`.
+- `@meghsat` fixed model load banner state across model switches.
+- `@meghsat` made disabling "Save chat history" keep previously saved sessions alive.
+- `@Zorro-Zhang` made Suggested model pulls use the configured `modelsource`.
+- `@kenvandine` expanded llama.cpp CI validation to ARM64 (DGX Spark) and RTX 5070, including sm_121 (GB10) support.
+- `@jeremyfowers` added a weekly CI workflow that validates container backend image tags.
 
-Check out v2026.46.2 on [GitHub Releases](https://github.com/lemonade-sdk/lemonade/releases/tag/v2026.46.2) and fire up `lemonade bench --submit` — I'd love to see where your setup lands!
+Check out v2026.46.2 on GitHub Releases and fire up `lemonade bench --submit` — I'd love to see where your setup lands!
