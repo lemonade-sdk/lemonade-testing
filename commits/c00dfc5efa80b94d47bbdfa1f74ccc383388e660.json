@@ -1,0 +1,32 @@
+{
+  "author": "@meghsat",
+  "branch": "main",
+  "bucket": "v2026.48",
+  "commit_sha": "c00dfc5efa80b94d47bbdfa1f74ccc383388e660",
+  "committed_at": "2026-11-13T18:29:08+00:00",
+  "evidence": {
+    "api_compatibility": "No impact. Neither file is a public API, config consumed by users, persistence format, or integration contract. The model name swap affects only which GGUF asset the test suite downloads and runs.",
+    "documentation": "No documentation affected. The only text change is a comment in a test file (test/server_systemone.py) that replaced 'Julia-1' with the generic phrase 'the decision model'. The PR body correctly marked 'Documentation is not affected by this change.' No spec, guide, or release notes need updating.",
+    "manual_release_testing": "No to-do. This PR touches only test files — test/utils/capabilities.py and test/server_systemone.py — and changes no production code, CLI commands, API endpoints, config defaults, GUI elements, or documented user-facing behavior. The change is internal to the test harness and does not affect the release surface.",
+    "post_approval_commits": "None. The PR has exactly one commit (0460e57ea5a0f1dbfa5bcb16b32d9250d9317336), which was the same commit that received the approval. The branch did not change after the approval.",
+    "review": "PR #4156 received one human approval: @iswaryaalex posted 'LGTM!' at 2026-11-13T18:28:58Z, about 75 minutes after the PR opened. The project's docs/dev/contribute.md recommends at least one reviewer with subject-matter expertise (llamacpp/CI are owned by @superm1, @jeremyfowers, @fl0rianr, and @pwilkin); @iswaryaalex is not listed in the maintainer expertise table. The approval was brief and lacked substantive detail. CodeRabbit independently assessed the change as 'Minimal' risk, confirming the diff matches the PR description and that only test files were touched. No inline comments were raised.",
+    "security": "No concern. The diff is a config string change in a test file; no supply-chain, credential, network, code-execution, or permission changes are present.",
+    "tests": "All CI checks passed or were skipped. The change modifies test/utils/capabilities.py (swapping the systemone test model from Julia-1-GGUF to Laya-GGUF) and test/server_systemone.py (updating a comment to say 'the decision model' instead of 'Julia-1'). No new test code was added, but no existing tests were weakened or deleted — the CI run that exercised the merged commit confirmed the full pipeline (including the C++ Server Build, Test, and Release workflow) passed, which implicitly validates the model swap works end-to-end. The 'Testing details' section in the PR template was left blank, so there is no record of the author's local test commands or results."
+  },
+  "generation_seconds": 175.4,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-13T19:12:16Z",
+  "pr_number": 4156,
+  "range_start": "v2026.46.2",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-13T19:17:01+00:00",
+  "reviewers": [
+    "@iswaryaalex"
+  ],
+  "sha": "c00dfc5efa80b94d47bbdfa1f74ccc383388e660",
+  "shout_outs": [],
+  "subject": "Upstream llama-server had a push into Julia model and that is breaking the initial load during the CI checks so swapping with Laya-GGUF (#4156)",
+  "summary": "Replaces the Julia-1-GGUF test model with Laya-GGUF in test/utils/capabilities.py to fix a CI load failure caused by an upstream llama.cpp converter change, and updates a test comment to refer to the decision model generically instead of naming Julia-1.",
+  "verdict": "Clean",
+  "verdict_reason": "This is a two-file, four-line test-only change — swapping a model name in a config dict and updating a comment — approved with CI passing and no post-approval churn."
+}
