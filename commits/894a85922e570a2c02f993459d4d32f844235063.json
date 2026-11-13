@@ -1,0 +1,33 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.48",
+  "commit_sha": "894a85922e570a2c02f993459d4d32f844235063",
+  "committed_at": "2026-11-13T19:15:43+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking or user-facing API changes. The diff touches only a GitHub Actions composite action definition.",
+    "documentation": "No user-facing documentation updates needed. This is an internal CI change.",
+    "manual_release_testing": "This change modifies only .github/actions/repo-manager/action.yml — a CI internal tool. It has no user-visible surface: no API endpoints, no CLI commands, no GUI changes, no config files, and no installed artifacts. No manual release testing is required.",
+    "post_approval_commits": "None. The PR had one commit (c80aad15acec52862d7ead76a60b446af85d111b) and no commits were added after the first or latest approval.",
+    "review": "PR #4151 received an APPROVE from @superm1 at 2026-11-12T20:38:42Z. No inline review comments were filed. @coderabbitai[bot] also left a COMMENTED review. The PR has a single commit with no post-approval changes. The reviewer (@superm1) is an admin maintainer covering ROCm, Linux packaging, security, Docker/containers, and llamacpp; CI is listed under @jeremyfowers's subject areas, but for an internal-only GitHub Actions refactor that touches no product code, a maintainer review is adequate.",
+    "security": "No supply-chain concerns. The action still clones lemonade-sdk/lemonade-testing (same org) and runs its state/runner/run.sh script. No credential changes, no network calls to external services, no code execution paths that were not already present.",
+    "tests": "No tests are expected for a GitHub Actions composite action refactor. All CI workflows triggered by the merge group passed: 'Validate New vLLM Release', 'Validate New stable-diffusion.cpp Release', and 'C++ Server Build, Test, and Release' all concluded with success."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 149.7,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-13T20:31:02Z",
+  "pr_number": 4151,
+  "range_start": "v2026.46.2",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-13T20:35:17+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "894a85922e570a2c02f993459d4d32f844235063",
+  "shout_outs": [],
+  "subject": "repo-manager action: run lemonade-testing's runner instead of pinning here (#4151)",
+  "summary": "Refactors the repo-manager GitHub Action to delegate all version pinning and tool installation to lemonade-testing's runner script instead of hardcoding versions in the action.",
+  "verdict": "Clean",
+  "verdict_reason": "A straightforward internal CI refactor that was approved by a maintainer with no post-approval changes, no user-facing surface, and all CI checks passing."
+}
