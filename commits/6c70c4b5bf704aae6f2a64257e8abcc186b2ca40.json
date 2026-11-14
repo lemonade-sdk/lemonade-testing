@@ -1,0 +1,33 @@
+{
+  "author": "@sreeram-11",
+  "branch": "main",
+  "bucket": "v2026.48",
+  "commit_sha": "6c70c4b5bf704aae6f2a64257e8abcc186b2ca40",
+  "committed_at": "2026-11-14T20:46:32+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking change. This fixes a pre-existing bug where failed streams silently returned success. Clients that were crashing (ollama Python client, ollama CLI) are now fixed. Clients that were already handling errors or ignoring the empty done line are unaffected. The status stays 200 — headers were already sent when the error arrived, matching Ollama's own behavior. The API schema (chat.cpp, generate.cpp) is extended with a oneOf that adds an error line variant, which is strictly additive to what clients must handle.",
+    "documentation": "docs/api/ollama.md is updated for both /api/chat and /api/generate endpoints with an 'Error line' subsection describing the new behavior: one {\"error\": \"...\"} line, no done line following, status stays 200. The OpenAPI schemas in chat.cpp and generate.cpp are also extended to include the error line in the oneOf union. gen_api_boilerplate.py --check passes.",
+    "manual_release_testing": "The change was manually verified by the author: both the ollama Python client (chat/stream=True, generate/stream=True) and the ollama CLI (ollama run) now display the real backend error instead of crashing or showing an empty answer. This is sufficient evidence that a human exercised the user-visible behavior. No additional manual to-do required.",
+    "post_approval_commits": "No post-approval commits. The branch final commit b3766a7 was approved by @fl0rianr at 2026-11-14T02:07:29Z. The two branch commits (6c23aea and b3766a7) were added before the review and the approval came after both were on the branch. CI checks (C++ Server Build, Validate vLLM, Validate stable-diffusion) all passed.",
+    "review": "PR #4157 was authored by @sreeram-11 and received a substantive review from @fl0rianr, who identified a P2 issue: backend errors relayed mid-stream were classified as client disconnects in telemetry. @fl0rianr also noted a minor non-blocking logging size concern from CodeRabbit. The author addressed both — the telemetry classification fix was added as a second commit (b3766a7) that introduced `forwarded_error_event` tracking in StreamingProxy and capped error logs at `kMaxErrorBodyBytes`. @fl0rianr re-reviewed the updated head and approved. The PR was also requested to @iswaryaalex and @jeremyfowers, but they did not provide reviews. @fl0rianr's documented expertise includes 'Lemonade Mix, GUI, ci, smart router' rather than the streaming proxy or llamacpp specifically; however, the review was thorough and caught a real behavioral issue. No post-approval commits were added after the approval at 2026-11-14T02:07:29Z.",
+    "security": "The streaming proxy now caps logged error bodies at 64 KiB (kMaxErrorBodyBytes), preventing unbounded log growth from a malicious or broken backend. No credential handling, supply-chain, or other security concerns. The change is benign.",
+    "tests": "Three new test components: (1) test_028a_chat_streaming_backend_error and test_028b_generate_streaming_backend_error in test/test_ollama.py, which exercise both endpoints by sending overflow prompts, verifying the stream ends with one error line, no done line, and the Ollama Python client raises ResponseError. (2) test/cpp/test_ollama_stream_error.cpp, a new C++ unit test that mocks a backend sending content then an error event, verifying the gateway converts it correctly and StreamingProxy telemetry says 'Backend reported an error during stream'. (3) CMakeLists.txt entry to build the new C++ test. The author confirmed new tests fail on main and pass on the branch. All 37 test_ollama.py tests pass. All 7 server_streaming_errors.py tests pass. No existing tests were weakened or deleted."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 161.6,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-14T21:28:01Z",
+  "pr_number": 4157,
+  "range_start": "v2026.46.2",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-14T21:32:23+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "6c70c4b5bf704aae6f2a64257e8abcc186b2ca40",
+  "shout_outs": [],
+  "subject": "fix(ollama): end failed /api/chat and /api/generate streams with an error line (#4157)",
+  "summary": "Fixes /api/chat and /api/generate SSE streams so that a backend error (e.g., prompt exceeding context size) ends the stream with a single {\"error\": \"...\"} line and no done line, matching Ollama's own behavior instead of silently returning empty success.",
+  "verdict": "Clean",
+  "verdict_reason": "Focused bug fix with thorough tests, substantive review that caught and resolved a telemetry classification issue, updated documentation, and no post-approval churn."
+}
