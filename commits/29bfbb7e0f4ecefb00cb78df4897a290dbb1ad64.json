@@ -1,0 +1,33 @@
+{
+  "author": "@iswaryaalex",
+  "branch": "main",
+  "bucket": "v2026.48",
+  "commit_sha": "29bfbb7e0f4ecefb00cb78df4897a290dbb1ad64",
+  "committed_at": "2026-11-13T23:43:22+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes to any user-facing contract. All changes are internal to maintainer tooling and CI workflows. The auto-label structured-output schema change only affects how the internal bot talks to the Anthropic API, not any external API.",
+    "documentation": "Inline docstrings are thorough in all three new scripts. The workflows document their pipelines in YAML comments. No user-facing documentation changes are needed since the tooling is maintainer-only.",
+    "manual_release_testing": "This commit adds maintainer/CI tooling (GitHub Actions workflows and a GitHub Pages dashboard). It does not change any end-user-facing API, CLI, GUI, config, or installed artifact. No manual release testing is required.",
+    "post_approval_commits": "Six commits landed after the first (and only) approval: (1) 8f89ff0 auto-label — tells the model whether the item is a PR or issue so it always assigns a workgroup; (2) 10c3f3f auto-label — switches to a JSON schema for structured output so the model cannot reply in prose or skip the workgroup; (3) c8aaa12 auto-label — makes the workgroup required in the schema for PRs; (4) 39e1da9 triage-notify — changes the dedup period from 7 days to 30 days; (5) b898d88 triage — switches weekly pulse counting from paginated API walks to created:/merged: searches; (6) a0d3d44 merge of main. Commits 1-5 materially change the behavior, risk profile, and data accuracy of features that were already approved. The auto-label schema changes (commits 2 and 3) alter the Anthropic API contract and label-application logic. The notification dedup change (commit 4) changes how frequently stale PRs are pinged. The pulse fix (commit 5) changes what numbers appear in the dashboard. None of these were re-approved.",
+    "review": "One substantive approval from @meghsat at 2026-11-13T07:37:19Z. The PR contains ~2,400 lines of new Python code across three new scripts (triage_maintainer.py, triage_notify.py, auto_assign.py) and significant workflow changes, yet received only one reviewer. No evidence of a second reviewer with subject-matter expertise. The project's contribute.md recommends at least one reviewer with domain expertise for every PR and warns against merging approved-but-not-thoroughly-reviewed PRs.",
+    "security": "Scripts use standard GitHub token patterns (GITHUB_TOKEN, TRIAGE_TOKEN secret) and call GitHub and Anthropic APIs with appropriate permissions. No credential handling or supply-chain risks beyond normal CI automation patterns. A CodeRabbit bot comment flagged that the 90-day issue trend query uses the since= filter which omits items created before the window but still open; this was addressed by the author using created:/closed: searches instead.",
+    "tests": "The test file test_triage_dashboard.py contains only 3 tests, all for XSS protection (script_safe_json escaping) in the existing triage_dashboard.py. There are no tests for the new triage_maintainer.py (1,780 lines), triage_notify.py (266 lines), or auto_assign.py (342 lines). The PR description claims '8 new tests (11 total)' but the current file has only 3 tests — a discrepancy. The new functionality (WG prediction, merit scoring, RFC panel, reviewer suggestions, notification rules, auto-assign scoring) has no automated regression tests."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 300.3,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-14T00:36:44Z",
+  "pr_number": 3807,
+  "range_start": "v2026.46.2",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-14T00:43:45+00:00",
+  "reviewers": [
+    "@meghsat"
+  ],
+  "sha": "29bfbb7e0f4ecefb00cb78df4897a290dbb1ad64",
+  "shout_outs": [],
+  "subject": "Triage Dashboard Additional View (#3807)",
+  "summary": "Adds a maintainer-focused PR triage dashboard (maintainer.html) with workgroup classification, reviewer suggestions, merit scoring, weekly pulse, and RFC panel, plus supporting automation scripts and CI workflows for auto-labeling, auto-assigning reviewers, and notifying about stale PRs.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "Six behavior-changing commits were added after the sole approval without evidence of renewed review, including structured-output schema changes for the auto-label bot and a dedup period change for the notification bot."
+}
