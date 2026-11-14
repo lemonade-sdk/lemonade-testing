@@ -1,0 +1,46 @@
+{
+  "author": "@sreeram-11",
+  "branch": "main",
+  "bucket": "v2026.48",
+  "commit_sha": "27f3f6759b95756687dbf62ecb6d2d7e813be3ed",
+  "committed_at": "2026-11-14T00:20:53+00:00",
+  "evidence": {
+    "api_compatibility": "Breaking: /api/chat previously returned 500 for image models and 500 or 200-empty for embedding/reranking models; it now returns 400. /api/generate previously returned 500 for embedding/reranking models; it now returns 400. /api/show previously returned capabilities: [] for image models; it now returns capabilities: [\"image\"]. These status code changes will affect clients that match on 500 error responses. The PR author correctly flagged these as breaking changes. The ollama CLI also refuses show and run for image models — a side effect the reviewer caught that was not included in the breaking changes section of the PR body.",
+    "documentation": "docs/api/ollama.md updated: new 400 error entries for /api/chat and /api/generate documenting the model-type rejection, and the capabilities enum in /api/show now includes \"image\". The PR description's table is thorough. The PR author declared breaking changes but did not mention the ollama show refusal side effect (noted by the reviewer). The documentation changes are adequate for the API changes.",
+    "manual_release_testing": "This commit changes user-facing behavior: /api/chat and /api/generate now return 400 for non-LLM models instead of loading and failing with 500 or 200-empty. /api/show gains a new \"image\" value in capabilities. The official ollama CLI refuses show and run for image models. CI passed (all 4 workflows: vLLM, llama.cpp, C++ Build/Test/Release, Validate New vLLM Release). No evidence a human exercised /api/chat with an image model to verify the 400 response, or /api/show for image capabilities, or the official ollama CLI refusal. These require manual testing before release.",
+    "post_approval_commits": "The final commit (961cf7b, 2026-11-13T23:16:28Z) adding classification model tests was submitted before the first and only approval (2026-11-13T23:29:42Z). No commits were added after approval.",
+    "review": "@fl0rianr provided a substantive review of the head commit 493eaad, noting the approach was correct and the centralized OllamaOutput classification was straightforward. The reviewer raised two observations: (1) the \"image\" capability addition to /api/show causes the official ollama show command to also fail (not just ollama run), and (2) classification models were correctly classified in C++ unit tests but not covered in the Python integration tests. The reviewer then submitted an APPROVED review at 2026-11-13T23:29:42Z. The review was from someone with subject area expertise in the project (GUI, CI, smart router, LMX per contribute.md), though Ollama-specific expertise is not listed. The review was thorough and caught the CLI compatibility side-effect and test coverage gap.",
+    "security": "No security concerns. The change rejects unwanted models before loading, which actually improves resource protection by avoiding unnecessary downloads and memory allocation for models that can't be used. No supply-chain, credential, network, or auth changes.",
+    "tests": "Comprehensive: a new C++ unit test (test_ollama_output.cpp) covers 17 classification scenarios across all model types. The Python integration tests (test_ollama.py) were expanded with tests for streaming/non-streaming image generation (test_022), chat rejection of image models (test_022a), show capability for image models (test_022b), upscaler not being an image generator (test_022c), chat/generate rejection of embedding models (test_022d, test_022e), keep_alive=0 unload behavior (test_022f), and a new 404 test for /api/generate. The reviewer correctly noted that classification models (Laya-GGUF) are tested in C++ but not in the Python integration tests — a small coverage gap the reviewer flagged but the author did not address. The C++ test is run as part of CI (OllamaOutputTest added to CMakeLists.txt)."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 140.8,
+  "maintainer_todos": [
+    {
+      "text": "Run /api/chat with an image generation model (e.g. SD-Turbo) and confirm the response is 400 with \"does not support chat\" and nothing is loaded."
+    },
+    {
+      "text": "Run /api/chat and /api/generate with a classification model (e.g. Laya-GGUF) and confirm both return 400 before loading."
+    },
+    {
+      "text": "Run /api/show for an image generation model and confirm the capabilities array includes \"image\"."
+    },
+    {
+      "text": "Run the official ollama CLI command `ollama show <image model>` against the server and confirm it refuses with \"image generation models are not currently supported\"."
+    }
+  ],
+  "merge_date": "2026-11-14T01:19:34Z",
+  "pr_number": 4155,
+  "range_start": "v2026.46.2",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-14T01:23:40+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "27f3f6759b95756687dbf62ecb6d2d7e813be3ed",
+  "shout_outs": [],
+  "subject": "fix(ollama): reject models that can't chat or generate before loading them (#4155)",
+  "summary": "Adds pre-load rejection for non-LLM models on /api/chat and /api/generate (returning 400 instead of loading and failing), adds \"image\" capability to /api/show for image generation models, and correctly excludes upscaling models from image generation.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "Breaking error responses (500→400) should be manually verified before release, and the Python integration tests omit classification model coverage that the reviewer flagged."
+}
