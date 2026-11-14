@@ -1,0 +1,43 @@
+{
+  "author": "@sreeram-11",
+  "branch": "main",
+  "bucket": "v2026.48",
+  "commit_sha": "a4914c1dd3b288432b2355e2e90540c9a807f819",
+  "committed_at": "2026-11-14T19:04:36+00:00",
+  "evidence": {
+    "api_compatibility": "This commit adds new values ('speech', 'decision') to the /api/show capabilities enum — no existing value is removed or changed. The /api/v1/audio/speech route now accepts an empty 'voice' field where it previously would have been passed through (which Kokoro rejected with 500). This is additive and fixes a 500 error; no existing client setup breaks. The JSON schema in show.cpp now includes 'speech' and 'decision' in the capabilities enum array, which is backward-compatible for clients that don't check the enum strictly. No breaking changes.",
+    "documentation": "docs/api/ollama.md updated to include 'speech' and 'decision' in the capabilities description, and docs/api/openai.md updated to note that an empty voice field is equivalent to omitting it. Both changes are consistent with the code.",
+    "manual_release_testing": "No human was shown to have exercised the Ollama CLI end-to-end before merge. The PR author notes 'ollama run for speech and decision with the ollama CLI 0.40.16 — Both work' but this is the author's self-test, not an independent verification. Both the speech and decision paths need manual verification by a tester before release.",
+    "post_approval_commits": "One commit was added after approval: 'test(ollama): assert a plain classifier does not report the decision capability' (43b0f97, 2026-11-13T23:37:56Z). This addresses fl0rianr's second suggestion by adding the Bert-Phishing-ONNX negative test case. It only touches test/test_ollama.py (2 insertions) and does not modify production code, so the risk profile is unchanged. However, it was not re-approved by @fl0rianr. This should be verified as not altering behavior.",
+    "review": "PR #4160 received one approval from @fl0rianr (2026-11-13T20:56:36Z). The reviewer flagged two non-blocking test suggestions: (1) skipTest inside subTest skips the entire method rather than just that case, and (2) the tests should explicitly assert a plain classifier does not advertise the decision capability. @bitgamma and @jeremyfowers were requested as reviewers but neither submitted a review. Neither reviewer has a listed subject area for Ollama API compatibility or Kokoro TTS (fl0rianr's areas are LMX models, GUI, CI, smart router), though the review was technically sound. The PR author did not re-request review after the post-approval test addition.",
+    "security": "No security concerns identified. The change is limited to Ollama API capability reporting and a defensive empty-string check on a voice parameter. No credential handling, network calls, code execution changes, or permission broadening.",
+    "tests": "The PR adds two tests: test_022g_show_speech_decision_capabilities (test/test_ollama.py) covering four model scenarios — kokoro-v1 reports ['speech'], Laya-GGUF reports ['decision'], Bert-Phishing-ONNX reports [], and Qwen2.5-Omni-3B-GGUF reports ['completion', 'vision']. test_008_tts_empty_voice_uses_default (test/server_tts.py) confirms an empty voice field produces a valid WAV. The PR author noted tests failed before the fix and passed after. fl0rianr suggested the skipTest inside subTest should skip individual cases instead; the current implementation uses self.skipTest(model) which skips the entire test method when a model is not available. This is a minor test quality issue, not a correctness concern."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 148.8,
+  "maintainer_todos": [
+    {
+      "text": "Run 'ollama run kokoro-v1 \"Hello world\"' and confirm it produces speech audio in WAV format."
+    },
+    {
+      "text": "Run 'ollama run Laya-GGUF --ask \"Is a refund being requested?\"' and confirm it responds with a decision (yes/no) with a confidence percentage."
+    },
+    {
+      "text": "Post the approved version of the commit, then run the same two commands again to confirm the post-approval test commit (asserting Bert-Phishing-ONNX reports no capabilities) did not change behavior."
+    }
+  ],
+  "merge_date": "2026-11-14T19:52:47Z",
+  "pr_number": 4160,
+  "range_start": "v2026.46.2",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-14T19:56:54+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "a4914c1dd3b288432b2355e2e90540c9a807f819",
+  "shout_outs": [],
+  "subject": "feat(ollama): report speech and decision capabilities in /api/show (#4160)",
+  "summary": "Adds speech capability reporting for TTS models and decision capability reporting for SystemOne decision models to /api/show, and makes /api/v1/audio/speech accept an empty voice field (as the Ollama CLI sends it, defaulting to the model's default voice).",
+  "verdict": "Needs Attention",
+  "verdict_reason": "A post-approval test commit was added in response to reviewer feedback without being re-approved, and the Ollama CLI integration for speech and decision should be manually verified before release."
+}
