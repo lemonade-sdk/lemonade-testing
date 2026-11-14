@@ -1,0 +1,33 @@
+{
+  "author": "@superm1",
+  "branch": "main",
+  "bucket": "v2026.48",
+  "commit_sha": "e3ad84dbcc7f4935e508d95f78992efa1a918988",
+  "committed_at": "2026-11-14T11:18:04+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. This is a GitHub Actions workflow configuration change only. It does not alter any CLI flag, config value, API endpoint, file format, or documented behavior. The artifact produced (x86_64 Linux embeddable lemond) will link against the Ubuntu 24.04 baseline glibc and OpenSSL, which aligns with the advertised Ubuntu 24.04 support — a correctness fix, not a contract change.",
+    "documentation": "Documentation is unaffected. The PR correctly checked 'Documentation is not affected by this change.' No user-facing or developer-facing docs need updating for a CI runner pin.",
+    "manual_release_testing": "This is a build-system change, not user-facing behavior. The embedded artifact (`lemonade-embeddable-linux-x86_64`) is produced by the build itself and will be validated by the CI 'Test Embeddable (Linux)' step that runs on ubuntu-24.04. No manual release testing to-do is warranted.",
+    "post_approval_commits": "Zero commits were added after approval. The single commit (c50bb44) was approved as-is. The merge commit (e3ad84d) is the squash merge of that single commit.",
+    "review": "PR #4140 received one substantive approval from @fl0rianr, who has CI expertise per docs/dev/contribute.md. The review was 'LGTM' with a brief note that the merge queue was blocked. CodeRabbit produced no actionable comments. No inline review comments were raised. The reviewer's subject-matter expertise aligns with the change area.",
+    "security": "No security concerns. The change only alters the GitHub Actions runner image label. No supply-chain, credential, network, or execution-path changes are introduced.",
+    "tests": "The change modifies only `.github/workflows/cpp_server_build_test_release.yml` (2 insertions, 2 deletions) — replacing `ubuntu-latest` with `ubuntu-24.04` for the x86_64 embeddable build matrix entry and the matching POSIX smoke test. Testing is done by CI itself: the main workflow ran and produced successful check runs for 'Build Embeddable Lemonade (Linux)', 'Test Embeddable (Linux)', and all other workflow jobs. No new unit tests are needed for a CI configuration change; CI is the test."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 161.1,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-14T12:29:40Z",
+  "pr_number": 4140,
+  "range_start": "v2026.46.2",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-14T12:34:12+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "e3ad84dbcc7f4935e508d95f78992efa1a918988",
+  "shout_outs": [],
+  "subject": "Run linux embedded build on Ubuntu 24.04 (#4140)",
+  "summary": "Pins the x86_64 Linux embeddable build and its POSIX smoke test to ubuntu-24.04 instead of ubuntu-latest so the produced lemond binary links against Ubuntu 24.04 glibc and OpenSSL.",
+  "verdict": "Clean",
+  "verdict_reason": "A minimal two-line CI workflow change that is narrowly scoped, properly approved by a reviewer with CI subject-matter expertise, and validated by all passing checks."
+}
