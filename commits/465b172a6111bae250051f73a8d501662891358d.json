@@ -1,0 +1,34 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.48",
+  "commit_sha": "465b172a6111bae250051f73a8d501662891358d",
+  "committed_at": "2026-11-15T20:18:32+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking change. The change does not affect any user-facing API, CLI, config, or protocol. The --refresh flag is an internal tool option. Cache key changes affect only the generated docs/tooling pipeline, not any external contract.",
+    "documentation": "The spec at docs/dev/specs/http-server.md was updated to describe the new --refresh behavior and explain that backend update workflows re-run examples and keep responses when shape is unchanged. The generator script docstring was updated with the new flag. This is the correct documentation practice for an internal tool change. No user-facing docs were affected.",
+    "manual_release_testing": "Not applicable. This commit changes only internal tooling and generated documentation files: docs/tools/gen_api_boilerplate.py (the generator), docs/dev/specs/http-server.md (updated spec), .gitattributes (LF line endings), and three GitHub workflow files (validate_llamacpp.yml, validate_sdcpp.yml, validate_vllm.yml). No shipped artifact, API, CLI command, config option, or user-visible behavior is changed or added. The --refresh flag is consumed only by update workflows, not by users.",
+    "post_approval_commits": "No commits were added after the latest approval (2026-11-15T18:59:52Z). The final commit (3cab28201adb59f466c915b0e2405f2520569636) was the review-feedback commit, approved by @fl0rianr. Zero post-approval churn.",
+    "review": "PR #4114 had four commits and received substantive review from two approvers (@sreeram-11 approved on 2026-11-11, @fl0rianr approved on 2026-11-15). CodeRabbit flagged a critical functional correctness issue: the vLLM workflow passed --refresh vllm but no declared examples resolved to the 'vllm' recipe, which would have caused the refresh step to fail and block update PR creation. The author fixed this by removing the vLLM --refresh selector. All CodeRabbit comments were addressed (marked \"Addressed in commit caed429\"). The vLLM fix was the most substantive reviewer finding — neither approver was a docs/tools subject-matter expert per contribute.md, but both applied reasonable scrutiny. No post-approval commits were added; the branch was stable after the first approval.",
+    "security": "No security concerns. No credential handling, network calls, code execution paths, or permission changes. Supply-chain impact is limited to modifying the gen_api_boilerplate.py tool and its cache file, both of which are internal to the docs pipeline. The cache file (api_examples_cache.json) records API response shapes — it contains no secrets, only request/response examples used for documentation.",
+    "tests": "No test suite was added. The author notes focused manual checks for stream length changes, new shapes in omitted middle, JSON-looking generated strings, NDJSON structure changes, legacy cache handling, and zero-selection refresh failure. The generator script docs/tools/gen_api_boilerplate.py was changed significantly (~150 lines), introducing new functions (value_shape, stream_shape, response_shape, example_recipe) and the --refresh CLI flag. No automated tests exercise these new functions, but the PR was manually validated for edge cases. This is acceptable for a docs tooling change that does not ship to users."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 186.5,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-15T21:08:51Z",
+  "pr_number": 4114,
+  "range_start": "v2026.46.2",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-15T21:13:38+00:00",
+  "reviewers": [
+    "@sreeram-11",
+    "@fl0rianr"
+  ],
+  "sha": "465b172a6111bae250051f73a8d501662891358d",
+  "shout_outs": [],
+  "subject": "fix(docs): only re-commit API examples whose response shape changed (#4114)",
+  "summary": "Change API example cache keys to be request-only (not backend-version-dependent) and add --refresh RECIPE to re-run examples for updated backends while keeping recorded responses when only values (not response shape) changed.",
+  "verdict": "Clean",
+  "verdict_reason": "Well-scoped tooling improvement with thorough review that caught a blocking bug in the vLLM workflow, clean CI, and no user-facing changes."
+}
