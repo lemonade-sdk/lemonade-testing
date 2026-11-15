@@ -1,0 +1,49 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.48",
+  "commit_sha": "2608f07fe545925a1fdb0386aba66ecfdff6a812",
+  "committed_at": "2026-11-15T01:33:09+00:00",
+  "evidence": {
+    "api_compatibility": "The supported_modes array is added to the recipe schema in the server system_info endpoint and the API spec docs/api/lemonade.md. It is an optional array field on an existing object, so existing clients that ignore unknown fields are not broken. The server-side change (src/cpp/server/system_info.cpp) populates the field from the recipe descriptor. No breaking changes.",
+    "documentation": "docs/api/lemonade.md gains a one-line entry for supported_modes describing it as a deployment mode array distinct from capability labels. The PR body documents testing done (typecheck, test, custom model in GUI) but the GUI changes — new dropdown, new fields, upscaler support — are not documented in a user guide or release notes here. The API doc update is present but minimal.",
+    "manual_release_testing": "This commit changes the GUI custom model form: a new recipe option (thenoise/image), a new Model purpose dropdown (image/edit/upscaling), conditional companion checkpoint fields with recipe-specific required/optional labels, and the server API schema adds an optional supported_modes array. No evidence shows anyone registered a model through the GUI with a real checkpoint and launched it. The passing CI tests are runtime unit/snapshot tests, not end-to-end GUI or server exercise.",
+    "post_approval_commits": "Two commits (e296ba4 on 2026-11-13T15:50:10Z and 176111f on 2026-11-13T16:23:05Z) were added after @bitgamma's approval. These address CodeRabbit inline feedback: auto-labeling of image editing models, alias normalization for image-edit/image-editing, and documentation of the supported_modes field. The changes are incremental refinements to the approved scope — no new behavior, no API surface expansion, and no new files. The second post-approval commit also adds tests for the alias normalization. No renewed human approval was obtained, but the post-approval churn is scoped to fixing review-identified issues.",
+    "review": "Approved by @bitgamma (2026-11-12T16:31:07Z), a maintainer with subject area expertise in 'thenoise, cli, recipes, new backends, benchmarking, new models'. The PR passes CI (Routing Schema Tests: success, Server Download Registry Tests: success). CodeRabbit raised four actionable inline comments (ARIA accessibility on blank fields, recipe-specific required indicators, i18n for new strings, and edit-label alias normalization); the author addressed all of them across subsequent commits. The human approval was given on commit 2361265 (second of four), before two follow-up commits.",
+    "security": "No credential handling, network calls, code execution, permission changes, or supply-chain modifications. The only new behavior is model registration validation in the GUI. No security concerns.",
+    "tests": "The file src/app/tests/custom-load-options.runtime.cjs adds extensive regression tests: isStandaloneImageUpscaler, customImageCompanionCheckpoints (with TheNoise's required-text-encoder-and-VAE validation, SD.cpp's optional checkpoints, upscaler stale-path rejection), customImagePurpose, customImageLabelsForPurpose (including alias normalization), and full buildCustomModelRecord + customRegistrationOptions integration for both upscaler and edit models. The file src/app/tests/model-nav-filter-layout.runtime.cjs adds snapshot assertions for the new runtime expressions. Tests are thorough for the new store functions and registration paths."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 190.0,
+  "maintainer_todos": [
+    {
+      "text": "Open the custom model editor, select TheNoise as the recipe, enter a text encoder and VAE checkpoint path, and confirm the model registers and the companion checkpoint fields are marked required."
+    },
+    {
+      "text": "Open the custom model editor, select SD.cpp as the recipe, leave the text encoder and VAE fields empty, and confirm the model registers without error (SD.cpp companion checkpoints must remain optional)."
+    },
+    {
+      "text": "In the custom model form for TheNoise or SD.cpp, open the Model purpose dropdown, select Standalone upscaling, and confirm the text encoder and VAE fields disappear (standalone upscalers require no companion checkpoints)."
+    },
+    {
+      "text": "In the custom model form for TheNoise or SD.cpp, set labels to include edit or image-edit, confirm the Model purpose selector shows Image editing, and verify the registration includes both image and edit labels."
+    },
+    {
+      "text": "Call the system info endpoint and confirm the recipes response includes the new supported_modes array field."
+    }
+  ],
+  "merge_date": "2026-11-15T02:14:18Z",
+  "pr_number": 4138,
+  "range_start": "v2026.46.2",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-15T02:19:10+00:00",
+  "reviewers": [
+    "@bitgamma"
+  ],
+  "sha": "2608f07fe545925a1fdb0386aba66ecfdff6a812",
+  "shout_outs": [],
+  "subject": "Fix TheNoise custom image model registration (#4138)",
+  "summary": "Adds TheNoise as a custom image model recipe in the GUI, supports standalone pixel upscalers for both TheNoise and SD.cpp, auto-labels custom image editing models via image/edit/upscaling purpose, normalizes image-edit/image-editing aliases, and documents the new supported_modes field in the recipes API schema.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The commit introduces user-visible GUI features (new model purpose selector, companion checkpoint validation, and standalone upscaler support) but no evidence shows anyone exercised the actual registration and launch flow with a real TheNoise or SD.cpp checkpoint before merging."
+}
