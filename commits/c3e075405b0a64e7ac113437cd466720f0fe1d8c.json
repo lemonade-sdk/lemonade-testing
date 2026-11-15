@@ -1,0 +1,46 @@
+{
+  "author": "@sreeram-11",
+  "branch": "main",
+  "bucket": "v2026.48",
+  "commit_sha": "c3e075405b0a64e7ac113437cd466720f0fe1d8c",
+  "committed_at": "2026-11-15T06:13:43+00:00",
+  "evidence": {
+    "api_compatibility": "Not breaking. Before this PR, /api/show returned 404 for an alias name; now it returns 200 with the target model's show data. Before this PR, /api/pull and /api/delete silently stripped ':latest' from an alias like '<target>:latest', acting on the target model instead of the alias — now they return 404. These are bug fixes, not breaking changes. The documentation note in docs/api/internal.md and src/cpp/server/routes/internal/aliases_list.cpp was corrected to reflect that Ollama's /api/show now resolves aliases (previously it said Ollama did not).",
+    "documentation": "docs/api/internal.md and src/cpp/server/routes/internal/aliases_list.cpp were updated to reflect that Ollama's /api/show now resolves aliases (previously the note said Ollama and Anthropic gateways do not resolve aliases). The change is scoped to internal API docs; no user-facing guide changes are needed for this bug fix.",
+    "manual_release_testing": "No evidence a human exercised /api/show with an alias, `ollama run <alias>`, an alias-named '<model>:latest' on pull/delete, or a registered ':latest' model on delete. CI passed all workflows (Lemonade App checks, Validate New llama.cpp Release, C++ Server Build/Test/Release), but the new Ollama alias behavior is user-facing and was only validated by unit tests.",
+    "post_approval_commits": "The first (and only) approval was at 2026-11-15T00:17:40Z. There were zero commits after this approval, so no post-approval churn occurred. The four commits on the PR are: d69af54 (resolve aliases in /api/show), ca82ed5 (refuse aliases in pull/delete), b8e953e (keep registered ':latest' model name), and 4243efe (fix test cleanup and assertion — addressing CodeRabbit comments). The last commit predates the approval.",
+    "review": "The only human review came from @fl0rianr, who approved with 'LGTM' on 2026-11-15T00:17:40Z. @fl0rianr's listed subject areas (docs/dev/contribute.md) are 'Lemonade Mix (LMX) omni models, GUI, ci, smart router' — not the Ollama gateway or model alias system. Two reviewers were requested (@iswaryaalex and @jeremyfowers) but neither submitted a review. The PR did receive automated comments from @coderabbitai[bot] on test_005b and test_005c cleanup scope and assertion correctness, which the author addressed in a follow-up commit (4243efe). No second human review with relevant domain expertise was obtained.",
+    "security": "No security concerns detected. The changes are confined to model name resolution in the Ollama gateway and do not affect authentication, permissions, credential handling, network calls, or supply-chain dependencies.",
+    "tests": "Three new tests added in test/test_ollama.py: test_005a_show_resolves_alias (verifies alias resolution on /api/show and 404 on /api/pull and /api/delete), test_005b_pull_and_delete_refuse_a_latest_alias (confirms an alias named '<model>:latest' cannot pull or delete the target), and test_005c_delete_a_registered_latest_name (confirms a real model whose name ends in ':latest' is deleted correctly). The PR description reports 38/38 tests passing on the branch. No tests were weakened or deleted."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 184.4,
+  "maintainer_todos": [
+    {
+      "text": "Start the server with a model and register an alias to it via POST /internal/aliases, then POST /api/show with the alias name and confirm the response matches the target model's show output."
+    },
+    {
+      "text": "Run `ollama run <alias>` with the Ollama CLI and confirm the alias resolves to the target model and starts a chat, instead of returning 404."
+    },
+    {
+      "text": "Create an alias named '<some-model>:latest' pointing to a different model, then POST /api/pull and DELETE /api/delete with that alias and confirm both return 404 without touching the target model's files."
+    },
+    {
+      "text": "Register a model with the literal name '<model>:latest', then DELETE /api/delete with that name and confirm the ':latest' model is removed while the base model '<model>' remains."
+    }
+  ],
+  "merge_date": "2026-11-15T06:56:38Z",
+  "pr_number": 4158,
+  "range_start": "v2026.46.2",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-15T07:01:28+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "c3e075405b0a64e7ac113437cd466720f0fe1d8c",
+  "shout_outs": [],
+  "subject": "fix(ollama): resolve model aliases in /api/show (#4158)",
+  "summary": "Resolves model aliases in Ollama's /api/show endpoint and prevents an alias ending in ':latest' from name-colliding with a different model on /api/pull and /api/delete.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The only substantive review was an LGTM from @fl0rianr, whose listed expertise areas do not include the Ollama gateway, and the user-visible API changes were not manually exercised."
+}
