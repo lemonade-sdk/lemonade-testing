@@ -1,0 +1,43 @@
+{
+  "author": "@sreeram-11",
+  "branch": "main",
+  "bucket": "v2026.48",
+  "commit_sha": "2ddcca793b49c04fca558023df401b20b21aa27d",
+  "committed_at": "2026-11-15T03:06:48+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking change to existing setups. The new `images` parameter is an optional addition to /api/generate. Requests without `images` follow the same text-completion path. The `audio` capability in /api/show is additive to the enum. The one behavioral change — returning a 500 error instead of silently ignoring images on a text-only model — is a bug fix that brings parity with /api/chat; it affects a misconfigured client, not a working one.",
+    "documentation": "docs/api/ollama.md updated: the /api/generate argument table now includes `images` with its Ollama-compatible description. The /api/show response table for `capabilities` now lists `audio` for chat-transcription models. The schema JSON in show.cpp also includes `audio` in the capabilities enum.",
+    "manual_release_testing": "The audio path (WAV audio through /api/generate on a chat-transcription model) was tested locally only. CI has no runner with a chat-transcription model, and the PR body explicitly states 'Audio is tested locally only.' The streaming error path for media requests is handled by a separate PR (#4157) that was merged before this one; the post-approval merge brought in #4157's fix. The author notes that /api/generate with images on a text-only model now returns a proper 500 error instead of silently ignoring the input — a behavioral change the tester should verify.",
+    "post_approval_commits": "One merge commit after approval (ef51623f, 'Merge branch main into sreeram/ollama-generate-images-audio', 2026-11-15T02:17:46Z). It rebases the PR onto the latest main, which at that point included PR #4138 (TheNoise custom model registration). The merge commit itself contains no code changes from the PR author, only the rebase diff; this is routine and does not introduce new behavior.",
+    "review": "Only one approval from @fl0rianr (LGTM, submitted 2026-11-15T00:05:07Z). Per contribute.md, @fl0rianr's subject areas are LMX omni models, GUI, CI, and smart router — not Ollama backend. Two reviewers were requested (@bitgamma and @jeremyfowers); @bitgamma covers 'thenoise, cli, recipes, new backends, benchmarking, new models' and @jeremyfowers covers 'new endpoints, new backends, large new features'. Neither provided a review before merge.",
+    "security": "No security concerns. Base64-encoded images and audio are passed through to the backend without processing or execution. No new credential handling, network calls, or supply-chain changes.",
+    "tests": "New unit test file test/cpp/test_ollama_generate_chunk.cpp (65 lines, 9 tests) exercises the new ollama_generate_chunk() function: completion chunk text, chat chunk content, null content, empty choices, missing choices, finish_reason setting done, and null finish_reason keeping done false. CI passes the new unit test. New Python test test_021a_generate_with_image_input exercises streaming and non-streaming image input with a vision model (CI-passing; macOS skipped). Existing test test_022g was renamed and extended to expect audio in capabilities for Qwen2.5-Omni-3B. Audio testing was done locally only (the PR body notes CI would need a 4.7 GB model and the Windows runner is near its time limit)."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 230.1,
+  "maintainer_todos": [
+    {
+      "text": "Start the server with a llama.cpp model that has the `chat-transcription` label (e.g., Qwen2.5-Omni-3B), send a POST to /api/generate with a WAV file base64-encoded in the `images` field, and confirm the streamed response contains the transcribed text rather than a guess."
+    },
+    {
+      "text": "Send a POST to /api/show for a chat-transcription model and confirm the `capabilities` array includes `audio` alongside the existing entries."
+    },
+    {
+      "text": "Send a POST to /api/generate with an image in `images` on a vision model (streaming and non-streaming) and confirm the model's response references the image content."
+    }
+  ],
+  "merge_date": "2026-11-15T04:25:43Z",
+  "pr_number": 4163,
+  "range_start": "v2026.46.2",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-15T04:31:22+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "2ddcca793b49c04fca558023df401b20b21aa27d",
+  "shout_outs": [],
+  "subject": "fix(ollama): pass images and audio through /api/generate and report audio (#4163)",
+  "summary": "Adds `images` parameter to the Ollama `/api/generate` endpoint (passing base64-encoded images and WAV audio through to the backend as a one-message chat) and adds `audio` to the `/api/show` capabilities enum for llama.cpp models with the `chat-transcription` label.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "All required reviewers were requested but none provided subject-matter expertise on the Ollama backend, and the new audio path was only tested locally."
+}
