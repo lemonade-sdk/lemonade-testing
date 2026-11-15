@@ -1,0 +1,34 @@
+{
+  "author": "@meghsat",
+  "branch": "main",
+  "bucket": "v2026.48",
+  "commit_sha": "75694147ceec03017a836951fe8f4595e624e88b",
+  "committed_at": "2026-11-15T22:16:32+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. No code was changed. The updated images are referenced by static markdown content and do not affect any API, CLI, config, or runtime contract.",
+    "documentation": "The blog post modelscope-blog/modelscope-search.md was updated to reflect the GUI3 interface — specifically the Models page name (instead of 'Model Manager'), the two-character search threshold (instead of three), the Online Catalog filter section, and the Chat page model selection. The documentation change is self-contained within the blog asset. The PR body's documentation checkbox was checked as 'not affected', which was technically incorrect since the markdown file was changed, but this is a minor body-inaccuracy that does not affect the quality of the documentation itself.",
+    "manual_release_testing": "Not applicable. The changes are purely asset files (3 PNG images) and a blog walkthrough document. No code, config, API, CLI, or GUI behavior is altered by this commit. The updated images are referenced by the markdown file itself, not by any compiled or runtime component.",
+    "post_approval_commits": "No post-approval commits. The PR branch head (465b172a6) was the last commit before the squash merge on 2026-11-15. The merge commit itself is a squash merge (single parent), so there is no branch churn after approval.",
+    "review": "Two human approvals: @fl0rianr (GUI subject-area maintainer per contribute.md) approved on 2026-11-12T09:47:52Z saying 'Thanks and alright, let's merge it'. @iswaryaalex approved on 2026-11-12T08:15:34Z with 'Checks out'. CodeRabbit flagged that the PR mixed news-page changes with asset updates, blocking the Publish News check; the author resolved this by reverting the news-related files (docs/assets/news-data.js and docs/news/modelscope-search.html) and committing them in a separate PR. The PR body was incomplete at review time: the 'Testing details' field was empty, the documentation checkbox said 'not affected' while the diff included a markdown file, and the summary did not name the changed files or explain the asset references.",
+    "security": "No security concerns. Three PNG image files were replaced with different content; no code, dependencies, network calls, or credential handling is involved.",
+    "tests": "No test files changed. This PR touches only PNG images and a markdown documentation file — there is no code or behavior to test. No existing tests were weakened or deleted."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 500.2,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-15T23:01:29Z",
+  "pr_number": 4135,
+  "range_start": "v2026.46.2",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-15T23:11:40+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@iswaryaalex"
+  ],
+  "sha": "75694147ceec03017a836951fe8f4595e624e88b",
+  "shout_outs": [],
+  "subject": "fix(gui): Updating the ModelScope assets to GUI3 (#4135)",
+  "summary": "Updates the ModelScope blog assets (3 PNG images: modelscope-chat.png, modelscope-download.png, modelscope-search-results.png) to higher-resolution GUI3 versions and revises the blog walkthrough text in modelscope-blog/modelscope-search.md to reflect the Models page naming and the two-character search threshold.",
+  "verdict": "Clean",
+  "verdict_reason": "Straightforward asset and documentation update with approvals from a GUI-area reviewer and all CI checks passing."
+}
