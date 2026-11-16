@@ -53,8 +53,7 @@
       "author": "@superm1",
       "commit": "fe43f6f664dabe1e0e4800d970e9673573ac3be3",
       "platforms": [
-        "Fedora",
-        "Debian"
+        "Fedora"
       ],
       "pr_number": 4057,
       "priority": "P1",
@@ -64,8 +63,7 @@
       "author": "@superm1",
       "commit": "fe43f6f664dabe1e0e4800d970e9673573ac3be3",
       "platforms": [
-        "Fedora",
-        "Debian"
+        "Fedora"
       ],
       "pr_number": 4057,
       "priority": "P1",
@@ -85,7 +83,9 @@
       "author": "@fl0rianr",
       "commit": "d05308710c1f38e4ecbfd529e8ba44375acc2730",
       "platforms": [
-        "all"
+        "Windows",
+        "Fedora",
+        "Debian"
       ],
       "pr_number": 4025,
       "priority": "P1",
@@ -205,7 +205,9 @@
       "author": "@jeremyfowers",
       "commit": "d4f53e7dd39336dbd81151f2964cde5ad750d6f7",
       "platforms": [
-        "all"
+        "Windows",
+        "Fedora",
+        "Debian"
       ],
       "pr_number": 4066,
       "priority": "P2",
@@ -225,7 +227,7 @@
       "author": "@danielholanda",
       "commit": "b0e01c7bf411c7fb15b3a55fcd7be78e0c5a9dc6",
       "platforms": [
-        "all"
+        "Fedora"
       ],
       "pr_number": 4059,
       "priority": "P2",
@@ -292,20 +294,20 @@
       "text": "Open https://lemonade-server.ai/news/auto-opt-vision.html, https://lemonade-server.ai/news/muse-glimmer.html, and https://lemonade-server.ai/news/vllm-rocm.html in a browser and confirm the new GUI3 banner image loads and renders correctly in the page header and in social sharing previews."
     }
   ],
-  "commits_reviewed": 30,
+  "commits_reviewed": 31,
   "commits_unreviewed": 0,
   "evidence": {
-    "blockers": "Three P0 items: the NVIDIA driver-gating path on real hardware (d4f53e7-2) must work or an existing setup silently breaks; the empty-admin-key auth bypass fix (5440e3e-1/2/3) must be verified on a built server since it is a security vulnerability. The ctx_size=0 router bug (13ed8c9-2) is P1 — a default-configuration break for the new GGUF zero-shot router, but users can work around it by explicitly setting ctx_size.",
-    "breaking_changes": "The empty LEMONADE_ADMIN_API_KEY security fix tightens authentication — misconfigured setups with a non-empty LEMONADE_API_KEY and explicitly empty LEMONADE_ADMIN_API_KEY will start receiving 401 where they previously had no auth requirement. The /files endpoint now lists every shard individually instead of returning one entry, which could surprise clients that iterate the response assuming a single main-file entry.",
-    "coverage": "All 30 commits in the release range were reviewed. This rating covers all 28 to-dos from those reviews. No commits were omitted.",
-    "manual_testing": "A human with a gfx1170 or gfx1171 GPU must verify model loading and inference (fe43f6f-1/2). The NVIDIA driver gating must be tested on a system with a missing or old NVIDIA driver to confirm the unsupported/action_required states and Vulkan fallback (d4f53e7-2). The auth bypass fix must be exercised against a built server binary (5440e3e-1/2/3). The multi-GPU monitor requires a two-or-more-GPU machine (d053087-1). The GGUF zero-shot router needs a real model through /v1/classify (13ed8c9-1) and the ctx_size=0 path (13ed8c9-2).",
-    "security": "This release contains one security fix (5440e3e): empty LEMONADE_ADMIN_API_KEY no longer bypasses auth. It was reviewed and a regression test was added. The fix must be manually verified on a built server before shipping. No other security concerns were observed in the commit reviews."
+    "blockers": "Two hardware-specific items require real devices before final sign-off: ROCm gfx1170/gfx1171 inference cannot be verified until AMD publishes TheRock assets for 10.1.0 (expected 10.3), so the runtime install path will fail until then; NVIDIA driver-gating logic needs a system with an NVIDIA GPU where the driver is missing or older than the minimum (525.60.13 Linux / 528.33 Windows) to confirm the unsupported/action_required paths and Vulkan fallback behave correctly.",
+    "breaking_changes": "LEMONADE_ADMIN_API_KEY set to empty string now properly enforces authentication (previously it was treated as unset, allowing access with only LEMONADE_API_KEY configured). Only misconfigured installations with a non-empty LEMONADE_API_KEY and an explicitly empty LEMONADE_ADMIN_API_KEY are affected. The /files endpoint now returns one entry per shard for multi-shard GGUF models in extra_models_dir instead of a single aggregated entry; clients iterating the response expecting one entry may need updating.",
+    "coverage": "31 commits reviewed across the range v2026.46.2..c6b0006. Reviewed surface includes: ROCm GPU target additions (gfx1170/gfx1171), NVIDIA driver-missing and driver-too-old gating, authentication fix for empty LEMONADE_ADMIN_API_KEY, GGUF zero-shot router support, conversation-scoped image references, multi-GPU monitor, backends metadata display, backends grid layout, image download and copy buttons, CUDA load endpoint protection for on-demand models, macOS Monitor CPU usage restoration, CLI error message improvements, multi-shard GGUF /files endpoint fix, container pin updates, model registry additions, website news entries, CI hardening, and packaging fixes. The range start v2026.46.2 to head c6b0006 was covered by the commit review digests; no commits in the range appear to be unreviewed.",
+    "manual_testing": "macOS Monitor CPU gauge must be exercised with an active model to confirm the restored host_statistics sampling displays correctly and the mutex scope does not cause noticeable UI stall. Chat view image download, copy, and multi-image editing need end-to-end GUI exercise to confirm the post-approval error-handling path and unique filenames work. GGUF zero-shot router should be run end-to-end with a real model through /v1/classify to validate against the ONNX reference implementation. /v1/load must be tested with an on-demand upscaler to confirm the 400 rejection.",
+    "security": "No new security concerns observed. The release includes a security fix for empty LEMONADE_ADMIN_API_KEY bypassing authentication, which tightens access control for a pre-existing misconfiguration pattern. CodeQL analysis passed on all reviewed commits."
   },
-  "generation_seconds": 134.5,
-  "head_sha": "8560a810db0b6c4cdf92c0b88133e12213b12e8b",
+  "generation_seconds": 114.2,
+  "head_sha": "c6b00068010763bbc75e45f9b3e82d9b15538af3",
   "is_hotfix": false,
   "last_stable_tag": "",
   "range_start": "v2026.46.2",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-11-12T15:12:30+00:00"
+  "reviewed_at": "2026-11-16T17:43:19+00:00"
 }
