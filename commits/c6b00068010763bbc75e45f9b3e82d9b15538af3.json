@@ -1,0 +1,33 @@
+{
+  "author": "@superm1",
+  "branch": "release-v2026.47",
+  "bucket": "v2026.47",
+  "cherry_picked_from": "e3ad84dbcc7f4935e508d95f78992efa1a918988",
+  "commit_sha": "c6b00068010763bbc75e45f9b3e82d9b15538af3",
+  "committed_at": "2026-11-16T11:36:51-06:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. This is a CI-only change; it does not modify any user-facing contract, CLI, API, config, or artifact schema.",
+    "documentation": "No documentation impact. The PR body explicitly states documentation is unaffected. The change aligns CI with already-advertised Ubuntu 24.04 support, so no docs needed updating.",
+    "manual_release_testing": "Not applicable. This commit touches only the CI workflow file (.github/workflows/cpp_server_build_test_release.yml). It does not change any API, CLI command, GUI element, config option, installed artifact, or documented user behavior. It is an internal build-system fix — build-system support for a platform that is already published and advertised.",
+    "post_approval_commits": "None. The PR contained exactly one commit (c50bb44) and there were zero commits added after the first and only approval. The cherry-picked commit on release-v2026.47 (c6b0006) is an exact replay of the original (e3ad84d) with no divergence.",
+    "review": "PR #4140 was reviewed and approved by @fl0rianr (2026-11-12T17:36:30Z), who has CI subject-matter expertise per docs/dev/contribute.md. No comments or requested changes were filed. The review was thorough enough for a two-line workflow edit. No commits were added after approval.",
+    "security": "No security concerns. The change replaces ubuntu-latest with ubuntu-24.04 in workflow runners — a standard, well-understood pinning action. No supply-chain, credential, or execution-path changes.",
+    "tests": "Not applicable — this is a GitHub Actions workflow change. The change was validated by CI, which ran the updated workflow on release-v2026.47; build jobs for 24.04 succeeded (e.g., 'Build (24.04, ubuntu, noble, ppa:lemonade-team/bleeding-edge)' and 'Upload to PPA (24.04, ubuntu, noble, ppa:lemonade-team/bleeding-edge)'). No tests were weakened or deleted."
+  },
+  "generation_seconds": 131.7,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-14T12:29:40Z",
+  "pr_number": 4140,
+  "range_start": "v2026.46.2",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-16T17:41:22+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "c6b00068010763bbc75e45f9b3e82d9b15538af3",
+  "shout_outs": [],
+  "subject": "Run linux embedded build on Ubuntu 24.04 (#4140)",
+  "summary": "Changes the linux embedded build matrix in .github/workflows/cpp_server_build_test_release.yml from ubuntu-latest to ubuntu-24.04 in two places (the X86_64 linux artifact job and the linux-embeddable build job) to match advertised Ubuntu 24.04 support and fix glibc 2.43 incompatibility on Ubuntu 24.04 hosts.",
+  "verdict": "Clean",
+  "verdict_reason": "A one-line-per-change CI workflow fix with clear rationale, subject-matter-expert review, clean CI, and no post-approval churn."
+}
