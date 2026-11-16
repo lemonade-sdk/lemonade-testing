@@ -1,0 +1,43 @@
+{
+  "author": "@meghsat",
+  "branch": "main",
+  "bucket": "v2026.48",
+  "commit_sha": "57773fe15971a244ebc735ba234c96bbc472220c",
+  "committed_at": "2026-11-16T08:00:08+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking change. The system_info API now returns non-zero vram_gb/virtual_mem_gb for AMD iGPUs on Windows, which is additional (not removed) data. No CLI flags, config values, or API contracts changed. The internal memory detection path in system_info.cpp is not a public API.",
+    "documentation": "No user-facing documentation changes required for a bug fix that restores correct behavior. The API spec may benefit from a note that AMD iGPU memory is now reported on Windows, but this is informational rather than required.",
+    "manual_release_testing": "No evidence of manual testing on actual Windows hardware with an AMD iGPU. The PR author provided a local repro script and a table showing context sizes jumping from 4096 to 21k–262k after the fix on a Ryzen AI 9 HX 375 with Radeon 890M. CI runs do not test Windows-specific DXGI code paths. Three manual tests recommended in maintainer_todos.",
+    "post_approval_commits": "No post-approval commits. A merge of main into the branch was added at 2026-11-16T07:21:19Z, before the approval at 08:00:01Z. Clean.",
+    "review": "One approval review from @bitgamma with body \"LGTM\" submitted at 2026-11-16T08:00:01Z. Zero inline comments on the diff. @fl0rianr was the requested reviewer but did not submit a review. @bitgamma's subject areas are the noise, CLI, recipes, new backends, and benchmarking; system info and GPU memory detection fall under @superm1 (ROCm, system info) and @kpoineal (Windows). The review was brief and lacked subject-matter expertise for the code changed.",
+    "security": "Low risk. The new Windows code uses standard Microsoft WRL/COM APIs (CreateDXGIFactory1, IDXGIFactory1, IDXGIFactory1::EnumAdapters1) to query adapter descriptions. These are system administration APIs, not network or credential-related. No new dependencies, supply-chain changes, or code execution paths introduced beyond existing Windows platform code.",
+    "tests": "Adds unit tests in test/cpp/test_gpu_memory_selection.cpp covering: (1) AMD dGPU preferred over iGPU when both present, (2) iGPU-only host sizing, (3) iGPU without a carve-out still exposes shared pool, (4) ROCm0 target on iGPU without carve-out. Updated existing test assertion (bare_rocm from total_gb==8.0 to total_gb==16.0 and !unified). New tests are well-scoped to the memory selection logic."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 150.1,
+  "maintainer_todos": [
+    {
+      "text": "Start the server on a Windows machine with an AMD iGPU, request GET /api/v1/system-info, and confirm the amd_gpu field now reports non-zero vram_gb and virtual_mem_gb values from DXGI rather than zeros from WMI."
+    },
+    {
+      "text": "Start the server with log_level=debug on a Windows AMD iGPU system, request GET /api/v1/models/<model>/options, and confirm resolved_ctx_size reflects the actual available memory instead of the 4096 default."
+    },
+    {
+      "text": "Start the server on a Windows AMD iGPU system, POST to load an NPU model (e.g. lfm2-1.2b-FLM), and confirm the server no longer falls back to a 4k context due to a zero RAM estimate from the iGPU."
+    }
+  ],
+  "merge_date": "2026-11-16T08:48:43Z",
+  "pr_number": 4182,
+  "range_start": "v2026.46.2",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-16T08:52:53+00:00",
+  "reviewers": [
+    "@bitgamma"
+  ],
+  "sha": "57773fe15971a244ebc735ba234c96bbc472220c",
+  "shout_outs": [],
+  "subject": "Fixes the autotune falling back to 4k ctx due to memory read mismatches (#4182)",
+  "summary": "Fixes the autotune falling back to 4k context size on AMD iGPU and NPU on Windows by reading iGPU dedicated/shared memory from DXGI instead of WMI, which returns 0 for integrated GPUs.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The review was brief (single \"LGTM\") and did not include a subject-matter reviewer with system info / GPU memory expertise, and the Windows-only DXGI code path should be manually validated on an AMD iGPU system before shipping."
+}
