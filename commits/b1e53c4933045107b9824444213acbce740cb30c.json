@@ -1,0 +1,40 @@
+{
+  "author": "@itomek",
+  "branch": "main",
+  "bucket": "v2026.48",
+  "commit_sha": "b1e53c4933045107b9824444213acbce740cb30c",
+  "committed_at": "2026-11-16T17:37:46+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking change for existing setups. The old behavior (api_key as a URL query parameter) was a security problem and not a documented API contract — the server never required clients to include it in URLs. The new behavior (credential in Sec-WebSocket-Protocol header) is the correct and standard way to authenticate WebSocket connections. Any client that was relying on the old URL query parameter approach was already broken by design. No config values, CLI flags, API endpoints, or schema changes.",
+    "documentation": "No documentation changes needed. The change is a transparent security fix — users do not configure or observe the credential transport mechanism.",
+    "manual_release_testing": "No manual release testing to-do needed. This is a security fix that changes what was previously incorrect behavior (leaking credentials in URLs) to the correct behavior. Users upgrading should expect authenticated WebSocket connections to succeed as before; if any user has a client that expects the api_key query parameter in WebSocket URLs (unlikely, as the server never documented or required it), that would be a client-side issue, not a server regression. The server-side change is invisible to users who use the normal app or CLI.",
+    "post_approval_commits": "The only commit after @superm1's approval (10eced2e) is a merge of main into the feature branch (\"Merge branch 'main' into codex/4133-websocket-auth\"). This is a routine rebase to bring in upstream changes and adds no new behavior, API surface, or security-relevant code. It does not change the risk profile of the approved changes.",
+    "review": "PR #4141 by @itomek was reviewed by @superm1 (admin maintainer with subject expertise in security and Docker/containers). @superm1 submitted an approval review at 2026-11-16T16:36:35Z. There are zero inline review comments, meaning the reviewer had no concerns. The PR requested reviews from @kpoineal (GUI/app) and @jeremyfowers (admin, new endpoints, GUI design) as well, though neither left comments. Given the small, self-contained scope of this fix (two changed lines of production code plus a new test file), a single substantive approval is adequate. @superm1's subject area includes security, matching the review needed.",
+    "security": "This is itself a security improvement: API keys are no longer logged in server access logs, browser history, proxy logs, or URL-based monitoring tools. The credential is transported via the WebSocket handshake's Sec-WebSocket-Protocol header, which is the standard mechanism for this protocol. The base64url encoding with URL-safe character replacement is correct and consistent with RFC 6455. No new security concerns are introduced by the change.",
+    "tests": "The PR adds a comprehensive 101-line Node.js runtime test at src/app/tests/websocket-auth.runtime.cjs. It compiles the relevant LemonadeAPI methods via TypeScript, injects a FakeSocket to capture WebSocket construction, and then verifies for every combination of API key (empty, ASCII, URL-special characters with +/=, and Unicode with café and emoji) and URL scheme (http/https) that: (1) the URL query does NOT contain an api_key parameter, (2) the protocol is wss:// for https and ws:// for http, (3) the correct pathname and port are used for both the primary and fallback log and realtime sockets, (4) the base64url credential in the Sec-WebSocket-Protocol header exactly matches the expected encoding, and (5) anonymous connections preserve the unauthenticated handshake (protocols undefined). The PR description confirms the pre-fix version fails this test (\"Fails on API key in URL query\") and that the full runtime suite passes (47 passed, 0 failed). No existing tests were weakened or deleted."
+  },
+  "fixes_prs": [
+    4133
+  ],
+  "generation_seconds": 228.2,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-16T18:25:47Z",
+  "pr_number": 4141,
+  "range_start": "v2026.46.2",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-16T18:35:17+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "b1e53c4933045107b9824444213acbce740cb30c",
+  "shout_outs": [
+    {
+      "handle": "@itomek",
+      "reason": "Co-authored the commit (Co-authored-by: Tomasz Iniewicz)."
+    }
+  ],
+  "subject": "fix: keep WebSocket API keys out of URLs (#4141)",
+  "summary": "Removes the api_key query parameter from WebSocket connect URLs and transports the credential through the Sec-WebSocket-Protocol header using unpadded base64url encoding via a new _webSocketProtocols() method.",
+  "verdict": "Clean",
+  "verdict_reason": "A focused, single-commit security fix with thorough automated tests, a positive substantive review, and no problematic post-approval changes."
+}
