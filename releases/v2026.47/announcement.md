@@ -1,39 +1,34 @@
-## Lemonade v2026.47.0
+## Lemonade v2026.47.1
 
 ### ⚠️ These notes are AI generated and will be revised by a human ⚠️
 
-@everyone v2026.47.0 is out: new AMD GPUs supported on the Rock backend, HRX models get automatic speculative decoding, GGUF classification models are here, and a multi-GPU monitor lands in the GUI!
+@everyone v2026.47.1 is out: https://github.com/lemonade-sdk/lemonade/releases/tag/v2026.47.1
+
+RDNA 3.5 GPUs finally join the party, HRX models get speculative decoding out of the box, you can chain multiple images in one conversation, and the backends tab is getting a fresh look.
 
 ### Breaking Changes
 
-- Setting `LEMONADE_ADMIN_API_KEY` to an empty string no longer bypasses authentication — API and metrics routes return 401 unless `LEMONADE_API_KEY` is also provided (affects misconfigured setups only).
-- The `/files` endpoint now returns one entry per shard for multi-shard GGUF models in `extra_models_dir` instead of a single aggregated entry, so clients that assumed one response may need updating.
+- Setting `LEMONADE_ADMIN_API_KEY` to an empty string no longer bypasses authentication — treat it as unset and provide `LEMONADE_API_KEY` for API and metrics routes.
+- The `/files` endpoint now returns one entry per shard for multi-shard GGUF models in `extra_models_dir` — clients expecting a single aggregated response need to handle multiple entries.
 
-### 🤖 New AMD GPUs on the Rock backend
+### 🎮 AMD RDNA 3.5 GPUs now supported
 
-`@superm1` added gfx1170 and gfx1171 to the Rock backend, so more AMD hardware is covered now.
+`@superm1` added gfx1170 and gfx1171 (RDNA 3.5) to the ROCm architecture list with an updated llama.cpp backend, so those cards can run models natively.
 
-### ⚡ Automatic MTP speculative decoding for HRX models
+### ⚡ MTP speculative decoding on HRX models
 
-`@AaronStGeorge` enabled automatic speculative decoding for HRX models — just pull an HRX model and Lemonade applies MTP behind the scenes. `@AaronStGeorge` also added the Qwen3.5-35B-A3B-HRX model to the registry, ready to `lemonade pull`.
+`@AaronStGeorge` enabled automatic MTP speculative decoding for supported HRX models — the `mtp` label triggers `--spec-type draft-mtp` under the hood, giving you faster inference without changing a single flag.
 
-### 🏷️ GGUF classification models in llama.cpp
+### 🖼️ Multiple images, one conversation
 
-`@meghsat` brought zero-shot prompt-router classification to the llama.cpp backend with GGUF models — the same `/v1/classify` interface you already know, now backed by GPU-accelerated encoders.
-
-### 📊 Multi-GPU monitor in the GUI
-
-`@fl0rianr` added a multi-GPU monitor to the GUI that shows per-GPU utilization and memory usage with selectable history charts for 2–4 GPUs. `@meghsat` helped polish it up.
+`@fl0rianr` added conversation-scoped image references, so you can chain multiple images in a single chat for multi-image editing and get direct Vision LLM analysis. Thanks `@meghsat` for the download button on generated images so you can grab them right from chat.
 
 ### Additional Improvements
 
-- `@meghsat` restored CPU usage on the Monitor page for macOS and fixed the KV Cache gauge on all platforms.
-- `@fl0rianr` added a download button on generated images, a Copy button on user messages, and conversation-scoped image references so you can build multi-image chats and send images to vision models directly.
-- `@danielholanda` added description, author, publisher, license, and project URL to backend descriptors — you can see who made a backend and what it's licensed under right in the app, CLI, and API.
-- `@danielholanda` made the Backends catalog flow into a dynamic multi-column grid that fills your window.
-- `@MrAnayDongre` improved the CLI 401 error message and added a `--help` footer pointing to global options.
-- `@fl0rianr` added an optional `generation_info` field to the images API response.
-- `@DigitalFlow` added OpenSUSE package name alternatives so RPMs build cleanly on Tumbleweed.
-- A handful of smaller fixes from `@sreeram-11`, `@Bekhouche`, `@julianxhokaxhiu`, `@fl0rianr`, `@sawansri`, `@jeremyfowers`, and `@meghsat`.
+- `@meghsat` brought GGUF zero-shot prompt router models to llama.cpp, running the encoder on GPU with scoring in lemond.
+- `@fl0rianr` added per-GPU utilization and memory charts for 2–4 GPU systems, and `generation_info` to image API responses.
+- `@danielholanda` added description, author, publisher, license, and project URL to backend descriptors, and `@DigitalFlow` added openSUSE RPM alternatives.
+- `@meghsat` restored CPU usage display on macOS Monitor and fixed the KV Cache gauge.
+- `@MrAnayDongre` improved the CLI 401 error message and added a help footer pointing to `lemonade --help`.
 
-Grab v2026.47.0 from [GitHub Releases](https://github.com/lemonade-sdk/lemonade/releases) and let me know what you make with it!
+Check v2026.47.1 on GitHub Releases — happy to see what you build with the new multi-image chat!
