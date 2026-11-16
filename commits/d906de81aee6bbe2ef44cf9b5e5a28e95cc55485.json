@@ -1,0 +1,45 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.48",
+  "commit_sha": "d906de81aee6bbe2ef44cf9b5e5a28e95cc55485",
+  "committed_at": "2026-11-16T09:55:49+00:00",
+  "evidence": {
+    "api_compatibility": "This is a CI/infrastructure change only. No API, CLI, config, or user-facing surface is altered. No breaking changes.",
+    "documentation": "docs/dev/testing.md was updated with a new 'Small docs-only PRs' subsection that documents eligibility rules, protected paths, retained jobs, and full-CI labels. The change was acknowledged by both author and reviewer.",
+    "manual_release_testing": "The merge queue exercised every workflow with full CI. However, the docs-only fast path was never triggered in a real docs-only PR, and a matrix-name-expansion bug was identified that could cause the Build Embeddable Lemonade (Linux) check to hang on required-checks for docs-only PRs. The ci:label re-triggering was tested only in the cpp workflow; the other three workflows (docs_and_style, routing_schema_tests, server_download_registry) received labeled events in their on: triggers but the PR notes this was left as a known gap.",
+    "post_approval_commits": "The CHANGES_REQUESTED review flagged that each gated job's if condition needed !cancelled() to avoid GitHub's implicit success() check, and that classify-small-docs-pr should be added to the aggregate needs lists. @sreeram-11 confirmed in a resolved inline comment that these changes were applied (each gated job uses !cancelled() && needs.full-ci-gate.result == 'success', and all three aggregates list classify-small-docs-pr + full-ci-gate in their needs). The post-approval commits stayed within the scope of the reviewer's guidance.",
+    "review": "PR requested review from @jeremyfowers (CI area owner per docs/dev/contribute.md), but no formal review from them was found. @sreeram-11 submitted a CHANGES_REQUESTED review that identified three issues: (1) a blocker where the Build Embeddable Lemonade (Linux) matrix job could hang on a required check because GitHub does not expand matrix names when the job is skipped; (2) a minor that docs/dev/testing.md line 140 would be false for docs-only PRs; (3) that full-ci-gate should be added to the needs of the three aggregate gates (packaging-gate, backends-gate, macos-gate). The CHANGES_REQUESTED review was later superseded — @sreeram-11 resolved their own comment on the aggregate needs issue and submitted an APPROVED review. The code uses a fail-closed classifier that defaults to full CI on API errors, merge queue events, and non-PR events.",
+    "security": "The new composite action uses actions/github-script@v8 with a GitHub token to list PR files. It reads no secrets, makes no network calls outside the GitHub API, and has no code execution. Supply-chain risk is limited to github-script@v8, which is the version already used elsewhere. No security concerns.",
+    "tests": "CI passed on the merge queue for all four workflows (cpp_server_build_test_release, docs_and_style, routing_schema_tests, server_download_registry) plus validate_llamacpp and validate_sdcpp. No unit or integration tests accompany the new composite action or workflow changes. The PR author acknowledged: 'The docs-only fast path itself has not yet been exercised by a live docs-only PR.'"
+  },
+  "fixes_prs": [],
+  "generation_seconds": 329.7,
+  "maintainer_todos": [
+    {
+      "text": "In a fork or personal branch with the same required checks, open a one-line docs-only PR and confirm that the Build Embeddable Lemonade (Linux) check completes instead of hanging at 'Expected — Waiting for status' on the raw matrix job name."
+    },
+    {
+      "text": "Open a docs-only PR and apply each of the ci:distros, ci:backends, ci:macos, and ci:upgrades labels one at a time, confirming that every affected workflow (cpp_server_build_test_release, docs_and_style, routing_schema_tests, server_download_registry) re-runs with full CI."
+    }
+  ],
+  "merge_date": "2026-11-16T10:30:57Z",
+  "pr_number": 2889,
+  "range_start": "v2026.46.2",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-16T10:38:14+00:00",
+  "reviewers": [
+    "@sreeram-11"
+  ],
+  "sha": "d906de81aee6bbe2ef44cf9b5e5a28e95cc55485",
+  "shout_outs": [
+    {
+      "handle": "@sreeram-11",
+      "reason": "Co-authored this PR and provided substantive review: identified a required-check hang risk on a matrix job and an aggregate needs-gap, both of which were resolved before merge."
+    }
+  ],
+  "subject": "ci: skip expensive jobs for small docs-only PRs (#2889)",
+  "summary": "Adds a classify-small-docs-pr composite action that gates four CI workflows behind a docs-only classifier, skipping expensive server, packaging, runtime and drift jobs for PRs touching only 1-5 Markdown files under docs/.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The CI gating logic is fundamentally sound and the merge queue passed cleanly, but a known matrix-name-expansion edge case on the Linux embeddable build was reported by the reviewer but not resolved before merge."
+}
