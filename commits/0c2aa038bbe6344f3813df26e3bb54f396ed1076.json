@@ -1,0 +1,46 @@
+{
+  "author": "@bitgamma",
+  "branch": "main",
+  "bucket": "v2026.48",
+  "commit_sha": "0c2aa038bbe6344f3813df26e3bb54f396ed1076",
+  "committed_at": "2026-11-16T18:59:24+00:00",
+  "evidence": {
+    "api_compatibility": "The TheNoise shared library version was bumped from 0.12.1 to 0.15.0 (both ROCm and CUDA tags). A major version jump can introduce behavioral changes in inference, sampler handling, or memory layout. Existing models may behave differently or fail under the new backend. This is a potential breaking change — users upgrading will silently get the new backend unless they pin versions. The three new model entries in server_models.json are additive and not breaking.",
+    "documentation": "No documentation files were changed. The model entries in server_models.json are self-describing JSON with labels, recipe, and recipe_options. The backend version bump is implicit. Users upgrading may not be aware of the TheNoise version change or that it can affect existing models.",
+    "manual_release_testing": "Three user-facing models and one upgraded backend binary were shipped with no evidence of human exercise. CI download registry checks verify artifact availability but do not run inference. Manual testing of each new model (MOSS-Image-SFT-8-Steps, MOSS-Image-Base-8-Steps, H3-Image-INT8) and a regression check on existing TheNoise models against the upgraded 0.15.0 backend is recommended before release.",
+    "post_approval_commits": "None. All three commits ('bump thenoise version', 'add h3-image', 'use euler, suggest models') precede the first and only approval. The branch was stable between the last commit and merge.",
+    "review": "PR #4187 received one human approval from @fl0rianr ('LGTM') submitted at 2026-11-16T18:29:25Z, after all three commits were pushed (latest at 2026-11-16T18:18:56Z). Per docs/dev/contribute.md, @bitgamma owns thenoise, cli, recipes, new backends, benchmarking, and new models; @fl0rianr covers LMX omni models, GUI, CI, and smart router — not thenoise. The approver lacks the listed subject-matter expertise for the thenoise version bump. CodeRabbit flagged that the MOSS-Image models needed sampler=euler set explicitly in recipe_options; the author addressed this in the final commit (fbfb715, 'use euler, suggest models'). No substantive post-approval commits were added. The review was timely (approved ~10 minutes after the final commit) but lacked SME coverage.",
+    "security": "The shared library binary is updated from an external publisher (thenoise-ai). The download registry CI validates artifact availability. No credential handling, network calls, or code execution paths beyond the standard inference pipeline were introduced. The new models are pulled from HuggingFace (thenoise-ai, Comfy-Org) — standard supply-chain risk. No acute security concern.",
+    "tests": "No unit or integration tests accompany the JSON-only changes. CI passed on all relevant workflows: C++ Server Build/Test/Release, Server Download Registry Tests, Validate New vLLM Release, Validate New stable-diffusion.cpp Release. The download registry check validates that model artifacts can be fetched, which provides partial coverage, but no end-to-end image generation was exercised by CI."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 149.4,
+  "maintainer_todos": [
+    {
+      "text": "Run lemonade pull MOSS-Image-SFT-8-Steps and generate an image with the default sampler (euler) to confirm the model loads and produces output."
+    },
+    {
+      "text": "Run lemonade pull MOSS-Image-Base-8-Steps and generate an image with the default sampler (euler) to confirm the model loads and produces output."
+    },
+    {
+      "text": "Run lemonade pull H3-Image-INT8 and generate an image at 2048×2048 (or edit an image) to confirm the model loads and produces output."
+    },
+    {
+      "text": "Start the server with the new TheNoise 0.15.0 backend and generate an image using an existing model (e.g. Z-Image-Turbo-TheNoise) to confirm the upgraded backend does not break older models."
+    }
+  ],
+  "merge_date": "2026-11-16T19:52:38Z",
+  "pr_number": 4187,
+  "range_start": "v2026.46.2",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-16T19:58:04+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "0c2aa038bbe6344f3813df26e3bb54f396ed1076",
+  "shout_outs": [],
+  "subject": "Bump TheNoise to v0.15.0, add MOSS-Image and H3-Image (#4187)",
+  "summary": "Bump TheNoise shared backend from v0.12.1 to v0.15.0 and add three image-generation models — MOSS-Image-SFT-8-Steps, MOSS-Image-Base-8-Steps, and H3-Image-INT8 — to server_models.json with 8-step euler defaults.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The reviewer @fl0rianr has no thenoise subject-matter expertise listed in docs/dev/contribute.md, and the TheNoise version bump from 0.12.1 to 0.15.0 introduces a new shared binary that must be manually verified alongside the three new models."
+}
