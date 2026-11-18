@@ -1,0 +1,33 @@
+{
+  "author": "@sawansri",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "0105829f9437d6544dbdbeb6fc0f20461a598161",
+  "committed_at": "2026-11-18T19:39:20+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The `lora` checkpoint role is new and optional — models without a lora checkpoint are unaffected. The `--lora` flag is not added to reserved flags, so `llamacpp_args` can still stack more adapters. The /pull API accepts the new role but a lemond without this change will download the adapter and ignore it (documented as a known limit).",
+    "documentation": "Updated. docs/api/lemonade.md adds `lora` to the checkpoints table alongside the other roles. docs/guide/configuration/custom-models.md adds a row for the lora role. The /pull route description in src/cpp/server/routes/lemonade/models/pull.cpp was also updated. All three locations consistently name `lora` for a llama.cpp GGUF LoRA adapter.",
+    "manual_release_testing": "None — the author's real-hardware validation on a Strix Halo with a real base+adapter pair provides strong evidence the primary path works before shipping.",
+    "post_approval_commits": "No post-approval commits. The single commit (084ebdac) was approved before it was pushed to the merge queue and merged as 0105829f. The review timeline: COMMENTED at 19:09:17, APPROVED at 19:37:37, merged at 20:32:50.",
+    "review": "PR #4204 was reviewed by @fl0rianr (approved 2026-11-18T19:37:37Z). @fl0rianr is an expert in Lemonade Mix omni models, GUI, CI, and smart router — not in llamacpp or new backends. The llamacpp subject-matter experts per contribute.md are @superm1 and @pwilkin, neither of whom reviewed this PR. The initial review state was COMMENTED with a note to wait until main functionality had been validated; the author's real-hardware validation (see below) preceded the APPROVED state. No inline review comments were filed. The PR was merged without an llamacpp subject-matter expert review.",
+    "security": "No security concerns. The change passes a file path to an existing command (llama-server) via the same mechanism used for mmproj and draft checkpoints. No new network calls, credential handling, code execution paths, or permission broadening.",
+    "tests": "New test test_009_lora_checkpoint_is_passed_to_llama_server in test/test_llamacpp_system_backend.py validates the new path end-to-end using the system backend mock. It reuses the cached main GGUF as the lora checkpoint (a reasonable shortcut since the mock never reads the adapter file). The test fails without the C++ change and passes with it. The full llamacpp test suite passed. The author also ran end-to-end on a Strix Halo (gfx1151) with a real base model (unsloth/Qwen3.8-27B-GGUF:Qwen3.8-27B-UD-Q4_K_XL.gguf) and a separate LoRA adapter (harness-hub/Qwen3.8-27B-pi-adapted-GGUF:Qwen3.8-27B-pi-lora-F16.gguf), confirming llama-adapters applied correctly on the vulkan native backend. The author noted testing on nathanw/halobox containers and on rocmfpx/gufo/llamacpp-hrx was not done — the PR description flags these as known limits (they download the checkpoint but don't apply it, same as any other role they don't read)."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 141.3,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-18T20:32:50Z",
+  "pr_number": 4204,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-18T20:36:59+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "0105829f9437d6544dbdbeb6fc0f20461a598161",
+  "shout_outs": [],
+  "subject": "feat(llamacpp): load a lora checkpoint as a GGUF LoRA adapter (#4204)",
+  "summary": "Adds a `lora` checkpoint role to the llamacpp backend so a model can list a GGUF LoRA adapter alongside `main`; lemond downloads it and passes it to llama-server as `--lora <path>`.",
+  "verdict": "Clean",
+  "verdict_reason": "Focused, well-scoped addition with adequate testing, passing CI, no post-approval changes, and no breaking or security concerns."
+}
