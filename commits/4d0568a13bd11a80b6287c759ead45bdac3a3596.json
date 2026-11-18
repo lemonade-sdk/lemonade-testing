@@ -1,0 +1,39 @@
+{
+  "author": "@apollo-2006",
+  "branch": "main",
+  "bucket": "v2026.48",
+  "commit_sha": "4d0568a13bd11a80b6287c759ead45bdac3a3596",
+  "committed_at": "2026-11-18T11:10:26+00:00",
+  "evidence": {
+    "api_compatibility": "The HTTP status code for 'repo has no supported files' and 'invalid manifest' cases changes from 500 to 400. This is a behavior change for clients that matched on 500, but 500 was incorrect (these are client errors, not server errors). The API docs in docs/api/lemonade.md were updated to reflect the new 400 rows and to remove those cases from the 500 description. This is a bug fix rather than a breaking change in the traditional sense, but existing clients that specifically caught 500 would need to handle 400 instead.",
+    "documentation": "docs/api/lemonade.md updated: 400 row now covers 'repository has no GGUF, ONNX RyzenAI or collection files, its collection manifest is invalid or too large'; 500 row no longer lists those cases. The error message strings in src/cpp/server/routes/lemonade/models/pull_variants.cpp were updated to match.",
+    "manual_release_testing": "The integration test is guarded by LEMONADE_INTEGRATION_TESTS=1 and is skipped by default. There is no evidence that a human exercised the /pull/variants endpoint with a repository lacking supported files before merge. The change is user-visible (different HTTP status code on a real endpoint), so manual verification is needed before release.",
+    "post_approval_commits": "No commits were added after @fl0rianr's approval. The four commits (initial fix, oversized manifest fix, non-string recipe fix, log-level cleanup) were all approved as a unit.",
+    "review": "PR #3673 received one substantive approval from @fl0rianr (LGTM) at 2026-11-18T11:10:18Z, right before merge. Per contribute.md, @fl0rianr's subject areas are LMX omni models, GUI, CI, and smart router — tangentially related via the omni collection manifest logic, but not deep expertise in the server error-handling path. No other human reviewer engaged. CodeRabbit bot raised one inline comment asking to add explicit \"source\": \"huggingface\" to the new integration test to avoid depending on default_model_source; the author addressed it. The change is small and self-contained, and the single review was adequate for the scope.",
+    "security": "No security concerns. The change replaces std::runtime_error with std::invalid_argument for invalid inputs, which is the correct C++ exception type for argument validation. No credential handling, network calls, or obfuscation changes.",
+    "tests": "C++ unit tests added in test/cpp/test_hf_variants.cpp covering is_omni_collection_manifest: valid manifest accepted, non-string recipe rejected without throwing, non-collection recipe rejected, empty components rejected, empty object rejected, non-object rejected. Integration test added in test/server_endpoints.py (test_033_pull_variants_rejects_repo_without_supported_files) using Qwen/Qwen1.5-0.5B-Chat on Hugging Face, asserting 400 and the expected error message. All CI checks passed (Lemonade App checks, Server Download Registry Tests, C++ Server Build/Test/Release). No existing tests weakened or deleted."
+  },
+  "fixes_prs": [
+    3605
+  ],
+  "generation_seconds": 158.4,
+  "maintainer_todos": [
+    {
+      "text": "Start lemond and request GET /pull/variants?checkpoint=Qwen/Qwen1.5-0.5B-Chat&source=huggingface and confirm the response is 400 with an error mentioning \"No supported model files found\" rather than 500."
+    }
+  ],
+  "merge_date": "2026-11-18T11:59:45Z",
+  "pr_number": 3673,
+  "range_start": "v2026.46.2",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-18T12:04:16+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "4d0568a13bd11a80b6287c759ead45bdac3a3596",
+  "shout_outs": [],
+  "subject": "server: return 400 for repos with no supported model files (#3673)",
+  "summary": "Changes the /pull/variants endpoint to return HTTP 400 (client error) instead of 500 (server error) when a Hugging Face or ModelScope repository contains no supported model files (no GGUF, ONNX, or collection manifest) or has an invalid or oversized collection manifest, and updates the API docs accordingly.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The API behavior change is user-visible and the integration test that covers the end-to-end path is skipped by default, so no human has manually exercised the new 400 response before release."
+}
