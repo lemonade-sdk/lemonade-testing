@@ -1,0 +1,38 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "917a80399c4fa6c4c8d4fd962c43eb5d1d938e52",
+  "committed_at": "2026-11-18T22:32:58+00:00",
+  "evidence": {
+    "api_compatibility": "This commit changes CI workflow definitions only. It does not modify any CLI, API, config, schema, persistence format, or documented contract that an existing setup depends on. No breaking changes.",
+    "documentation": "The PR description documents every behavioral change (visible failures, verified documentation, existing bot PR handling, conflict-safe replay, draft/manual-hold protection, recovery). No other documentation files were changed. The change is self-documenting in the PR body; no separate release notes update is needed since no user-visible product behavior changes.",
+    "manual_release_testing": "This commit changes only GitHub Actions workflow logic (.github/workflows/validate_sdcpp.yml). There are no user-facing surfaces — no API endpoint, CLI flag, config option, GUI change, or newly supported model. The scheduled workflow itself is the only surface a user could encounter, and it requires a cron trigger or manual dispatch, neither of which a tester would exercise during a release candidate check.",
+    "post_approval_commits": "Two commits were added after the first and only approval (2026-11-18T17:57:24Z): (1) 9e652c4 (fl0rianr, 'fix(ci): missing index') at 19:42:14Z, which differentiates 'file missing from index' from ordinary 3-way conflicts in the docs replay fallback; (2) 4713447 (sreeram-11, 'fix: address CodeRabbit comment') at 21:58:27Z, which refactors the entire missing-index recovery into an exclude-list + three-way replay pattern to avoid silently overwriting cleanly mergeable branch edits. Both address CodeRabbit findings; neither adds new behavior, changes the API/GUI/CLI surface, or materially alters the risk profile of the approved PR. The PR body was not updated to reflect these changes.",
+    "review": "PR #3975 received one substantive approval from @sreeram-11 at 2026-11-18T17:57:24Z. @sreeram-11 has subject area expertise in stable diffusion (per docs/dev/contribute.md). CodeRabbit raised multiple findings across iterations (data integrity, functional correctness, stability, API docs verification, conflict-safe replay); @fl0rianr addressed all of them and @sreeram-11 confirmed at least one. The PR description is thorough, listing each behavioral change with its rationale.",
+    "security": "The workflow uses GITHUB_TOKEN for git push and PR creation, downloads artifacts from the same repo, and fetches from origin — all standard GitHub Actions patterns. It runs community scripts (gen_api_boilerplate.py, update_sdcpp_versions.py) from the repo tree. The concurrency key uses repository and release identifiers, not secrets. No supply-chain risk, credential exposure, or code-execution concern beyond normal CI operations.",
+    "tests": "The author tested patch application and Bash syntax locally. Offline tests used a fake `gh` and throwaway Git remote to exercise successful retry, foreign/fork PR protection, manual hold, denied draft conversion, and a closed PR's leftover branch. A deliberate docs merge conflict was verified. However, the normal PR CI passes but the scheduled/dispatch Create update PR path is skipped for ordinary PR pushes. End-to-end Actions testing is explicitly noted as pending."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 226.0,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-18T23:27:22Z",
+  "pr_number": 3975,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-18T23:33:01+00:00",
+  "reviewers": [
+    "@sreeram-11"
+  ],
+  "sha": "917a80399c4fa6c4c8d4fd962c43eb5d1d938e52",
+  "shout_outs": [
+    {
+      "handle": "@sreeram-11",
+      "reason": "Co-authored the final commit (4713447) that refactored the missing-index recovery flow into a conflict-safe three-way patch replay, substantially improving the resolution of generated API documentation conflicts on existing bot branches."
+    }
+  ],
+  "subject": "fix(ci): validate sd-cpp auto-updates and flag failed checks (#3975)",
+  "summary": "Reworks the sd-cpp auto-update workflow to run API documentation verification before staging docs in the update PR, serialize concurrent update PRs per release pair, add a three-way conflict-safe replay for generated API documentation, and surface any incomplete backend or GPU-offload validation as a [Validation failed] draft PR with a detailed warning body.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The PR adds substantial new logic to a scheduled workflow that auto-creates and manages bot PRs; two commits were pushed after approval (a missing-index fix and a conflict-safe replay refactor) and the end-to-end scheduled/dispatch path has not been tested."
+}
