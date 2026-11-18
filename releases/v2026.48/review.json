@@ -1,0 +1,675 @@
+{
+  "branch": "release-v2026.48",
+  "break_rulings": [
+    {
+      "breaks": [],
+      "id": "4a97ba2",
+      "why": "The change makes the KV Cache gauge show real usage on all platforms and adds CPU usage on macOS; these are fixes, not breaks."
+    },
+    {
+      "breaks": [],
+      "id": "835eb91",
+      "why": "Generated image filenames now include call.id for uniqueness, but this is an additive change that does not break any documented contract."
+    },
+    {
+      "breaks": [],
+      "id": "d4f53e7",
+      "why": "llamacpp:cuda now reports unsupported when the NVIDIA driver is missing or too old; this catches a previously silent failure and improves user experience by falling through to Vulkan."
+    },
+    {
+      "breaks": [],
+      "id": "b0e01c7",
+      "why": "The /system-info API gains five new optional backend metadata fields; existing consumers simply see additional data and are not broken."
+    },
+    {
+      "breaks": [],
+      "id": "d053087",
+      "why": "The Monitor panel gains optional new fields for multi-GPU data; this is additive to the existing schema and does not break consumers."
+    },
+    {
+      "breaks": [],
+      "id": "d58fd33",
+      "why": "Image IDs and direct analysis are new features with additive fields that are never persisted; existing conversations are unaffected."
+    },
+    {
+      "breaks": [
+        "Requests that previously succeeded without authentication on API and metrics routes now return 401 when LEMONADE_API_KEY is set and LEMONADE_ADMIN_API_KEY is explicitly empty."
+      ],
+      "id": "5440e3e",
+      "why": "This tightens authentication on a misconfiguration that previously allowed empty-key bypass; only setups with a non-empty API key and an explicitly empty admin key are affected."
+    },
+    {
+      "breaks": [],
+      "id": "95ca4fb",
+      "why": "This is a CI workflow change only; no user-facing API, CLI, config, or artifact is altered."
+    },
+    {
+      "breaks": [],
+      "id": "27f3f67",
+      "why": "The /api/chat and /api/generate endpoints now return 400 instead of 500 for non-LLM models; 500 was incorrect for client errors, so this fixes the status code rather than breaking working setups."
+    },
+    {
+      "breaks": [],
+      "id": "c3e0754",
+      "why": "Alias resolution on /api/show is a bug fix returning 200 instead of 404; /api/pull and /api/delete now correctly refuse aliases named :latest instead of silently acting on the target."
+    },
+    {
+      "breaks": [
+        "Upgrading the TheNoise shared backend from v0.12.1 to v0.15.0 may change inference behavior, sampler handling, or memory layout for existing models shipped with the release."
+      ],
+      "id": "0c2aa03",
+      "why": "A major version jump in the shared backend binary can alter behavior for models that were working under the previous version, and users will silently receive the new binary on upgrade."
+    },
+    {
+      "breaks": [],
+      "id": "4d0568a",
+      "why": "The /pull/variants endpoint now returns 400 instead of 500 for unsupported repositories; 500 was the wrong code for a client error, so this corrects the status rather than breaking working setups."
+    }
+  ],
+  "breaking_changes": [
+    "Requests that previously succeeded without authentication on API and metrics routes now return 401 when LEMONADE_API_KEY is set and LEMONADE_ADMIN_API_KEY is explicitly empty.",
+    "Upgrading the TheNoise shared backend from v0.12.1 to v0.15.0 may change inference behavior, sampler handling, or memory layout for existing models shipped with the release."
+  ],
+  "bucket": "v2026.48",
+  "candidate_issues": [],
+  "checklist": [
+    {
+      "author": "@jeremyfowers",
+      "commit": "d4f53e7dd39336dbd81151f2964cde5ad750d6f7",
+      "platforms": [
+        "Windows",
+        "Ubuntu PPA",
+        "Snap",
+        "Docker",
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 4066,
+      "priority": "P0",
+      "text": "Run lemond on a system with an NVIDIA GPU and either no driver or an old driver (e.g. 516.94 on Windows, 515.105.01 on Linux), open the web UI or query the device info endpoint, and confirm that llamacpp:cuda reports 'unsupported' or 'action_required' with the correct message and that auto backend selection falls through to Vulkan."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "5440e3e9c7bd10006a126f70cfbc155961f9a2ac",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4122,
+      "priority": "P0",
+      "text": "Start the server with LEMONADE_API_KEY set to a non-empty value and LEMONADE_ADMIN_API_KEY explicitly empty, then send a GET request to /api/v1/health without an Authorization header and confirm it returns HTTP 401."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "5440e3e9c7bd10006a126f70cfbc155961f9a2ac",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4122,
+      "priority": "P0",
+      "text": "With the same configuration, send a GET request to /internal/routes with Authorization: Bearer wrong-key and confirm it returns HTTP 401."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "5440e3e9c7bd10006a126f70cfbc155961f9a2ac",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4122,
+      "priority": "P0",
+      "text": "With the same configuration, send a GET request to /api/v1/health with Authorization: Bearer matching the LEMONADE_API_KEY value and confirm it returns HTTP 200."
+    },
+    {
+      "author": "@meghsat",
+      "commit": "13ed8c91bff5e5cc1931a41f86e871e5162f3006",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4096,
+      "priority": "P0",
+      "text": "Start the server with a GGUF zero-shot router and set ctx_size to 0 (or omit it); send a classify request and confirm the model loads and responds instead of failing with 'n_batch and n_ubatch cannot both be zero'."
+    },
+    {
+      "author": "@bitgamma",
+      "commit": "0c2aa038bbe6344f3813df26e3bb54f396ed1076",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4187,
+      "priority": "P0",
+      "text": "Start the server with the new TheNoise 0.15.0 backend and generate an image using an existing model (e.g. Z-Image-Turbo-TheNoise) to confirm the upgraded backend does not break older models."
+    },
+    {
+      "author": "@superm1",
+      "commit": "fe43f6f664dabe1e0e4800d970e9673573ac3be3",
+      "platforms": [
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 4057,
+      "priority": "P1",
+      "text": "On a system with a gfx1170 or gfx1171 GPU, run lemond and confirm a model loads and serves inference through the ROCm backend."
+    },
+    {
+      "author": "@superm1",
+      "commit": "fe43f6f664dabe1e0e4800d970e9673573ac3be3",
+      "platforms": [
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 4057,
+      "priority": "P1",
+      "text": "On the same system, confirm the runtime install for the ROCm backend does not throw (gfx117X-all TheRock assets for version 10.1.0 are still absent and the author acknowledged this is expected to be fixed at 10.3)."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "835eb9145fdebe36658e9dbe184a6be99affd5ac",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4062,
+      "priority": "P1",
+      "text": "Open the Chat view, generate an image (e.g. via image-generation tool), and click the download button on the generated image to confirm the file downloads with the correct format extension and the expected filename stem."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "835eb9145fdebe36658e9dbe184a6be99affd5ac",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4062,
+      "priority": "P1",
+      "text": "Send a text message in Chat, click the new Copy button on the user message, and confirm the clipboard receives the exact message text."
+    },
+    {
+      "author": "@danielholanda",
+      "commit": "b0e01c7bf411c7fb15b3a55fcd7be78e0c5a9dc6",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4059,
+      "priority": "P1",
+      "text": "Run `lemonade backends info llamacpp:rocm` on a system with ROCm and confirm the output shows Author ggml-org, Publisher lemonade-sdk, and License MIT."
+    },
+    {
+      "author": "@danielholanda",
+      "commit": "b0e01c7bf411c7fb15b3a55fcd7be78e0c5a9dc6",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4059,
+      "priority": "P1",
+      "text": "Open the app on a Linux system with ROCm, navigate to the Backends tab, and confirm the llamacpp:rocm card displays a \"Container\" format badge, the author \"ggml-org\" next to the version, and \"License: MIT\"."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "d05308710c1f38e4ecbfd529e8ba44375acc2730",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4025,
+      "priority": "P1",
+      "text": "Open the Monitor view with a machine that has two or more GPUs, select a GPU other than GPU 0 on the GPU card, and confirm the history chart switches to show that GPU's utilization."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "d58fd331ea0e4c61e54bc04c5d498ff01c390b5e",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4082,
+      "priority": "P1",
+      "text": "In the GUI with a vision-capable chat model, upload an image, then invoke analyze_image (e.g., via the MCP tool) and confirm the model sees the image directly rather than returning a degraded text description."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "d58fd331ea0e4c61e54bc04c5d498ff01c390b5e",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4082,
+      "priority": "P1",
+      "text": "Generate an image, then edit it by selecting the generated image as a reference and confirm the edited version appears and the original is preserved."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "d58fd331ea0e4c61e54bc04c5d498ff01c390b5e",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4082,
+      "priority": "P1",
+      "text": "Start a new conversation, generate multiple images (at least three), then open the image-edit mode and verify all generated images are available for selection as edit references."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "d58fd331ea0e4c61e54bc04c5d498ff01c390b5e",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4082,
+      "priority": "P1",
+      "text": "Send an image in a text-only model chat and confirm the UI blocks the image from reaching the backend with an appropriate error rather than crashing or sending corrupted data."
+    },
+    {
+      "author": "@pwilkin",
+      "commit": "322675ac6d4f65f352b5de7649ab2b3736e90700",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4108,
+      "priority": "P1",
+      "text": "Register a multi-shard GGUF model whose shard filenames lack zero-padding (e.g., model-1-of-10.gguf, model-10-of-10.gguf), call the /files endpoint, and confirm that shard 1 appears before shard 10 in the response."
+    },
+    {
+      "author": "@meghsat",
+      "commit": "13ed8c91bff5e5cc1931a41f86e871e5162f3006",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4096,
+      "priority": "P1",
+      "text": "Start the server with a GGUF zero-shot router model (classification + zero-shot labels) and send a POST to /v1/classify with a few labels and a short input string; confirm the response carries label scores and truncated: false."
+    },
+    {
+      "author": "@sreeram-11",
+      "commit": "27f3f6759b95756687dbf62ecb6d2d7e813be3ed",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4155,
+      "priority": "P1",
+      "text": "Run /api/chat with an image generation model (e.g. SD-Turbo) and confirm the response is 400 with \"does not support chat\" and nothing is loaded."
+    },
+    {
+      "author": "@sreeram-11",
+      "commit": "27f3f6759b95756687dbf62ecb6d2d7e813be3ed",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4155,
+      "priority": "P1",
+      "text": "Run /api/chat and /api/generate with a classification model (e.g. Laya-GGUF) and confirm both return 400 before loading."
+    },
+    {
+      "author": "@sreeram-11",
+      "commit": "27f3f6759b95756687dbf62ecb6d2d7e813be3ed",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4155,
+      "priority": "P1",
+      "text": "Run the official ollama CLI command `ollama show <image model>` against the server and confirm it refuses with \"image generation models are not currently supported\"."
+    },
+    {
+      "author": "@sreeram-11",
+      "commit": "a4914c1dd3b288432b2355e2e90540c9a807f819",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4160,
+      "priority": "P1",
+      "text": "Run 'ollama run kokoro-v1 \"Hello world\"' and confirm it produces speech audio in WAV format."
+    },
+    {
+      "author": "@sreeram-11",
+      "commit": "a4914c1dd3b288432b2355e2e90540c9a807f819",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4160,
+      "priority": "P1",
+      "text": "Run 'ollama run Laya-GGUF --ask \"Is a refund being requested?\"' and confirm it responds with a decision (yes/no) with a confidence percentage."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "2608f07fe545925a1fdb0386aba66ecfdff6a812",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4138,
+      "priority": "P1",
+      "text": "Open the custom model editor, select TheNoise as the recipe, enter a text encoder and VAE checkpoint path, and confirm the model registers and the companion checkpoint fields are marked required."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "2608f07fe545925a1fdb0386aba66ecfdff6a812",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4138,
+      "priority": "P1",
+      "text": "Open the custom model editor, select SD.cpp as the recipe, leave the text encoder and VAE fields empty, and confirm the model registers without error (SD.cpp companion checkpoints must remain optional)."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "2608f07fe545925a1fdb0386aba66ecfdff6a812",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4138,
+      "priority": "P1",
+      "text": "In the custom model form for TheNoise or SD.cpp, open the Model purpose dropdown, select Standalone upscaling, and confirm the text encoder and VAE fields disappear (standalone upscalers require no companion checkpoints)."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "2608f07fe545925a1fdb0386aba66ecfdff6a812",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4138,
+      "priority": "P1",
+      "text": "In the custom model form for TheNoise or SD.cpp, set labels to include edit or image-edit, confirm the Model purpose selector shows Image editing, and verify the registration includes both image and edit labels."
+    },
+    {
+      "author": "@sreeram-11",
+      "commit": "2ddcca793b49c04fca558023df401b20b21aa27d",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4163,
+      "priority": "P1",
+      "text": "Start the server with a llama.cpp model that has the `chat-transcription` label (e.g., Qwen2.5-Omni-3B), send a POST to /api/generate with a WAV file base64-encoded in the `images` field, and confirm the streamed response contains the transcribed text rather than a guess."
+    },
+    {
+      "author": "@sreeram-11",
+      "commit": "2ddcca793b49c04fca558023df401b20b21aa27d",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4163,
+      "priority": "P1",
+      "text": "Send a POST to /api/generate with an image in `images` on a vision model (streaming and non-streaming) and confirm the model's response references the image content."
+    },
+    {
+      "author": "@sreeram-11",
+      "commit": "c3e075405b0a64e7ac113437cd466720f0fe1d8c",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4158,
+      "priority": "P1",
+      "text": "Start the server with a model and register an alias to it via POST /internal/aliases, then POST /api/show with the alias name and confirm the response matches the target model's show output."
+    },
+    {
+      "author": "@sreeram-11",
+      "commit": "c3e075405b0a64e7ac113437cd466720f0fe1d8c",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4158,
+      "priority": "P1",
+      "text": "Run `ollama run <alias>` with the Ollama CLI and confirm the alias resolves to the target model and starts a chat, instead of returning 404."
+    },
+    {
+      "author": "@sreeram-11",
+      "commit": "c3e075405b0a64e7ac113437cd466720f0fe1d8c",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4158,
+      "priority": "P1",
+      "text": "Create an alias named '<some-model>:latest' pointing to a different model, then POST /api/pull and DELETE /api/delete with that alias and confirm both return 404 without touching the target model's files."
+    },
+    {
+      "author": "@sreeram-11",
+      "commit": "c3e075405b0a64e7ac113437cd466720f0fe1d8c",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4158,
+      "priority": "P1",
+      "text": "Register a model with the literal name '<model>:latest', then DELETE /api/delete with that name and confirm the ':latest' model is removed while the base model '<model>' remains."
+    },
+    {
+      "author": "@meghsat",
+      "commit": "57773fe15971a244ebc735ba234c96bbc472220c",
+      "platforms": [
+        "Windows"
+      ],
+      "pr_number": 4182,
+      "priority": "P1",
+      "text": "Start the server on a Windows machine with an AMD iGPU, request GET /api/v1/system-info, and confirm the amd_gpu field now reports non-zero vram_gb and virtual_mem_gb values from DXGI rather than zeros from WMI."
+    },
+    {
+      "author": "@meghsat",
+      "commit": "57773fe15971a244ebc735ba234c96bbc472220c",
+      "platforms": [
+        "Windows"
+      ],
+      "pr_number": 4182,
+      "priority": "P1",
+      "text": "Start the server with log_level=debug on a Windows AMD iGPU system, request GET /api/v1/models/<model>/options, and confirm resolved_ctx_size reflects the actual available memory instead of the 4096 default."
+    },
+    {
+      "author": "@meghsat",
+      "commit": "57773fe15971a244ebc735ba234c96bbc472220c",
+      "platforms": [
+        "Windows"
+      ],
+      "pr_number": 4182,
+      "priority": "P1",
+      "text": "Start the server on a Windows AMD iGPU system, POST to load an NPU model (e.g. lfm2-1.2b-FLM), and confirm the server no longer falls back to a 4k context due to a zero RAM estimate from the iGPU."
+    },
+    {
+      "author": "@bitgamma",
+      "commit": "0c2aa038bbe6344f3813df26e3bb54f396ed1076",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4187,
+      "priority": "P1",
+      "text": "Run lemonade pull MOSS-Image-SFT-8-Steps and generate an image with the default sampler (euler) to confirm the model loads and produces output."
+    },
+    {
+      "author": "@bitgamma",
+      "commit": "0c2aa038bbe6344f3813df26e3bb54f396ed1076",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4187,
+      "priority": "P1",
+      "text": "Run lemonade pull MOSS-Image-Base-8-Steps and generate an image with the default sampler (euler) to confirm the model loads and produces output."
+    },
+    {
+      "author": "@bitgamma",
+      "commit": "0c2aa038bbe6344f3813df26e3bb54f396ed1076",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4187,
+      "priority": "P1",
+      "text": "Run lemonade pull H3-Image-INT8 and generate an image at 2048×2048 (or edit an image) to confirm the model loads and produces output."
+    },
+    {
+      "author": "@apollo-2006",
+      "commit": "4d0568a13bd11a80b6287c759ead45bdac3a3596",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3673,
+      "priority": "P1",
+      "text": "Start lemond and request GET /pull/variants?checkpoint=Qwen/Qwen1.5-0.5B-Chat&source=huggingface and confirm the response is 400 with an error mentioning \"No supported model files found\" rather than 500."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "41558581aa3d31a7b7f2d36fbb5b55f32db9a12e",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4047,
+      "priority": "P2",
+      "text": "Send a POST /v1/load request with a known upscaler model name and verify the response is a 400 error instead of proceeding with the load."
+    },
+    {
+      "author": "@meghsat",
+      "commit": "4a97ba2b47da08f8b6f2d0df8dd45d15a21e1bf5",
+      "platforms": [
+        "macOS"
+      ],
+      "pr_number": 4069,
+      "priority": "P2",
+      "text": "Review the final metrics_macos.cpp code to confirm the mutex now protects the Mach host_statistics call (not just the delta calculation) and that holding the lock through the Mach API call is acceptable for the polling frequency used by the Monitor UI."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "54c0e9ff6ede0ac6716a11646dac4ef22138658d",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4075,
+      "priority": "P2",
+      "text": "Open the Lemonade website news page and confirm the November 5, 2026 Phoronix entry for the 2026.45.3 release appears at the top of the list with the correct title, date, link, and Phoronix logo image."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "7aab772545477c41ad8ca2e52a4f699b69dd2ca1",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4072,
+      "priority": "P2",
+      "text": "Open the Lemonade app, navigate to the Backends tab, and confirm Halogen, Gufo, DwarfStar4, and TheNoise each show their logo image with the engine name beside it, and that the layout looks correct (icons are 38px tall with tighter padding, names are visible)."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "d4f53e7dd39336dbd81151f2964cde5ad750d6f7",
+      "platforms": [
+        "Windows",
+        "Ubuntu PPA",
+        "Snap",
+        "Docker",
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 4066,
+      "priority": "P2",
+      "text": "Replace the PR body summary with a human-written sentence explaining what the PR changes, why the minimum driver versions were chosen, and how a user sees the result."
+    },
+    {
+      "author": "@danielholanda",
+      "commit": "b0e01c7bf411c7fb15b3a55fcd7be78e0c5a9dc6",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4059,
+      "priority": "P2",
+      "text": "Run `lemonade backends info llamacpp:no-such-backend` and confirm it exits non-zero with an error about an unknown backend."
+    },
+    {
+      "author": "@danielholanda",
+      "commit": "818833828b16302e6fbb3cc98c11e4f019a9903f",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4084,
+      "priority": "P2",
+      "text": "Open the Backends tab in the GUI and resize the window from narrow to wide; confirm cards reflow from one column to two or three columns and that each card keeps its natural height without clipping."
+    },
+    {
+      "author": "@danielholanda",
+      "commit": "818833828b16302e6fbb3cc98c11e4f019a9903f",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4084,
+      "priority": "P2",
+      "text": "Confirm the bottom padding under action buttons on backend cards is visible (buttons should not touch the card bottom border) on both single-backend and multi-backend cards."
+    },
+    {
+      "author": "@MrAnayDongre",
+      "commit": "0ca5189874c216da8478353b719fa55cd644f237",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4103,
+      "priority": "P2",
+      "text": "Start the server with LEMONADE_API_KEY set and run `lemonade status` without passing --api-key to confirm the error message names both --api-key and LEMONADE_API_KEY."
+    },
+    {
+      "author": "@meghsat",
+      "commit": "8560a810db0b6c4cdf92c0b88133e12213b12e8b",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4130,
+      "priority": "P2",
+      "text": "Open https://lemonade-server.ai/news/auto-opt-vision.html, https://lemonade-server.ai/news/muse-glimmer.html, and https://lemonade-server.ai/news/vllm-rocm.html in a browser and confirm the new GUI3 banner image loads and renders correctly in the page header and in social sharing previews."
+    },
+    {
+      "author": "@sreeram-11",
+      "commit": "27f3f6759b95756687dbf62ecb6d2d7e813be3ed",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4155,
+      "priority": "P2",
+      "text": "Run /api/show for an image generation model and confirm the capabilities array includes \"image\"."
+    },
+    {
+      "author": "@sreeram-11",
+      "commit": "a4914c1dd3b288432b2355e2e90540c9a807f819",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4160,
+      "priority": "P2",
+      "text": "Post the approved version of the commit, then run the same two commands again to confirm the post-approval test commit (asserting Bert-Phishing-ONNX reports no capabilities) did not change behavior."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "2608f07fe545925a1fdb0386aba66ecfdff6a812",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4138,
+      "priority": "P2",
+      "text": "Call the system info endpoint and confirm the recipes response includes the new supported_modes array field."
+    },
+    {
+      "author": "@sreeram-11",
+      "commit": "2ddcca793b49c04fca558023df401b20b21aa27d",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4163,
+      "priority": "P2",
+      "text": "Send a POST to /api/show for a chat-transcription model and confirm the `capabilities` array includes `audio` alongside the existing entries."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "d906de81aee6bbe2ef44cf9b5e5a28e95cc55485",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 2889,
+      "priority": "P2",
+      "text": "In a fork or personal branch with the same required checks, open a one-line docs-only PR and confirm that the Build Embeddable Lemonade (Linux) check completes instead of hanging at 'Expected — Waiting for status' on the raw matrix job name."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "d906de81aee6bbe2ef44cf9b5e5a28e95cc55485",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 2889,
+      "priority": "P2",
+      "text": "Open a docs-only PR and apply each of the ci:distros, ci:backends, ci:macos, and ci:upgrades labels one at a time, confirming that every affected workflow (cpp_server_build_test_release, docs_and_style, routing_schema_tests, server_download_registry) re-runs with full CI."
+    }
+  ],
+  "commits_reviewed": 48,
+  "commits_unreviewed": 0,
+  "evidence": {
+    "blockers": "The empty LEMONADE_ADMIN_API_KEY authentication bypass (5440e3e) was merged without manual release testing and must be verified before shipping. The NVIDIA driver gating (d4f53e7) must be confirmed on real hardware to ensure CUDA users are not unexpectedly routed to Vulkan. The ctx_size=0 router crash (13ed8c9-2) is a known bug that ships unpatched. The TheNoise backend upgrade (0c2aa03-4) needs regression testing against existing models.",
+    "breaking_changes": "The only breaking change this release ships is the TheNoise shared backend upgrade from v0.12.1 to v0.15.0, which may alter inference behavior for existing models. The authentication fix tightens behavior only for misconfigured installations with LEMONADE_API_KEY set and LEMONADE_ADMIN_API_KEY explicitly empty; working setups are unaffected.",
+    "coverage": "48 commits reviewed across the full range from v2026.46.2 to 4d0568a. All 48 CI workflows passed for their respective PRs. ROCm hardware paths (gfx1170/gfx1171) and the audio transcription path were tested locally only and not exercised by CI or a human on a release candidate build.",
+    "manual_testing": "GUI features need end-to-end exercise: multi-GPU monitor selection (d053087), image download/copy buttons (835eb91), image analysis/editing workflows (d58fd33), custom model registration for TheNoise and SD.cpp (2608f07), and multi-shard file listing (322675a). ROCm gfx117x hardware paths need real GPU verification (fe43f6f). The audio transcription path (2ddcca7) was tested locally only.",
+    "security": "This release contains one security fix: the empty LEMONADE_ADMIN_API_KEY bypass (5440e3e) that previously allowed unauthenticated access when the admin key was explicitly empty. The WebSocket credential transport fix (b1e53c4) was shipped in the previous bucket. No other security-relevant changes were observed."
+  },
+  "generation_seconds": 256.2,
+  "head_sha": "4d0568a13bd11a80b6287c759ead45bdac3a3596",
+  "is_hotfix": false,
+  "last_stable_tag": "",
+  "range_start": "v2026.46.2",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-18T16:11:58+00:00"
+}
