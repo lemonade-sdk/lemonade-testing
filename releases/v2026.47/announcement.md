@@ -1,19 +1,13 @@
 ## Lemonade v2026.47.1
 
-### ⚠️ These notes are AI generated and will be revised by a human ⚠️
-
 @everyone v2026.47.1 is out: https://github.com/lemonade-sdk/lemonade/releases/tag/v2026.47.1
 
-RDNA 3.5 GPUs finally join the party, HRX models get speculative decoding out of the box, you can chain multiple images in one conversation, and the backends tab is getting a fresh look.
+HRX models get speculative decoding out of the box, you can chain multiple images in one conversation, and the backends tab is getting a fresh look.
 
 ### Breaking Changes
 
 - Setting `LEMONADE_ADMIN_API_KEY` to an empty string no longer bypasses authentication — treat it as unset and provide `LEMONADE_API_KEY` for API and metrics routes.
 - The `/files` endpoint now returns one entry per shard for multi-shard GGUF models in `extra_models_dir` — clients expecting a single aggregated response need to handle multiple entries.
-
-### 🎮 AMD RDNA 3.5 GPUs now supported
-
-`@superm1` added gfx1170 and gfx1171 (RDNA 3.5) to the ROCm architecture list with an updated llama.cpp backend, so those cards can run models natively.
 
 ### ⚡ MTP speculative decoding on HRX models
 
