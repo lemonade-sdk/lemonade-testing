@@ -4,43 +4,30 @@
 
 @everyone v2026.48 is out: https://github.com/lemonade-sdk/lemonade/releases/tag/v2026.48.0
 
-MTP speculative decoding speeds up HRX models, a multi-GPU monitor shows per-card utilization and memory, GGUF prompt-router models join `/v1/classify`, and multi-image editing lets you work with several images in a single conversation.
+You can now pass images and audio through `/api/generate`, get speech and decision capabilities from `/api/show`, and non-LLM models are rejected upfront with a clean error instead of a silent fail.
 
 ### Breaking Changes
 
-- **API and metrics routes now require authentication** — when `LEMONADE_API_KEY` is set and `LEMONADE_ADMIN_API_KEY` is explicitly empty, requests that previously succeeded without a key now return 401. Set `LEMONADE_ADMIN_API_KEY` to a value or leave it unset.
-- **Upgrading TheNoise shared backend changes inference behavior** — bumping from v0.12.1 to v0.15.0 may alter sampler handling, memory layout, or output for existing models shipped with the release.
+- `/api/chat` and `/api/generate` return 400 instead of 500 for non-LLM models — clients that match on 500 to detect invalid model types will get a different status code.
+- TheNoise upgraded to v0.15.0 — existing image generation models run with the new backend and may produce different output or fail.
 
-### 🚀 Automatic MTP speculative decoding for HRX models
+### 🖼️ Images, audio, speech, and decisions in multi-modal conversations
 
-`@AaronStGeorge` enables MTP (speculative decoding) for HRX models by detecting the `mtp` label in the catalog and launching with `--spec-type draft-mtp`, so supported model pairs get a throughput boost automatically. Try it with `Qwen3.5-35B-A3B-HRX` — it ships with the MTP label already set.
+`@sreeram-11` added the `images` parameter to `/api/generate` so you can pass base64-encoded images and WAV audio through to the backend as a one-message chat. They also added `speech` capability reporting for TTS models, `decision` capability reporting for SystemOne decision models, and `audio` for llama.cpp models with the `chat-transcription` label on `/api/show`. Thanks `@fl0rianr` for adding TheNoise as a custom image model recipe in the GUI so you can work with standalone pixel upscalers too.
 
-### 🖥️ Multi-GPU monitor
+### ✅ Non-LLM models rejected before they even load
 
-`@fl0rianr` adds a multi-GPU monitor to the GUI that shows per-GPU utilization and memory usage with selectable GPU history charts for 2–4 GPUs, sitting alongside the existing single-GPU System Vitals layout.
+`@sreeram-11` made `/api/chat` and `/api/generate` reject non-LLM models upfront with a clean 400 instead of loading and failing, and fixed SSE streams so backend errors — like prompts exceeding context size — end with a single error line instead of silently returning empty success.
 
-### 🏷️ GGUF prompt-router models for classification
+### 🎨 TheNoise v0.15.0 with new image models
 
-`@meghsat` brings GGUF zero-shot prompt-router models to `llama.cpp` — the encoder runs on GPU inside llama-server and the scoring vector runs in lemond, giving you GPU-accelerated `POST /v1/classify` with the same JSON response as the ONNX implementation.
-
-### 🖼️ Multi-image editing and explicit image selection
-
-`@fl0rianr` adds conversation-scoped image references so you can edit specific images, send them to Vision LLMs, and get direct Vision LLM analysis when your active chat model supports it — all within a single conversation.
+`@bitgamma` bumped TheNoise from v0.12.1 to v0.15.0, bringing three new image generation models — MOSS-Image-SFT-8-Steps, MOSS-Image-Base-8-Steps, and H3-Image-INT8 — and `@fl0rianr` added GUI recipe support for the upgrade.
 
 ### Additional Improvements
 
-- `@superm1` adds gfx1170 and gfx1171 ROCm GPU targets and bumps llama.cpp for those platforms.
-- `@danielholanda` adds backend description, author, publisher, license, and project_url metadata, visible on backend cards and via `lemonade backends info`.
-- `@meghsat` fixes the autotune fallback on AMD iGPU and NPU for Windows so context sizing works correctly.
-- `@fl0rianr` fixes CPU usage display on macOS and the KV Cache gauge across platforms.
-- `@fl0rianr` adds a download button for generated and edited images in the Chat view.
-- `@sreeram-11` adds `images` support to Ollama's `/api/generate` endpoint and improves Ollama error handling on SSE streams.
-- `@sreeram-11` adds speech and decision capability reporting to `/api/show`, and accepts an empty voice field for TTS.
-- `@MrAnayDongre` makes the CLI 401 error message clearer and adds API key help to every `--help` footer.
-- `@danielholanda` switches the Backends tab to a dynamic multi-column grid that adapts to window width.
-- `@jeremyfowers` adds logos and display styling for Halogen, Gufo, DwarfStar4, and TheNoise backends.
-- `@fl0rianr` adds `generation_info` to the image generation API response and supports TheNoise as a custom image model recipe in the GUI.
-- `@pwilkin` makes `/files` enumerate every shard for multi-shard GGUF models in extra_models_dir.
-- `@apollo-2006` returns 400 instead of 500 from `/pull/variants` when a repository has no supported files.
+- `@itomek` moved the API key out of WebSocket connect URLs and into the `Sec-WebSocket-Protocol` header for a cleaner security story.
+- `@meghsat` fixed autotune falling back to 4k context size on AMD iGPU and NPU on Windows by reading memory from DXGI instead of WMI.
+- `@sreeram-11` resolved model aliases in `/api/show` so they match what you expect.
+- `@apollo-2006` changed `/pull/variants` to return 400 instead of 500 when a repository has no supported files, giving you a clearer error on bad searches.
 
-Check out v2026.48.0 on GitHub Releases and tell us what you think!
+Check v2026.48.0 on GitHub Releases — I can't wait to see what you build with images and audio in chat!
