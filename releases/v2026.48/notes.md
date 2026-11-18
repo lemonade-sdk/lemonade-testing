@@ -2,14 +2,13 @@
 
 ### ⚠️ These notes are AI generated and will be revised by a human ⚠️
 
-- Automatic MTP speculative decoding is enabled for HRX models, improving throughput on supported model pairs.
-- A new multi-GPU monitor displays per-GPU utilization and memory usage with selectable GPU history charts for 2 to 4 GPUs.
-- GGUF zero-shot prompt-router models extend `/v1/classify` with a GPU-accelerated encoder and scoring vector.
-- Multi-image editing and explicit image selection let you edit specific images and send them to Vision LLMs within a single conversation.
+- Images and audio parameters added to `/api/generate` for multi-modal conversations, with speech and decision capabilities now reported on `/api/show`.
+- `/api/chat` and `/api/generate` now reject non-LLM models with a clear 400 error, and backend failures end streams with an error line.
+- TheNoise backend upgraded to v0.15.0 with new image generation models and GUI recipe support.
 
 ## Breaking Changes
 
 ### ⚠️ These notes are AI generated and will be revised by a human ⚠️
 
-- Requests that previously succeeded without authentication on API and metrics routes now return 401 when `LEMONADE_API_KEY` is set and `LEMONADE_ADMIN_API_KEY` is explicitly empty.
-- Upgrading TheNoise shared backend from v0.12.1 to v0.15.0 may change inference behavior, sampler handling, or memory layout for existing models shipped with the release.
+- `/api/chat` and `/api/generate` return 400 for non-LLM models instead of 500 — clients that rely on 500 status codes to detect invalid model types should update their error handling.
+- TheNoise backend upgraded to v0.15.0 — existing image generation models may produce different output or fail under the new backend.
