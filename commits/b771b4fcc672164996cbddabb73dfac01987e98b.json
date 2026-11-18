@@ -1,0 +1,37 @@
+{
+  "author": "@iswaryaalex",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "b771b4fcc672164996cbddabb73dfac01987e98b",
+  "committed_at": "2026-11-18T17:07:53+00:00",
+  "evidence": {
+    "api_compatibility": "This is a breaking change, acknowledged by the PR author. The ryzenai-llm backend no longer supports --backend cpu or --backend hybrid; only --backend npu works. All 12 hybrid model entries (e.g. Llama-3.2-1B-Instruct-Hybrid, Meta-Llama-3-8B-Hybrid) were removed from server_models.json. All CPU model entries (e.g. Qwen2.5-0.5B-Instruct-CPU) were removed. Model IDs changed: e.g. Llama-3.2-1B-Instruct-CPU → Llama-3.2-1B-Instruct-NPU, with checkpoint paths changing from onnx-ryzenai format to *_rai_1.9.0_npu format. The MCP server comment in mcp_server.cpp was updated to reference *-NPU instead of *-Hybrid. Users running scripts or configs that reference old model IDs or use --backend cpu/hybrid will encounter errors. The migration path (use NPU-only models) is documented in the PR body.",
+    "documentation": "docs/dev/getting-started.md was updated: example model commands now use Qwen3-0.6B-GGUF instead of Llama-3.2-1B-Instruct-CPU, which is a separate example-model update. auto_label.py was updated to describe ryzenai as 'RyzenAI NPU backend' (removed 'hybrid'). The MCP server comment in mcp_server.cpp was updated to reference *-NPU instead of *-Hybrid. The tool description in lemonadeTools.ts was updated from 'hybrid NPU' to 'NPU via Ryzen AI'. The CI workflow comment was updated to test ryzenai on npu only. The model catalog (server_models.json) and version pin (backend_versions.json) reflect the new checkpoint naming. The breaking change (no hybrid support) is documented in the PR body. No separate migration guide or release notes were added within this PR.",
+    "manual_release_testing": "No evidence of manual end-to-end testing on actual NPU hardware. The PR author noted local testing but did not specify a device or backend. The CI runs on STX Halo runners for the cpp workflow, but the ryzenai CI entry was changed to test only the npu backend; whether that CI job actually executed ryzenai tests against real NPU hardware is unclear from the logs reviewed. This is a major backend upgrade (v1.7.0→v1.9.0) with a new dependency download (ryzenai-server.zip with new SHA-256), new model checkpoint names, and a breaking change in supported backends. The release-critical path — download the new ryzenai-server v1.9.0 zip, load an NPU model, and run a chat completion — should be manually verified before shipping.",
+    "post_approval_commits": "No commits were added after the first (and only) approval at 2026-11-18T15:52:52Z. The final merged tree is fbba178e5a1003491458a7a765a734b8ffe26825, and the approval is attached to that exact commit. There is no post-approval churn.",
+    "review": "PR #4188 received one approval from @meghsat at 2026-11-18T15:52:52Z. @meghsat does not appear in docs/dev/contribute.md as a maintainer, so it is unclear whether this reviewer has documented NPU/ryzenai expertise. No maintainer with explicit NPU subject-matter expertise (e.g. @ramkrishna2910 or @superm1, both listed as NPU experts) was assigned or appears in the approval history. The author exercised good judgment by reverting out-of-scope test changes (the image/audio test additions that never ran on ryzenai) and by switching the tool-call test model when the original checkpoint produced garbage. One CodeRabbit comment noted that ryzenai's capabilities dict did not declare image_input or audio_input, but this was addressed by reverting the multimodal tests from the final diff.",
+    "security": "The PR pins the ryzenai-server v1.9.0 zip asset with a SHA-256 hash (sha256:fbafd130d05fb6b6428e927761c65085d672384dd5968d5230b8ee3df878b5f0) in backend_versions.json, providing integrity verification. The hash was updated twice during the PR — once initially and again after the asset was rebuilt from Llama 3.2 tool-call parser commit 8008518. The source is AMD's GitHub release (lemonade-sdk/ryzenai-server v1.9.0). No new network calls, code execution paths, or credential handling were introduced. No supply-chain concerns beyond the expected dependency upgrade.",
+    "tests": "CI checks all passed: cpp_server_build_test_release, validate_llamacpp, and validate_vllm workflows completed with success. The ryzenai test backend in test/utils/capabilities.py was narrowed from [cpu, hybrid, npu] to [npu] only, and the test model switched from Qwen2.5-0.5B-Instruct-CPU to Llama-3.2-1B-Instruct-NPU. The CPP test suite was updated to reference the new NPU model names (e.g. Qwen2.5-0.5B-Instruct-NPU instead of CPU variants). The author added better error output to the tool-call assertion (printing model content on failure). However, no image or audio input tests are present in the final diff — they were reverted because ryzenai does not declare image_input/audio_input support. The multimodal test coverage for ryzenai is therefore absent."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 200.9,
+  "maintainer_todos": [
+    {
+      "text": "Start the server with --wrapped-server ryzenai --backend npu and run the quickstart to confirm that Llama-3.2-1B-Instruct-NPU downloads, loads, and responds to chat completions."
+    }
+  ],
+  "merge_date": "2026-11-18T17:49:47Z",
+  "pr_number": 4188,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-18T17:55:01+00:00",
+  "reviewers": [
+    "@meghsat"
+  ],
+  "sha": "b771b4fcc672164996cbddabb73dfac01987e98b",
+  "shout_outs": [],
+  "subject": "RAI 1.9.0 Upgrade  (#4188)",
+  "summary": "Upgrades ryzenai-llm backend from v1.7.0 to v1.9.0, replacing all CPU and hybrid model variants with 42 NPU-only checkpoints (amd/*_rai_1.9.0_npu), dropping 12 hybrid models that no longer have RAI 1.9 builds, and updating CI to test ryzenai on NPU only; fixes tool-call tests by switching to Llama-3.2-1B-Instruct-NPU after Qwen2.5-3B produced garbage output on STX Halo runners.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "No maintainer with documented ryzenai/NPU subject-matter expertise reviewed the PR, and there is no evidence of manual testing on actual NPU hardware for this major backend upgrade."
+}
