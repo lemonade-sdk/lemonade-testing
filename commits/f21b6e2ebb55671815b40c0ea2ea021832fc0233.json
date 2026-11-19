@@ -1,0 +1,59 @@
+{
+  "author": "@pwilkin",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "f21b6e2ebb55671815b40c0ea2ea021832fc0233",
+  "committed_at": "2026-11-19T09:41:26+00:00",
+  "evidence": {
+    "api_compatibility": "The PR changes Router image method signatures to accept a CancelFlag* pointer (new parameter), changes StreamingProxy::forward_sse_stream and forward_byte_stream signatures to accept a CancelToken, and changes HttpClient::get to accept a CancelToken. These are internal server types, not a user-facing API contract. The GET /jobs/{id} route no longer includes media_extract_bytes in step output (a cleanup of internals leaking into the API view). The audio_speech and audio_generations job ops now reject unknown response_format values, which is stricter than the HTTP route that defaults to wav — a behavioral divergence on two surfaces that @bitgamma flagged. No breaking change for external API clients, but the format-rejection divergence is worth noting in release notes.",
+    "documentation": "docs/dev/how-to-add-new-job-ops.md was created (moved from docs/) and docs/dev/job-system.md was updated with the new operations table, media inputs/outputs section, and a text-to-3D pipeline example. The old docs/how-to-add-new-job-ops.md was deleted. However, @bitgamma's review identified several documentation issues: (1) the job-system.md op table was not updated to list all twelve ops, (2) the pipeline example in job-system.md still referenced old op names (generate_image, generate_3d) and wrong result paths (data.0.path instead of data.0.b64_json), (3) the how-to-add-new-job-ops.md page is at docs/ instead of docs/dev/, (4) the 'Constraints from project notes' section references rules that do not exist in the codebase and is contradictory, and (5) status codes in the doc are misleading since JobError::status is only used in two places (job-create validation). These are documentation quality issues that should be cleaned up.",
+    "manual_release_testing": "The PR adds six new job operations (image_generations, image_edits, image_variations, audio_speech, audio_generations, model_3d_generations) that are user-reachable via the POST /api/v1/jobs endpoint, plus a 16 MiB per-job media budget, an 8 MiB per-result output cap, cancellation behavior changes on streaming audio/3D, and a GET /jobs/{id} response that no longer includes media_extract_bytes. No evidence of a human running these against a real server was found. The maintainer to-dos above cover the surface items that need manual verification. @bitgamma's review raised a concern that the media-store byte accounting may undercount actual jobs.json size (tracked bytes × ~2.7x due to base64 and duplicate copies), which should be confirmed before release.",
+    "post_approval_commits": "No commits were added after the final approval. @fl0rianr's last approval was on commit 73dee281 (2026-11-18) and @bitgamma's final approval was on commit e29d0eef (2026-11-19), which is the merge commit itself. The branch history includes multiple fix commits between the initial review and final approval that were explicitly addressed per reviewer guidance, so the final state is the reviewed state.",
+    "review": "PR #2766 received substantive review from @fl0rianr (COLLABORATOR, subject area: Trellis, OpenMOSS, ACE-Step, ThinkSound, llamacpp per contribute.md) and @bitgamma (MEMBER, subject area: thenoise, cli, recipes, new backends, benchmarking, new models per contribute.md). @fl0rianr reviewed across four iterations, identified speech format mismatch, image input compatibility, PCM metadata loss, and extract limit scope issues — all of which were fixed in subsequent commits. @bitgamma provided a deep review catching media-store undercounting (serialized jobs.json size vs tracked budget), untriggerable duplicate budget checks, media_extract_bytes leaking into the API response, error_message undefined-behavior risk, model pre-check gaps, redundant JSON round-trips, naming inconsistencies, and documentation gaps — all of which were addressed in follow-up commits. @bitgamma gave an APPROVED review on 2026-11-19T06:52:17Z (commit e29d0eef), the same commit that was merged. @fl0rianr gave an APPROVED review on 2026-11-18T10:32:52Z (commit 73dee281), before @bitgamma's final round. The PR description was not filled out to the repo template (Spec Driven Development, Scope, Testing, Documentation, Breaking Changes sections), which CodeRabbit flagged repeatedly; @bitgamma specifically requested this. The PR referenced discussion #2718 (job engine) but did not formally link it as an approved RFC or WG scope per the template.",
+    "security": "The PR introduces a CancelToken/CancelFlag propagation path through the entire media-job stack (Router → StreamingProxy → HttpClient → curl). This is a safety improvement that allows aborting in-flight backend calls. No security regressions identified. The data URI normalization in normalize_image_inputs correctly rejects percent-encoded URIs. The media output cap (8 MiB per result) prevents a single large result from inflating jobs.json. The per-job media budget (16 MiB) bounds retained media. @bitgamma flagged that the budget check may undercount actual file size, which is a reliability concern rather than a security issue.",
+    "tests": "New unit tests: test_job_media_io.cpp (MediaSinkCapture, data URI parsing, normalize_image_inputs for image/mask/3D, media_result_json). test_job_media_limits.cpp (base64 decoded size, output limits, media result bytes, payload bytes, stored bytes, MediaStoreBudget with extracts, clobbered key handling, cumulative budget, overflow saturation). test_streaming_silent_stream.cpp (GET cancellation, SSE cancellation, byte-stream cancellation with both flag and predicate modes). test_job_graph.cpp (json round-trip updated for new ops and media_extract_bytes). Integration tests: test/server_jobs.py (test_generation_op_registered, test_generation_op_fails_without_backend, test_audio_streaming_selectors_without_backend, test_audio_op_rejects_unknown_format). All CI checks passed (C++ Server Build, Validate New llama.cpp Release, Validate New vLLM Release). The sink capture logic in MediaSinkCapture is thoroughly tested in unit tests. No integration test exercises the 413 per-result cap or the 16 MiB per-job budget, and no integration test verifies that interrupting a media step actually aborts the in-flight backend call — @bitgamma flagged these gaps."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 370.4,
+  "maintainer_todos": [
+    {
+      "text": "Start the server, load an image model (e.g. Flux), and POST a job with op image_generations including a prompt; confirm the job completes and the context entry contains data with a b64_json field and a top-level size field."
+    },
+    {
+      "text": "Start the server, load a TTS model (e.g. Kokoro), and POST a job with op audio_speech; confirm the job completes and the context entry contains data with mime_type reflecting the negotiated format and a size field."
+    },
+    {
+      "text": "POST a job with op image_editions that references a previous step's b64_json as its image input; confirm the step succeeds and the result contains data with b64_json and size."
+    },
+    {
+      "text": "Start the server, load a 3D model (e.g. TRELLIS-3D), and POST a job with op model_3d_generations; confirm the result has mime_type model/gltf-binary, response_format glb, and a size field."
+    },
+    {
+      "text": "POST a job with op audio_speech using an unsupported response_format value (e.g. banana); confirm the step fails before any backend call and the error message names the rejected format."
+    },
+    {
+      "text": "POST a job that chains two media ops whose combined decoded output exceeds 16 MiB; confirm the second step fails with a per-job media store limit error."
+    },
+    {
+      "text": "While a media job (image, audio, or 3D) is running, delete or interrupt it via the jobs endpoint; confirm the backend call stops within a few seconds rather than waiting for its full timeout."
+    },
+    {
+      "text": "GET the jobs/{id} endpoint for a completed job and confirm the response does not contain a media_extract_bytes field in any step output."
+    }
+  ],
+  "merge_date": "2026-11-19T10:34:53Z",
+  "pr_number": 2766,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-19T10:42:46+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@bitgamma"
+  ],
+  "sha": "f21b6e2ebb55671815b40c0ea2ea021832fc0233",
+  "shout_outs": [],
+  "subject": "feat: add jobs for all operations besides chat completion to the job engine (#2766)",
+  "summary": "Adds jobs for image_generations, image_edits, image_variations, audio_speech, audio_generations, and model_3d_generations to the job engine, with cancellation propagation through Router and StreamingProxy, 8 MiB per-result and 16 MiB per-job media limits, extract value accounting, and supporting documentation and tests.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The PR introduces six new user-facing job operations plus media-size limits and cancellation plumbing that should be manually verified before release, and the reviewer notes that the media-store byte accounting may still undercount serialized jobs.json size."
+}
