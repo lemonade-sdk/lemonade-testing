@@ -1,0 +1,44 @@
+{
+  "author": "@francescobozzo",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "64dff4ab7d5d2d6a3418ecba407e11818090336e",
+  "committed_at": "2026-11-19T03:22:20+00:00",
+  "evidence": {
+    "api_compatibility": "Breaking for existing container descriptor authors: ContainerPolicy.user (optional ContainerUser) is a new field. The host function group_id(const string& group) was removed and replaced by device_group_ids(const vector<string>& paths), which returns all owning GIDs of the listed paths instead of looking up a single named group. This changes behavior: Docker/rootful Podman will now add every device-owning group rather than only render. For the gufo:rocm backend specifically, this is not breaking because the previous root-running image owned everything, and the new image needs video group for /dev/kfd. The image source change from docker.io/kyuz0/amd-strix-halo-toolboxes to ghcr.io/gufo-org/toolboxes/gufo-runtime:0.34.0 is a new artifact location, not a breaking change for users — they pull the same backend. The allowlist in allowed_image() adds ghcr.io/gufo-org/ prefix. The backend descriptor in gufo/gufo.h changes the 'about' field to credit Gufo (gufo-org) instead of Donato Capitella (kyuz0) — user-facing but informational.",
+    "documentation": "docs/dev/specs/container-backends.md updated: the image allowlist now includes ghcr.io/gufo-org/*, the ContainerUser field is documented in the descriptor table, the --userns=keep-id option is documented for rootless Podman, and the --group-add option now lists device-owning group IDs instead of the render group ID. The comparison table (SELinux, Seccomp, Groups, Model mount, Port, Devices) is updated to reflect the new group logic. docs/guide/configuration/container-backends.md updated the gufo:rocm image source to point to gufo-org/toolboxes. backend_versions.json updated the gufo:rocm pin to 0.34.0 with digest. The contributor PR body is thorough and includes testing details, documentation confirmation, and scope checklist.",
+    "manual_release_testing": "No human is shown to have exercised the new gufo:rocm image on the release hardware. The author tested on their own Strix Halo (gfx1151) with NixOS and Docker, confirming load and chat/stream at ~51 tok/s with DFlash2. The validate_containers.yml dry run passed. However, no one tested the specific scenarios that matter for release: rootless Podman with private model files, Docker or rootful Podman on systems where /dev/kfd is owned by video rather than render, and the edge case where the model file is owned by a different UID than 1000. CI passes build+unit tests but does not drive the actual container launch path with the new image.",
+    "post_approval_commits": "One commit (b7ff098d) was added after jeremyfowers' first approval. It added the user mapping feature and the device-group-iteration logic — both substantive changes. @fl0rianr re-reviewed the diff and approved (\"Thanks, appreciate the quick fixes and the additional testing!\"). The author then received a follow-up question about Docker/rootful Podman handling of UID 1000, acknowledged it (\"Oh you are right, overlooked that\"), but did not add further code; fl0rianr's final approval (\"Oh you are right, overlooked that. Thanks for working through the feedback!\") covered this. The post-approval commit remained within the spirit of the original PR (fixing the permission regressions the reviewer flagged) and was subsequently approved.",
+    "review": "@fl0rianr (subject-matter expert on containers, per contribute.md) identified two permission regressions in the initial commit: rootless Podman would lose access to private (0600) GGUF files because --userns=keep-id was not added, and Docker/rootful Podman would lose GPU access because only the render GID was added instead of every device-owning group. @jeremyfowers enabled CI and deferred merge pending fixes. The author (Francesco Bozzo) added the second commit b7ff098 (after jeremyfowers' first approval at 2026-11-13T21:20:35Z), which introduced the --userns=keep-id flag and rewrote group-add to iterate all device node GIDs. @fl0rianr re-reviewed the second commit and approved at 2026-11-14T11:16:07Z after the author fixed both concerns. One comment from @fl0rianr on Docker/rootful Podman running as UID 1000 without user mapping (a potential issue with 0600 model files owned by a different UID) was acknowledged with 'overlooked that' and no further action was taken — the current code does not add --userns to Docker/rootful Podman, so this remains an open concern. CodeRabbit raised an unverified finding about device nodes owned by GID 0 being silently skipped; this was never addressed. No inline review comments were filed.",
+    "security": "The image source moves from a personal Docker Hub account (docker.io/kyuz0) to an org account (ghcr.io/gufo-org). The new image runs as a non-root user (1000:1000), which is a security improvement over the previous root-running image. The --userns=keep-id flag on rootless Podman maps the user into the container, reducing privilege escalation risk. The --cap-add list for Gufo is empty (no capabilities added beyond defaults), which is consistent with minimal privilege. No supply-chain concerns beyond the expected registry migration; the image pin uses a fixed digest (sha256:49b1fce40cb43e33c46d91595e300cb320cdec768fcd976f8c8da24b402fc133), not a mutable tag. CodeRabbit's concern about GID 0 devices being silently skipped is a minor correctness issue, not a security vulnerability.",
+    "tests": "test/cpp/test_container_manager.cpp gains five new test cases: docker with video+render group GIDs, docker with no device groups, rootless Podman with --userns=keep-id, rootless Podman via podman.socket with --userns=keep-id, and Docker/rootful Podman without --userns. test_descriptors_and_pins verifies gufo:rocm declares user 1000:1000. The existing group_id tests were replaced with device_group_ids tests. No tests weakened or deleted; the ARM64 and Windows paths were not modified (rootless user mapping is Linux-only). CI (C++ Server Build, Test, and Release) passed with 113/113 tests reported by the author. CodeRabbit raised an unverified finding about root-owned device nodes (GID 0) being silently filtered out; the code skips S_ISCHR nodes with st_gid == 0, which means a /dev/xxx owned by root:0 would not get a --group-add. This was never resolved or acknowledged by reviewers."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 244.7,
+  "maintainer_todos": [
+    {
+      "text": "Install the v2026.49 candidate and run 'lemonade backends install gufo:rocm' to confirm the image is pulled from ghcr.io/gufo-org/toolboxes/gufo-runtime with digest sha256:49b1fce40cb43e33c46d91595e300cb320cdec768fcd976f8c8da24b402fc133."
+    },
+    {
+      "text": "On a Strix Halo (gfx1151) machine with rootless Podman, run 'lemonade load Qwen3.8-27B-Gufo' and then send a chat/stream request to confirm the model loads and generates text without file-permission or GPU-access errors."
+    },
+    {
+      "text": "On the same machine with Docker or rootful Podman, load the same model and confirm it opens /dev/kfd without 'Permission denied', verifying the container now receives every device-owning group (video, render) rather than only render."
+    }
+  ],
+  "merge_date": "2026-11-19T04:12:53Z",
+  "pr_number": 4159,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-19T04:18:51+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@jeremyfowers"
+  ],
+  "sha": "64dff4ab7d5d2d6a3418ecba407e11818090336e",
+  "shout_outs": [],
+  "subject": "Run gufo from gufo-org/toolboxes images (#4159)",
+  "summary": "Switches the gufo:rocm container from docker.io/kyuz0/amd-strix-halo-toolboxes to ghcr.io/gufo-org/toolboxes/gufo-runtime:0.34.0 and adds ContainerUser support so non-root images (UID:GID 1000:1000) get --userns=keep-id on rootless Podman and all device-owning groups (e.g. video, render) are added via --group-add on Docker and rootful Podman.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "A post-approval commit materially changed the group-add logic from a single render GID to every device-owning group and added rootless user mapping; a reviewer addressed the concerns but an unverified CodeRabbit finding about root-owned device nodes was never resolved, and no human exercised gufo:rocm on the new image."
+}
