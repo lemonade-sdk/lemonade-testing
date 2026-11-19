@@ -1,0 +1,39 @@
+{
+  "author": "@anishp55",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "5fec0a8217e54fa317e664aba9b9b8fb6e04a51b",
+  "committed_at": "2026-11-19T06:59:08+00:00",
+  "evidence": {
+    "api_compatibility": "This commit adds output only — when the agent CLI is missing, the CLI now prints environment variables and a launch command instead of a plain 'Agent binary not found' error. It does not change any existing command behavior, config format, protocol, or saved files. No breaking change.",
+    "documentation": "No user-facing documentation files were changed. The new output is self-describing: it tells the user to set the key securely and rerun the original invocation. A CodeRabbit pre-merge check flagged an incomplete PR description template, but the description itself correctly states the feature, use case, platforms, and key-redaction behavior.",
+    "manual_release_testing": "CI tested the feature through six new Python tests that drive the exact CLI path (lemonade launch <agent> with a missing binary). The tests exercise POSIX shell output, PowerShell output, API-key redaction, Pi-specific behavior, opencode sync failure, and admin-key precedence. No human manually exercised the feature, but the test suite covers the user-reachable surface comprehensively.",
+    "post_approval_commits": "First approval was at 2026-11-18T15:51:45Z. One commit (8f49280, 'fix: refactor and fix a bit') was added after first approval at 17:03 UTC that same day. It removed a redundant 'adjust localhost URLs' line from the POSIX/Windows shell recipe and removed the temporary key-check guards (': \"${VAR:?Set …}\"' and 'if (-not $env:) { throw … }') that were replaced by the explicit 'export' statement. This is a cleanup within the approved scope, and @bitgamma re-approved the branch at 06:57 UTC the next day, covering this change.",
+    "review": "PR #1951 was requested for review by @jeremyfowers (admin maintainer, subject area: new CLI commands). @fl0rianr approved at 2026-11-18T15:51:45Z after addressing all inline review findings (key precedence, Junie profile root, shell guard blocks, sync failure path, quoting fixes). @bitgamma (member) approved at 2026-11-19T06:57:43Z. The PR received extensive inline review comments from CodeRabbit (5 rounds) plus one comment on the PR description template, all of which were addressed by follow-up commits. @fl0rianr is on the maintainer table with subject areas including 'cli', covering this PR's scope.",
+    "security": "API keys are never printed in clear text. The formatter replaces key literals with environment-variable references (${LEMONADE_API_KEY} or ${LEMONADE_ADMIN_API_KEY}). The admin-key precedence in the manual recipe matches the normal launch path. User-provided --agent-args that contain keys are also redacted. The manual shell recipe instructs the user to set the key securely before running the command. No credential leaks, network calls, or supply-chain changes introduced.",
+    "tests": "Six new tests in test/server_cli2.py: test_116a validates Codex quoting with --agent-args on POSIX and PowerShell (checks argument pairs, quoting of spaces, model args); test_116b validates API-key redaction in exports and custom --agent-args (checks that a key embedded in '--token=x<key>y' is replaced by ${LEMONADE_API_KEY}); test_116c validates that the Pi path does not print a key-bearing command when the binary is missing; test_116e validates that a sync failure (bad opencode.json) prints a recovery message without a Command: block; test_116f validates admin-key precedence when both LEMONADE_API_KEY and LEMONADE_ADMIN_API_KEY are set. The test helper gained inject_runner_key and cwd parameters to support isolated fixtures. No existing tests were weakened or deleted."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 228.8,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-19T08:46:05Z",
+  "pr_number": 1951,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-19T08:51:38+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@bitgamma"
+  ],
+  "sha": "5fec0a8217e54fa317e664aba9b9b8fb6e04a51b",
+  "shout_outs": [
+    {
+      "handle": "@fl0rianr",
+      "reason": "Co-author of the commit and author of all five PR commits, performing the implementation and addressing every CodeRabbit review finding across six files."
+    }
+  ],
+  "subject": "when agent cli is not found print env vars and launch cmd (#1951)",
+  "summary": "When lemonade launch <agent> cannot find the agent CLI, prints environment variables and a shell-quoted launch command for manual invocation, with API key redaction and POSIX/PowerShell support depending on the build platform.",
+  "verdict": "Clean",
+  "verdict_reason": "New CLI feature is adequately reviewed by two people including a CLI subject-matter expert, has six new tests covering POSIX and PowerShell paths with API-key redaction, and all post-approval commits were within scope and re-approved."
+}
