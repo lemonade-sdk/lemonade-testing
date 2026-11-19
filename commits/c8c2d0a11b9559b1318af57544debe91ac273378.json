@@ -1,0 +1,42 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "c8c2d0a11b9559b1318af57544debe91ac273378",
+  "committed_at": "2026-11-19T21:55:29+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. HF_TOKEN continues to take precedence. This is an additive fallback; existing setups that rely on HF_TOKEN are unaffected. The behavior change is purely what happens when HF_TOKEN is not set.",
+    "documentation": "Small QoL feature matching huggingface_hub behavior. No new CLI commands, config options, or API endpoints. No documentation changes required.",
+    "manual_release_testing": "This commit adds user-visible behavior: a token file that 'hf auth login' writes is now used for Hugging Face API requests. No evidence a human exercised this path end-to-end. The tester should verify the token file is read when HF_TOKEN is unset.",
+    "post_approval_commits": "One commit (4ccc1102) was added after the approval at 2026-11-19T19:29:04Z. It adds a try/catch around the default cache directory lookup — the same change suggested by @danielholanda in an inline comment. It does not add new behavior, change API/CLI/GUI, or weaken tests. The change is minimal and follows reviewer guidance, though it was not re-approved.",
+    "review": "One substantive human reviewer (@danielholanda) approved the PR. All CI checks passed. The review comment from CodeRabbit flagged XDG_CACHE_HOME and path expansion concerns; these were not addressed in the final code. The reviewer approved before these concerns were fully resolved, but the issues are low-risk for typical setups.",
+    "security": "The token is read from standard Hugging Face locations (HF_TOKEN_PATH > $HF_HOME/token > default cache dir) and used only as a Bearer Authorization header for Hugging Face API calls. No new credential exposure, network paths, or permission changes. The try/catch prevents an exception from crashing when HOME is unset.",
+    "tests": "No new tests were added. The change is a single new function with straightforward logic matching huggingface_hub's documented precedence. No existing tests were weakened or deleted."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 183.1,
+  "maintainer_todos": [
+    {
+      "text": "Unset HF_TOKEN, start the Lemonade server, and request a model that requires authentication; confirm the request succeeds using the token file instead of failing with 401 Unauthorized."
+    }
+  ],
+  "merge_date": "2026-11-19T22:47:10Z",
+  "pr_number": 4213,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-19T22:53:38+00:00",
+  "reviewers": [
+    "@danielholanda"
+  ],
+  "sha": "c8c2d0a11b9559b1318af57544debe91ac273378",
+  "shout_outs": [
+    {
+      "handle": "@danielholanda",
+      "reason": "Co-author of the commit; reviewed the PR, suggested the try/catch error handling for the default token path, and the fix was incorporated."
+    }
+  ],
+  "subject": "feat: read the Hugging Face token file when HF_TOKEN is unset (#4213)",
+  "summary": "Adds a huggingface_token() function that falls back from HF_TOKEN env var to HF_TOKEN_PATH, then $HF_HOME/token, then ~/.cache/huggingface/token — matching huggingface_hub so that users who ran 'hf auth login' get authenticated requests automatically.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "New user-reachable token-file reading behavior was merged without evidence of manual end-to-end testing before release."
+}
