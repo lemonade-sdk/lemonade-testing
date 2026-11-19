@@ -1,0 +1,42 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "281dcea8a8b61a23bfef37a650d2a2e6a576bdd1",
+  "committed_at": "2026-11-18T22:53:28+00:00",
+  "evidence": {
+    "api_compatibility": "No user-facing API changes. Only .github/workflows/validate_llamacpp.yml is modified. No CLI flags, config options, API endpoints, schema changes, or installed artifacts are affected.",
+    "documentation": "The PR body serves as comprehensive internal documentation of the new behavior: successful vs. failed validation paths, draft PR formatting with CAUTION sections, existing-bot-PR reuse with retry-branch suffix matching, manual-hold detection, three-way patch replay with conflict handling, and recovery semantics. The PR does not change user-facing documentation content. The project's philosophy (user error is a bug, design for agility) is respected by making failure visible instead of silent.",
+    "manual_release_testing": "The changes affect the validate_llamacpp.yml workflow, which runs on schedule or dispatch. No human has exercised the dispatch path for this change. A real dispatch is needed to verify GITHUB_TOKEN permissions for convertPullRequestToDraft, the draft-to-ready demotion flow, and the PR body/title update logic on existing bot PRs. The PR is CI-only infrastructure; it changes the auto-update mechanism's failure-reporting behavior, which is user-visible to maintainers who review the auto-update PRs.",
+    "post_approval_commits": "Two post-approval commits exist. Commit 55409ba (by @fl0rianr) differentiated the missing-page error from ordinary 3-way conflicts by inspecting the apply error text ('does not exist in index') and used --ignore-unmatch for the rm. Commit 4afebbc (by @sreeram-11, the approver themselves) rewrote the entire patch-recovery logic: instead of applying the full patch then replacing every changed file on failure, it now separates changed files into missing vs present, excludes missing files from the initial apply, applies the rest with --3way --index, and only copies recorded versions for actual conflicts. This is a structural change to the recovery semantics that @sreeram-11 self-confirmed but did not re-submit for review.",
+    "review": "The PR was requested_reviewer for @jeremyfowers and received extensive inline comments from CodeRabbit across multiple iterations. @sreeram-11 approved at 2026-11-18T17:54:22Z after two rounds of changes, noting the code was much cleaner and running the create-pr logic locally against a fake gh and throwaway git remote. @sreeram-11 is listed in the project's contribute.md under ci as a subject-area maintainer, so this review satisfies the subject-matter-expertise guideline. The PR body is exceptionally detailed, covering validation behavior, draft handling, existing-PR reuse, conflict resolution, and recovery. However, two commits were added after the first and latest approval: 'fix(ci): adress edge case' (55409ba, by fl0rianr at 19:21) and 'fix: address CodeRabbit comment' (4afebbc, by sreeram-11 at 21:56). The final commit was authored by @sreeram-11 and substantially reworked the docs-patch replay from a catch-all fallback that replaced every changed file to a selective approach that separates missing pages from conflicts, applying the remaining patch with three-way merge. @sreeram-11 confirmed the CodeRabbit comment as addressed in a PR comment, but this was a substantive code change after approval that warrants a note.",
+    "security": "No security concerns. The workflow uses GITHUB_TOKEN with contents:write and pull-requests:write, which is standard for bot-managed PR creation. No supply-chain changes, credential handling, network calls to external services, code execution paths, or suspicious blobs are introduced. The git worktree usage is safe.",
+    "tests": "The PR includes extensive offline testing with a fake gh and throwaway git remote: stale failure-title recovery, manual hold preservation, spoofed fork-PR rejection, branch-write denial handling, closed-PR-left-behind recovery, and generated-docs conflict resolution with retained branch edits. The author notes that the normal PR CI passes but the scheduled/dispatch path is skipped for ordinary PR pushes, and a real GitHub Actions dispatch remains necessary. This offline testing is thorough for the bash logic but does not cover token permissions or end-to-end GitHub API behavior."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 317.0,
+  "maintainer_todos": [
+    {
+      "text": "Trigger the 'Create update PR' workflow via GitHub Actions workflow dispatch and intentionally cause a validation failure to confirm a draft PR with '[Validation failed]' title and CAUTION body is created."
+    }
+  ],
+  "merge_date": "2026-11-19T00:14:41Z",
+  "pr_number": 3965,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-19T00:21:48+00:00",
+  "reviewers": [
+    "@sreeram-11"
+  ],
+  "sha": "281dcea8a8b61a23bfef37a650d2a2e6a576bdd1",
+  "shout_outs": [
+    {
+      "handle": "@sreeram-11",
+      "reason": "Co-authored the final commit (4afebbc) that rewrote the docs-replay patch application to address CodeRabbit's findings on missing-page recovery and deleted-page conflict resolution."
+    }
+  ],
+  "subject": "fix(ci): make llama.cpp auto-update documentation failures visible (#3965)",
+  "summary": "Make llama.cpp auto-update workflow failures visible to maintainers by creating draft PRs with '[Validation failed]' titles and CAUTION sections instead of silently producing no update PR.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "Two post-approval commits were added after @sreeram-11's approval, including a substantial rewrite by the co-author that changed the patch-replay logic without renewed approval."
+}
