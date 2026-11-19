@@ -1,0 +1,45 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "82706b28922f1198a631a6ef6f9f44a8f8db6878",
+  "committed_at": "2026-11-19T07:50:05+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking API changes. No new CLI flags, config options, API endpoints, or saved-file formats are introduced. The auto-tune internal calculation changes are transparent to users. The PR explicitly declares no breaking changes. The follow-up admission policy and auto_context_safer setting are deferred to a separate PR.",
+    "documentation": "The PR claims documentation is not affected. The bounded-SWA architecture table in swa_cache_profile.h carries a maintenance comment (Reaudit whenever a bundled backend version changes), which is appropriate. The config docs half-done concern from the first review round is deferred to the follow-up admission-policy PR.",
+    "manual_release_testing": "The changes affect how Lemonade auto-selects context sizes for every llama.cpp model with bounded sliding-window KV caches (gemma2/3/4, gpt-oss, cohere2/2moe, olmo2, exaone4, granite_swa, flint) and every AMD UMA system. The bounded-SWA optimization alone can increase the auto-detected context for Gemma 4 from ~60k to 262144 tokens on a 5090. The discrete-GPU headroom changed from 4.5% (capped at 2 GiB) to a fixed 1 GiB, and the host workspace minimum dropped from 1.0 GiB to 0.5 GiB. The reviewer noted the rejection path is now broader than the title suggests: compute_auto_context_size returning 0 causes the Router to throw for every recipe, not just llama.cpp on GPU. The three maintainer to-dos above target the untested scenarios.",
+    "post_approval_commits": "None. The PR has two commits (199c9b67 and 85160405). The first approval was submitted at 2026-11-19T06:39:22Z by @bitgamma, after both PR commits had already been authored. No commits were added after approval.",
+    "review": "Two CHANGES_REQUESTED reviews from @bitgamma (2026-11-16 and 2026-11-18) covering ~19 substantive points across architecture, safety, correctness and tests — including the rejection path being broader than the title suggests, reserve constant changes, architecture-layout table staleness, LLAMA_ARG_N_PARALLEL=1 handling, config docs half done, dead code, and partial GGUF metadata on parse failure. All issues were addressed in the refactor-and-address-review commit, followed by an LGTM approval on 2026-11-19T06:39:22Z. Per contribute.md, @bitgamma's listed subject areas are thenoise/cli/recipes/new_backends/benchmarking/new_models; @superm1 (ROCm, llamacpp) and @kpoineal were requested reviewers but did not review. The substantive review coverage compensates for the lack of a named auto-tune specialist.",
+    "security": "No supply-chain, credential, network-call, code-execution, or permission-broadening changes. The commit modifies memory budgeting and GGUF parsing logic only. No telemetry or obfuscation concerns. The oversized GGUF array guard in read_gguf_metadata (rejecting arrays with 1<<40 elements) is a valid DoS prevention measure.",
+    "tests": "Extensive test coverage added: new file test/cpp/test_auto_context_flow.cpp (111 lines) exercising the estimator with Gemma 4, Flint, and Qwen KV fixtures; 542 new lines in test/cpp/test_auto_tune.cpp covering bounded SWA architectures (gemma2/3/4, gpt-oss, cohere2/2moe, olmo2, exaone4, granite_swa, flint), fallbacks, runtime-compatibility guards, KV cache format detection, and UMA/GTT memory budgets; 159 new lines in test/cpp/test_gguf_reader.cpp covering GGUF bool/integer/oversized arrays and metadata integrity. The CI C++ Server Build, Test, and Release workflow passed. The PR body self-identifies hardware testing coverage as Strix Halo expanded GTT and discrete GPU CPU-offload, but NOT Strix Halo default GTT — a gap the reviewer flagged and the author acknowledged."
+  },
+  "fixes_prs": [
+    3862
+  ],
+  "generation_seconds": 470.5,
+  "maintainer_todos": [
+    {
+      "text": "Start a Strix Halo machine with the default 64 GiB GTT, load a Gemma 4 or Flint model, and confirm the auto-detected context size matches the test expectations in test_auto_context_flow.cpp (bounded_kv == 262144 for Gemma 4 on 31.8 GiB, full 262144 for Flint on 31.8 GiB) rather than OOMing."
+    },
+    {
+      "text": "On a discrete GPU system, load a model that previously auto-selected a context size below 4096 tokens and confirm it still loads — the old 4096 floor is now min(max_ctx, 4096) so previously-sub-4k estimates that hit 4096 now get the tighter estimate instead."
+    },
+    {
+      "text": "On an AMD UMA system with a model that exceeds the GTT but fits within physical RAM, confirm that llama.cpp can still offload layers to CPU and the model loads rather than being rejected at the auto-tune stage."
+    }
+  ],
+  "merge_date": "2026-11-19T09:40:23Z",
+  "pr_number": 3988,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-19T09:50:07+00:00",
+  "reviewers": [
+    "@bitgamma"
+  ],
+  "sha": "82706b28922f1198a631a6ef6f9f44a8f8db6878",
+  "shout_outs": [],
+  "subject": "fix(auto-tune): correct AMD UMA budgets and preserve CPU offload (#3988)",
+  "summary": "Corrects AMD UMA memory budgeting and bounded sliding-window KV estimation in the auto-tune context-size calculator, reducing discrete-GPU headroom to a fixed 1 GiB, lowering host workspace minimum to 0.5 GiB, and adding bounded-SWA profiles for gemma2/3/4, gpt-oss, cohere2/2moe, olmo2, exaone4, granite_swa and flint with runtime-compatibility guards.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The commit significantly changes automatic context sizing for AMD UMA and bounded-SWA models, but the reviewer noted Strix Halo with the default 64 GiB GTT was never tested and the rejection path is broader than the title implies."
+}
