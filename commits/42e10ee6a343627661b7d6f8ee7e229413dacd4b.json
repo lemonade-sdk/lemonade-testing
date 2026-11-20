@@ -1,0 +1,43 @@
+{
+  "author": "@gringus",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "42e10ee6a343627661b7d6f8ee7e229413dacd4b",
+  "committed_at": "2026-11-20T06:31:22+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking API changes. The /v1/embeddings endpoint accepts the same request schema; only the internal model name sent to the FLM backend changes. Clients sending lemonade model ids (e.g. embed-gemma-300m-FLM) now get correct embeddings instead of a 400 — a fix, not a break.",
+    "documentation": "No documentation update needed. The change is a bug fix that restores expected behavior for FLM embedding models through the OpenAI-compatible API. The fix aligns with the existing pattern documented in the code comments for the sibling paths.",
+    "manual_release_testing": "This changes a user-facing API endpoint (/v1/embeddings) and is the first FLM-specific test for the embeddings path. The author's testing on real hardware is thorough but should be validated on a release candidate to confirm no regression. See Maintainer To-Do.",
+    "post_approval_commits": "No commits were added after the first and only approval (2026-11-20T06:30:29Z). The branch contained a single commit that was identical to what was merged.",
+    "review": "PR #4166 has one substantive review from @iswaryaalex (FastFlowLM maintainer per contribute.md), who approved the code change. @iswaryaalex left one inline comment suggesting the comment match the two-line style used by the sibling paths and avoid issue numbers per AGENTS.md; the author did not adopt this suggestion but @iswaryaalex still approved. The reviewer's feedback was limited to comment style and an observation about FLM 1.0.11 ignoring the model field — no substantive code concerns were raised.",
+    "security": "No security concerns. The change modifies a local JSON field within the C++ server before forwarding to the FLM backend; no new network calls, credential handling, or permission changes.",
+    "tests": "No new or modified tests accompany this change. The existing embedding test in test/server_router.py exercises llamacpp models (nomic-embed-text-v1-GGUF) only, not the FLM embeddings path. The author provided detailed manual test results on Ryzen AI hardware with FLM 1.0.13, including a real-world RAG scenario — this is valuable evidence but does not substitute for automated coverage."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 160.6,
+  "maintainer_todos": [
+    {
+      "text": "Start the server with an FLM embedding model (e.g. embed-gemma:300m via flm serve --embed 1) and POST to /v1/embeddings with model set to the lemonade model id (e.g. embed-gemma-300m-FLM); confirm the request succeeds and returns vectors instead of a 400 error."
+    },
+    {
+      "text": "Verify the embeddings response is identical when the same input is submitted twice, confirming bit-identical output across repeated requests."
+    },
+    {
+      "text": "Test the same endpoint with an FLM model that is not an embedding model (classification or transcription); confirm it still returns a 400 UnsupportedOperation error rather than succeeding or crashing."
+    }
+  ],
+  "merge_date": "2026-11-20T07:23:29Z",
+  "pr_number": 4166,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-20T07:27:58+00:00",
+  "reviewers": [
+    "@iswaryaalex"
+  ],
+  "sha": "42e10ee6a343627661b7d6f8ee7e229413dacd4b",
+  "shout_outs": [],
+  "subject": "fix(flm): forward the flm checkpoint in embeddings() (#4166)",
+  "summary": "Translates the model name from lemonade's FLM model id (e.g. embed-gemma-300m-FLM) to the FLM checkpoint name (e.g. embed-gemma:300m) in FastFlowLMServer::embeddings(), matching the behavior already present in chat_completions(), completion() and forward_streaming_request() so FLM embedding models work through the OpenAI-compatible API.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The fix is sound and adequately reviewed, but introduces user-visible API behavior that was not exercised by automated tests and the PR author's manual testing should be verified on a release candidate."
+}
