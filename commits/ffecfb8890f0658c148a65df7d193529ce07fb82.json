@@ -1,0 +1,38 @@
+{
+  "author": "@gringus",
+  "branch": "release-v2026.48",
+  "bucket": "v2026.48",
+  "cherry_picked_from": "42e10ee6a343627661b7d6f8ee7e229413dacd4b",
+  "commit_sha": "ffecfb8890f0658c148a65df7d193529ce07fb82",
+  "committed_at": "2026-11-20T11:20:07-08:00",
+  "evidence": {
+    "api_compatibility": "Not a breaking change. This repairs a request format that was already failing (400 Unknown embedding model) on FLM >= 1.0.13. The change makes the OpenAI-compatible /v1/embeddings endpoint work as users expect. No other API contracts are affected.",
+    "documentation": "The code comment is the only documentation touched. It is functional but does not follow the repo's comment style conventions (avoids issue numbers and cross-call-site references). The fix does not require spec, release notes, or user-facing documentation changes since it repairs broken behavior rather than adding new functionality.",
+    "manual_release_testing": "The fix repairs a previously broken path. A user with FLM >= 1.0.13 serving an embedding model (e.g. embed-gemma:300m) can POST /v1/embeddings with the lemonade model id (e.g. embed-gemma-300m-FLM) and should now receive vectors instead of a 400 error. This is the same endpoint that was broken before the fix.",
+    "post_approval_commits": "No post-approval commits. The PR had a single commit (12f68ea231d5c33a14d0ec6c984b73e6e5f7e183), approved at 2026-11-20T06:30:29Z and merged at 2026-11-20T07:23:29Z. This release branch cherry-pick (ffecfb8890f0658c148a65df7d193529ce07fb82) is a one-for-one copy of that commit with no new changes.",
+    "review": "PR #4166 was reviewed by @iswaryaalex, who provided one inline comment and approved. @iswaryaalex is not listed in docs/dev/contribute.md as a maintainer with FastFlowLM expertise (that falls under @superm1). The reviewer flagged a comment-style nit — the new comment includes an issue reference (#3889) and a cross-reference to sibling call sites, which the repo's AGENTS.md style guide says to avoid — and suggested a two-line replacement. The author did not apply the suggestion; the comment in the merged code still contains the issue reference and sibling-path mention. The reviewer approved anyway without enforcing the nit. The substantive fix — copying the request, setting model = checkpoint_ — is sound and mirrors the pattern used in chat_completions(), completion(), and forward_streaming_request().",
+    "security": "No security concerns. The change only rewrites one field in an outgoing request JSON object. No new network paths, credential handling, or permissions involved.",
+    "tests": "No new unit or integration tests were added for the embeddings path change. The author tested the fix manually on a Ryzen AI 9 HX 470 with FLM 1.0.13, reporting that /v1/embeddings returned vectors after the fix (768-dim) where it previously returned 400. The reviewer noted that CI suggests FLM 1.0.11 may actually ignore the model field (the existing embeddings test passes on main with the Lemonade name), but this does not invalidate the fix since FLM >= 1.0.13 hard-rejects unknown tags. Manual testing by the author is acceptable for this scope."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 121.8,
+  "maintainer_todos": [
+    {
+      "text": "Apply the reviewer's comment nit on the new docstring: replace \"exactly like chat_completions/completions above. Fixes #3889\" with a clean two-line comment that avoids issue references and call-site mentions, matching the sibling paths' style."
+    }
+  ],
+  "merge_date": "2026-11-20T07:23:29Z",
+  "pr_number": 4166,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-20T19:39:15+00:00",
+  "reviewers": [
+    "@iswaryaalex"
+  ],
+  "sha": "ffecfb8890f0658c148a65df7d193529ce07fb82",
+  "shout_outs": [],
+  "subject": "fix(flm): forward the flm checkpoint in embeddings() (#4166)",
+  "summary": "Changes the FLM embeddings() backend method to rewrite the model field in the request to the flm checkpoint name (e.g. \"embed-gemma:300m\") instead of forwarding lemonade's model id verbatim, making FLM embedding models usable through the OpenAI-compatible API.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The fix is small and correct, but FLM is a subject-area for @superm1 per contribute.md and no FLM-expert reviewer weighed in, and an inline review comment nit was accepted without resolution."
+}
