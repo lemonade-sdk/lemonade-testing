@@ -1,33 +1,44 @@
-## Lemonade v2026.48.0
+## Lemonade v2026.48.3
 
 ### ⚠️ These notes are AI generated and will be revised by a human ⚠️
 
-@everyone v2026.48 is out: https://github.com/lemonade-sdk/lemonade/releases/tag/v2026.48.0
+@everyone v2026.48.3 is out: https://github.com/lemonade-sdk/lemonade/releases/tag/v2026.48.3
 
-You can now pass images and audio through `/api/generate`, get speech and decision capabilities from `/api/show`, and non-LLM models are rejected upfront with a clean error instead of a silent fail.
+You can pass images and audio through to backends, non-LLM models get rejected before they load, the SSE error line is back, and FLM v1.0.13 brings AMD-signed Windows binaries with working embeddings.
 
 ### Breaking Changes
 
-- `/api/chat` and `/api/generate` return 400 instead of 500 for non-LLM models — clients that match on 500 to detect invalid model types will get a different status code.
-- TheNoise upgraded to v0.15.0 — existing image generation models run with the new backend and may produce different output or fail.
+- `/api/chat` now returns HTTP 400 for image generation models instead of 500 — you won't see a server error when you ask a chat model to make pictures.
+- `/api/chat` and `/api/generate` now return HTTP 400 for embedding and reranking models instead of 500 — no more silent hangs, just a clean rejection.
+- TheNoise shared backend is updated from v0.12.1 to v0.15.0, which may change inference behavior or memory layout for existing models.
+- `GET /pull/variants` now returns HTTP 400 instead of 500 when a repository has no supported model files or an invalid or oversized collection manifest — so you can spot bad searches at a glance.
 
-### 🖼️ Images, audio, speech, and decisions in multi-modal conversations
+### 🖼️ Images and audio, one conversation
 
-`@sreeram-11` added the `images` parameter to `/api/generate` so you can pass base64-encoded images and WAV audio through to the backend as a one-message chat. They also added `speech` capability reporting for TTS models, `decision` capability reporting for SystemOne decision models, and `audio` for llama.cpp models with the `chat-transcription` label on `/api/show`. Thanks `@fl0rianr` for adding TheNoise as a custom image model recipe in the GUI so you can work with standalone pixel upscalers too.
+`sreeram-11` added the `images` parameter to `/api/generate` (base64-encoded images and WAV audio passed through as one-message chat) and `audio` capability reporting to `/api/show` for llama.cpp models with the `chat-transcription` label, plus `speech` for TTS models and `decision` for SystemOne decision models.
 
-### ✅ Non-LLM models rejected before they even load
+### ✋ Non-LLM models rejected before they load
 
-`@sreeram-11` made `/api/chat` and `/api/generate` reject non-LLM models upfront with a clean 400 instead of loading and failing, and fixed SSE streams so backend errors — like prompts exceeding context size — end with a single error line instead of silently returning empty success.
+`sreeram-11` made `/api/chat` and `/api/generate` return a 400 error when asked to use a non-LLM model, instead of loading it and failing. The image generation capability is now reported on `/api/show`, and upscaling models are correctly excluded from image generation.
 
-### 🎨 TheNoise v0.15.0 with new image models
+### 📡 SSE streams now end with an error line
 
-`@bitgamma` bumped TheNoise from v0.12.1 to v0.15.0, bringing three new image generation models — MOSS-Image-SFT-8-Steps, MOSS-Image-Base-8-Steps, and H3-Image-INT8 — and `@fl0rianr` added GUI recipe support for the upgrade.
+`sreeram-11` fixed `/api/chat` and `/api/generate` so a backend error — like a prompt exceeding context size — ends the stream with an `{"error": "..."}` line and no `done` line, matching Ollama's own behavior. No more silent empty successes.
+
+### 🔤 FLM v1.0.13 with embeddings support
+
+`@zaneni6` bumped the FastFlowLM NPU backend to v1.0.13 with AMD-signed Windows binaries, and thanks `@iswaryaalex` the embeddings endpoint now works through the OpenAI-compatible API — use `GET /v1/embeddings` with FLM embedding models and get results back.
+
+### 🎨 Three new image models on TheNoise
+
+`@bitgamma` updated TheNoise to v0.15.0 and added MOSS-Image-SFT-8-Steps, MOSS-Image-Base-8-Steps, and H3-Image-INT8 with 8-step euler defaults.
 
 ### Additional Improvements
 
-- `@itomek` moved the API key out of WebSocket connect URLs and into the `Sec-WebSocket-Protocol` header for a cleaner security story.
-- `@meghsat` fixed autotune falling back to 4k context size on AMD iGPU and NPU on Windows by reading memory from DXGI instead of WMI.
-- `@sreeram-11` resolved model aliases in `/api/show` so they match what you expect.
-- `@apollo-2006` changed `/pull/variants` to return 400 instead of 500 when a repository has no supported files, giving you a clearer error on bad searches.
+- `@itomek` moved the WebSocket API key from the URL query string to the Sec-WebSocket-Protocol header.
+- `@sreeram-11` made the Ollama `/api/show` endpoint resolve model aliases and prevented name collisions with `:latest` aliases.
+- `@meghsat` fixed autotune context size on AMD iGPU and NPU on Windows by reading memory from DXGI instead of WMI.
+- `@fl0rianr` added a docs-only PR gate that skips expensive CI jobs for small Markdown-only PRs.
+- `@sreeram-11` and `@jeremyfowers` improved maintainer workflow tools and Windows signing infrastructure.
 
-Check v2026.48.0 on GitHub Releases — I can't wait to see what you build with images and audio in chat!
+Check v2026.48.3 on GitHub Releases — try the images and audio params and let me know what you build!
