@@ -1,0 +1,33 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "9a24b5eee5251627b50651d4a9f93828e8407ee9",
+  "committed_at": "2026-11-20T02:25:38+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking change. Users download the same files. Stable releases now include a signed Windows embeddable .zip (lemond.exe and lemonade.exe are Authenticode-signed alongside the MSIs), which only improves the experience. Release candidates continue to ship the unsigned embeddable zip. Release notes text is updated to reflect the new signing behavior.",
+    "documentation": "docs/dev/release.md updated to state that all Windows files (MSIs and embeddable binaries) go out in a single signing request under the new job name 'Sign Windows Release with SignPath'. Release notes template updated to say embeddable binaries are now signed for stable releases. No other docs changed.",
+    "manual_release_testing": "The change is CI infrastructure only — it alters how the release workflow bundles and signs Windows artifacts, but does not change user-facing behavior (the same files ship, just signed). The merge-queue run already exercised the full signing path. No manual release-testing to-do required.",
+    "post_approval_commits": "No commits were added after the first (and only) approval at 2026-11-20T00:31:59Z. The PR contains a single commit.",
+    "review": "Single approval from @iswaryaalex with body 'works well!' — a one-line response for a 106-line workflow refactor is thin. The PR body was a placeholder ('title') requiring CodeRabbit to remind the author to fill in the template. No inline review comments were raised. The author (@jeremyfowers) is listed in docs/dev/contribute.md as admin maintainer with subject area 'ci'; the sole reviewer (@iswaryaalex) is not listed as a maintainer, so the PR lacks a subject-matter expert reviewer. CodeRabbit auto-comment noted the template was unfilled but flagged no code issues.",
+    "security": "The workflow uses SIGNPATH_API_TOKEN to submit a signing request via a trusted SignPath action. The token is used to submit artifacts for signing, not to execute code or send credentials externally. No supply-chain risk introduced. The workflow runs on a standard github-hosted runner (windows-latest) for signing.",
+    "tests": "No unit or integration tests for CI/CD workflow changes; the change was exercised through the merge queue, which ran all workflows including cpp_server_build_test_release (run #13429) and passed."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 189.0,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-20T03:10:26Z",
+  "pr_number": 4219,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-20T03:15:16+00:00",
+  "reviewers": [
+    "@iswaryaalex"
+  ],
+  "sha": "9a24b5eee5251627b50651d4a9f93828e8407ee9",
+  "shout_outs": [],
+  "subject": "ci: sign the Windows embeddable archive in the same SignPath request as the MSIs (#4219)",
+  "summary": "Bundles the Windows MSI installers and the Windows embeddable zip (containing lemond.exe and lemonade.exe) into a single unsigned artifact for one SignPath signing request, then publishes the signed embeddable zip for stable releases and the unsigned zip for release candidates.",
+  "verdict": "Clean",
+  "verdict_reason": "Low-risk CI-only change with all CI checks passing and no breaking user-facing behavior, though the review was thin."
+}
