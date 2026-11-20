@@ -1,0 +1,42 @@
+{
+  "author": "@zaneni6",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "be9d61d7d8819fac190b0e05b77f2c79af0da43a",
+  "committed_at": "2026-11-20T16:59:07+00:00",
+  "evidence": {
+    "api_compatibility": "Not breaking. This changes only a version string in a JSON config used by the FLM installer to construct asset download URLs. No CLI flags, config keys, API endpoints, or persistence formats changed. The installer and its consumers interact with the same download endpoints and the same FLM binary interface; only the asset version label changes.",
+    "documentation": "Not affected. This is a dependency version bump with no behavioral changes, API changes, or user-facing documentation updates required.",
+    "manual_release_testing": "This is a dependency version bump touching one JSON config file. No human manually exercised the path before merge. CI passing is insufficient because the FLM installer constructs its download URL from this pin; the installer must successfully download and install FLM v1.0.13 on an actual NPU system. This should be tested on release candidate builds.",
+    "post_approval_commits": "No post-approval commits. The branch was merged-of-main into chore/flm-v1.0.12 at 2026-11-20T07:42:45Z and @iswaryaalex approved at 2026-11-20T07:48:45Z; the merge into main happened at 2026-11-20T18:08:19Z. The diff from the approved state (bf059bb) to the merge commit (be9d61d) is empty.",
+    "review": "Only one human review: @iswaryaalex approved on 2026-11-20T07:48:45Z after a merge of main into the branch. The approval notes FLM 1.0.13's AMD-signed Windows binaries (flm.exe), its use of the model field on /v1/embeddings (which broke FLM embeddings in Lemonade until PR #4166 was merged), and a follow-up about 13 new -oga-hipep GPU-only models showing as NPU -FLM models with size 0. @zaneni6 requested @sreeram-11 as a reviewer but received no review from them. Per docs/dev/contribute.md, the maintainers with FLM/NPU subject-area expertise are @superm1 and @ramkrishna2910; neither reviewed this PR. CodeRabbit (bot) posted multiple COMMENTED reviews noting a version conflict (the PR body said v1.0.12 while the diff said v1.0.13 — upstream v1.0.13 was not yet published at the time of the initial CodeRabbit run on Nov 13) and template compliance issues, but these were bot-generated comments.",
+    "security": "No concerns. The change only updates a version pin. FLM v1.0.13 ships the same asset set as prior versions (Windows MSI/zip, Linux tarball and .debs), and the approval review confirms the Windows binaries are now AMD-signed, which is a security improvement.",
+    "tests": "No new tests are expected for a version-pin bump. CI checks all passed: Routing Schema Tests, Validate New stable-diffusion.cpp Release, and C++ Server Build, Test, and Release. The PR test plan (lemonade backends installs FLM v1.0.13 and an FLM model loads/runs on NPU) was not executed by a human before merge; CI passing is not a substitute for manual NPU exercise. The single change to src/cpp/resources/backend_versions.json (flm.npu: v1.0.11 → v1.0.13) does not introduce logic that unit tests could cover."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 200.0,
+  "maintainer_todos": [
+    {
+      "text": "Confirm the backend version bump works end-to-end: run lemonade backends on an NPU system and verify it reports FLM v1.0.13, then load an FLM model on NPU to confirm inference succeeds."
+    }
+  ],
+  "merge_date": "2026-11-20T18:08:19Z",
+  "pr_number": 4067,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-20T18:13:24+00:00",
+  "reviewers": [
+    "@iswaryaalex"
+  ],
+  "sha": "be9d61d7d8819fac190b0e05b77f2c79af0da43a",
+  "shout_outs": [
+    {
+      "handle": "@iswaryaalex",
+      "reason": "Co-authored this commit alongside @zaneni6."
+    }
+  ],
+  "subject": "chore(flm): bump FLM to v1.0.13 (#4067)",
+  "summary": "Pins the FastFlowLM (FLM) NPU backend version from v1.0.11 to v1.0.13 in src/cpp/resources/backend_versions.json, updating the asset download target for FLM MSI, zip, tarball, and .deb packages on both Windows and Linux.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The PR was reviewed by @iswaryaalex who lacks FLM/NPU subject matter expertise per docs/dev/contribute.md, leaving no reviewer with recommended domain knowledge for the FastFlowLM backend."
+}
