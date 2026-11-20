@@ -3,32 +3,42 @@
   "break_rulings": [
     {
       "breaks": [
-        "/api/chat and /api/generate return 400 instead of 500 for non-LLM models — clients matching on 500 error responses get a different status code."
+        "/api/chat returns 400 (was 500) for image generation models instead of loading and failing.",
+        "/api/chat and /api/generate return 400 (was 500) for embedding and reranking models instead of loading and failing."
       ],
       "id": "27f3f67",
-      "why": "The HTTP status code changed from 500 to 400 for image, embedding, and reranking models on /api/chat and /api/generate."
-    },
-    {
-      "breaks": [
-        "The Noise backend upgraded from v0.12.1 to v0.15.0; existing image generation models run with the new backend on upgrade and may produce different output or fail."
-      ],
-      "id": "0c2aa03",
-      "why": "A major backend version bump silently shipped with the release, changing inference behavior for every existing TheNoise model on upgrade."
+      "why": "Clients that match on 500 error responses will no longer catch these errors and may misinterpret the result."
     },
     {
       "breaks": [],
       "id": "c3e0754",
-      "why": "These are bug fixes: /api/show now returns 200 for aliases (was 404), and /api/pull and /api/delete now correctly refuse aliases instead of acting on the target model."
+      "why": "Alias resolution on /api/show is additive (404→200); refusal of aliases on pull/delete is a bug fix, not a break for working setups."
+    },
+    {
+      "breaks": [
+        "TheNoise shared backend is updated from v0.12.1 to v0.15.0, which may change inference behavior or memory layout for existing models."
+      ],
+      "id": "0c2aa03",
+      "why": "Users upgrading silently get the new backend, and existing image generation setups may produce different output or fail to load."
+    },
+    {
+      "breaks": [
+        "GET /pull/variants returns 400 (was 500) for repositories without supported model files."
+      ],
+      "id": "4d0568a",
+      "why": "Clients that matched on 500 for this case will no longer catch it."
     },
     {
       "breaks": [],
-      "id": "4d0568a",
-      "why": "The 500 to 400 change on /pull/variants is a bug fix — the old 500 was incorrect for a client error (unsupported files or invalid manifest)."
+      "id": "ffecfb8",
+      "why": "The embeddings path was returning 400 and is now fixed to return vectors; no working setup is broken by the repair."
     }
   ],
   "breaking_changes": [
-    "/api/chat and /api/generate return 400 instead of 500 for non-LLM models — clients matching on 500 error responses get a different status code.",
-    "The Noise backend upgraded from v0.12.1 to v0.15.0; existing image generation models run with the new backend on upgrade and may produce different output or fail."
+    "/api/chat returns 400 (was 500) for image generation models instead of loading and failing.",
+    "/api/chat and /api/generate return 400 (was 500) for embedding and reranking models instead of loading and failing.",
+    "TheNoise shared backend is updated from v0.12.1 to v0.15.0, which may change inference behavior or memory layout for existing models.",
+    "GET /pull/variants returns 400 (was 500) for repositories without supported model files."
   ],
   "bucket": "v2026.48",
   "candidate_issues": [],
@@ -264,6 +274,26 @@
       "text": "Start lemond and request GET /pull/variants?checkpoint=Qwen/Qwen1.5-0.5B-Chat&source=huggingface and confirm the response is 400 with an error mentioning \"No supported model files found\" rather than 500."
     },
     {
+      "author": "@zaneni6",
+      "commit": "e452c7e904ddff220aecf6c76ed4ef11e525a7b6",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4067,
+      "priority": "P1",
+      "text": "Install the v2026.48 release candidate on an NPU system (Linux Ryzen AI or Windows) and run `lemonade backends` to confirm FLM v1.0.13 installs without error."
+    },
+    {
+      "author": "@zaneni6",
+      "commit": "e452c7e904ddff220aecf6c76ed4ef11e525a7b6",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4067,
+      "priority": "P1",
+      "text": "Serve an embedding model through FLM (`flm serve --embed 1`) and make a `POST /v1/embeddings` request — confirm it returns vectors instead of a `400 Unknown embedding model` error."
+    },
+    {
       "author": "@sreeram-11",
       "commit": "27f3f6759b95756687dbf62ecb6d2d7e813be3ed",
       "platforms": [
@@ -307,7 +337,9 @@
       "author": "@fl0rianr",
       "commit": "d906de81aee6bbe2ef44cf9b5e5a28e95cc55485",
       "platforms": [
-        "all"
+        "Ubuntu PPA",
+        "Fedora",
+        "Debian"
       ],
       "pr_number": 2889,
       "priority": "P2",
@@ -322,22 +354,32 @@
       "pr_number": 2889,
       "priority": "P2",
       "text": "Open a docs-only PR and apply each of the ci:distros, ci:backends, ci:macos, and ci:upgrades labels one at a time, confirming that every affected workflow (cpp_server_build_test_release, docs_and_style, routing_schema_tests, server_download_registry) re-runs with full CI."
+    },
+    {
+      "author": "@gringus",
+      "commit": "ffecfb8890f0658c148a65df7d193529ce07fb82",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4166,
+      "priority": "P2",
+      "text": "Apply the reviewer's comment nit on the new docstring: replace \"exactly like chat_completions/completions above. Fixes #3889\" with a clean two-line comment that avoids issue references and call-site mentions, matching the sibling paths' style."
     }
   ],
-  "commits_reviewed": 17,
+  "commits_reviewed": 20,
   "commits_unreviewed": 0,
   "evidence": {
-    "blockers": "One P0: the TheNoise 0.15.0 backend upgrade must be confirmed not to break existing image models. Several P1s require manual exercise of new API behavior (400 rejections, ollama CLI refusal), new GUI features (TheNoise recipe, SD.cpp upscaling), alias resolution, and Windows AMD iGPU memory detection. No showstoppers.",
-    "breaking_changes": "API status codes changed from 500 to 400 on /api/chat and /api/generate for non-LLM models. The Noise backend version bumped from v0.12.1 to v0.15.0, which may change behavior for existing image models.",
-    "coverage": "17 commits reviewed across the range from v2026.47.1 to 4d0568a. All 29 to-dos are rated. No coverage gaps.",
-    "manual_testing": "Ollama CLI integration (speech, decision, image model refusal, alias resolution), TheNoise 0.15.0 regression against existing models, new GUI custom model registration flow, and Windows AMD iGPU system-info and context sizing. These involve external tools, GUI interaction, or platform-specific hardware that CI does not exercise.",
-    "security": "One security improvement merged: WebSocket credentials moved from URL query string to Sec-WebSocket-Protocol header (PR 4141). No new security concerns observed in this release."
+    "blockers": "The TheNoise 0.15.0 upgrade must be verified against existing models (0c2aa03-4, P0) before shipping — a major backend version jump with no end-to-end inference evidence. The Windows AMD iGPU memory fix (57773fe) needs real hardware validation or context sizing remains broken. The FLM backend install and embeddings path (e452c7e) need NPU hardware verification. The /pull/variants 400 change (4d0568a) affects clients matching on 500.",
+    "breaking_changes": "Three breaking changes ship: (1) /api/chat and /api/generate return 400 instead of 500 for non-LLM models — clients matching on 500 must update. (2) TheNoise backend is upgraded from 0.12.1 to 0.15.0 — existing models may behave differently under the new binary. (3) GET /pull/variants returns 400 instead of 500 for unsupported repositories — clients matching on 500 must update. Two reported changes (alias resolution on /api/show, embeddings path repair) are behavioral improvements, not breaks.",
+    "coverage": "All 20 commits in the range are reviewed. The 20 digest entries cover 32 to-dos across Ollama gateway behavior (rejection, alias resolution, streaming errors, audio/image input, capability reporting), custom image model registration in the GUI, TheNoise backend upgrade, FLM backend upgrade, Windows AMD iGPU memory detection, /pull/variants error code, docs-only CI gating, WebSocket auth, backend version bumps, and maintainer tooling.",
+    "manual_testing": "New backends (TheNoise 0.15.0, FLM 1.0.13) need end-to-end inference on real hardware. New GUI model registration flow needs the custom model editor exercised with actual checkpoints. New Ollama behaviors (image model rejection, alias resolution, audio input, decision model, speech model) need manual endpoint testing. Windows AMD iGPU memory reporting requires a Ryzen AI system. The docs-only CI fast path needs a live docs-only PR to verify the matrix-name-expansion edge case is resolved.",
+    "security": "WebSocket authentication fix (b1e53c4) removes API key leakage from URL query strings — a security improvement. FLM 1.0.13 ships AMD-signed Windows binaries instead of unsigned builds. No new supply-chain or credential concerns observed in the release range."
   },
-  "generation_seconds": 601.6,
-  "head_sha": "4d0568a13bd11a80b6287c759ead45bdac3a3596",
+  "generation_seconds": 109.9,
+  "head_sha": "e452c7e904ddff220aecf6c76ed4ef11e525a7b6",
   "is_hotfix": false,
   "last_stable_tag": "",
   "range_start": "v2026.47.1",
   "repo": "lemonade-sdk/lemonade",
-  "reviewed_at": "2026-11-18T20:09:04+00:00"
+  "reviewed_at": "2026-11-20T19:47:27+00:00"
 }
