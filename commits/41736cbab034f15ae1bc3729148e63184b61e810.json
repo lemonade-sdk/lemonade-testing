@@ -1,0 +1,38 @@
+{
+  "author": "@Bekhouche",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "41736cbab034f15ae1bc3729148e63184b61e810",
+  "committed_at": "2026-11-20T07:09:12+00:00",
+  "evidence": {
+    "api_compatibility": "On a collection.router model, a request that continues earlier responses through previous_response_id, conversation, or item_reference now returns 400 instead of reaching a backend candidate. This is a breaking change for workflows that relied on the old behavior, but the old behavior was a correctness bug — the new candidate had no access to the response chain, and results were backend-dependent (llama.cpp rejects the field, cloud backends have no non-streaming Responses API, others may answer without context). The PR correctly labels it as breaking and documents it in the error row and route notes. The endpoint badge changes from fully_available to partially_available because the previous_response_id argument is now declared Support::Partial. This is accurate: llama.cpp rejects it, and router collections now also reject it. No other API contracts are affected.",
+    "documentation": "The OpenAPI docs are generated from the route schema in responses.cpp. The endpoint badge, previous_response_id argument row (marked Partial with explanation that llama.cpp rejects it), a new route note explaining the rejection, and the new error row (router_response_chain_unsupported) are all present. The explanation in the error message tells the client to resend the full input or target the candidate named in x_lemonade_route.route_to from the earlier response's first SSE event. One nit: the test docstring still contains a (#2957) reference, which the project guidelines discourage, but this is cosmetic.",
+    "manual_release_testing": "The commit changes behavior of the POST /v1/responses endpoint when the model parameter names a collection.router — a user-reachable API path. CI runs the Python tests against a local server, but nothing shows a human exercising this on a release candidate. One manual test item is written in Maintainer To-Do.",
+    "post_approval_commits": "All changes were made before the final APPROVE from @SlawomirNowaczyk at commit 4850824. The merge queue merged the fully-reviewed tip at 41736cb. No commits were added after approval.",
+    "review": "PR #3497 received a substantive review from @SlawomirNowaczyk (listed in docs/dev/contribute.md under smart router for wg::platform-core). He opened with a CHANGES_REQUESTED review covering 16 points — functional correctness (single collection lookup, policy mismatch, argument validation, streaming, alias tests), documentation accuracy, and log severity. The author addressed all points across commits that resolved the CodeRabbit findings (single snapshot for guard+dispatch, handling item_reference without type, null type, conversation with empty/null id, logging the failed lookup, and streaming route guidance). @SlawomirNowaczyk then re-reviewed at 4850824 and APPROVED. @jeremyfowers left a single inline comment on the initial doc draft style but no body — the author later self-replied with the rewrite. No substantive review was missed; the review quality is high.",
+    "security": "No security concerns. The change improves correctness and safety by preventing a response chain from silently crossing to a backend that cannot honor it. No supply-chain changes, credential handling, or code execution paths are introduced.",
+    "tests": "Seven new Python integration tests (test_640 through test_647) cover the guard: rejection with previous_response_id, passing through on concrete models, empty id handling, streaming rejection before SSE, alias (without user. prefix), all three state-reference forms (conversation, item_reference with/without type), and the non-rejection path for full messages with id+role+content. Tests use a non-existent model to avoid loading inference (test_641) and stream with short timeouts to avoid waiting 600 s. The test coverage is comprehensive and matches the code paths in responses.cpp."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 280.1,
+  "maintainer_todos": [
+    {
+      "text": "Start the server with a router collection and send a POST to /v1/responses with previous_response_id set; confirm it returns 400 with error.code router_response_chain_unsupported and a JSON body naming the collection."
+    }
+  ],
+  "merge_date": "2026-11-20T08:16:53Z",
+  "pr_number": 3497,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-20T08:23:18+00:00",
+  "reviewers": [
+    "@SlawomirNowaczyk",
+    "@jeremyfowers"
+  ],
+  "sha": "41736cbab034f15ae1bc3729148e63184b61e810",
+  "shout_outs": [],
+  "subject": "feat(router): reject previous_response_id on a router collection (#3497)",
+  "summary": "/v1/responses now returns 400 with router_response_chain_unsupported when the model is a collection.router and the request references earlier responses through previous_response_id, conversation, or item_reference.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The commit changes API behavior on the responses endpoint for router collections and should be manually tested against a running server before release."
+}
