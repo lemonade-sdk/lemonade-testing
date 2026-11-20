@@ -1,0 +1,43 @@
+{
+  "author": "@meghsat",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "f7077fcfb1b73752a2f380aaace614192a3a0e34",
+  "committed_at": "2026-11-20T19:26:41+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking change. The new public-facing APIs (special_token_lead, strip_special_tokens) are internal to the rule-head classification path and not part of the llamacpp-server wire protocol. The /v1/classify endpoint behavior is unchanged for clients — it returns the same results with fewer upstream calls. The RuleHeadCounts struct replaces a simple pair internally but is not exposed to clients. The change is strictly an internal optimization.",
+    "documentation": "No user-facing documentation changes. The PR explicitly states documentation is not affected. The optimization is transparent to users — the same /v1/classify contract, same responses, faster execution.",
+    "manual_release_testing": "The change modifies the /v1/classify endpoint's internal tokenization path for rule-head models, which is user-reachable. All CI checks (llamacpp validation, app checks, server download registry, C++ build/test/release) passed. No human ran classify with a rule-head model against this change before merging. The optimization should be manually verified with a prompt router GGUF containing a rulehead.bin, exercising repeated label sets (cache hit), new label sets (cache miss), and long text (cache and truncation path).",
+    "post_approval_commits": "The merge-queue commit (f7077fc) contains two author commits: 310ede5 (the optimization) and 1475c9e (PR feedback: window check before label check in cache). The follow-up commit was added before the first approval and is a small cache-safety guard, consistent with the CodeRabbit finding. It does not change the spirit, scope, or risk profile of the approved PR. No new behavior was introduced after approval.",
+    "review": "PR #4217 received one human approval (@fl0rianr, submitted 2026-11-20T19:22:12Z) with a brief 'Fine from my side, good work'. Per docs/dev/contribute.md, @fl0rianr's subject areas are LMX omni models, GUI, CI, and smart router — not llamacpp. The llamacpp experts are @superm1 (admin) and @pwilkin. A code-level performance optimization touching core tokenization and caching should ideally have review from an llamacpp expert. CodeRabbit raised one valid concern (oversized rejected label blocks entering the cache) which the author addressed in a follow-up commit (1475c9e). There were no substantive inline review comments from @fl0rianr.",
+    "security": "No security concerns. The change adds in-memory caching of token arrays with a bounded size (MAX_CACHED_LABEL_BLOCKS = 256) and cache eviction. No credential handling, network calls, or permission changes. The cache key is the label block content string, which is user-supplied but non-malicious in this context. No supply-chain or obfuscation concerns.",
+    "tests": "New tests in test/cpp/test_llamacpp_rulehead.cpp (62 lines) cover: (1) byte-budget bypass where text at or under the token window is not tokenized on its own, (2) text over the byte budget triggers counting and truncation, (3) the byte bound counts bytes not characters so multi-byte UTF-8 fits more characters, (4) tokenizer returning empty-piece tokens falls back to the normal path, (5) special_token_lead counting special tokens before vs after input, (6) strip_special_tokens correctness and error paths, (7) router_tokens producing identical ids and spans from a single add_special call versus two calls. The tests are thorough and target the specific new code paths. No existing tests were weakened or deleted."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 138.0,
+  "maintainer_todos": [
+    {
+      "text": "Start the server with a rule-head prompt router model and send multiple /v1/classify requests with the same label set, then confirm the classification result is correct and response time is noticeably faster than on the previous release."
+    },
+    {
+      "text": "Send a /v1/classify request with a label set never seen before, then reload the server (or send a second request with the same new label set) and confirm classification still works correctly after the cache is warmed."
+    },
+    {
+      "text": "Send /v1/classify requests with text exceeding the model's token window and confirm the text is truncated correctly and the classification result matches the previous release."
+    }
+  ],
+  "merge_date": "2026-11-20T20:18:57Z",
+  "pr_number": 4217,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-20T20:23:02+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "f7077fcfb1b73752a2f380aaace614192a3a0e34",
+  "shout_outs": [],
+  "subject": "fix(server): llamacpp 1-2 /tokenize calls per rule-head classify instead of 4 (#4217)",
+  "summary": "Reduces /tokenize API calls from 4 to 1-2 per /v1/classify request when using a rule-head GGUF by caching per-label token results and using the add_special+with_pieces single-call endpoint.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The sole reviewer (@fl0rianr) lacks llamacpp subject-matter expertise; @pwilkin or @superm1 should sign off before release."
+}
