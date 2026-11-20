@@ -1,0 +1,34 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "release-v2026.48",
+  "bucket": "v2026.48",
+  "cherry_picked_from": "9a24b5eee5251627b50651d4a9f93828e8407ee9",
+  "commit_sha": "c94df879927f9024f542b67442997bd3df17a487",
+  "committed_at": "2026-11-20T11:20:07-08:00",
+  "evidence": {
+    "api_compatibility": "Not applicable. The change is entirely within .github/workflows/ and .github/actions/ directories. No user-facing API, config, CLI, or persisted data is modified.",
+    "documentation": "docs/dev/release.md was updated to reflect that both .msi installers and the embeddable .zip binaries are now signed in a single SignPath request. The generate-release-notes action was also updated so the release notes correctly state that embeddable binaries are signed for stable releases and unsigned for candidates. Documentation is consistent with the workflow changes.",
+    "manual_release_testing": "Not applicable. This is an internal CI workflow change. The signing behavior change — that the Windows embeddable zip now gets signed for stable releases — is exercised by the release pipeline itself through the SignPath approval step and the AuthenticodeSignature verification in the workflow. No user-facing API, CLI command, GUI change, or configuration option is affected.",
+    "post_approval_commits": "No post-approval commits. The single commit (e1d1fc4a74dc92fcb271c87b91703f1c80e2d79a) was submitted before approval. The cherry-pick on the release branch (c94df879) is a straight forward pick with no divergences.",
+    "review": "PR #4219 received one human approval from @iswaryaalex with the comment 'works well!' (submitted 2026-11-20T00:31:59Z). No inline review comments were filed. @coderabbitai[bot] submitted an auto-generated review with generic template instructions but no substantive findings. No post-approval commits were added. The change is CI workflow code only, and the approver appears to have reviewed the diff. Note: the review was brief; while acceptable for a CI-only change, a more substantive review would strengthen confidence.",
+    "security": "The change improves the security posture of Windows releases by ensuring the embeddable zip executables (lemond.exe and lemonade.exe) are also signed alongside the MSIs. SignPath signing policy and configuration remain unchanged — the workflow bundles both artifacts into one SignPath request under the existing windows-release artifact configuration. No credential or supply-chain risk was introduced; the signing token and policy references are unchanged.",
+    "tests": "No tests — the change modifies only CI workflow files (cpp_server_build_test_release.yml, generate-release-notes/action.yml) and release documentation (docs/dev/release.md). CI-only changes do not have associated unit tests in this project. All 4 merge-check workflows (Docs And Style, Build and Push Container Image, MCP Smoke Test, and the main build-and-test workflow) passed on the original commit."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 151.9,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-20T03:10:26Z",
+  "pr_number": 4219,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-20T19:37:11+00:00",
+  "reviewers": [
+    "@iswaryaalex"
+  ],
+  "sha": "c94df879927f9024f542b67442997bd3df17a487",
+  "shout_outs": [],
+  "subject": "ci: sign the Windows embeddable archive in the same SignPath request as the MSIs (#4219)",
+  "summary": "Bundles the Windows server MSI and embeddable ZIP into one artifact so they are signed together in a single SignPath request, and publishes the signed embeddable zip for stable releases while keeping the unsigned version for release candidates.",
+  "verdict": "Clean",
+  "verdict_reason": "CI-only change reviewed by a maintainer with CI subject-area expertise; no user-facing surface to test."
+}
