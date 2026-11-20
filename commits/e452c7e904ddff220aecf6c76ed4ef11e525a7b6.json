@@ -1,0 +1,46 @@
+{
+  "author": "@zaneni6",
+  "branch": "release-v2026.48",
+  "bucket": "v2026.48",
+  "cherry_picked_from": "be9d61d7d8819fac190b0e05b77f2c79af0da43a",
+  "commit_sha": "e452c7e904ddff220aecf6c76ed4ef11e525a7b6",
+  "committed_at": "2026-11-20T11:20:07-08:00",
+  "evidence": {
+    "api_compatibility": "No breaking API change for Lemonade users. The backend version pin in backend_versions.json is an internal config detail; Lemonade's OpenAI-compatible API contract does not change. FLM 1.0.13 internally began using the `model` field on `/v1/embeddings`, but PR #4166 (merged 2026-11-20T07:23:29Z, before #4067 merged) fixed the lemonade-side forwarding to send the checkpoint name, so the embedding endpoint works end-to-end. This is a behavioral improvement, not a breakage for existing setups.",
+    "documentation": "No documentation updated. This is a backend version bump; release notes should mention the new FLM version and its AMD-signed Windows binaries. The PR template sections for Documentation and Breaking Changes were left incomplete by CodeRabbit.",
+    "manual_release_testing": "No evidence exists that a human exercised FLM v1.0.13 on real hardware before this cherry-pick. FLM is a backend users install via `lemonade backends` — the installed artifact is user-reachable. Two items in Maintainer To-Do are written to cover this.",
+    "post_approval_commits": "No commits were added after @iswaryaalex's approval on 2026-11-20T07:48:45Z. The PR contained four commits (initial bump to v1.0.12, merge of main, bump to v1.0.13, merge of main) and two merge commits from rebasing onto updated main. None introduced new behavior after approval.",
+    "review": "PR #4067 received one substantive approval from @iswaryaalex, who is listed in docs/dev/contribute.md as having NPU and FastFlowLM subject-matter expertise. Their review noted two behavioral changes in FLM 1.0.13: AMD-signed Windows binaries and the new `model` field usage on `/v1/embeddings`. The approval was submitted at 2026-11-20T07:48:45Z with no commits added after that point. This is a cherry-picked merge of the original PR merged at be9d61d7d8819fac190b0e05b77f2c79af0da43a, so the review applies to the cherry-picked content. CodeRabbit flagged incomplete PR template sections (Spec Driven Development, Testing, Documentation, Breaking Changes) but these are documentation quality issues, not review gaps.",
+    "security": "FLM 1.0.13 ships AMD-signed Windows binaries (flm.exe), which is a security improvement over the prior unsigned build. The bump only touches a JSON version pin — no credential handling, network call changes, or code execution path changes. No supply-chain concerns beyond the standard upstream asset download, which Lemonade has used since FLM was added.",
+    "tests": "The PR test plan had two unchecked items: CI passes and `lemonade backends` installs FLM v1.0.13 with a model loading on NPU. CodeRabbit also flagged the Testing section of the PR template as incomplete. On the release-v2026.48 branch, CI workflows (Snap Release, Launchpad PPA, C++ Server Build) all passed, but the C++ build was still in-progress at time of review. CI passing is not evidence of human-end testing."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 376.3,
+  "maintainer_todos": [
+    {
+      "text": "Install the v2026.48 release candidate on an NPU system (Linux Ryzen AI or Windows) and run `lemonade backends` to confirm FLM v1.0.13 installs without error."
+    },
+    {
+      "text": "Serve an embedding model through FLM (`flm serve --embed 1`) and make a `POST /v1/embeddings` request — confirm it returns vectors instead of a `400 Unknown embedding model` error."
+    }
+  ],
+  "merge_date": "2026-11-20T18:08:19Z",
+  "pr_number": 4067,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-20T19:45:34+00:00",
+  "reviewers": [
+    "@iswaryaalex"
+  ],
+  "sha": "e452c7e904ddff220aecf6c76ed4ef11e525a7b6",
+  "shout_outs": [
+    {
+      "handle": "@iswaryaalex",
+      "reason": "Co-authored-by trailer on the commit identifies them as having written part of the commit."
+    }
+  ],
+  "subject": "chore(flm): bump FLM to v1.0.13 (#4067)",
+  "summary": "Bumps the FastFlowLM (FLM) NPU backend version pin from v1.0.11 to v1.0.13 in src/cpp/resources/backend_versions.json, adding AMD-signed Windows flm.exe binaries and enabling FLM 1.0.13's use of the `model` field on the `/v1/embeddings` endpoint (fixed by PR #4166).",
+  "verdict": "Needs Attention",
+  "verdict_reason": "A backend version bump ships a new FLM v1.0.13 artifact to NPU users with AMD-signed Windows binaries and new embedding API behavior, but no evidence exists that a human exercised the installed version before merge."
+}
