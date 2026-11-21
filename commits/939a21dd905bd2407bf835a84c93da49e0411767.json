@@ -1,0 +1,40 @@
+{
+  "author": "@meghsat",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "939a21dd905bd2407bf835a84c93da49e0411767",
+  "committed_at": "2026-11-20T23:53:43+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The /api/system endpoint continues to work identically; the change only refines which AMD GPUs are enumerated on Windows. The API documentation was updated to list D3DKMT alongside DXGI, DXCore and PDH. The change does not alter any existing client contract.",
+    "documentation": "The API docs (docs/api/lemonade.md) and the in-code comment were updated to include D3DKMT in the list of Windows AMD telemetry backends. The system_stats.cpp inline docstring was also updated. The documentation is consistent with the code change.",
+    "manual_release_testing": "No evidence of a human exercising the monitor page in an RDP session with an AMD GPU in a release-candidate build. This is user-visible behavior (GPU listing in the monitor tab) that needs manual verification before release.",
+    "post_approval_commits": "No commits were added after the first approval (2026-11-20T23:13:12Z) or the latest approval (2026-11-20T23:49:31Z). The PR contained two commits: the original fix and a merge of main into the feature branch, neither of which altered behavior after review.",
+    "review": "Two reviews were submitted: @PCAssistSoftware tested on live RDP hardware and confirmed the fix (\"GPU only showing once now\"), and @fl0rianr approved with \"LGTM\". @fl0rianr covers GUI in the maintainer matrix and is relevant; @PCAssistSoftware is not a listed maintainer and has no documented AMD/ROCm subject-area expertise from contribute.md, so the review does not include a maintainer with deep AMD platform expertise. No inline comments were raised on either review.",
+    "security": "Low risk. The code dynamically loads gdi32.dll at runtime via LoadLibraryExA with LOAD_LIBRARY_SEARCH_SYSTEM32, calls D3DKMTOpenAdapterFromLuid and D3DKMTQueryAdapterInfo to query kernel adapter type, then closes the handle. No network calls, no credentials, no file I/O, no new permissions. The logic correctly handles query failures by defaulting to including the adapter (fail-open).",
+    "tests": "No new automated tests were added. The PR author confirmed local testing on their own RDP setup, and @PCAssistSoftware verified the fix with a screenshot from real RDP hardware. This is a platform-specific, Windows-only behavioral change that is difficult to cover with CI tests but was adequately validated through hands-on testing by the author and a reviewer."
+  },
+  "fixes_prs": [
+    4220
+  ],
+  "generation_seconds": 150.6,
+  "maintainer_todos": [
+    {
+      "text": "Start an RDP session on a Windows machine with an AMD GPU, open the Lemonade monitor tab, and confirm only the physical GPU is shown (no phantom RDP indirect display adapter)."
+    }
+  ],
+  "merge_date": "2026-11-21T00:42:15Z",
+  "pr_number": 4225,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-21T00:46:37+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@PCAssistSoftware"
+  ],
+  "sha": "939a21dd905bd2407bf835a84c93da49e0411767",
+  "shout_outs": [],
+  "subject": "rdp gpus are ignored from the monitor tab using D3DKMT kernel buils checks (#4225)",
+  "summary": "Adds D3DKMT kernel adapter type checks to AMD GPU enumeration on Windows, filtering out RDP indirect display adapters (which copy the real GPU's vendor ID, device ID and memory) so they no longer appear as a phantom second GPU in the monitor tab.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The commit changes user-visible GPU enumeration behavior on Windows with AMD GPUs in RDP sessions but no end-to-end manual test was recorded, so a tester should exercise the monitor page under RDP before shipping."
+}
