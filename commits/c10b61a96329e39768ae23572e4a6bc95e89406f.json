@@ -1,0 +1,34 @@
+{
+  "author": "@vjanelle",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "c10b61a96329e39768ae23572e4a6bc95e89406f",
+  "committed_at": "2026-11-21T03:29:26+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. This is a GUI-only fix in src/app/src/components/ModelDetailPanel.tsx touching a React component and its test file. The load request body behavior (sending the un-normalized freeform string) was already the pre-existing contract; the fix simply ensures the user-visible editing path preserves that contract.",
+    "documentation": "No documentation changes needed. The PR explicitly states documentation is unaffected. This is a bug fix that restores intended behavior — it does not introduce new features or change documented behavior.",
+    "manual_release_testing": "The behavior is user-reachable — the freeform Backend args textarea in the Models detail config panel for Gufo (and llama.cpp) models. However, the Playwright tests exercise the same UI path a human would use (typing spaces, blur, load), and the bug reproduction steps from issue #4152 are directly covered by the regression test. No additional manual release testing is required.",
+    "post_approval_commits": "None. The PR contains a single commit (86616c85) and no commits were added after either approval. The first approval was 2026-11-13T16:36:57Z and the latest approval was 2026-11-21T03:29:18Z, both before the merge commit at 2026-11-21T04:15:46Z. The merge was processed through gh-readonly-queue with a merge group re-run of all CI checks.",
+    "review": "The PR has two approvals: @fl0rianr (\"Thanks, LGTM\", 2026-11-13T16:36:57Z) and @Geramy (\"LGTM\", 2026-11-21T03:29:18Z). Both reviewers have subject matter expertise: @fl0rianr covers GUI and @Geramy covers GUI/app per docs/dev/contribute.md. The PR body follows the project template with Spec Driven Development checklist, clear scope, testing commands with results, and explicit non-breaking declaration. No substantive inline review comments were raised beyond the CodeRabbit auto-summary. CodeRabbit assessed merge risk as \"Minimal\" and noted the change is small and covered by browser tests.",
+    "security": "No security concerns. The change is a two-line React component fix with no credential handling, network calls, code execution, supply-chain changes, or permission modifications.",
+    "tests": "The PR adds 48 lines of Playwright regression tests in src/app/tests/features.spec.ts, parameterized over the ['llamacpp', 'gufo'] recipes. Each test iterates through: typing spaces, repeated spaces, quoted paths like \"--path my model\", blur (which normalizes the display), and the load request body to verify the backend receives the un-normalized value with spaces intact. No existing tests were weakened, deleted, or skipped. The author reports 46 runtime tests and 3 Playwright tests passing (the 2 new + 1 existing '25d' test matched by the grep filter)."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 154.0,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-21T04:15:46Z",
+  "pr_number": 4153,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-21T04:19:59+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@Geramy"
+  ],
+  "sha": "c10b61a96329e39768ae23572e4a6bc95e89406f",
+  "shout_outs": [],
+  "subject": "fix(gui): preserve spaces in freeform backend args (#4153)",
+  "summary": "Fixes a bug where the freeform Backend args textarea in the GUI drops spaces while typing, turning \"--sessions 4\" into \"--sessions4\", for the Gufo recipe (llama.cpp coverage preserved as regression guard).",
+  "verdict": "Clean",
+  "verdict_reason": "A focused two-line fix with full Playwright regression coverage for both affected and unaffected backends, approved by two reviewers with GUI expertise, and passing all CI checks with no post-approval changes."
+}
