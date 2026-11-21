@@ -1,0 +1,46 @@
+{
+  "author": "@Bekhouche",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "b7a6f689da02c4f1a20541a4a7d65db40f0b3682",
+  "committed_at": "2026-11-21T08:57:58+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The four cost keys were silently dropped before, so nothing depended on them. GET /v1/models only gains optional fields. The new outputs.estimated_cost on routing decisions is additive — existing clients that do not read it are unaffected. The schema for /v1/models now includes the four cost fields, but as optional additions they do not break consumers that ignore unknown keys.",
+    "documentation": "Comprehensive. New Cost metadata section in docs/guide/configuration/custom-models.md with four table rows and explanation of reporting vs routing, units (USD per million tokens), latency_ms_hint as author's estimate, re-registration erasure, and unusable-value warning. docs/api/router.md now describes outputs.estimated_cost with an example. docs/api/openai.md and docs/api/lemonade.md were regenerated for the new /v1/models fields. docs/guide/configuration/custom-models.md table entries for the four fields were added. The schema README was updated. The author also self-corrected CodeRabbit's two findings (model naming prefix on example key, and cost-selection claims that referenced non-existent features) in follow-up commits.",
+    "manual_release_testing": "Four user-visible surfaces were added and no human appears to have exercised them end-to-end: (1) cost metadata persisted through POST /models/register, (2) cost metadata persisted through POST /pull, (3) cost fields listed on GET /v1/models, and (4) outputs.estimated_cost carried on routing decisions. The router cost-cache invalidation on registry generation change is tested in isolation but not through the HTTP path a user would follow. Maintainer to-dos cover these surfaces.",
+    "post_approval_commits": "The PR merged via GitHub's merge queue; there are no post-approval commits on this PR's own branch. The post-approval-commits script returned commits from other PRs in the same merge group, which is expected behavior. The final approval on 2026-11-16 is the relevant one, and the merge commit (2026-11-21) reflects only reviewed changes.",
+    "review": "PR #3518 was reviewed by @SlawomirNowaczyk, who has subject-matter expertise in the smart router (per docs/dev/contribute.md). He first requested changes on 2026-11-09 (major: docs referenced non-existent `cost_select`/`cost` classifier and `lemonade import` stripped cost keys; minor: missing cache test, config dir override, shared helper). The author addressed the major issues (docs rewritten on 2026-11-20, import fix, config_dir fix, shared header, router.md updated) and the reviewer approved on 2026-11-16. The final review confirmed: docs link to router.md which now describes estimated_cost, cache refresh is now tested, import covers collection models[] entries, Python tests use `next(..., None)` with a clear message, and temp dir cleanup is guarded. The review was thorough and applied project philosophy well.",
+    "security": "No security concerns. The cost fields are user-defined, validated (cost_tier must be one of four bands; prices/latency must be non-negative numbers), and only reported or carried as metadata — they do not affect control flow, permissions, or network behavior. The new generation-counter cache invalidation is an internal mechanism with no external attack surface. No supply-chain, credential, or telemetry changes.",
+    "tests": "A new 222-line C++ test (test_model_manager_cost_props.cpp) covers: registration preserves the four keys, router resolves registered cost, cost cache refresh after re-registration, typed price wins over extras, unusable values are dropped on read, unusable metadata names bad keys, and `lemonade import` keeps cost keys for both top-level models and collection components. Server-endpoint tests add test_000b (register through /models/register with cost fields, check /models lists them) and test_007a (pull through /pull with cost fields, check /models lists them). test_000a and test_000b were also improved to use `next(..., None)` with a clear assertion message instead of StopIteration. CI (C++ Server Build, Test, and Release) passed with conclusion success. No evidence of test weakening or inappropriate skipping."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 334.1,
+  "maintainer_todos": [
+    {
+      "text": "Register a user model through POST /models/register with cost_tier, cost_input_per_million, cost_output_per_million and latency_ms_hint, then GET /v1/models and confirm all four fields appear in the model's entry."
+    },
+    {
+      "text": "Pull a user model through POST /pull with the same four cost fields, then GET /v1/models and confirm they are listed on the pulled model."
+    },
+    {
+      "text": "Send a POST /pull to re-register the same model with different cost values, then GET /v1/models and confirm the new values appear without restarting lemond."
+    },
+    {
+      "text": "Execute a routed request through the router and check that the response's outputs.estimated_cost carries the cost metadata (cost_tier, prices, latency_ms_hint) that was set on the selected model."
+    }
+  ],
+  "merge_date": "2026-11-21T09:46:47Z",
+  "pr_number": 3518,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-21T09:54:04+00:00",
+  "reviewers": [
+    "@SlawomirNowaczyk"
+  ],
+  "sha": "b7a6f689da02c4f1a20541a4a7d65db40f0b3682",
+  "shout_outs": [],
+  "subject": "fix(models): persist cost metadata through user-model registration (#3518)",
+  "summary": "Adds cost_tier, cost_input_per_million, cost_output_per_million and latency_ms_hint to the USER_DEFINED_MODEL_PROPS and kKnownKeys allowlists, introduces a shared cost_metadata.h so the four keys survive POST /models/register, POST /pull, and `lemonade import`, lists them on GET /v1/models and in outputs.estimated_cost on routing decisions, and refreshes the router cost cache when the registry generation moves.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The commit adds user-visible cost metadata to /v1/models, the /pull registration path, and routing decision outputs with a new cache-refresh mechanism, but nothing shows a human exercised these paths end-to-end before release."
+}
