@@ -1,0 +1,34 @@
+{
+  "author": "@sawansri",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "ed1bee096b185b18f3486dcd722ebf54dd824693",
+  "committed_at": "2026-11-22T20:02:47+00:00",
+  "evidence": {
+    "api_compatibility": "The ContainerPolicy.former_images field is additive (no required behavior change for backends that do not set it). The system_info schema description for amd_gpu is expanded to mention optional fields (hip_index, pci_bus_id, uuid) and runtime_devices is added as optional; both are non-breaking additions. The backend enrichment try-except block is widened, which could mask previously-thrown exceptions in get_backend_enrichment, but this is an internal API path, not a user-facing contract. No breaking change.",
+    "documentation": "The spec at docs/dev/specs/container-backends.md gains a row for the former_images field with its purpose and a concrete example. The three commit messages explain the problem, solution, and rationale for each change. The system_info schema description is updated to reflect new optional fields. Documentation is adequate.",
+    "manual_release_testing": "None required. The fix is internal container-cleanup logic exercised by unit tests; no user-visible CLI, API, GUI, or config change is introduced by this PR alone.",
+    "post_approval_commits": "After the latest approval (2026-11-21T10:15:56Z), the only new commit on the PR branch is a merge of main into the feature branch by @fl0rianr (c07aa7da, 2026-11-22T19:28:01Z). This is a standard sync merge and introduces no code changes. The CodeRabbit bot flagged a potential Windows test failure in test_installed_images() where the Gufo container policy is compiled out on Windows; @fl0rianr noted it was not critical and the bot created follow-up issue #4234. No substantive post-approval code changes.",
+    "review": "Approved by @fl0rianr on 2026-11-21T00:10:52Z and @francescobozzo on 2026-11-21T10:15:56Z. @fl0rianr raised a substantive edge case: users who already upgraded after #4159 still have an orphaned old image that this fix cannot identify, but acknowledged it doesn't block the migration fix. His subject area per docs/dev/contribute.md includes CI, GUI, and smart router, which overlaps with containers through the broader container/infrastructure ecosystem. @francescobozzo's area of expertise is not listed in the project docs, but his approval was routine. The review is adequate for this fix.",
+    "security": "No security concerns. The change adds container image cleanup logic and environment variable handling for device selection; no credential handling, network calls, code execution paths, or permission broadening.",
+    "tests": "Three new deterministic tests in test/cpp/test_container_manager.cpp: test_installed_images() validates no-marker behavior, digest resolution under current and former repositories, and presence filtering against a fake host; test_remove_image() verifies that Podman's 'image not known' and Docker's 'No such image' are treated as success with no warning, while an unreachable daemon still warns. Each new check was written to fail before its fix, per the PR description. The test framework uses a temporary cache directory and a FakeHost that mocks Podman/Docker commands, so no external dependencies are needed. The CodeRabbit Windows concern was noted as a follow-up issue."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 266.3,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-22T21:02:17Z",
+  "pr_number": 4223,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-22T21:08:26+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@francescobozzo"
+  ],
+  "sha": "ed1bee096b185b18f3486dcd722ebf54dd824693",
+  "shout_outs": [],
+  "subject": "fix(containers): remove a backend's image from its former repository (#4223)",
+  "summary": "Fixes gufo:rocm upgrade and uninstall for installs made before #4159 moved the image from docker.io/kyuz0/amd-strix-halo-toolboxes to ghcr.io/gufo-org/toolboxes/gufo-runtime, and reports those old installs as update_required instead of installable.",
+  "verdict": "Clean",
+  "verdict_reason": "Well-scoped fix with thorough tests, a substantive review, and no post-approval code changes."
+}
