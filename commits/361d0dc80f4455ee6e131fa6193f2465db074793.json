@@ -1,0 +1,46 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "361d0dc80f4455ee6e131fa6193f2465db074793",
+  "committed_at": "2026-11-22T11:46:50+00:00",
+  "evidence": {
+    "api_compatibility": "The amd_gpu description in system_info_schema.cpp was expanded to mention new fields (hip_index, pci_bus_id, uuid), and a new runtime_devices field was added to the backend recipe object. Both are additive — the new fields are optional and do not replace or remove existing data. The process_manager platform-layer now accepts an env_vars parameter, but this is internal. No breaking changes detected.",
+    "documentation": "The amd_gpu description in system_info_schema.cpp was updated. The PR author noted 'regenerate docs for device selection' in the commit message, and documentation files (docs/api/openai.md, docs/api/router.md, docs/guide/configuration/custom-models.md) were updated. The new runtime_devices field is documented in the schema.",
+    "manual_release_testing": "This is a new user-facing feature. The GPU device selection setting in the GUI and the runtime_devices field on the system info API have no evidence of having been exercised by a human with a GPU. The PR author validated on RTX 4090/RTX 5090 but CI alone is insufficient — manual verification before release is recommended.",
+    "post_approval_commits": "The final approval from @bitgamma was at 2026-11-21T09:44:57Z and from @meghsat at 2026-11-22T03:11:43Z. The merge commit at 2026-11-22T12:29:33Z contains no commits added after approval. No post-approval churn detected.",
+    "review": "PR was reviewed by @bitgamma (subject-matter expertise in thenoise, cli, recipes, new backends per docs/dev/contribute.md) who submitted a CHANGES_REQUESTED review on 2026-11-20 covering architectural concerns (backend-specific knowledge leaking into system_info, the internal-hip-probe entry-point pattern in main.cpp, the hardcoded _device option list, and code duplication). @fl0rianr addressed the architectural feedback — extracting apply_accelerator_device_env_vars as a common helper, making the HIP probe a separate lemonade-hip-probe.exe, and changing the _device auto-detection to use the '_device' suffix convention. @meghsat (co-author) also reviewed and approved. The review was thorough and the author was responsive to feedback.",
+    "security": "The lemonade-hip-probe.exe is a small helper on Windows that queries HIP's device order once per boot. It runs as a separate process, so driver failures or hangs in HIP do not affect the main server. The probe binary is built from existing source in src/cpp/hip_probe and ships beside the server. No supply-chain, credential, or network call changes. The only concern is an additional executable in the release artifact, but it is a simple process-launch helper with no sensitive operations.",
+    "tests": "The PR adds substantial new tests: test/cpp/test_backend_utils_gpu_env.cpp (160+ new lines covering CUDA, ROCm, and Vulkan device selection logic), test/cpp/test_recipe_options_precedence.cpp (new section verifying 'auto' device override semantics), test/cpp/test_system_info_helpers.cpp (new tests for KFD node sorting, UUID generation, PCI bus ID decoding, and HIP probe parsing). No existing tests appear weakened or deleted."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 310.0,
+  "maintainer_todos": [
+    {
+      "text": "Open the GPU device setting for TheNoise or sd.cpp in the GUI, select a specific GPU from the list, and confirm the backend starts on that GPU instead of auto-selected."
+    },
+    {
+      "text": "Call the system info endpoint and confirm amd_gpu entries carry hip_index, pci_bus_id, and uuid fields, and that runtime_devices appears on installed backends."
+    }
+  ],
+  "merge_date": "2026-11-22T12:29:33Z",
+  "pr_number": 4004,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-22T12:36:32+00:00",
+  "reviewers": [
+    "@bitgamma",
+    "@meghsat"
+  ],
+  "sha": "361d0dc80f4455ee6e131fa6193f2465db074793",
+  "shout_outs": [
+    {
+      "handle": "@meghsat",
+      "reason": "Co-authored-by trailer on the merge commit; wrote part of the PR and helped resolve a review concern about the HIP probe entry-point design."
+    }
+  ],
+  "subject": "feat: add backend device selection (#4004)",
+  "summary": "Adds GPU device selection for TheNoise, sd.cpp, Trellis, ThinkSound, ACE-Step, OpenMOSS, and llamacpp backends, maps ROCm GPU selection to HIP device numbers via PCI bus ID or ROCr UUID, and adds a new runtime_devices field to the amd_gpu entries in the system info API.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "This is a significant new user-facing feature — GPU device selection across multiple backends — with no evidence that a human exercised it end-to-end before merge."
+}
