@@ -1,0 +1,37 @@
+{
+  "author": "@francescobozzo",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "4886311f8f781ff12b0fd8b4b89123188207769e",
+  "committed_at": "2026-11-22T07:44:50+00:00",
+  "evidence": {
+    "api_compatibility": "build_server_argv() gained a required `host` parameter (a breaking change for any caller), but this is an internal function used only within the gufo backend code; all callers in the codebase were updated in this commit and the test suite reflects the new signature. No public API, CLI, config, or documented contract was changed. The host binding defaults to 0.0.0.0 on Linux (container, published port) and 127.0.0.1 on Windows (native) — a behavioral change visible only on Windows, not a breaking API.",
+    "documentation": "README.md backends table updated: gufo:rocm now lists 'Windows, Linux'. docs/dev/backends-reference.md added the native-windows entry. docs/dev/specs/container-backends.md updated the Gufo pin explanation to include the Windows native install flow. docs/guide/configuration/container-backends.md added a note about Windows running gufo:rocm as a native backend. All documentation updates are consistent with the code change.",
+    "manual_release_testing": "The PR author reports local smoke tests: `lemonade backends install gufo:rocm` downloaded the 0.35.0 Windows zip and verified its hash, then smoke tested Qwen3.8-27B-Gufo, and verified the auto-update script locally. No evidence a human exercised the install-and-run path on actual Windows hardware. The new feature surface includes: a native Windows install of gufo:rocm that downloads a zip from Gufo's release, the host binding change (0.0.0.0 on Linux containers, 127.0.0.1 on Windows native), and the validate_containers.yml workflow recording zip SHA-256. None of these was verified by a human on Windows.",
+    "post_approval_commits": "None — the PR's two commits (ad779db: initial implementation, d262e5e: version-resolution and status-dup fix) were both in place before the sole approval. No commits were added after approval.",
+    "review": "@jeremyfowers (subject-matter expertise in new backends) approved the PR on 2026-11-21T18:13:58Z with the comment 'Thank you! I will add CI coverage for this in a follow up PR.' No substantive inline review comments were left by @jeremyfowers. CodeRabbit (bot) flagged a version-resolution edge case in resolve_version where an explicit release-tag override could be replaced with the baseline image pin, causing a false update_required on a reinstalled release; the author addressed this in the second commit by introducing installed_version() and checking user_pin in the version comparison. First and latest approval timestamps are identical (2026-11-21T18:13:58Z); there are no post-approval commits.",
+    "security": "The native Windows install binds to 127.0.0.1 instead of 0.0.0.0, which is a security-positive change for a local inference server. The validate_containers.yml workflow validates the zip's SHA-256 against the release-published checksum and fails if a re-uploaded asset has a different hash — supply-chain integrity is preserved. The new get_install_params() downloads from gufo-org/gufo releases, which is an existing upstream trust boundary.",
+    "tests": "Unit tests in test/cpp/test_container_manager.cpp were updated: test_gufo_argv() now passes the host parameter to build_server_argv() and exercises release_tag() and installed_version(); test_descriptors_and_pins() was adjusted for the native-vs-container descriptor on each OS. The auto-update script's fallback logic (keeping the old pin when the zip is not yet published) was tested locally by the author. No end-to-end or Windows-specific tests are present, and the reviewer noted CI coverage will come in a follow-up PR."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 170.3,
+  "maintainer_todos": [
+    {
+      "text": "Install v2026.49 (or later) on a Windows machine with an AMD Strix Halo GPU and run `lemonade backends install gufo:rocm`, then confirm it downloads gufo-v0.35.0-windows-x86_64.zip, loads a model, and serves on localhost."
+    }
+  ],
+  "merge_date": "2026-11-22T09:14:09Z",
+  "pr_number": 4218,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-22T09:18:48+00:00",
+  "reviewers": [
+    "@jeremyfowers"
+  ],
+  "sha": "4886311f8f781ff12b0fd8b4b89123188207769e",
+  "shout_outs": [],
+  "subject": "Run gufo:rocm natively on Windows from Gufo's release zip (#4218)",
+  "summary": "On Windows, gufo:rocm installs the gufo-v0.35.0-windows-x86_64.zip release build and runs it on 127.0.0.1; Linux keeps the container — both OSes share the same Gufo 0.35.0 version via the image pin, and validate_containers.yml records the zip's SHA-256 while falling back to the previous pin until the release attaches the Windows build.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "No evidence a human exercised the new Windows-native gufo:rocm install path before merge — the feature ships user-visible behavior (a new download source and a binding change from 0.0.0.0 to 127.0.0.1) that should be verified on Windows before release."
+}
