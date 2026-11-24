@@ -1,0 +1,33 @@
+{
+  "author": "@github-actions[bot]",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "fae04577d1cf98e58aba5a90d1f2693c9e9ea1ad",
+  "committed_at": "2026-11-24T06:42:31+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The pinned version string in backend_versions.json is an implementation detail; the sd-cpp API contract is not altered by a pin bump. API documentation examples were regenerated with new timestamps and base64 image data, which is cosmetic — no schema, field, or behavior change is introduced.",
+    "documentation": "docs/api/openai.md examples were regenerated to match the new backend output format. The new examples show a `generation_info` field that was not present in the old examples — this suggests sd-cpp master-1106-b115a63 now emits richer response data. This is additive documentation that improves accuracy, not a breaking change. The api_examples_cache.json was similarly updated to reflect the new response shape.",
+    "manual_release_testing": "Not applicable. This commit touches only backend_versions.json (version pin strings), docs/api/openai.md (documentation examples), and docs/tools/api_examples_cache.json (cached API response fixtures). No code is changed. The sd-cpp library itself is pulled at a new SHA, but that is a standard backend update — users will experience a version bump of the image, not a new feature or behavior. The validated backends (cpu, vulkan, rocm-stable) already run through CI. Unvalidated backends (cuda, metal) are covered by their own update validation pipelines when runners become available.",
+    "post_approval_commits": "No post-approval commits. The single commit (sha 0221bfac7636f8c244ef705c7a13892aa6fca991) existed before approval. The merge commit fae04577d1cf98e58aba5a90d1f2693c9e9ea1ad was created automatically by the merge group.",
+    "review": "One approval from @fl0rianr (2026-11-23T18:47:41Z) with no comments. @fl0rianr's subject areas per docs/dev/contribute.md are LMX omni models, GUI, CI, and smart router — stable diffusion is not listed under their expertise; @ramkrishna2910 owns stable diffusion and did not review. This is acceptable for a pure version-pin bump with no code changes, but the lack of SD-specific review should be noted.",
+    "security": "No security concerns. This is a dependency version pin update from a known upstream release stream (master-1106-b115a63). No new code paths, network calls, credentials, or obfuscated blobs are introduced.",
+    "tests": "No unit or integration tests changed. The PR includes extensive validation evidence from the update workflow: 12 images generated across 3 backends (cpu, vulkan, rocm-stable) with 2 models (Flux-2-Klein-4B and SD-Turbo-GGUF) at two sizes (1024x1024 and 512x256), all showing 'PASS' GPU offload. CUDA and metal were updated but not validated — CUDA has no runner, metal has no macOS matrix leg. This is acknowledged and intentional in the PR body. CI passes: all CodeQL, C++ CI build and smoke tests, container builds, docker smoke, docs style, and packaging builds succeeded."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 161.6,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-24T07:31:55Z",
+  "pr_number": 4232,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-24T07:36:34+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "fae04577d1cf98e58aba5a90d1f2693c9e9ea1ad",
+  "shout_outs": [],
+  "subject": "Update stable-diffusion.cpp pins to master-1106-b115a63 and CUDA master-1106-b115a63 (#4232)",
+  "summary": "Updates stable-diffusion.cpp backend pins from master-957-90e86d1 to master-1106-b115a63 across all five backends (cpu, vulkan, rocm-stable, cuda, metal) and refreshes API doc examples and validation cache.",
+  "verdict": "Clean",
+  "verdict_reason": "This is a routine automated dependency pin update with no code changes, no API or behavior changes, no new shipped features, and no risk surface requiring manual release testing."
+}
