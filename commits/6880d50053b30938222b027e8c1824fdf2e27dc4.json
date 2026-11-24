@@ -1,0 +1,37 @@
+{
+  "author": "@Bekhouche",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "6880d50053b30938222b027e8c1824fdf2e27dc4",
+  "committed_at": "2026-11-24T06:42:28+00:00",
+  "evidence": {
+    "api_compatibility": "Purely additive: new llm.route.* attributes on existing inference spans. Unrouted requests emit no new attributes. No CLI flag, config value, saved-file format, or documented API is changed.",
+    "documentation": "No documentation update accompanies the change. The span attributes are a new observability surface; the PR description documents the fields, but user-facing documentation (spec or release notes) does not reflect the new attributes.",
+    "manual_release_testing": "The span attributes are user-visible in telemetry traces and the GUI3 Inspect view (stated in the PR description). The CI tests exercise them on a live server but no human end-to-end verification of the GUI3 Inspect view was documented.",
+    "post_approval_commits": "The final commit on the PR branch (63cef5f) is a merge of main into feat/telemetry-route-attributes, not a substantive code change. No code was added after approval.",
+    "review": "PR #3501 was reviewed by @SlawomirNowaczyk (smart router expert per contribute.md), who raised two major findings: (1) route attributes were set inside backend callbacks, so early failures (eviction, load failure, watchdog recovery) produced error spans with no routing decision — the fix was to apply attributes immediately after each span creation; (2) the twelve unit tests in test_telemetry_helpers.cpp called the mapper directly on flat JSON and never exercised the dispatch-to-span path, leaving no test coverage for the per-request clear or the nested cost collision guard. The author addressed both findings across the subsequent commits. @SlawomirNowaczyk then approved with 'LGTM now'. @abn (telemetry subject-matter expert) was requested but did not review. CodeRabbit bot posted automated comments on every review pass; all were addressed or acknowledged by the author.",
+    "security": "The thread-local g_current_route_decision mirrors the existing trace-context pattern and is cleared per-request in authenticate(), preventing stale-value leakage on reused worker threads. No network calls, credential handling, supply-chain changes, or permission broadening are introduced.",
+    "tests": "Six C++ unit tests in test_telemetry_helpers.cpp cover the payload and attribute-mapping functions: empty payload, malformed JSON, non-object payload, cost flattening (flattened into scalar attributes), nested members dropped, and colliding estimated_cost keys cannot shadow the decision's own. Two Python integration tests in server_telemetry.py send a routed then an unrouted request over one keep-alive connection (reusing the worker thread) and assert span attributes on the routed span and their absence on the second; a second test routes to a non-existent model and confirms the error span still carries the decision. The RoutingTelemetryTests are now included in the Linux CI endpoints job."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 457.6,
+  "maintainer_todos": [
+    {
+      "text": "Start the server with a collection.router that routes to a loaded model, send a routed chat completion request with the telemetry WebSocket open, and confirm the exported span carries llm.route.collection, llm.route.to, llm.route.matched_rule, llm.route.default_used, and any cost fields present in the policy, then send an unrouted request on the same connection and confirm no llm.route.* attributes are present."
+    }
+  ],
+  "merge_date": "2026-11-24T07:31:53Z",
+  "pr_number": 3501,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-24T07:41:15+00:00",
+  "reviewers": [
+    "@SlawomirNowaczyk"
+  ],
+  "sha": "6880d50053b30938222b027e8c1824fdf2e27dc4",
+  "shout_outs": [],
+  "subject": "feat(telemetry): emit the routing decision as span attributes (#3501)",
+  "summary": "Adds llm.route.{collection,to,matched_rule,default_used,cost_tier,cost_input_per_million,...} span attributes to every inference span (chat.completions, completions, streaming variants, responses, and the model-load span) so traces show the collection.router policy decision instead of the routing metadata being visible only on the x_lemonade_route client header.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The new span attributes are user-visible in telemetry traces and the GUI3 Inspect view; while CI testing is thorough, no human end-to-end verification on the release candidate was documented and the telemetry subject-matter expert (@abn) was not a reviewer."
+}
