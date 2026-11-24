@@ -1,0 +1,52 @@
+{
+  "author": "@iswaryaalex",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "f9568d493ced11e54112ce9c802e60c91b5f14b2",
+  "committed_at": "2026-11-24T04:50:59+00:00",
+  "evidence": {
+    "api_compatibility": "New optional fields source (install, dry-run) and backend_source (load) in API routes — existing requests and responses are unchanged. New config key backend_source with default github. is_reachable() gains optional accept_redirect parameter defaulting to false. No existing setup breaks on upgrade.",
+    "documentation": "PR body provides comprehensive user-facing documentation covering config, CLI, API fields, and behavioral differences. Configuration docs updated in docs/guide/configuration/README.md. Note: CodeRabbit flagged missing checksums.modelscope entries for vLLM gfx942/gfx950 override assets — ModelScope installs for those GPUs will fail until the mirror is updated.",
+    "manual_release_testing": "The feature is user-reachable through a new config key (backend_source), CLI flags (--source, --backend-source), and API fields (source, backend_source) on install, dry-run, and load. No evidence shows a human exercised the full mirror install → load → inference path on a release candidate. CI passes the backend-source flag through the API, but that is not a human exercising it.",
+    "post_approval_commits": "@jeremyfowers added commit 75f43c3a (fix(backends): count a redirect as reachable for the download-service probe) at 2026-11-23T23:32:33Z, one minute before approving — renewed review covers this behavioral change. The PR was squashed and merged at 2026-11-24T04:13:40Z by @jeremyfowers.",
+    "review": "@jeremyfowers (admin maintainer, subject area: new features) submitted the only substantive human review and approved at 2026-11-23T23:32:44Z. @Zorro-Zhang provided extensive review feedback across two comments covering security (empty expected_hash, token exposure, assets.json integrity after interrupted sync) and the PR body lists every feedback item addressed. CodeRabbit AI and GitHub Advanced Security both commented on minor issues.",
+    "security": "ModelScope downloads are fail-closed — every mirrored file must match a SHA-256 pin in checksums.modelscope of backend_versions.json, or the download is refused. No token sent on public reads; redirect handler drops credentials on cross-host redirects. Zorro-Zhang raised token and hash concerns; both addressed. The mirror tooling's CodeQL issues (untrusted checkout, incomplete URL sanitization) are deferred to a follow-up PR.",
+    "tests": "29 C++ unit tests in BackendSourceTest covering URL construction, config/env/validation, per-request scope, worker thread hand-off via carry_to_worker, and fail-closed hash verification. 3 server endpoint integration tests in server_endpoints.py (dry-run URL selection, unknown source rejection with 400, live onnxruntime:cpu install from the mirror with hash verification). @itomek tested on Strix Halo Linux, verifying source rejection, request isolation, and checksum rejection."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 606.2,
+  "maintainer_todos": [
+    {
+      "text": "Set backend_source=modelscope, install llamacpp:cpu (Linux/Windows) or llamacpp:metal (macOS) from the ModelScope mirror, then load a model and run a chat completion — confirm the backend installs from the mirror with hash verification and inference succeeds."
+    },
+    {
+      "text": "Run lemonade backends install llamacpp:vulkan --source modelscope — confirm the backend installs from the mirror."
+    },
+    {
+      "text": "Set backend_source to an invalid value and confirm it warns and falls back to github."
+    }
+  ],
+  "merge_date": "2026-11-24T05:29:30Z",
+  "pr_number": 4154,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-24T05:41:24+00:00",
+  "reviewers": [
+    "@jeremyfowers"
+  ],
+  "sha": "f9568d493ced11e54112ce9c802e60c91b5f14b2",
+  "shout_outs": [
+    {
+      "handle": "@jeremyfowers",
+      "reason": "Co-authored part of the PR and provided substantive review with subject matter expertise in new features."
+    },
+    {
+      "handle": "@meghsri",
+      "reason": "Co-authored part of the PR (commit contributing to the backend download path)."
+    }
+  ],
+  "subject": "Add backend_source=modelscope to download backends from a ModelScope mirror (#4154)",
+  "summary": "Adds backend_source=modelscope as a config option, per-request API field, and CLI flag to download pinned backend binaries from the public lemonade-sdk/backends ModelScope mirror instead of GitHub Releases and AMD's tarball server.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "A new user-facing download source with a broader code path was merged with maintainer review, but a live mirror install end-to-end on a release candidate should be verified before shipping."
+}
