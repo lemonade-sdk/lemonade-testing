@@ -1,0 +1,47 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "ebb471b9137fb46e56e17acb9c39555f2d108c32",
+  "committed_at": "2026-11-23T23:10:44+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The internal McpServer constructor gains a fourth parameter (ServerToolFn) but this is a private class; the change is only visible through the existing POST /mcp endpoint, which retains backward compatibility. Existing tools (lemonade_list_models, lemonade_chat, etc.) are unchanged. The MCP tool catalog now includes three additional tools, which is additive. The existing /api/v1/load and /api/v1/unload endpoints are called through an internal adapter — their contract is preserved.",
+    "documentation": "docs/api/mcp.md updated with full tool definitions for lemonade_get_model_info, lemonade_load_model, and lemonade_unload_model, including input schemas, MCP annotations, and descriptions. AGENTS.md updated to reflect the canonical tools/list catalog approach. docs/assets/persona-demo/people/apps.js updated to reflect variable tool count. The existing tools/list documentation generator (gen_mcp_boilerplate.py) is run with --check. Text-to-speech mention removed from the 'no MCP tool' list, consistent with the expanded capability surface.",
+    "manual_release_testing": "The PR author reports running cmake build, python3 test/server_mcp.py, python3 test/server_mcp_smoke.py, and docs/tools/gen_mcp_boilerplate.py --check. These exercise the code through the test harness, but no evidence shows an MCP-compatible client (Claude Desktop, Cursor, MCP Inspector, or similar) was used to interact with the new tools end-to-end. The tools are user-reachable via POST /mcp JSON-RPC and should be manually verified before shipping.",
+    "post_approval_commits": "No commits were added after the latest approval (2026-11-23T20:27:50Z). The branch tip at approval and at merge is the same commit. No post-approval churn detected.",
+    "review": "PR #3319 was approved by @kpoineal on 2026-08-25 and @jeremyfowers on 2026-11-23. The single commit (3fcfaa56) was authored by @fl0rianr. No commits were added after the latest approval. @jeremyfowers has subject-matter expertise in new endpoints, new backends, and large new features per contribute.md. @kpoineal covers GUI/app development; both reviewers applied appropriate scrutiny. The PR was merged as part of a 4-PR stack (position 1/4), related to #3275, and approved by RFC #3426.",
+    "security": "The new tools validate arguments strictly: only allowed keys are accepted (additionalProperties: false in schemas), string arguments are trimmed and must be non-empty, ctx_size is validated to int64 with overflow checks, and options keys are rejected if they shadow reserved names (model, model_name, save_options, pinned). No network calls, credential handling, telemetry, or code execution paths outside the existing API-key boundary. The tools reuse the same ApiRoute handler that /mcp already passes through, so they do not bypass authorization.",
+    "tests": "Five new integration tests in test/server_mcp.py: test_024_get_model_info_tool (model detail round-trip), test_025_unload_requires_explicit_model_name (prevents REST unload-all fallback), test_026_load_and_unload_tools (load/unload round-trip via MCP), test_026a_load_ctx_size_rejects_invalid_numbers (rejects 4096.5 and 2^63), test_026b_options_ctx_size_rejects_invalid_numbers (rejects fractional/overflowing ctx_size nested in options). All tests use safe_probes to validate dispatch without triggering side effects. MCP_HUB_EXPECTED_TOOLS set verifies all three new tools appear in tools/list. MCP annotations are verified per-tool. A new tools/list assertion in test/server_mcp_smoke.py validates presence of the three tools. The mcp-smoke-test CI workflow was updated to trigger on rpc.cpp changes. No existing tests were weakened or deleted."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 238.6,
+  "maintainer_todos": [
+    {
+      "text": "Run the MCP tools/list method via POST /mcp in a running server and verify the response includes lemonade_get_model_info, lemonade_load_model, and lemonade_unload_model alongside the existing tools."
+    },
+    {
+      "text": "Call lemonade_get_model_info with a known model name through an MCP client (e.g. MCP Inspector or Claude Desktop) and confirm the result contains model_name, recipe, and download state fields."
+    },
+    {
+      "text": "Call lemonade_load_model with model_name and ctx_size=4096 through the MCP tools/call method and confirm the load completes with a success status."
+    },
+    {
+      "text": "Call lemonade_unload_model with model_name through the MCP tools/call method and confirm the unload succeeds and the model no longer appears in the loaded models list."
+    }
+  ],
+  "merge_date": "2026-11-24T03:25:25Z",
+  "pr_number": 3319,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-24T03:31:17+00:00",
+  "reviewers": [
+    "@kpoineal",
+    "@jeremyfowers"
+  ],
+  "sha": "ebb471b9137fb46e56e17acb9c39555f2d108c32",
+  "shout_outs": [],
+  "subject": "MCP: add model inspection, load, and unload tools (#3319)",
+  "summary": "Adds three new MCP tools — lemonade_get_model_info, lemonade_load_model, lemonade_unload_model — to the Streamable HTTP /mcp endpoint, wiring them through a shared ServerToolFn adapter that delegates to existing Lemonade server handlers for model inspection, load, and unload.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The new MCP tools introduce user-reachable functionality that should be manually exercised with an MCP-compatible client before shipping, and the PR is stack position 1/4 of a multi-PR MCP expansion whose full surface area will not be testable until later stacks land."
+}
