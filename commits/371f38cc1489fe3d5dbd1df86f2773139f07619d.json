@@ -1,0 +1,33 @@
+{
+  "author": "@sreeram-11",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "371f38cc1489fe3d5dbd1df86f2773139f07619d",
+  "committed_at": "2026-11-24T14:42:28+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The file is .github/runners.json — internal CI config only. No API, CLI flag, config option, persistence format, or documented behavior is affected. The PR author explicitly marked 'This PR does not introduce breaking changes.'",
+    "documentation": "Not affected. This is internal CI metadata. The PR author confirmed 'Documentation is not affected by this change.' No release notes, API spec, or user documentation needs updating.",
+    "manual_release_testing": "This commit changes no user-facing surface. .github/runners.json is internal CI infrastructure consumed by GitHub Actions workflows for runner heartbeat monitoring. It is not installed, configured, or exercised by end users or developers running Lemonade.",
+    "post_approval_commits": "No commits were added after approval. The PR contains a single commit (4e56e833) authored by Sreeram at 2026-11-24T08:21:27Z, and the sole approval arrived at 2026-11-24T14:42:26Z. Branch was merged at 2026-11-24T15:34:26Z without further changes.",
+    "review": "PR #4252 received one approval from @vgodsoe submitted at 2026-11-24T14:42:26Z. @vgodsoe does not appear in the maintainers table in docs/dev/contribute.md, but the change is a one-line addition and one-line removal in a JSON data file with no code to misunderstand. The PR was submitted as a collaborator (@sreeram-11) and self-labeled under area::ci and wg::enterprise-grade, where @jeremyfowers covers CI subject-matter expertise. No inline review comments were posted.",
+    "security": "No concerns. The change touches only a JSON data file listing runner names. No credentials, network calls, code execution, supply-chain updates, or permission changes are involved. The removed runner (jfowers-stx-rtx-00) was simply deregistered from GitHub; the added runner (sjlab-rtx-5070-fractal-01) has labels matching its existing heartbeat job.",
+    "tests": "No tests are expected for a CI runner inventory JSON file. The change does not modify code, logic, or configuration schemas — it updates a list of runner names used by .github/workflows/runner_heartbeat.yml and monitor_selfhosted_runners.yml. CI workflows validated the change through merge-group checks (C++ Server Build, Validate New vLLM Release, Validate New llama.cpp Release, Validate New stable-diffusion.cpp Release), all of which succeeded."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 147.1,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-24T15:34:26Z",
+  "pr_number": 4252,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-24T15:38:45+00:00",
+  "reviewers": [
+    "@vgodsoe"
+  ],
+  "sha": "371f38cc1489fe3d5dbd1df86f2773139f07619d",
+  "shout_outs": [],
+  "subject": "Update runner entries (#4252)",
+  "summary": "Removes unregistered runner jfowers-stx-rtx-00 and adds active runner sjlab-rtx-5070-fractal-01 to .github/runners.json, fixing the weekly Monitor Self-Hosted Runners job that was failing on a stale entry.",
+  "verdict": "Clean",
+  "verdict_reason": "Single-file JSON data change to CI runner inventory, fully reviewed with all CI checks passing and no post-approval churn."
+}
