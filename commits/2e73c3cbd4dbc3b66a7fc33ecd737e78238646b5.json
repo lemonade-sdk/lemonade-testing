@@ -1,0 +1,47 @@
+{
+  "author": "@Bekhouche",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "2e73c3cbd4dbc3b66a7fc33ecd737e78238646b5",
+  "committed_at": "2026-11-24T09:22:01+00:00",
+  "evidence": {
+    "api_compatibility": "This PR introduces new routes and a new model type — no breaking changes. The new routes are marked experimental and live under the standard prefixes. The change to forward_get_request (wrapped_server.cpp) now passes the timeout_seconds argument to HttpClient::get instead of ignoring it, which fixes a latent bug (a 300 s default instead of the caller's intended timeout) but does not change externally visible behavior for existing users. The change to test/utils/server_base.py to accept 'sdcpp' alongside 'sd-cpp' as a wrapped-server name only affects the test harness. The model catalog entry for Wan2.1-T2V-1.3B is additive. The sd-cpp backend version pin bump in backend_versions.json (master-957 to master-1106-b115a63) is also additive — it updates the pinned version used by new installs but does not change the API contract.",
+    "documentation": "docs/api/lemonade.md was updated with the four video routes, generated from route specs, with recorded examples in docs/tools/api_examples_cache.json. The POST /v1/videos note includes measured time (~140 s) and VRAM (~14 GB) on a Radeon AI PRO R9700. docs/guide/configuration/custom-models.md documents the text_encoder and t5xxl checkpoint keys. docs/dev/backends-reference.md documents the video capability of sd-cpp. The deployment label table was updated to include the video label. The model catalog entry for Wan2.1-T2V-1.3B includes its checkpoints, recipe, and defaults. All documentation changes were reviewed.",
+    "manual_release_testing": "This PR introduces four new user-facing HTTP routes (POST /v1/videos, GET /v1/videos/{id}, GET /v1/videos/{id}/content, POST /v1/videos/{id}/cancel), a new video ModelType, and a new catalog entry (Wan2.1-T2V-1.3B). The integration tests run against a live server but require a GPU and a real video model download (~8.8 GB), so they do not run on the normal CI runners. Two human-verification items are listed in the maintainer to-dos above. The post-approval merge-queue build also included commits from other PRs (#4232 sd-cpp pin bump, #3501 telemetry routing attributes) that modified telemetry span creation and sd-cpp version pins — these were not individually exercised against the video path, but they do not touch video code.",
+    "post_approval_commits": "The merge commit (2e73c3c) is a squash merge of the PR branch. The diff output shows it was built on top of other PRs that merged into main during the merge queue cycle (#4232 sd-cpp version pin update and #3501 telemetry routing decision). These two additional commits modified docs/api/openai.md (image generation examples), docs/tools/api_examples_cache.json (image generation examples), src/cpp/resources/backend_versions.json (sd-cpp pin from master-957 to master-1106-b115a63), src/cpp/resources/server_models.json (Wan entry fields), src/cpp/server/telemetry.h, src/cpp/server/telemetry.cpp, src/cpp/server/router.cpp, src/cpp/server/routes/router/router_dispatch.cpp, src/cpp/server/core/api_route.cpp, src/cpp/server/core/request_middleware.cpp, src/cpp/server/jobs/job_manager.cpp, src/cpp/server/routes/internal/shutdown.cpp, src/cpp/server/services/model_loader.cpp, src/cpp/server/models/ingest.cpp, and test/cpp/test_telemetry_helpers.cpp / test/server_telemetry.py. None of these touched the video-specific code (video_store, sdcpp_server video routes, generate_video job op, video API routes). The PR's own 17 commits were all authored by @Bekhouche and reviewed before the final approval on 2026-11-23. Slawomir's final approval (2026-11-23T15:47:16Z) preceded the merge-queue build and squash, but the build only rebased — no new video behavior was introduced between approval and merge.",
+    "review": "The PR received two rounds of substantive review from @fl0rianr (API design, router behavior, telemetry) and two rounds from @SlawomirNowaczyk (video clip lifecycle, file name collisions, shutdown race conditions). @SlawomirNowaczyk raised a critical race condition where clean_up could delete a clip still being published, and a follow-up finding about orphaned clip reservations surviving restarts — both were addressed in later commits. @bitgamma reviewed the model catalog entry and caught that image_defaults had been folded into recipe_options. The PR author self-reviewed the full diff (checked the 'I reviewed the full diff myself' box). All CodeRabbit findings (seed entropy, stream flush check, cancel propagation, shutdown serialization) were also addressed. The project philosophy (design for agility, user error is a bug) is reflected in the careful cancel paths, explicit error messages, and the generous frame count defaults that avoid silent single-frame outputs. fl0rianr has expertise in the smart router and GUI; SlawomirNowaczyk has expertise in the smart router; bitgamma has expertise in stable diffusion and new backends. At least one reviewer (bitgamma) has subject area expertise in the stable-diffusion.cpp backend. The merge queue built on top of other PRs (#4232 sd-cpp pin update, #3501 telemetry routing decision) that merged into main during the review window, but neither touched the video feature's code paths.",
+    "security": "The new video clip file store uses generated file names with a valid-name check (prefix + 32 hex chars, no traversal, no uppercase). After review, the name generator was seeded with four random_device values (128 bits instead of 32) to reduce collision risk. The stream write check was moved after explicit close() so flush failures are caught. Video models are refused by image generation, edit, and variation endpoints. The sd-server process is stopped (not just canceled) when a cancel is refused mid-generation, preventing GPU hold. No suspicious network calls, credential handling, or supply-chain changes beyond the standard sd-cpp backend pin update.",
+    "tests": "Comprehensive test coverage: (1) C++ unit tests — test_video_store.cpp covers file name generation, read/write, clean-up, reservation lifecycle, stale-snapshot concurrency, orphaned reservation release, number normalization, is_video_job, and video_status. (2) C++ unit tests — test_sdcpp_video_poll.cpp covers failed poll tolerance (up to 5), persistent failure give-up, cancel-before-submit skipping the backend, stalled-backend cancel (submits and polls time out in <20s), and negative-seed randomization. (3) C++ unit tests — test_download_wait.cpp covers a canceled download wait not blocking the shared install. (4) Server integration test — test/server_video.py with 15 test cases covering missing prompt/model rejection, unknown video 404, unknown model job failure, content-before-completion 409, number validation/normalization, queued-video cancel reporting completed_at, full video generation with WebM magic bytes and frame count, default frame count from recipe options, duration-to-frames conversion, cancel releasing the GPU, concurrent chat during video generation, and video-model refusal by image endpoints. GPU tests run behind LEMONADE_VIDEO_GPU_FREE_ONLY=1; CI runs the GPU-free subset. No tests appear weakened or deleted."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 457.4,
+  "maintainer_todos": [
+    {
+      "text": "Start the server with --wrapped-server sdcpp --backend vulkan, POST to /v1/videos with a prompt and a known video model, poll GET /v1/videos/{id} until completed, then GET /v1/videos/{id}/content and verify the payload starts with WebM/Matroska magic bytes (0x1a 0x45 0xdf 0xa3) and reports matching frame_count and fps."
+    },
+    {
+      "text": "POST to /v1/videos to create a long clip (e.g. 81 frames), wait until the status shows running, then POST to /v1/videos/{id}/cancel and verify the job reports canceled and a subsequent shorter clip on the same model starts within 180 seconds (confirming sd-server was stopped and freed the GPU)."
+    }
+  ],
+  "merge_date": "2026-11-24T10:17:38Z",
+  "pr_number": 3506,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-24T10:27:07+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@SlawomirNowaczyk",
+    "@bitgamma"
+  ],
+  "sha": "2e73c3cbd4dbc3b66a7fc33ecd737e78238646b5",
+  "shout_outs": [
+    {
+      "handle": "@SlawomirNowaczyk",
+      "reason": "Found two critical video-clip lifecycle race conditions (cleanup deleting an in-flight clip, orphaned clip reservation surviving restart) and drove the fixes through two rounds of detailed review."
+    }
+  ],
+  "subject": "feat(api): video generation via stable-diffusion.cpp (#3506)",
+  "summary": "Adds text-to-video generation via the stable-diffusion.cpp backend with four new /v1/videos routes (POST create, GET status, GET content, POST cancel), a generate_video job op, a new video ModelType and IVideoServer capability, Wan2.1-T2V-1.3B to the model catalog, and a file-based clip store under <cache>/videos.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The PR introduces significant user-facing surface area (four new API routes, a new video model, a file store for clips) but nothing shows a human exercised it end-to-end on a GPU with a real video model."
+}
