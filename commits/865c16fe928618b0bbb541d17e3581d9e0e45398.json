@@ -1,0 +1,40 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "865c16fe928618b0bbb541d17e3581d9e0e45398",
+  "committed_at": "2026-11-24T19:52:57+00:00",
+  "evidence": {
+    "api_compatibility": "This is a pure addition — two new MCP tools. No existing endpoint, flag, config value, or API contract is changed. The tools delegate to existing POST /api/v1/audio/generations and POST /api/v1/audio/speech routes, so there is no breaking change.",
+    "documentation": "docs/api/mcp.md is updated with generated reference entries for both tools, including argument tables. However, CodeRabbit flagged that the duration unit (seconds, as the generation path defines) is not stated, and the response_format accepted values (mp3, wav, opus, aac, flac, pcm) are not listed in either tool's documentation. The PR author's commit gen_mcp_boilerplate.py --check passed but the descriptions for duration and response_format in the C++ schema still lack those details, so the generated markdown carries generic \"Argument X for the Y tool\" descriptions instead of specific ones. This is a documentation gap, not a blocker.",
+    "manual_release_testing": "The commit introduces two new user-reachable MCP tools. CI runs only test the tool schema and discovery paths with a nonexistent model; nobody appears to have invoked lemonade_generate_audio or lemonade_text_to_speech with an actual audio-generation or TTS model and verified the binary audio response. Two maintainer to-dos are written above.",
+    "post_approval_commits": "No commits were added after approval. The PR contained two commits (1a0ce526 at 2026-11-18 and fc8bfb94 at 2026-11-18), both before the first and latest approval at 2026-11-24T19:07:14Z.",
+    "review": "@jeremyfowers approved the PR on 2026-11-24T19:07:14Z after first commenting on 2026-11-23T20:34:42Z that he could not figure out how to test the audio tools (\"The tools dont seem to know how to save the audio to a file, like the image gen tools do\"). The PR author addressed the underlying audio output concern in the second commit (fc8bfb94) which added PCM metadata preservation (sample rate and channel count from X-MOSS-* headers, plus model identification when omitted). CodeRabbit also raised two inline comments: one on PCM metadata (addressed by the author's second commit) and one on missing documentation for duration unit and response_format values (not addressed). @jeremyfowers has subject-matter expertise as an admin maintainer covering \"new endpoints, new backends, large new features\".",
+    "security": "The new tools route through the existing HTTP endpoints (POST /api/v1/audio/generations and POST /api/v1/audio/speech) and apply the same model-resolution logic the existing code uses. No new network calls, credential handling, or permission broadening is introduced. The base64-encoding of binary responses follows the existing pattern used for image generation.",
+    "tests": "test/server_mcp.py adds both new tools to the safe_probes map (lemonade_generate_audio with prompt/model keys, lemonade_text_to_speech with input/model keys) so the tool-discovery and dispatch tests pass. test/server_mcp_smoke.py adds both tools to the expected-namespace assertion. The tests verify that the tools appear in the MCP tool list and dispatch without errors, but they use placeholder arguments (model: 'nonexistent') and do not exercise the actual audio generation or TTS code paths end-to-end with a real model."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 191.3,
+  "maintainer_todos": [
+    {
+      "text": "Start the Lemonade server with an audio-generation model loaded (or let one pull on demand), call the lemonade_generate_audio tool with a prompt, and confirm the MCP response returns a non-empty audio payload with a valid mime_type."
+    },
+    {
+      "text": "Start the Lemonade server with a TTS model loaded, call the lemonade_text_to_speech tool with input text, and confirm the MCP response returns a non-empty audio payload with the correct mime_type for the chosen response_format."
+    }
+  ],
+  "merge_date": "2026-11-24T20:47:14Z",
+  "pr_number": 4203,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-24T20:52:08+00:00",
+  "reviewers": [
+    "@jeremyfowers"
+  ],
+  "sha": "865c16fe928618b0bbb541d17e3581d9e0e45398",
+  "shout_outs": [],
+  "subject": "MCP: audio generation and text-to-speech (#4203)",
+  "summary": "Adds MCP tools lemonade_generate_audio and lemonade_text_to_speech, exposing the existing POST /api/v1/audio/generations and POST /api/v1/audio/speech endpoints through the MCP protocol with binary response conversion (base64, MIME type), loaded/downloaded media-model resolution, and PCM metadata preservation (sample rate and channel count from X-MOSS-* headers).",
+  "verdict": "Needs Attention",
+  "verdict_reason": "Two user-facing MCP tools are shipped with no evidence of end-to-end manual exercise and with documentation gaps (duration unit and response_format values not specified) that CodeRabbit flagged but were not fully addressed."
+}
