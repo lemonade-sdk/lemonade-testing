@@ -1,0 +1,43 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "c7f0fb4572b8871b0a62fff3b97b2eed6a34f6a8",
+  "committed_at": "2026-11-24T00:55:55+00:00",
+  "evidence": {
+    "api_compatibility": "This commit does not break any existing setup. It adds a new value (auto) to the default_model_source config enum. The default remains huggingface, so all existing deployments see identical behavior. Explicit source specifications (--source, source/registry_source fields, provider URLs) retain their precedence. Custom models keep their recorded registry. No API endpoints, flags, or file formats are removed or changed.",
+    "documentation": "docs/dev/model-registries.md was updated with a new paragraph describing the auto mode policy, startup probing, and behavior when probes fail. docs/guide/configuration/README.md was updated to add auto to the accepted values for default_model_source and describe the configuration workflow. The changes are consistent with the implementation.",
+    "manual_release_testing": "The PR description states the change 'was tested locally in a harness that swallows HF traffic in a manner similar to the Great Firewall.' This describes a local simulation, not real-world hardware validation of end-to-end auto-mode pulls. No human is shown to have exercised the config setting, startup probing, source-less pull resolution, or re-pull cache preservation on actual build artifacts. The feature is user-reachable via the default_model_source config option and affects CLI pull behavior, the /pull and /pull/variants API routes, and the built-in model catalog listing.",
+    "post_approval_commits": "One post-approval commit (190baea, 'Address auto model source review feedback') was pushed after fl0rianr's first COMMENTED review but before the final APPROVED review. This commit addressed all four substantive issues identified: loading installed FLM models without resolving a registry source, sending auth headers with availability probes, keeping a recorded registry on re-pull only when complete, refreshing the model list on auto source change, and keeping built-in models listed when source selection throws. No commits were added after the final approval at 2026-11-21T19:59:06Z.",
+    "review": "fl0rianr (no assigned subject-matter area for model registries, but the code touches the core platform layer where jeremyfowers holds expertise) provided a detailed substantive review identifying four correctness issues: cached FLM models must remain loadable without registry access, registry probes must reuse authentication headers, cache correctness for incomplete downloads, and inconsistent model cache invalidation on source transitions. All four were addressed in the post-review commit (190baea). fl0rianr then approved with 'Thanks for the fixes. In that case you have my go.' The review covered the core logic paths and integration points.",
+    "security": "Registry probes now send the configured auth headers (previously empty), which is a security improvement — authenticated endpoints will no longer be misclassified as unavailable. Probes use HTTP 10-second timeouts. Network requests are restricted to HTTPS via HttpSecurityPolicy::ExternalHttpsOnly. No new credential handling, telemetry, or supply-chain surface introduced.",
+    "tests": "Unit tests in test/cpp/test_pull_registry.cpp exercise the auto-mode pull path with mocked registries, confirming that downloads use the effective source, cached copies survive source transitions, and restarts discover existing caches. test/cpp/test_config_default_source.cpp validates that auto is accepted, round-trips correctly, and does not resolve as a registry identity. CodeRabbit identified four inline correctness issues (stale registry pinning, missing auth headers, incomplete artifact checks, model listing exception handling), all of which were addressed in the post-review commit. The ModelSourceMonitor's probe logic itself is not unit-tested, as it requires actual network probes."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 221.5,
+  "maintainer_todos": [
+    {
+      "text": "Start lemond with default_model_source set to auto and run a source-less pull of a built-in model (for example, the default llama model) to confirm the server selects a registry without adding more than ~10 seconds of startup latency."
+    },
+    {
+      "text": "Set default_model_source to auto and verify the /pull/variants endpoint for a built-in model returns the resolved source (huggingface or modelscope) matching the probe result."
+    },
+    {
+      "text": "Start lemond with auto mode, pull a model from the selected registry, then restart the server after changing network conditions (e.g. block Hugging Face) and confirm the next source-less pull uses the other registry without re-downloading a model that already exists under the original registry."
+    }
+  ],
+  "merge_date": "2026-11-24T04:10:24Z",
+  "pr_number": 4222,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-24T04:15:50+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "c7f0fb4572b8871b0a62fff3b97b2eed6a34f6a8",
+  "shout_outs": [],
+  "subject": "Add automatic model registry selection (#4222)",
+  "summary": "Adds auto as a valid value for the default_model_source config key so the server probes Hugging Face and ModelScope at startup, selects the one that responds (preferring Hugging Face), and uses that registry for source-less pulls, while keeping already-downloaded models from being re-fetched under a different registry.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The feature adds user-visible behavior with no evidence that a human exercised end-to-end auto-mode model pulls on real hardware before merging."
+}
