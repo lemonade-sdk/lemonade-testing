@@ -1,0 +1,51 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "1a018a563ef4521d9d36660a09c46c8620e420ca",
+  "committed_at": "2026-11-24T01:35:10+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking change to existing APIs. The MCP tool list gains a new tool (lemonade_web_search) but all existing tools retain their names, schemas, and behavior. The HttpClient::get signature gains an optional follow_redirects=true default parameter, which is backward-compatible with all existing callers. The GUI adds a new tool toggle without removing or altering any existing toggle. The MCP API docs in docs/api/mcp.md are updated with the new tool.",
+    "documentation": "docs/api/mcp.md was updated with the new lemonade_web_search tool reference including argument schema, return format, and MCP annotations. The change is self-contained within the existing generated tools section.",
+    "manual_release_testing": "No human exercised the new user-visible surface. The merge-queue CI ran 4 workflows (Publish News skipped, Routing Schema Tests passed, Validate New llama.cpp Release passed, C++ Server Build/Test/Release passed), but these are automated checks. The author confirmed manual GUI3 testing with Gemma-4-12B-it-MTP-GGUF locally, but there is no evidence that a tester or reviewer independently verified the feature in a release candidate. The feature touches the GUI (globe icon, web search checkbox in tool picker), the MCP server API (/mcp tools/call), and C++ HTTP client — all user-reachable.",
+    "post_approval_commits": "No commits were added after the approval at 2026-11-23T21:35:22Z. The PR branch tip (6febcfadc) was the same commit approved. The merge-queue merged the single squashed commit on 2026-11-24T04:18:26Z.",
+    "review": "The PR was requested for review by @kpoineal (GUI/app expert per contribute.md) but no human review comment was posted before @jeremyfowers approved on 2026-11-23T21:35:22Z. The approval came from an admin maintainer who has subject-area overlap (GUI design language, new features), but the GUI-specific reviewer did not weigh in. CodeRabbit bot raised 19 inline comments across the PR lifecycle (URL handling, XML entity order, CDATA evaluation, script/style tag matching, UTF-8 truncation), all of which appear to have been addressed in later commits. No human reviewer explicitly verified the CodeRabbit findings.",
+    "security": "The web_search module is security-sensitive: it makes an external HTTPS request to a fixed Bing RSS endpoint, parses untrusted XML, and feeds results into LLM system prompts. Safeguards present: (a) follow_redirects=false pins requests to the original host. (b) max_body_bytes=256 KB on the HTTP call. (c) 8-second timeout. (d) Concurrency limit of 2 and rate limit of 20 per minute with sliding window. (e) URL validation rejects HTTP, tracking redirects, credentials in host, and invalid UTF-8. (f) Script/style blocks stripped from snippets. (g) Entity decoding is bounded (12-byte lookahead). (h) No result URLs are fetched. (i) MCP tool is guarded by user opt-in selection. One residual concern: the RSS parser uses find_ci-based pattern matching rather than a proper XML library — the CodeRabbit comments flagged that tag-like text inside CDATA could confuse the parser, and while the author addressed many of those findings, a thorough review of the XML boundary logic was not done by a human reviewer. The bounded approach is reasonable for RSS, but the absence of human review on the XML parsing edge cases is worth noting.",
+    "tests": "Three test files cover the change: (1) test/cpp/test_web_search_parser.cpp (172 lines) exercises the offline RSS parser with entity decoding, CDATA handling, Bing URL unwrapping, tracking-link rejection, UTF-8 truncation boundaries, and max_results validation. (2) test/server_mcp.py adds test_021d_web_search_rejects_invalid_args_without_network which validates all invalid-arg paths without hitting the network. (3) src/app/tests/fixtures/mcp-runtime-entry.ts adds 93 lines of C++ runtime fixture tests covering tool catalog ordering, deny-on-omission, AbortSignal propagation, malformed structuredContent rejection, and error handling. (4) src/app/tests/a11y.spec.ts adds a11y tests for the web search toggle and verifies it does not enable unrelated built-in tools. No end-to-end GUI test exercises the actual Bing call path. The author notes full C++ CI and cross-platform regression testing were not yet completed, though the C++ build-and-test workflow in the merge-queue passed."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 298.8,
+  "maintainer_todos": [
+    {
+      "text": "Start the server with a loaded model, open the GUI, click the add-tools button, enable the 'Web search tool' checkbox, and send a message — confirm the response contains numbered search results with title, URL, and snippet."
+    },
+    {
+      "text": "In the Tools dialog, enable web_search alongside an existing external MCP server and confirm only web_search is added to the selection — no other default tools should appear."
+    },
+    {
+      "text": "Call the /mcp endpoint with tools/call for lemonade_web_search using search_type=news, a valid query, and max_results=3, and confirm the structuredContent contains exactly three results with source and published_at fields."
+    },
+    {
+      "text": "Call lemonade_web_search with query set to 257 spaces and confirm the server returns isError: true without making any external request."
+    }
+  ],
+  "merge_date": "2026-11-24T04:18:26Z",
+  "pr_number": 4209,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-24T04:25:20+00:00",
+  "reviewers": [
+    "@jeremyfowers"
+  ],
+  "sha": "1a018a563ef4521d9d36660a09c46c8620e420ca",
+  "shout_outs": [
+    {
+      "handle": "@jeremyfowers",
+      "reason": "Admin maintainer reviewed and approved a 1,198-line feature spanning new C++ security-critical infrastructure, TypeScript GUI changes, MCP API extension, tests, and documentation — substantively responsible for the merge decision."
+    }
+  ],
+  "subject": "feat(mcp): add opt-in web search to Lemonade chat (#4209)",
+  "summary": "Adds the lemonade_web_search MCP tool (exposed as web_search in the GUI tool picker) that fetches up to five live Bing RSS web or news results via a fixed HTTPS endpoint, with a new globe icon indicator in the chat toolbar, and tightens HttpClient::get to accept a follow_redirects=false parameter for the search call.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The PR adds user-reachable GUI and MCP surface (new tool toggle, new MCP tool endpoint, globe icon) that no human exercised end-to-end before merge, and the merge-queue CI was skipped for the publish-news workflow."
+}
