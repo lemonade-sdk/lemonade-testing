@@ -1,0 +1,54 @@
+{
+  "author": "@itomek",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "a4f93a0a232522f206a5748ab16fa6f583234016",
+  "committed_at": "2026-11-24T05:51:34+00:00",
+  "evidence": {
+    "api_compatibility": "This is a breaking change. The ModelManager C++ API changes: download_model() adds allow_backend_args parameter, register_model() adds allow_backend_args parameter, register_user_model() changes its source parameter to include allow_backend_args, and replace_options() adds allow_backend_args. The HTTP REST API now requires the admin API key for any request containing backend argument keys (llamacpp_args, whispercpp_args, merge_args) in model register, pull, load, jobs, and options endpoints. With the default configuration (admin key set), a regular API caller that previously could supply backend arguments will now receive 403. With only an admin key set, ordinary API access remains open while argument operations require the admin key. With no key configured, the old behavior is preserved (no-key fallback to regular key). The PR author documents these breaking-change scenarios in the PR body.",
+    "documentation": "docs/api/lemonade.md and docs/api/openai.md are modified to reflect the authorization requirements for backend arguments. docs/guide/configuration/README.md is updated for the default_model_source auto addition. The PR body clearly documents the breaking-change scenarios (distinct keys, admin-only key, no-key fallback). The API documentation updates should be verified to accurately reflect the 403 behavior and which endpoints require admin authorization.",
+    "manual_release_testing": "This is a significant user-facing security change. The HTTP REST API routes affected are: POST /v1/models/register (recipe_options with backend arguments), POST /v1/models/{name}/options (PATCH/DELETE with backend argument keys), POST /v1/load (request body with *_args or merge_args), POST /v1/jobs (load step with backend argument keys), and POST /v1/pull (recipe_options with backend arguments). The desktop app ModelManager and ModelDetailPanel components now filter saved arguments from ordinary loads. The fallback behavior when admin key is unset is unchanged. Manual release testing is required to confirm the authorization boundary works across all API versions (/v0, /v1, /api/v0, /api/v1), all affected endpoints, and all key configurations (both keys set, admin-only, regular-only, no keys).",
+    "post_approval_commits": "The PR branch evolved through multiple commits after the initial push. The PR merge commit message lists at least 15 commit titles, including fixes for 'atomic collection authorization', 'stale model save responses', 'queued pull validation', 'registered collection definitions for queued pulls', 'preserving protected model settings across registration, reloads and server switches', 'aligning app regressions with server-owned backend arguments', and 'Adapt to automatic model registry selection (#4222)'. The last commit is from @jeremyfowers adapting to PR #4222 (added ModelIngest::Deps::automatic_model_source and a new download_registered_model path), which touches model_manager.cpp and test_model_manager_collection_validation.cpp. This post-approval commit modifies the same C++ API surface and was not re-reviewed by @superm1. The merge queue ran CI checks on the final merge commit (a4f93a0a2), which passed for C++ Server Build and llama.cpp/sd.cpp validation, but the merge queue's automated checks are not a substitute for renewed human review of the substantive changes. The post-approval commits appear to be addressing reviewer feedback and adapting to an unrelated PR; they do not materially change the risk profile, but the unreviewed nature of the adaptation commit warrants maintainer attention.",
+    "review": "PR #4211 requested reviews from @kpoineal and @jeremyfowers but neither left a substantive review. Only @superm1 (admin maintainer; subject areas: llamacpp, security, Docker/containers) provided human review with an approval: 'I have no concerns with this approach.' This is appropriate — the change touches the llamacpp backend argument system and security, and a reviewer with that expertise did approve. CodeRabbit posted multiple inline comments across the PR's evolution, including findings about component selection flow (ingest.cpp), save-stale-response handling (ModelDetailPanel.tsx), reload-before-auth ordering (api.ts), and registration-protecting-saved-arguments (ingest_collections.cpp). The author addressed the component selection, stale save, and reload issues in follow-up commits. The registration-protecting-saved-arguments finding from CodeRabbit was not addressed.",
+    "security": "This PR is a security fix: it closes an authorization gap where regular API callers could override backend arguments (llamacpp_args, whispercpp_args) that launch the server-side inference process with arbitrary command-line flags. The fix adds an allow_backend_args gate to every mutating path — register, pull, load, jobs, options (PATCH/DELETE), and collection registration/import — ensuring only the admin API key can supply or modify these values. The authorization is checked at the request level before any state mutation. The fallback behavior (no-key unset falls through to regular key, preserving existing behavior) is correct and safe. CodeRabbit flagged one potentially unaddressed finding: protecting saved arguments during registration (ingest_collections.cpp:924), where a regular-key recipe replacement could indirectly clear saved backend arguments via save_model_options without the allow_backend_args check. This warrants attention as a potential authorization bypass in the registration flow.",
+    "tests": "The PR adds substantial testing: 607 lines in test/server_backend_args_auth.py covering 13+ HTTP authorization test scenarios (regular-key denial for load, register, pull, jobs, and options operations; admin-key authorization; key-compatibility edge cases; atomic collection authorization; remote collection manifest protection). C++ test additions include test_model_manager_collection_validation.cpp (243 lines adding queued-inline-pull, pointer-collection-pull, and unavailability-rejection regressions), test_pull_registry.cpp (197 lines of default-source and auto-source adaptations), test_recipe_options_persistence.cpp (18 lines), test_store_publish.cpp (14 lines), and test_store_snapshot.cpp (2 lines). JavaScript/TypeScript runtime tests add model-load-options.runtime.cjs (61 lines), model-manager-load-policy.runtime.cjs (124 lines), panel-load-readiness.runtime.cjs (41 lines), and panel-save-load-regression.runtime.cjs (185 lines). The PR author reports platform-specific CTest results (macOS: 117/117, Ubuntu: 120/120, Windows: 113/117 with 4 pre-existing failures) and renderer web UI click-through tests on Windows and Ubuntu servers. All 13 new HTTP authorization tests and the empty-admin-key regression passed on each platform. Testing is thorough for the new authorization behavior."
+  },
+  "fixes_prs": [
+    4210
+  ],
+  "generation_seconds": 437.5,
+  "maintainer_todos": [
+    {
+      "text": "Start the server with both LEMONADE_API_KEY and LEMONADE_ADMIN_API_KEY set, send a POST to /v1/models/register with a model definition containing recipe_options.llamacpp_args using the regular key, and confirm the response is 403 with no model written."
+    },
+    {
+      "text": "With both keys configured, send the same registration request using the admin key and confirm the model is registered with the backend arguments persisted."
+    },
+    {
+      "text": "Start the server with only LEMONADE_ADMIN_API_KEY set (no regular key), send a model load with llamacpp_args in the body using no Authorization header, and confirm the response is 403."
+    },
+    {
+      "text": "With both keys set, send a POST to /v1/models/register with recipe_options containing llamacpp_args, then reload the same model using the regular key with edited arguments in the body, and confirm the reload returns 403 and the model remains running."
+    },
+    {
+      "text": "Set both keys, register a model with admin arguments, then send a POST DELETE to /v1/models/{name}/options using the regular key and confirm it returns 403 and the saved arguments remain intact."
+    },
+    {
+      "text": "Start the server with no keys at all, send a load with llamacpp_args and confirm it succeeds (fallback to regular key behavior is unchanged)."
+    }
+  ],
+  "merge_date": "2026-11-24T06:39:22Z",
+  "pr_number": 4211,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-24T06:48:26+00:00",
+  "reviewers": [
+    "@superm1"
+  ],
+  "sha": "a4f93a0a232522f206a5748ab16fa6f583234016",
+  "shout_outs": [],
+  "subject": "Require admin authorization for backend argument overrides (#4211)",
+  "summary": "Adds an allow_backend_args boolean parameter to download_model, register_model, register_user_model, and replace_options to enforce admin authorization for backend argument overrides (llamacpp_args, whispercpp_args, merge_args) through the HTTP REST API, ModelManager C++ API, and desktop app.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "An admin maintainer with llamacpp and security expertise approved the security change, but a co-author (jeremyfowers) added commits after that approval adapting to a separate PR, and those unreviewed post-approval commits touch the same API surface."
+}
