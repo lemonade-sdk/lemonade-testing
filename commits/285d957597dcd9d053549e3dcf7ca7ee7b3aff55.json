@@ -1,0 +1,49 @@
+{
+  "author": "@pwilkin",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "285d957597dcd9d053549e3dcf7ca7ee7b3aff55",
+  "committed_at": "2026-11-24T13:39:38+00:00",
+  "evidence": {
+    "api_compatibility": "The existing /v1/audio/speech voice field semantics for OpenMOSS models changed: a non-empty voice now triggers voice design (Generate reference sample). The PR mitigates this by introducing voice_design_description and leaving voice empty in describe mode, but existing clients sending a non-empty voice value (e.g., voice=default) will unexpectedly trigger voice design rather than use the value as a style instruction. The legacy MOSS-VoiceGen entry preserves the old behavior. This is a breaking change scoped to OpenMOSS models only; users upgrading to this release with an OpenMOSS model must adapt. The PR does not bump a version flag or include a migration banner.",
+    "documentation": "docs/guide/app/audio-and-3d.md updated comprehensively: new workflows (describe, clone, plain), MOSS-SoundEffect controls and defaults, OpenMOSS generation parameters, per-field settings behavior, and the legacy MOSS-VoiceGen entry. The change table correctly adds openmoss to the audio generation column. No spec changes to update.",
+    "manual_release_testing": "No human-end-to-end run is evident. This PR introduces significant user-reachable behavior: the internalized voice-design cascade, MOSS-SoundEffect with sigma-shift/negative-prompt/seed, OpenMOSS speech sampling parameters, and per-field settings persistence during late model-option loads. All require manual verification in the app before release. The five to-dos above cover these paths.",
+    "post_approval_commits": "This is a squash merge of PR #2838. The branch contained three commits: the initial feature (voice design cascade + SFX controls), a fix for late model-option loads resetting all edited settings, and a refinement to track edits per field instead of a blanket touched flag. @fl0rianr gave an early CHANGES_REQUESTED on the first iteration, then later APPROVED after the two fix commits landed. The post-approval commits improved correctness (per-field tracking, speech override preservation) and test robustness, staying within the spirit and scope of the original review. No commits were added after the final approval.",
+    "review": "Substantive reviewer @fl0rianr (subject-matter expert on GUI and OpenMOSS per contribute.md) provided multiple CHANGES_REQUESTED reviews across iterations, identifying six real concerns: (1) transient VoiceGen process could leave requests hanging, (2) cascade now requires TTS and VoiceGen resident simultaneously, (3) non-empty voice now triggers voice design breaking OpenAI-compatible semantics, (4) audio_defaults not used by GUI, (5) seed -1 does not mean random for unsigned seed, (6) clone-mode style note ignored. All issues were addressed in follow-up commits: the server now runs the cascade internally (resolving 1-3 and 6), per-field edit tracking preserves user edits during late options loads (resolving 4-5), and voice design uses voice_design_description while voice keeps its OpenAI meaning. @fl0rianr then approved, noting the server-side dependency (#2863) landed first. The review applied the project philosophy of User Error is a Bug by proactively fixing edge cases rather than waiting for users to hit them.",
+    "security": "No security concerns identified. The change is GUI-only and adds no new network paths, credential handling, or execution surfaces. The co-authored-by trailers include Claude Opus 5.5 (bot) and fl0rianr (merge maintainer).",
+    "tests": "New file src/app/tests/openmoss-composer.spec.ts (262 lines) covers: describe mode sending voice_design_description, plain mode sending voice, clone mode sending reference_wav_b64, MOSS-VoiceGen legacy behavior, voice and SFX settings surviving late model-option loads, MOSS-SoundEffect using engine defaults, and seed = -1 drawing random. The late-load tests use an observable signal (wait for untouched field to update) rather than a fixed wait, addressing a CodeRabbit nit. Tests demonstrate the fixes described in the PR body."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 294.8,
+  "maintainer_todos": [
+    {
+      "text": "Select OpenMOSS-TTS, choose Describe mode, enter a voice description, and send a message; confirm the server runs the voice design step and produces speech without showing a voice-design model."
+    },
+    {
+      "text": "Select MOSS-SoundEffect, set Steps to 30 and Negative prompt to music, send a prompt, and confirm the request includes steps=30 and the negative prompt."
+    },
+    {
+      "text": "Select MOSS-SoundEffect, change Steps and CFG while the model options are loading, then send a prompt; confirm both your edited values appear in the request."
+    },
+    {
+      "text": "Select OpenMOSS-TTS in clone mode, attach a WAV sample and enter a style note, then send a message; confirm the style note is sent as voice and the WAV as reference_wav_b64."
+    },
+    {
+      "text": "Select MOSS-SoundEffect, leave the seed blank or enter -1, and send a prompt twice; confirm both generations differ (random seed, not repeating)."
+    }
+  ],
+  "merge_date": "2026-11-24T14:38:22Z",
+  "pr_number": 2838,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-24T14:45:13+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "285d957597dcd9d053549e3dcf7ca7ee7b3aff55",
+  "shout_outs": [],
+  "subject": "feat: bump OpenMoss engine to 0.2.0 / GUI side (#2838)",
+  "summary": "Rewrites the OpenMOSS composer: voice design cascades internally through the selected speech model (replacing the old MOSS-VoiceGen hand-cascade), adds the MOSS-TTS-Local model, and adds MOSS-SoundEffect with sigma-shift and negative-prompt controls, while fixing late model-option loads to preserve per-field user edits.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "Substantive reviewer caught six real concerns (three blocking); all were addressed, but the reviewer flagged GPU residency and seed handling issues that persist and warrant manual verification before shipping."
+}
