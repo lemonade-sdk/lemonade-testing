@@ -1,0 +1,41 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "3609f34d0de1993d051061abc849e431e0a3d58f",
+  "committed_at": "2026-11-23T23:08:10+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking or user-visible API change. This is a pure CI workflow change in .github/workflows/ — nobody upgrading encounters any difference.",
+    "documentation": "No user-facing documentation affected. The PR description has unresolved TODO placeholders in the Summary and Testing sections per CodeRabbit's auto-review, but these are PR body hygiene issues, not documentation defects.",
+    "manual_release_testing": "This is a maintainer-only CI workflow change. It does not add or change any user-facing behavior, API, CLI, config, or artifact. The new job will run on subsequent PRs and merge queue runs; no manual release testing is needed.",
+    "post_approval_commits": "None. The single commit (a63b352fe) was the only commit in the PR and received two approvals with no churn after approval. First approval at 2026-11-23T14:51:35Z, latest at 2026-11-23T23:11:16Z.",
+    "review": "Two human approvals: @sawansri (APPROVED 2026-11-23T14:51:35Z) and @francescobozzo (APPROVED 2026-11-23T23:11:16Z). @sawansri has subject area expertise in 'new backends' which is relevant here. No ROCm-specific reviewer (@superm1) is on record. The PR description has a TODO placeholder in the Summary row table: '<!-- TODO(human): summary per docs/dev/ai-content-policy.md -->' was left unresolved. CodeRabbit bot submitted a COMMENTED review flagging this TODO, the Testing section blank, and the Spec Driven Development checkbox selection — all issues present at merge time. The single commit was authored by @jeremyfowers with a Claude Co-authored-by trailer; no post-approval commits were added.",
+    "security": "No security concerns. The change only adds CI workflow YAML referencing existing secrets (HUGGINGFACE_ACCESS_TOKEN, GH_TOKEN) and existing self-hosted runner groups. No supply-chain, credential, or execution-path changes.",
+    "tests": "This PR contains no application code changes — only a GitHub Actions workflow addition. No test code to evaluate. The new CI job itself is a test; it was not run on this PR because the job gate (backends-gate) only fires on merge_queue or PRs with the ci:backends label, and the workflow had not been merged yet at merge time."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 144.3,
+  "maintainer_todos": [
+    {
+      "text": "Check the PR description for remaining TODO placeholders and clean them up before release notes are drafted, since the Summary table and Testing section contain unresolved blanks."
+    },
+    {
+      "text": "Confirm that @superm1 reviewed the ROCm-specific aspects of this CI test configuration, since the new job installs and runs the gufo:rocm backend and no ROCm-expert reviewer is on record."
+    }
+  ],
+  "merge_date": "2026-11-24T00:41:44Z",
+  "pr_number": 4231,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-24T00:45:54+00:00",
+  "reviewers": [
+    "@sawansri",
+    "@francescobozzo"
+  ],
+  "sha": "3609f34d0de1993d051061abc849e431e0a3d58f",
+  "shout_outs": [],
+  "subject": "ci: test gufo:rocm on Devlab Dispatch's Strix Halo Windows runners (#4231)",
+  "summary": "Adds a new CI job test-exe-devlab-backends that runs the gufo:rocm backend on Devlab Dispatch's Strix Halo Windows self-hosted runners via the lemonade.exe installer.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The PR description still contains TODO placeholders in the Summary section that were not cleaned up before merge, and the ROCm-specific reviewer (@superm1) was not consulted despite the change directly testing ROCm backend behavior on new hardware."
+}
