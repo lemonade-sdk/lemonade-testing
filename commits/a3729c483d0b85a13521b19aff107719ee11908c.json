@@ -1,0 +1,43 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "a3729c483d0b85a13521b19aff107719ee11908c",
+  "committed_at": "2026-11-24T15:08:40+00:00",
+  "evidence": {
+    "api_compatibility": "Breaking: the /v1/videos output_format enum gains \"mp4\" (non-breaking addition). The doc comments for video_frames and fps changed from explicit defaults ('33' and '16') to 'the backend default' — no client is affected since these were never part of a contract. SD-CPP backend now explicitly rejects output_format=mp4 (was silently passed through), which is a correctness fix, not a user-facing break since mp4 was never supported.",
+    "documentation": "docs/api/lemonade.md updated to list TheNoise alongside stable-diffusion.cpp as supported video backends, output_format now includes mp4, and the cancel route description was updated to note TheNoise's cooperative cancel behavior. The model catalog entries include recipe options for each model.",
+    "manual_release_testing": "No evidence a human exercised video generation, cancel, or content download on real GPU hardware with TheNoise. The test file is a unit test with a mock backend. The new video_generations() API path, cooperative cancel behavior, and the six new models are user-reachable and were not manually tested.",
+    "post_approval_commits": "One commit was added after approval: @fl0rianr's 'add turbo models, minor adjustments' (sha f68f468) at 2026-11-24T14:22:42Z, 79 minutes later. It added Wan2.2-TI2V-5B-Turbo-INT8 and Wan2.2-T2V-A14B-Turbo-INT8 models, the \"edit\" label to Krea 2 and both MOSS-Image models, and removed hardcoded default numbers from doc comments. This followed the reviewer's explicit suggestion and remains within the spirit of the approved PR, but the new model entries were not re-reviewed.",
+    "review": "@bitgamma (thenoise subject matter expert per contribute.md) approved at 2026-11-24T13:03:23Z after requesting turbo models and the \"edit\" label. The review was substantive and the follow-up addressed those requests. However, the approval came before the turbo models were added.",
+    "security": "The backend communicates only over localhost with HttpSecurityPolicy::TrustedLoopback — no network risk. Model checkpoints are downloaded from HuggingFace (Comfy-Org, thenoise-ai, comfyicu, Milo01, Stick9190, Kijai). The INT8 models use ConvRot quantization, which is a standard format. No new credential handling or supply-chain changes.",
+    "tests": "New test file test/cpp/test_thenoise_video_poll.cpp with 219 lines covering: request mapping (video-only fields, not image fields), unsupported format rejection, transient poll failure retry, explicit and recipe-level defaults, pre-submit cancellation, mid-submit cancellation, completion-then-cancel, cancel during content download, and lost-job failure paths. Tests use a mock HTTP backend. No GPU or integration-level video generation tests are included."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 209.4,
+  "maintainer_todos": [
+    {
+      "text": "Start a server with TheNoise backend and a Wan 2.2 video model, POST a video generation to the /v1/videos endpoint, and confirm the response includes the expected frame count, fps, and MIME type."
+    },
+    {
+      "text": "Submit a video generation with the /v1/videos endpoint and cancel it mid-generation via the /v1/videos/{id}/cancel endpoint, then confirm the job reports canceled and the next generation completes without re-downloading the model."
+    },
+    {
+      "text": "Request a video with output_format set to mp4 and confirm the response MIME type is video/mp4 and the clip is valid."
+    }
+  ],
+  "merge_date": "2026-11-24T16:21:35Z",
+  "pr_number": 4255,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-24T16:26:52+00:00",
+  "reviewers": [
+    "@bitgamma"
+  ],
+  "sha": "a3729c483d0b85a13521b19aff107719ee11908c",
+  "shout_outs": [],
+  "subject": "feat(server): add theNoise video model support (#4255)",
+  "summary": "Adds theNoise video model support: TheNoiseServer implements IVideoServer with video_generations() enabling cooperative cancel, WebM/MP4 output, and optional model components (audio_vae, spatial_upscaler, text_projection, dit_low), plus six recommended video models (Wan 2.2 TI2V 5B FP16, Wan 2.2 TI2V 5B Turbo INT8, Wan 2.2 T2V A14B FP16, Wan 2.2 T2V A14B Turbo INT8, LTX 2.3 Distilled INT8, LTX 2.5 Distilled INT8), backend upgrade to TheNoise 0.16.0, and enables the \"edit\" label for Krea 2 and MOSS-Image models.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "A post-approval commit added two new turbo video models and the \"edit\" label without renewed approval, and this significant new user-facing feature has no evidence of manual end-to-end GPU testing."
+}
