@@ -1,0 +1,40 @@
+{
+  "author": "@github-actions[bot]",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "f8db59b8efb9a0cf2fb77d420eb26233a71e2786",
+  "committed_at": "2026-11-24T02:12:29+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The commit only updates sha256 image pins and one added checksum in src/cpp/resources/backend_versions.json, a configuration file that controls which container images are downloaded. No API, CLI, config schema, or persistence format is affected.",
+    "documentation": "No documentation changes needed. This is a routine version pin update to an internal configuration file.",
+    "manual_release_testing": "No human manually exercised the updated container images before merge. The CI container build tests and smoke tests are automated. The gufo version bump (0.35.0→0.36.0) and halogen bump (0.19.1→0.20.7) are the highest-risk changes since they are major/minor version bumps rather than digest-only updates.",
+    "post_approval_commits": "No commits were added after the first (and only) approval at 2026-11-24T01:25:38Z. The PR contained a single commit with no post-approval churn.",
+    "review": "PR #4250 was approved by @jeremyfowers (member, admin maintainer with CI expertise). His review noted this replaces #4233 which conflicted with #4240's llama.cpp pins, and that the merge queue's container backend tests cover the changes. One substantive approval; no inline comments. No commits were added after approval — the PR had a single commit authored by github-actions[bot].",
+    "security": "All updated pins are SHA-256 digests, which are cryptographically verified at download time (BackendUtils::lookup_expected_asset_hash). No supply-chain risk beyond the normal risk of pulling updated container images from upstream registries. The new gufo v0.36.0-windows-x86_64.zip checksum was added alongside the version pin, maintaining the integrity verification pattern.",
+    "tests": "All CI checks passed: C++ Server Build and Test, Container Build Tests (amd64 and arm64 smoke tests), Docker Build Smoke Test, MCP Smoke Test, and all ancillary workflows. CodeQL analysis passed. The container build tests (Build and smoke test amd64/arm64) built and ran smoke tests against the updated images, but these are automated CI runs rather than manual human verification."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 197.6,
+  "maintainer_todos": [
+    {
+      "text": "Run `lemonade run` with the `gufo:rocm` backend and confirm the container pulls version 0.36.0 and starts inference without error."
+    },
+    {
+      "text": "Run `lemonade run` with the `halogen:rocm` backend and confirm it starts with version 0.20.7."
+    }
+  ],
+  "merge_date": "2026-11-24T04:33:21Z",
+  "pr_number": 4250,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-24T04:38:36+00:00",
+  "reviewers": [
+    "jeremyfowers"
+  ],
+  "sha": "f8db59b8efb9a0cf2fb77d420eb26233a71e2786",
+  "shout_outs": [],
+  "subject": "Update container backend image pins (#4250)",
+  "summary": "Updates SHA-256 pins for ds4:rocm (rocm-10.0), gufo:rocm (0.35.0→0.36.0), halogen:rocm (0.19.1→0.20.7), llamacpp:halobox (rocm-10.0-strix-llama), llamacpp:nathanw (vulkan-radv-performance), and adds the gufo v0.36.0-windows-x86_64.zip checksum.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "Approved by a subject-matter expert with all CI passing, but no human manually exercised the updated container images before merge."
+}
