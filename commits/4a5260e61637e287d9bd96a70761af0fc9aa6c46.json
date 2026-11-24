@@ -1,0 +1,53 @@
+{
+  "author": "@danielholanda",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "4a5260e61637e287d9bd96a70761af0fc9aa6c46",
+  "committed_at": "2026-11-23T20:37:47+00:00",
+  "evidence": {
+    "api_compatibility": "The registry search API route extends the `format` query parameter enum from `[\"gguf\"]` to `[\"gguf\", \"loom\"]`. This is an additive change — existing callers passing `format=gguf` continue to work unchanged. The internal C++ API changes `search()` parameter from `bool gguf_only` to `RegistrySearchFormat format`, but this is an internal class method not exposed to users. No breaking API changes identified.",
+    "documentation": "The PR updates docs/guide/cli.md with the new `loom` recipe section (`--loom-device`, `--loom-memory-bytes`, `--loom-args`). docs/dev/backends-reference.md adds the Loom backend descriptor table. docs/api/lemonade.md updates the registry search endpoint to document `format=loom`. docs/api/internal.md adds `loom` to the server configuration. docs/guide/configuration/README.md adds `loom_backend`. README.md includes a Loom badge. All documentation changes appear consistent with the code. No API spec inconsistencies identified.",
+    "manual_release_testing": "CI exercised the loom test on an R9700 runner via the merge queue, but the test is a non-container build (not a Docker container as the original commit message mistakenly called it). No human manually exercised the loom backend on real Strix Halo or R9700 hardware to verify end-to-end model download, bundle startup, and inference. This is a new native backend that downloads external wheels from ROCm/hrx-system GitHub Releases and starts loom-serve as a subprocess — a significant user-reachable path with no evidence of manual hardware testing.",
+    "post_approval_commits": "The merge commit is a squash of 24+ commits authored by danielholanda, jeremyfowers, and Mario Limonciello. Co-authors include Cursor, Claude, and Claude Opus 5.5 (AI assistants, not people). The substantive co-authored-by human contributors are @jeremyfowers (CI, workflow changes) and @superm1 (GPU enumeration, device environment variables). Both are already credited in reviewers. No post-approval commits were added — the merge was a clean squash from the merge group.",
+    "review": "The PR was requested for review by @superm1 (ROCm, new backends, linux packaging, security) and @jeremyfowers (new backends, GUI design language, new CLI commands), both of whom have subject-matter expertise per docs/dev/contribute.md. Both reviewers left substantive inline comments: @superm1 asked about R9700 documentation, amdgpu:// device selection semantics, multi-GPU GUI selector, and how amdgpu://0 maps internally; @jeremyfowers questioned the user-facing API fields for device selection, added R9700 hardware CI testing, and flagged a model that may need RDNA4-only handling. However, every review in the PR is in COMMENTED state — neither reviewer submitted an APPROVED review. The merge queue ran all checks and the merge was executed by @sreeram-11 (a merge-queue actor) without formal approval. This is unusual for a new backend and should be reconsidered for future merges.",
+    "security": "The PR adds a new backend that downloads Python wheels from ROCm/hrx-system GitHub Releases and a model catalog of ~51 bundles from Hugging Face. Loom bundle serve_args from info.json are validated against a whitelist (pool, memory, slab, parameter-mode flags); listener, model, device, and flagfile flags are rejected. Reserved custom arguments (--listen, --model, --device, --preset, --flagfile, --memory_bytes) are validated before passing to loom-serve. Loom bundles are restricted to Hugging Face only. The bundle file layout is validated against path traversal. These are positive security practices. No supply-chain or credential concerns beyond the standard external dependency download pattern.",
+    "tests": "The PR adds an extensive test suite: test_loom_contract.cpp (751 lines) covers bundle planning, path validation, program file checks, launch argument contracts, device target selection, request shaping, readiness parsing, card metadata, installer contracts, descriptor contracts, catalog validation, and cache layout with a FixtureHub. test_auto_context_flow.cpp gains tests for uses_ctx_size=false recipes (loom, cloud). test_pull_registry.cpp updates to use RegistrySearchFormat::Any. test_facade_shape.cpp adds loom_server.cpp to the models-header whitelist. test_backend_utils_gpu_env.cpp and test_recipe_options_precedence.cpp add new test cases. test/system_info_helpers.cpp adds tests for KFD GPU node enumeration and PCI bus ID resolution. Integration tests in test/server_llm.py and test/utils/capabilities.py add the loom backend to the test matrix with specific model and configuration. CI runs the loom container test on the R9700 runner (Devlab Dispatch)."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 440.1,
+  "maintainer_todos": [
+    {
+      "text": "Start a server on Strix Halo or R9700 hardware and select a Loom model (e.g. Qwen3.5-0.8B-Loom) from the model list, then confirm the chat completions endpoint returns responses without errors."
+    },
+    {
+      "text": "Run `lemonade pull Qwen3.5-0.8B-Loom` and verify the bundle downloads into `models--loom-fun--unsloth-Qwen3.5-0.8B-loom/snapshots/` in the HF cache layout, then run the model and check the `--wrapped-server loom` logs for a successful startup."
+    },
+    {
+      "text": "Call the registry search endpoint with `GET /api/search?query=qwen&format=loom` and confirm it returns Hugging Face repositories tagged `loom-serve` rather than GGUF repositories."
+    }
+  ],
+  "merge_date": "2026-11-24T00:12:55Z",
+  "pr_number": 4162,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-24T00:23:25+00:00",
+  "reviewers": [
+    "@superm1",
+    "@jeremyfowers"
+  ],
+  "sha": "4a5260e61637e287d9bd96a70761af0fc9aa6c46",
+  "shout_outs": [
+    {
+      "handle": "@superm1",
+      "reason": "Co-authored-by on the merge commit (Mario Limonciello <mario.limonciello@amd.com> and <superm1@kernel.org>) wrote part of the commit, including substantive changes to system GPU enumeration and device environment variable handling."
+    },
+    {
+      "handle": "@jeremyfowers",
+      "reason": "Co-authored-by on the merge commit (Jeremy Fowers <jeremy.fowers@amd.com> and <80718789+jeremyfowers@users.noreply.github.com>) wrote part of the commit, including substantive CI and workflow changes."
+    }
+  ],
+  "subject": "Add experimental HRX Loom backend  (#4162)",
+  "summary": "Adds the experimental HRX Loom backend with recipe `loom`, pins hrx-loom v0.2.0 from ROCm/hrx-system, registers gfx1151 (Strix Halo), gfx1201 32 GB class (Radeon AI PRO R9700) and gfx1201 16 GB class (RX 9070 XT/9070) device targets, stores Loom bundles in standard Hugging Face cache layout, downloads ~51 loom-fun models to server_models.json, extends the registry search API with `format=loom` to find loom-serve tagged repositories, and skips auto ctx_size for the fixed-context loom recipe.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The requested subject-matter reviewers left substantive comments but no formal approvals were submitted before merge, and the new backend is a large user-facing feature with no evidence of manual end-to-end inference testing on real hardware."
+}
