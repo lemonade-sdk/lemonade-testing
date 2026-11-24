@@ -1,0 +1,33 @@
+{
+  "author": "@sreeram-11",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "8b08dd806508432b296fb77b77b516b3b40a421a",
+  "committed_at": "2026-11-24T12:21:07+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The change is confined to test files and a test utility constant. No public API, CLI, config, or persisted format is affected.",
+    "documentation": "Not affected. The change is purely test infrastructure; no API, CLI, or user-facing documentation needs updating.",
+    "manual_release_testing": "This PR changes only test files (test/, test/utils/). There are no user-reachable surfaces — no API endpoints, CLI commands, GUI changes, config options, or shipped behavior modifications. No manual release testing is needed.",
+    "post_approval_commits": "No commits were added after the first (and only) approval at 2026-11-24T12:20:55Z. The three PR commits — the initial model substitution, the merge of main, and the pull-result assertion fix — all predate approval.",
+    "review": "PR #4254 was approved by @fl0rianr at 2026-11-24T12:20:55Z with an LGTM. @fl0rianr is listed in docs/dev/contribute.md as a reviewer for CI subject area, so the review had subject matter expertise. CodeRabbit (bot) identified that the initial version discarded the pull return code in test_090, meaning a failed pull would be silently followed by a delete of a missing model. The author fixed this in commit 8281a77 by asserting the pull returns zero and asserting the delete returns zero. CodeRabbit confirmed the fix. @jeremyfowers was a requested reviewer but no review from them is recorded.",
+    "security": "No security concerns. The change replaces one Hugging Face model ID with another in test code; no credentials, network calls, code execution, or permission changes are introduced.",
+    "tests": "The PR modifies existing integration tests (server_cli2.py, server_endpoints.py, test_ollama.py, utils/test_models.py) to use a smaller model constant for pull-and-delete operations. It does not add new unit tests for the DELETE_TEST_MODEL constant itself, but the constant is a simple string assignment in utils/test_models.py and the existing tests exercise the pull/list/delete code paths with it. The author locally verified all affected API calls (delete when not downloaded, streaming and non-streaming pull, /models listing, Ollama /api/tags and /api/delete, and CLI pull + delete) against a local server. CI checks on the commit all passed: validate_sdcpp, validate_vllm, server_download_registry, and cpp_server_build_test_release."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 123.5,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-24T13:12:23Z",
+  "pr_number": 4254,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-24T13:16:22+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "8b08dd806508432b296fb77b77b516b3b40a421a",
+  "shout_outs": [],
+  "subject": "test: stop re-downloading the shared test model in CLI/Endpoints jobs (#4254)",
+  "summary": "Replaces the 183 MB shared test model (Tiny-Test-Model-GGUF) with a 37 MB reranker model (jina-reranker-v1-tiny-en-GGUF) in tests that pull and delete models — test_007, test_008, test_016, cli test_090, and ollama test_099 — so the shared model stays downloaded and CI jobs download ~768 MB less total per run.",
+  "verdict": "Clean",
+  "verdict_reason": "CI-only test optimization reviewed by a maintainer with CI expertise, with all checks passing and no user-visible changes."
+}
