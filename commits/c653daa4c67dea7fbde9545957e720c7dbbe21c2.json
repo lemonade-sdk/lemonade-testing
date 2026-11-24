@@ -1,0 +1,43 @@
+{
+  "author": "@danielholanda",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "c653daa4c67dea7fbde9545957e720c7dbbe21c2",
+  "committed_at": "2026-11-24T16:09:51+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking API changes in this commit's diff. The changes are internal to the GUI app components. The registeredRemoteModel.ts function gains a new code path for Loom recipes but does not alter behavior for existing non-Loom models.",
+    "documentation": "No documentation changes in this commit. The diff is entirely frontend app code and a unit test.",
+    "manual_release_testing": "The C++ backend changes (loom_server.cpp, hf_variants.cpp, etc.) were part of the larger Loom feature work reviewed through earlier PRs (#4162, #4193). This commit's diff touches only frontend files (ModelListPanel.tsx, ModelManager.tsx, registeredRemoteModel.ts, model-provider-search.runtime.cjs). The user-visible behavior — searching for a Hugging Face Loom model by repository name, pulling it, and having it show up in the model list ready to load — is new for this release and has not been manually exercised.",
+    "post_approval_commits": "No commits were added after the first approval (2026-11-24T15:36:26Z) or the latest approval (2026-11-24T15:42:34Z). The last commit before merge was a branch merge by @jeremyfowers at 2026-11-24T15:35:49Z. The branch was updated via 'update branch' right before approvals, which is routine.",
+    "review": "PR #4241 received two approving reviews: @jeremyfowers (approved 2026-11-24T15:36:26Z, 'Oop, pushing update branch fixed it. Approved!') and @kpoineal (approved 2026-11-24T15:42:34Z, 'LGTM!'). @jeremyfowers is a maintainer with subject-matter expertise in backends, GUI design, and CI. @kpoineal covers GUI/app. Both approvals came within minutes of each other after a branch update. No commits were added after either approval. The PR also had CodeRabbit AI review comments (5 comments across the C++ and TypeScript files); none were addressed in a subsequent round, and the final merge succeeded, implying the reviewer found them acceptable. The review was timely and covered by the right expertise, though the reviews were brief.",
+    "security": "No security concerns in the frontend-only changes. The Loom backend work (already in main via earlier PRs) includes a security note about validating info.json serve_args to prevent flag injection — that was handled in the backend review cycle, not this commit.",
+    "tests": "The PR adds a test file src/app/tests/model-provider-search.runtime.cjs with three assertions for the findRegisteredRemoteModel function covering Loom bundle matching by repository, non-matching repositories, and recipe gating. The existing runtime tests were also updated (regex adjusted, checkpoint added to search haystack). This is adequate for the new function branch, though the test is unit-level and does not exercise the GUI flow."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 347.2,
+  "maintainer_todos": [
+    {
+      "text": "Open the Lemonade GUI, search for a Loom model repository name from Hugging Face, select it, trigger the pull, and confirm the model appears in search results and the Load button works afterward."
+    }
+  ],
+  "merge_date": "2026-11-24T16:53:18Z",
+  "pr_number": 4241,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-24T17:00:58+00:00",
+  "reviewers": [
+    "@jeremyfowers",
+    "@kpoineal"
+  ],
+  "sha": "c653daa4c67dea7fbde9545957e720c7dbbe21c2",
+  "shout_outs": [
+    {
+      "handle": "@superm1",
+      "reason": "Authored three substantive commits on this PR: adding the Loom recipe to the agent launch model selection, normalizing the chat completion response model id, and fixing auto ctx_size for fixed-context recipes while resolving GPU preset limits."
+    }
+  ],
+  "subject": "fix(app): make Loom models easy to add from the GUI (#4241)",
+  "summary": "Makes Loom models easy to add from the GUI by searching by the Hugging Face repository name, detecting when a pulled model already exists in Lemonade's built-in catalog and handing it off to Load, and adding the checkpoint repository to the model list panel search index so pulled Loom bundles appear in results.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The PR introduces user-visible GUI behavior — searching for and loading Loom models from the Hugging Face catalog — that has not been manually exercised before release."
+}
