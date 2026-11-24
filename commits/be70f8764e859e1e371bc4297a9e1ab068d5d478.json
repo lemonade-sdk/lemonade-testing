@@ -1,0 +1,43 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "be70f8764e859e1e371bc4297a9e1ab068d5d478",
+  "committed_at": "2026-11-24T17:26:22+00:00",
+  "evidence": {
+    "api_compatibility": "Breaking. Two public symbols were removed from loom.h: kDefaultDevice (inline constexpr const char*) and BundlePlan::preset (std::string). Internal functions target_preset, default_preset, and parameter_bytes were removed. The BundlePlan struct lost its preset field. Bundles lacking a quick_start record in info.json will now fail at runtime where they previously would have loaded using hardcoded per-GPU profiles. The one-shot refresh attempts to re-fetch the card if the bundle is supported but missing quick_start, but if that fails (offline or stale cache), the bundle is refused.",
+    "documentation": "The PR body is minimal ('Change the loom model launch protocol so that it reads a quick_start command setting from the model card. This replaces the hardcoded args in Lemonade and makes the model card the SSOT, which will make maintenance easier later.'). CodeRabbit's pre-merge check flagged that the PR description should cite a Spec Driven Development issue, expand the summary, describe scope, detail testing, and address breaking changes — none of which were done. No release notes, documentation update, or changelog entry was added. The removed public symbols (kDefaultDevice, BundlePlan::preset) and the new quick_start requirement for model cards should be documented.",
+    "manual_release_testing": "The Loom backend is a C++ inference backend whose user-visible surface is model loading on a supported GPU. Bundles downloaded before this PR — cached on user systems — will fail to load on GPUs that did not previously have a quick_start record, unless the system can fetch the updated card revision via the one-shot refresh path. This creates a release risk for users with older cached bundles, particularly on offline or restricted networks. The to-do items cover the three release-critical paths: the device index bug, successful refresh, and offline failure.",
+    "post_approval_commits": "No commits were added after @danielholanda's approval at 2026-11-24T17:16:20Z. The last commit (09d8739d) was pushed at 2026-11-24T16:22:17Z. Approval and merge were clean with no post-approval churn.",
+    "review": "PR #4214 was reviewed by @danielholanda, a maintainer with subject area expertise in new backends. He approved with 'Chatted offline. Solution is good.' at 2026-11-24T17:16:20Z. The PR had one pre-approval inline comment from @danielholanda asking whether the quick_start requirement applies to all 50+ models on loom-fun and 300+ on loom-draft, indicating awareness of the scope impact. CodeRabbit flagged a major functional correctness issue: a recorded device such as amdgpu://1?completion_spin_ns=123 passes the amdgpu:// prefix check, but the parser at line 295 of loom_bundle.cpp keeps only the text after ?, so the device index '1' is silently dropped. build_server_argv then emits --device=amdgpu://?completion_spin_ns=123, potentially launching on a different GPU than the card records. This was not addressed or acknowledged by the author or reviewer. The PR was merged rapidly — less than two hours after the final commit — with all three CI checks (C++ Server Build, llamacpp validation, vLLM validation) passing.",
+    "security": "The quick_start() function validates the recorded preset (alphanumeric, dash, underscore, dot), device (must start with amdgpu://, query string must be alphanumeric with _= and &), and serve args (filtered through is_recordable_serve_arg, which rejects listen, model, device, devices, flagfile, preset, and bare IPs/ports). Custom loom_args still pass through unchanged, preserving the existing override path. No new credential handling, network calls beyond the existing BundleFetcher download path, or code execution surfaces introduced.",
+    "tests": "Test coverage was updated thoroughly. All old test functions (target_preset, default_preset, parameter_bytes) were removed from test_loom_contract.cpp and replaced with tests for the new quick_start, records_quick_start, serve_args(QuickStart), preset_limits, and build_server_argv(device_query) APIs. Tests cover valid records for Strix Halo, Radeon R9700, and gfx1201-16gb; invalid presets, devices, and serve arguments; custom argument overrides; preload behavior; and the records_quick_start helper. No evidence of inappropriate test weakening or deletion."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 384.9,
+  "maintainer_todos": [
+    {
+      "text": "Load a Loom model on a multi-GPU system where the model card's quick_start device is set to a path with a non-empty segment between amdgpu:// and the query string (e.g., amdgpu://1?completion_spin_ns=123), and confirm the server's --device flag contains the device index instead of silently dropping it."
+    },
+    {
+      "text": "Load a Loom model whose bundle was cached before this release — before cards recorded a Quick start for the system's GPU — and confirm the server fetches the updated card to obtain the missing Quick start record before launching."
+    },
+    {
+      "text": "Load a Loom model whose cached bundle lacks a Quick start for the system's GPU while the server has no network access, and confirm the server fails with a clear error message instead of launching with wrong defaults."
+    }
+  ],
+  "merge_date": "2026-11-24T18:23:41Z",
+  "pr_number": 4214,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-24T18:31:59+00:00",
+  "reviewers": [
+    "@danielholanda"
+  ],
+  "sha": "be70f8764e859e1e371bc4297a9e1ab068d5d478",
+  "shout_outs": [],
+  "subject": "loom: serve the Quick start each card records instead of hardcoded args (#4214)",
+  "summary": "Replace hardcoded per-GPU flags, preload limits and preset suffixes in the Loom backend with devices.<target>.quick_start from each model card's info.json, adding validation and a one-shot refresh for cached bundles that lack a Quick start record.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "A CodeRabbit-identified device path bug — non-empty segments between amdgpu:// and the query string are silently dropped — was not addressed before approval, and bundles without quick_start records will fail if the one-shot card refresh cannot reach the network."
+}
