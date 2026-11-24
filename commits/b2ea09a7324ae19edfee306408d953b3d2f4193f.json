@@ -1,0 +1,33 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "b2ea09a7324ae19edfee306408d953b3d2f4193f",
+  "committed_at": "2026-11-24T05:51:14+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The PR adds four new MCP tools and documentation; no existing endpoints, flags, configs, or behaviors are modified or removed. The tools forward to existing REST routes (/api/v1/health, /api/v1/system-info, /api/v1/install) without altering their contracts.",
+    "documentation": "docs/api/mcp.md updated with full reference documentation for all four new tools, including descriptions, arguments, return values, MCP annotations, and entries in the tool catalog table. The PR declares documentation is affected and has been updated.",
+    "manual_release_testing": "@jeremyfowers provided a screenshot in the approval (submitted 2026-11-23) confirming the tools work with a small model. The MCP server tools are user-reachable through the MCP protocol, and a human exercised them. No further manual testing is required for this release.",
+    "post_approval_commits": "The PR has two commits, both authored by @fl0rianr: (1) 71d84826 — initial MCP tools, (2) 1df52b02 — non-blank input patterns. The first approval from @jeremyfowers was submitted on 2026-11-23T20:14:17Z against commit 1df52b02 (the second commit), so there are zero commits after approval. The second commit was a direct response to @anditherobot's inline comment and was included in the approved state.",
+    "review": "PR #4202 was authored by @fl0rianr and approved by @jeremyfowers (admin maintainer with expertise in new endpoints and large features). @jeremyfowers submitted the approval on 2026-11-23 with a screenshot confirming the tools work with a small model. @ramkrishna2910 was requested as a reviewer but did not review; however, the single maintainer approval with hands-on testing evidence is adequate for this scope. @anditherobot left one inline comment (2026-11-19) suggesting non-blank input patterns for the install tool; the author addressed this in a follow-up commit (\"MCP: advertise non-blank backend install names\"). CodeRabbit flagged a minor functional issue about the `recipes` field absence in `lemonade_list_backends`; the author addressed it in the second commit, which now checks for the field before projecting. All post-approval commits (none beyond the second commit which predated approval) remained within the scope of the PR.",
+    "security": "No security concerns identified. The code reuses existing server routes, validates input patterns, and does not introduce new credential handling, network calls, permission changes, or telemetry.",
+    "tests": "test/server_mcp.py validates tool registration, annotation schemas for all four tools, and the install tool's input pattern constraints. test/server_mcp_smoke.py asserts the tools appear in the MCP catalog. The PR adds 28 lines of test code and 310 lines of production code. No existing tests were weakened or deleted. The test suite covers tool catalog consistency, annotation correctness, and safe dispatch for the mutating tool. The CodeRabbit review noted that the three read-only tools are not exercised end-to-end in the test suite, which is a minor gap but not critical for this release."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 215.2,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-24T06:37:53Z",
+  "pr_number": 4202,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-24T06:43:13+00:00",
+  "reviewers": [
+    "@jeremyfowers"
+  ],
+  "sha": "b2ea09a7324ae19edfee306408d953b3d2f4193f",
+  "shout_outs": [],
+  "subject": "MCP: server health, system info and backend management (#4202)",
+  "summary": "Adds four MCP tools (lemonade_get_server_health, lemonade_get_system_info, lemonade_list_backends, lemonade_install_backend) that expose server health, system information, backend availability, and backend installation capabilities through the MCP server.",
+  "verdict": "Clean",
+  "verdict_reason": "All checks passed, the PR was reviewed by a maintainer with hands-on testing evidence, tests cover the four new tools, and the change introduces no breaking changes or security concerns."
+}
