@@ -1,0 +1,37 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "34f51aa201f021ee370a4d2b1d8a2bad95ced209",
+  "committed_at": "2026-11-24T04:03:16+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The API.ts change adds `include_usage: true` to the stream_options body — this is an additive flag to the existing chat completion endpoint and does not change any contract. No CLI, config, or persistence format changes. The ContextMeterProps interface is new and does not affect existing consumers.",
+    "documentation": "No public API or CLI documentation affected. The PR title has a typo (\"conext\" instead of \"context\") carried through the merge commit subject — minor but visible in release notes. The PR body spells it correctly.",
+    "manual_release_testing": "The ContextMeter is a new GUI feature users reach by opening the Chat composer. It shows live token usage, a breakdown popover with color-coded segments, and real-time updates during streaming. The tester should open the popover during a completed chat to verify the breakdown adds up to the reported prompt total, and during streaming to confirm live updates appear. The model guard fix means switching models mid-stream should cause the meter to show the new model's estimate rather than the old model's count.",
+    "post_approval_commits": "Commit c435465 (2026-11-23T23:15:07Z) arrived 1.5h after the first approval. It added: a request-model guard on liveContextUsage preventing cross-model meter readings; conversation history fallback so saved conversations show non-empty estimates; image-cost calibration (carryMeasuredImageCost, withPendingImageCost); Escape-key focus restoration; and the effectiveSlotContextSize bug fix for parallel kv cache sizing. These are substantial behavioral corrections within the feature scope but were not re-reviewed. Commit 69473b6 (2026-11-24T03:27:02Z) is a merge of main — a standard merge-queue rebase.",
+    "review": "One human review from @jeremyfowers (GUI maintainer per contribute.md) who approved on 2026-11-23T21:54:39Z with a single cosmetic comment about removing tildes from numbers. No other substantive human review. CodeRabbit raised four functional-correctness issues across three files — model guard for live usage, conversation history fallback for saved chats, Escape-key focus restoration, and tool-call argument counting — all marked Minor. These were addressed in a post-approval commit without renewed human approval.",
+    "security": "No security concerns. No credential handling, no supply-chain changes, no network calls beyond the existing API endpoint. The MCP preflight uses a dynamic import of an existing module. No obfuscation or suspicious blobs.",
+    "tests": "Comprehensive Node runtime test at context-meter.runtime.cjs (252 lines): token accounting, multimodal fallback (50 KB base64 → otherTokens > 1400), usage-timing priority, context truncation scaling, zero-prompt protection, parallel slot sizing, streaming 35K tokens, thinking split, model guard presence in ChatView, i18n coverage. No skipped tests."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 527.7,
+  "maintainer_todos": [
+    {
+      "text": "Run the ContextMeter in the GUI with a conversation that has tool-call answers: open the meter popover and confirm the meter reports a non-zero conversation tokens category rather than zero, proving tool-call argument text is included in the estimate."
+    }
+  ],
+  "merge_date": "2026-11-24T04:57:55Z",
+  "pr_number": 4244,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-24T05:08:34+00:00",
+  "reviewers": [
+    "@jeremyfowers"
+  ],
+  "sha": "34f51aa201f021ee370a4d2b1d8a2bad95ced209",
+  "shout_outs": [],
+  "subject": "feat: add conext meter (#4244)",
+  "summary": "Adds a 30px circular ContextMeter button to the Chat composer (ChatView.tsx) that shows token usage as a circular progress ring and, when opened, a popover breaking down system prompt, tool definitions, conversation text, tool results, template/media, thinking text, and last answer tokens — with estimated preflight for MCP tool schemas, conversation history fallback, carried image-cost calibration, live-streaming usage with model-name guarding (ChatView.tsx + ContextMeter.tsx + contextUsage.ts + context-meter.runtime.cjs tests).",
+  "verdict": "Needs Attention",
+  "verdict_reason": "All four CodeRabbit-identified functional correctness issues were fixed in a commit after approval without renewed human review, and the PR title contains a typo (conext) that was never corrected."
+}
