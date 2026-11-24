@@ -1,0 +1,33 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "9c4081f86f14e04067b5d4e11f767f703ee0a39c",
+  "committed_at": "2026-11-24T16:30:45+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The change adds one new model key ('Inkling-2-Mini-Loom') to server_models.json. No existing config, CLI flag, API endpoint, or saved file is affected. Users who upgrade will simply see a new model option in their list.",
+    "documentation": "Model registry additions are discovered through the tool's model list, not separate docs. The PR links to the upstream HuggingFace package for user reference. Release notes should list the new model.",
+    "manual_release_testing": "The Server Download Registry Tests validated the checkpoint download. A human exercising the full pull path would be redundant for this low-risk JSON-only addition; the CI download check serves the same purpose.",
+    "post_approval_commits": "No commits were pushed after the first or latest approval. All three commits (two in the PR plus the squash merge commit) were ready before @sawansri approved.",
+    "review": "PR #4258 approved by @sawansri at 2026-11-24T15:54:21Z. Per contribute.md, @sawansri covers 'new models' so the reviewer has subject-matter expertise. PR body links to the upstream HuggingFace package. No inline review comments. The second commit (removing the incorrectly added 'dflash' label from the Inkling Loom entry) was pushed at 15:52:43Z, before the approval at 15:54:21Z, so both commits were reviewed together.",
+    "security": "No security concerns. The change adds a model entry referencing a HuggingFace checkpoint (loom-fun/unsloth-Inkling-2-Mini-loom). No code execution, credential handling, or supply-chain changes.",
+    "tests": "No code tests required — the change is a 11-line JSON registry addition. The Server Download Registry Tests workflow passed, confirming the checkpoint is reachable. No tests were weakened or deleted."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 184.3,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-24T17:23:29Z",
+  "pr_number": 4258,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-24T17:28:27+00:00",
+  "reviewers": [
+    "@sawansri"
+  ],
+  "sha": "9c4081f86f14e04067b5d4e11f767f703ee0a39c",
+  "shout_outs": [],
+  "subject": "feat(models): add Inkling-2-Mini Loom model (#4258)",
+  "summary": "Adds Inkling-2-Mini-Loom to server_models.json using checkpoint loom-fun/unsloth-Inkling-2-Mini-loom with chat, tool-calling, and reasoning labels and 18.1 GB size.",
+  "verdict": "Clean",
+  "verdict_reason": "A minimal 11-line JSON model registry addition reviewed by a subject-matter expert with all CI checks passing and no post-approval changes."
+}
