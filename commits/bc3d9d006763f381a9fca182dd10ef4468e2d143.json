@@ -1,0 +1,37 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "bc3d9d006763f381a9fca182dd10ef4468e2d143",
+  "committed_at": "2026-11-24T04:24:21+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. Three new MCP tool registrations only — no changes to existing API contracts, CLI commands, config formats, or persistence. The new tools delegate to existing /api/v1/pull, /api/v1/delete, and router state, so they inherit existing auth and behavior.",
+    "documentation": "docs/api/mcp.md updated with 71 new lines documenting all three tools — their MCP annotations, argument schemas (model_name, checkpoint, recipe, source, do_not_upgrade for pull; model_name and confirm for delete; none for get_loaded_models), return descriptions, and a new row in the tool reference table. The tool descriptions in mcp_server.cpp match the documentation.",
+    "manual_release_testing": "The three new MCP tools are user-reachable surface: a client can call tools/list to discover them and tools/call to invoke lemonade_get_loaded_models (no args), lemonade_pull_model (model_name required, optional checkpoint/recipe/source/do_not_upgrade), and lemonade_delete_model (model_name + confirm=true required). No evidence of a human exercising any of these through an actual MCP client. Unit tests hit the server endpoints directly but do not exercise the MCP transport layer end-to-end.",
+    "post_approval_commits": "No post-approval commits. The PR branch contains exactly one commit (6b6a4875) authored by @fl0rianr, approved at 2026-11-23T20:27:34Z and merged at 2026-11-24T05:13:57Z.",
+    "review": "The PR was approved by @jeremyfowers (admin maintainer) on 2026-11-23T20:27:34Z. @jeremyfowers' subject areas are 'new endpoints, new backends, large new features, GUI design language, new CLI commands, website, governance, Lemonade Mix (LMX) omni models, ci' — not MCP. The MCP subject-area expert @siavashhub (listed in docs/dev/contribute.md) did not review this PR. There are no human inline review comments on the PR. CodeRabbit raised one trivial nitpick about checking deletion postconditions in the test (line 800), which is a maintainability observation rather than a correctness concern. No post-approval commits were added; the branch contains a single commit.",
+    "security": "lemonade_delete_model gates deletion with confirm=true (enum: [true]), returning an error if omitted or false. It also checks model_exists before delegating to the REST handler. MCP annotations correctly mark delete as destructive and get_loaded_models as read-only. Pull delegates to the existing authenticated /api/v1/pull endpoint. No credential handling, network calls outside existing endpoints, or permission changes.",
+    "tests": "test/server_mcp.py adds test_027_pull_existing_model_tool (pulls a cached model with do_not_upgrade=true), test_028_delete_requires_confirmation (registers a disposable model, confirms deletion is rejected without confirm=true, succeeds with confirm=true, and cleans up), annotation verification for all three new tools in test_012, and safe probe entries. test/server_mcp_smoke.py adds the three tool names to the expected tool set. CodeRabbit noted the deletion test could assert that the model is actually absent after the delete (a minor test robustness observation). All CI checks passed: C++ Server Build, vLLM validation, llama.cpp validation, and stable-diffusion.cpp validation."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 191.8,
+  "maintainer_todos": [
+    {
+      "text": "Connect an MCP client to a running Lemonade server, call tools/list, then call each of the new tools — lemonade_get_loaded_models (no arguments), lemonade_pull_model with do_not_upgrade=true on a cached model, and lemonade_delete_model with confirm=true on a disposable model — and verify the responses match the documented schema."
+    }
+  ],
+  "merge_date": "2026-11-24T05:13:57Z",
+  "pr_number": 4200,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-24T05:21:04+00:00",
+  "reviewers": [
+    "@jeremyfowers"
+  ],
+  "sha": "bc3d9d006763f381a9fca182dd10ef4468e2d143",
+  "shout_outs": [],
+  "subject": "MCP: add model pull, delete, and residency tools (#4200)",
+  "summary": "Adds three new MCP server tools — lemonade_pull_model, lemonade_delete_model (with confirm=true gate), and lemonade_get_loaded_models — wired through existing REST handlers and documented in docs/api/mcp.md.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "Three new user-facing MCP tools added with no manual end-to-end testing through an MCP client, and the MCP domain expert (@siavashhub) did not review the PR despite being listed as the MCP subject-area maintainer."
+}
