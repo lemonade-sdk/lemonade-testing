@@ -1,0 +1,42 @@
+{
+  "author": "@sawansri",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "4bf7242c599f4fdb8efedde1773b586587a44295",
+  "committed_at": "2026-11-24T00:50:48+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking API change. The modification is a static JSON addition to a model registry file. No command, flag, config key, schema, or persisted format is altered. The change adds a new optional model that may be suggested but is not a required or default model.",
+    "documentation": "The PR adds only a model registry JSON entry. No documentation files were updated. For a model registry addition, this is consistent with the project pattern where the registry itself serves as the authoritative list.",
+    "manual_release_testing": "The registry entry is user-visible in the model selection UI, but nobody verified whether a user can actually load and use this model with the release candidate's backend pins. The PR author explicitly noted it was not end-to-end tested because no pinned backend supports inkling2_loop yet. The reviewer's hands-on testing used a locally built lemond with backend pins from a separate PR (#4240), which is not the release candidate state. This needs manual verification against the actual release candidate.",
+    "post_approval_commits": "No post-approval commits. The PR contained exactly one commit and received approval 38 seconds after submission (00:50:46Z). No churn occurred after approval.",
+    "review": "PR #4224 has one substantive human review from @jeremyfowers, who approved the single commit. @jeremyfowers has llamacpp listed as a subject-matter area in docs/dev/contribute.md. However, the PR author's own commit message and PR body explicitly state: 'No llama.cpp release includes #32694 yet' (the inkling2_loop architecture Mini requires) and 'Not yet tested end to end, because no pinned backend can load the model yet.' The PR was still merged. CodeRabbit flagged this as a Major functional correctness issue (comment 4674080486), but no human reviewer addressed the gap between the exposed registry entry and the missing backend support before merge.",
+    "security": "No security concern. The change adds a model registry entry pointing to a HuggingFace GGUF checkpoint and its mmproj file. This is a standard model catalog addition with no credential handling, network calls, code execution, or permission changes beyond what a model download already entails.",
+    "tests": "No tests were added or modified. The change is a 13-line JSON addition to server_models.json. Model registry entries are not individually tested by the project's CI — CI validates the C++ build and backend pins but does not validate individual model entries or verify they are loadable. The project has no existing unit test pattern for model registry entries."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 166.0,
+  "maintainer_todos": [
+    {
+      "text": "Start the server with the v2026.49 release candidate, browse to the model selection screen, and confirm Inkling-2-Mini-GGUF appears in the list. Then attempt to launch it and note the error — it should fail with an architecture-not-supported or similar backend rejection, confirming the entry exists but is non-functional without the pending backend pin bump."
+    }
+  ],
+  "merge_date": "2026-11-24T03:27:10Z",
+  "pr_number": 4224,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-24T03:31:37+00:00",
+  "reviewers": [
+    "@jeremyfowers"
+  ],
+  "sha": "4bf7242c599f4fdb8efedde1773b586587a44295",
+  "shout_outs": [
+    {
+      "handle": "@jeremyfowers",
+      "reason": "Conducted substantial hands-on testing on two different GPU architectures (Vulkan on Strix Halo and ROCm), verifying that text with reasoning, vision, and two-turn tool calls all work correctly with the model."
+    }
+  ],
+  "subject": "Add Inkling-2-Mini-GGUF (unsloth UD-Q4_K_XL) to model registry (#4224)",
+  "summary": "Adds the Inkling-2-Mini-GGUF model entry (unsloth/Inkling-2-Mini-GGUF:Inkling-2-Mini-UD-Q4_K_XL.gguf) to src/cpp/resources/server_models.json, labeling it as a chat/vision/tool-calling/reasoning model using the llamacpp recipe with mmproj vision support.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The model registry entry was merged without the backend pin update it explicitly depends on, so the model will appear in the UI but fail to load for users until the separate backend bump lands."
+}
