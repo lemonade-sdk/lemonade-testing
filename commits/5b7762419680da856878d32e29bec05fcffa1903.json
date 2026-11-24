@@ -1,0 +1,33 @@
+{
+  "author": "@jeremyfowers",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "5b7762419680da856878d32e29bec05fcffa1903",
+  "committed_at": "2026-11-24T04:58:57+00:00",
+  "evidence": {
+    "api_compatibility": "No API, CLI, config, or persistence format changes. This commit is a CI configuration change with zero user-facing contracts affected. No breaking changes.",
+    "documentation": "No documentation is affected by this change. The PR body correctly asserts 'Documentation is not affected by this change'.",
+    "manual_release_testing": "This commit touches only GitHub Actions workflow timeout values. It does not change any user-visible behavior, API, CLI, GUI, or configuration. No manual release testing is required.",
+    "post_approval_commits": "No post-approval commits were added to the PR. The merge queue built the merge commit 5b77624 directly from the approved branch head 132e6c76.",
+    "review": "PR #4251 was reviewed by @sreeram-11 (APPROVED). No other human review comments were filed. The PR author @jeremyfowers is a maintainer with ci as a declared subject area. The PR body includes a table of recent run durations showing five Windows CLI/Endpoint runs cancelled at the 30-min limit despite passing within 29 minutes, providing clear evidence the change was needed. No inline comments were left by reviewers.",
+    "security": "No security concerns. The change only modifies timeout values in a workflow YAML file. No supply-chain changes, credential handling, network calls, or code execution paths are affected.",
+    "tests": "This is a pure CI configuration change (one workflow file, five numeric edits). No application-level tests are appropriate or expected. The PR author verified by examining recent CI run durations via the GitHub API. No existing tests were weakened or deleted."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 182.5,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-24T06:37:49Z",
+  "pr_number": 4251,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-24T06:42:38+00:00",
+  "reviewers": [
+    "@sreeram-11"
+  ],
+  "sha": "5b7762419680da856878d32e29bec05fcffa1903",
+  "shout_outs": [],
+  "subject": "ci: raise CI job timeouts that cancel passing runs (#4251)",
+  "summary": "Raises timeout-minutes for five CI jobs in .github/workflows/cpp_server_build_test_release.yml: Windows CLI/Endpoints 30→60 min, macOS CLI/Endpoints 60→75 min, macOS .dmg inference 45→75 min, Container smoke test 45→75 min, and Test watchdog lifecycle 15→30 min.",
+  "verdict": "Clean",
+  "verdict_reason": "A minimal, well-documented CI-only change that raises timeout values to prevent passing runs from being cancelled, with all checks passing on merge."
+}
