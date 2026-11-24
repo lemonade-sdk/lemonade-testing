@@ -1,0 +1,45 @@
+{
+  "author": "@github-actions[bot]",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "47bf50921784491be633757db8710071db694321",
+  "committed_at": "2026-11-23T21:57:09+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking API change. The version bumps affect which pre-built binary each channel downloads; the backend contract (API endpoints, config schema, CLI flags) is unchanged. The generated header adds 8 architecture names to the supported list, which only expands matching, never narrows it. API doc examples show updated response IDs, timestamps, and the new system_fingerprint 'b12633-9c10c94e1', but these are documentation artifacts, not behavioral changes.",
+    "documentation": "API docs (anthropic.md and openai.md) were updated with new example responses reflecting the updated backend. docs/tools/api_examples_cache.json gained stream_shape metadata for several entries. The generated architecture header comments list the new source pins.",
+    "manual_release_testing": "CI validated inference across vulkan, rocm-stable, rocm-nightly, and cuda arm64 for every model listed in the PR body, but CI on the CI runner is not a human exercising the shipped backend binaries. The post-approval container-backend merge changed upgrade/uninstall cleanup behavior that needs manual verification before release.",
+    "post_approval_commits": "After @fl0rianr's approval, @sreeram-11 merged branch 'main' into the PR branch at 2026-11-23T21:14:02Z, introducing 141 insertions and 14 deletions across 9 C++ files from PR #4223 (container-image former-repository tracking). This merge added ContainerPolicy::former_images, new get_installed_backend_images()/get_present_installed_images() functions, modified remove_image() to suppress 'image not known'/'No such image' warnings, and added two test suites to test_container_manager.cpp. The C++ code changed behavior (upgrade/uninstall image-cleanup logic) without being part of the approved llamacpp update review.",
+    "review": "PR #4240 was approved by @fl0rianr at 2026-11-23T18:58:15Z. Per docs/dev/contribute.md, llamacpp falls under @superm1's subject-area expertise; @fl0rianr's areas are LMX omni models, GUI, CI, and the smart router. The PR is an automated update with comprehensive CI validation (6 models × 5+ backends, all PASS), but the reviewer lacked the specified domain expertise.",
+    "security": "The commit touches only version pins, a generated architecture list, and API doc examples. The post-approval container-backend merge makes image removal more tolerant of missing images, which is a correctness improvement (it no longer warns when an old image was already deleted). No credential handling, network calls, or supply-chain risks beyond the normal version bump.",
+    "tests": "The PR body includes a CI validation table with 14 models × 5-6 backends, all reporting PASS for inference and GPU offload. The post-approval merge added 81 new lines of C++ unit tests covering installed-image resolution under former repositories, image removal error handling, and status reporting. No existing tests were weakened or deleted."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 313.0,
+  "maintainer_todos": [
+    {
+      "text": "Run the container upgrade and uninstall paths for a backend that has been installed from a former repository (e.g., gufo:rocm from docker.io/kyuz0/amd-strix-halo-toolboxes) and confirm the old image is cleaned up and no spurious warnings appear."
+    },
+    {
+      "text": "Confirm that `lemonade config set llamacpp.rocm_bin=\"latest\"` continues to resolve to the updated rocm-stable or rocm-nightly pin and that inference still works with at least one ROCm-capable GPU."
+    }
+  ],
+  "merge_date": "2026-11-24T00:36:45Z",
+  "pr_number": 4240,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-24T00:45:02+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "47bf50921784491be633757db8710071db694321",
+  "shout_outs": [
+    {
+      "handle": "@sreeram-11",
+      "reason": "Co-authored the commit with a `Co-authored-by:` trailer, indicating direct contribution beyond the automated update."
+    }
+  ],
+  "subject": "Update llama.cpp to b12633, rocm-stable to b12625, rocm-nightly to b1385 (#4240)",
+  "summary": "Bumps llama.cpp backend version pins from b12233/b12223/b1372 to b12633/b12625/b1385 across all six channels (vulkan, cpu, metal, rocm-stable, rocm-nightly, cuda), regenerates the supported-architectures header with 8 new model families, and updates API example outputs to match the new system_fingerprint.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "A merge of main into the PR branch after approval introduced 141 lines of unreviewed C++ container-backend code alongside the approved llama.cpp version bump."
+}
