@@ -1,0 +1,36 @@
+{
+  "author": "@meghsat",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "14b77b9db5a81881e31928963ee544d4ecc3c354",
+  "committed_at": "2026-11-25T08:35:49+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The change modifies internal model update logic — the model manager API, artifact store API, and config options are unchanged. The `probe_directory_writable` function is new internal utility code. `FilterResult.hidden` and `FilterReasons.hidden` are new internal fields added to carry hidden-model information through the filter pipeline, but these are internal struct members, not a public API contract. The PR itself declares no breaking changes, and the diff shows no changes to public headers, CLI interfaces, or API endpoints.",
+    "documentation": "No documentation changes needed. This is a bug fix for internal model update behavior. The PR declares no documentation impact.",
+    "manual_release_testing": "This is a C++ library change (model manager, artifact store, update scan, safe_fs utilities) with no CLI command, no API endpoint, no GUI change, no config option change, and no new installed artifact. The change affects internal model update behavior. A user with models in extra_models_dir could observe the fix (no more duplicate folders, stale snapshots cleaned), but there is no surface that a tester can type or click. Passing CI with 26 new tests exercising the exact paths is sufficient.",
+    "post_approval_commits": "The PR was merged as a squash commit (14b77b9db). The PR head before merge was b1d7f1b. The merge commit sha matches the PR head, confirming a squash merge. All post-approval commits in the PR were additions to address review feedback (blob cleanup edge case, directory checkpoint cleanup, extra dir writability probe, cross-platform writability test, shared-repo cleanup test, blob-link cleanup test, outside-link guard, shared-blobs-dir test, linked-repo test). These were reviewed through CodeRabbit follow-up comments and addressed by the author. The @fl0rianr approval at 2026-11-24T08:49:20Z was before these additions. The @bitgamma approval at 2026-11-25T08:35:15Z came after the last CodeRabbit follow-up comment at 2026-11-25T00:47:04Z, effectively re-approving the changes.",
+    "review": "PR #4249 was reviewed by @fl0rianr (wg::platform-core maintainer, subject-matter expertise in platform-core/recipes/backends) and @bitgamma (CLI/recipes/backends maintainer). @fl0rianr approved with 'LGTM' at 2026-11-24T08:49:20Z, after initially flagging that the extra repository directory should be created before the writability probe — a concern the author addressed. @bitgamma approved with 'lgtm!' at 2026-11-25T08:35:15Z. CodeRabbit also posted substantive findings: it caught a data integrity issue where `published->models` (filtered) was passed to `remove_superseded_files` instead of the unfiltered registry, which would let hidden models' files be deleted — the author fixed this. CodeRabbit further caught a race condition in ingest.cpp where a store writer lock is not held across the usage scan and file removal, allowing a concurrent `ModelStore::Write` to publish a checkpoint to the old snapshot before `refs/main` moves, causing `remove_superseded_files` to receive stale data and potentially delete the file while it is still in use. @bitgamma approved this without addressing the lock concern. The original PR head commit was approved by @fl0rianr before any post-approval commits were added; the post-approval commits (blob cleanup edge case, directory checkpoint cleanup, shared-repo test, blob-link test, outside-link guard, shared-blobs-dir test, linked-repo test) were all added in response to CodeRabbit findings and reviewer feedback, so no new code was added without review.",
+    "security": "CodeRabbit flagged a race condition: in ingest.cpp, `store->read()` snapshots the published model set, then `remove_superseded_files` walks replaced files. Between the snapshot and removal, a concurrent `ModelStore::Write` (triggered by a download) can resolve a checkpoint to the old snapshot, publish it, and then `remove_superseded_files` deletes it as superseded. The reviewer did not flag this; the author did not address it. This is a data integrity concern — a loaded model could lose its file during an update of a different model in the same repository. The affected window is narrow and requires two concurrent downloads, but the potential for a loaded model to lose its file on disk is serious.",
+    "tests": "The PR adds 25 new test cases in test/cpp/test_extra_dir_updates.cpp and one new test case in test/cpp/test_recipe_hiding.cpp. Tests cover: extra copy at latest snapshot (up-to-date flagging), older extra copy (stale flagging), in-place update in extra dir, unwritable extra dir (fails with named error, managed cache untouched), open file during update (Windows vs Linux behavior), managed copy priority, extra root containing managed cache (not misread), first pull to managed cache, multi-repository updates (main + mmproj), legacy auxiliary file updates into its own repository, legacy aux with readonly root, unusual paths (spaces and non-ASCII), shared repository files (another model's file kept), blob-link cleanup, directory checkpoint cleanup, hidden model file protection, unresolved local model protection, symlink alias protection, link-chain through snapshot, shared blob reference, external symlink target protection, blobs/ symlinked outside repo protection, and linked repository cleanup. All CI checks passed (C++ Server Build, Launchpad PPA, Validate stable-diffusion.cpp, CI, codeql, docs)."
+  },
+  "fixes_prs": [
+    4208
+  ],
+  "generation_seconds": 291.4,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-25T09:30:02Z",
+  "pr_number": 4249,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-25T09:36:45+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@bitgamma"
+  ],
+  "sha": "14b77b9db5a81881e31928963ee544d4ecc3c354",
+  "shout_outs": [],
+  "subject": "Update models in place in extra_models_dir and remove superseded snapshots (#4249)",
+  "summary": "Fixes extra_models_dir update check comparing against the wrong directory (causing every update to appear available and creating duplicate folders), updates models in place within extra_models_dir instead of silently falling back to the managed cache, removes superseded snapshots after in-place updates while protecting files still read by other models, and adds a cross-platform writability probe for extra directories.",
+  "verdict": "Clean",
+  "verdict_reason": "Two subject-matter reviewers approved, post-approval changes addressed their feedback, all 25+ tests pass, and the code is a C++ library change with no CLI/API/UX surface for manual release testing."
+}
