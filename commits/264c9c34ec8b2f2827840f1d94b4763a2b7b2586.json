@@ -1,0 +1,33 @@
+{
+  "author": "@iswaryaalex",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "264c9c34ec8b2f2827840f1d94b4763a2b7b2586",
+  "committed_at": "2026-11-25T07:30:34+00:00",
+  "evidence": {
+    "api_compatibility": "No user-facing API, config, CLI, or persistence format is changed. The only contract affected is internal CI routing. No breaking change for existing setups.",
+    "documentation": "CI workflow changes do not require end-user documentation. The PR body's Effect on main section explains the behavioral change for maintainers. The BENCH_NIGHTLY_BRANCH repository variable is described in the PR body as the override mechanism.",
+    "manual_release_testing": "This is CI infrastructure only; no user-facing surface (no API, CLI, GUI, config, model, or installed artifact) is changed. The behavior will naturally validate when the next nightly cron fires at 02:00 UTC or when the next release is published and dispatches to bench-nightly. No maintainer to-do required.",
+    "post_approval_commits": "No commits were added after the first (and only) approval. The PR contains a single commit (f573cec), which was the one approved.",
+    "review": "The PR received one substantive approval from @ramkrishna2910 at 2026-11-25T07:28:59Z, with no inline comments. CodeRabbit (bot) reviewed the diff but its findings are automated. Per docs/dev/contribute.md, CI expertise belongs to @jeremyfowers and @fl0rianr; @ramkrishna2910's listed subject areas do not include CI. The PR body was generated with Claude Code (footer present), and the pre-merge AI-Generated PR check flagged the PR description as AI-authored, though the check was not re-run after merge.",
+    "security": "The new dispatch-to-nightly job uses gh workflow run with $GITHUB_TOKEN and has permissions: actions: write — a standard GitHub Actions pattern. No external network calls, no credential handling beyond the standard token, no supply-chain changes. No security concern.",
+    "tests": "This is a CI workflow change with no unit or integration tests in the diff. CodeRabbit confirmed the PR body claims match the diff (Inconsistent Pr Body check passed). The setup job's new if-gate was correctly flagged as a change to its definition. No evidence of test weakening or deletion."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 179.2,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-25T08:27:57Z",
+  "pr_number": 4259,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-25T08:32:44+00:00",
+  "reviewers": [
+    "@ramkrishna2910"
+  ],
+  "sha": "264c9c34ec8b2f2827840f1d94b4763a2b7b2586",
+  "shout_outs": [],
+  "subject": "ci(bench): schedule and release events dispatch to bench-nightly branch (#4259)",
+  "summary": "Adds a dispatch-to-nightly job to .github/workflows/benchmark-regression.yml so that the 02:00 UTC cron and release-published events trigger the benchmark workflow on the bench-nightly branch (or the $BENCH_NIGHTLY_BRANCH repo variable) instead of running the benchmark jobs in-place on main, and gates the setup job on workflow_dispatch only.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The CI-only change was approved by @ramkrishna2910, who does not have CI subject-matter expertise per contribute.md; a CI expert should confirm the dispatch logic before shipping."
+}
