@@ -1,0 +1,33 @@
+{
+  "author": "@github-actions[bot]",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "0adc007d22d7d6a3fb4eaeb1d315956a7f3d37b1",
+  "committed_at": "2026-11-25T11:34:07+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The diff adds entries under checksums.modelscope for three new backend versions and updates the therock pin from 10.1.0 to 10.2.0. Existing backends, flags, config values, CLI commands, and API contracts are unchanged. This is a pure data addition to a version pin file.",
+    "documentation": "No documentation changes needed. This is an internal data file update for backend pin checksums. The PR body and the automated workflow description are sufficient.",
+    "manual_release_testing": "This commit adds checksum data for three new backend pins (llama.cpp b12644, stable-diffusion.cpp master-1119d71, thetherock 10.2.0) to the ModelScope mirror section. The PR body states: 'Until this merges, backend_source=modelscope refuses those releases; GitHub downloads are unaffected.' Existing users are unaffected; users who want to download these specific new backends via the ModelScope mirror will be able to after merge. CI already validated the JSON structure and checksum format. No manual release testing required.",
+    "post_approval_commits": "None. The PR contained one commit (2986c6c616cf883ebce0ce5af3afc87a3f2328d4) at 2026-11-25T05:58:56Z, approved over 3 hours later. Zero patches for commits after first or latest approval.",
+    "review": "PR #4266 was approved by sreeram-11 (COLLABORATOR) at 2026-11-25T08:56:29Z. CodeRabbit skipped review (bot user detected). The PR requested review from iswaryaalex, jeremyfowers, and fl0rianr, but only sreeram-11 provided a substantive approval. This is a data-only change — SHA-256 digests copied from GitHub's published releases into a JSON file — so minimal review is appropriate. The single commit was already in place when approval was given; no commits were added after approval.",
+    "security": "The commit adds SHA-256 digests sourced from GitHub's published release assets. No code execution, no supply-chain changes beyond trusted checksum data, no credential handling, no network calls introduced. The checksums are integrity-checked by the backend download logic — no risk of tampering without detection.",
+    "tests": "All CI checks passed: C++ Server Build and Release, Container Build Tests, Docker Smoke Test, CodeQL (actions, c-cpp, javascript-typescript, python, rust), MCP Smoke Test, Routing Schema Tests, Server Download Registry Tests, Ubuntu ARM64 and Windows builds, and packaging builds. The checksum update changes only src/cpp/resources/backend_versions.json (+106 lines, -17 lines), and the full CI gate validates JSON parsing and build integrity. No tests weakened, deleted, or skipped inappropriately."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 200.1,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-25T12:29:27Z",
+  "pr_number": 4266,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-25T12:34:32+00:00",
+  "reviewers": [
+    "sreeram-11"
+  ],
+  "sha": "0adc007d22d7d6a3fb4eaeb1d315956a7f3d37b1",
+  "shout_outs": [],
+  "subject": "Update ModelScope checksums for new backend pins (#4266)",
+  "summary": "Adds SHA-256 checksums.modelscope entries for llama.cpp b12644, stable-diffusion.cpp master-1119d71, and thetherock 10.2.0 backend pins to src/cpp/resources/backend_versions.json.",
+  "verdict": "Clean",
+  "verdict_reason": "A bot-generated data-only checksum update that was approved, passed all CI checks, and introduced no post-approval changes."
+}
