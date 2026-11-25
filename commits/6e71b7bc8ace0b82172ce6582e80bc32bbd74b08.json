@@ -1,0 +1,42 @@
+{
+  "author": "@iswaryaalex",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "6e71b7bc8ace0b82172ce6582e80bc32bbd74b08",
+  "committed_at": "2026-11-25T04:57:00+00:00",
+  "evidence": {
+    "api_compatibility": "The new per-request source field on POST /v1/install, POST /v1/install/dry-run, and POST /v1/load is optional and defaults to existing behavior. The backend_source config key and LEMONADE_BACKEND_SOURCE env var default to github (unchanged). No breaking API changes.",
+    "documentation": "The PR includes a dataset card (tools/modelscope_mirror/dataset_card.md) with bilingual (EN/ZH) documentation for the ModelScope mirror, describing the layout and how to point Lemonade at it via backend_source and default_model_source. The mirror script has a comprehensive docstring with usage examples and environment variables. The PR body includes a detailed review feedback table.",
+    "manual_release_testing": "The backend_source config option is a new user-facing setting that changes where backend binaries are downloaded from. The --source CLI flag on 'lemonade backends install' and the --backend-source flag on 'lemonade load / run' are also user-facing. The per-request source field on POST /v1/install and POST /v1/load are new API parameters. No evidence shows a human exercised these settings with a live mirror before merge. The mirror workflow itself has not been exercised end-to-end against a live release pin outside of CI.",
+    "post_approval_commits": "No commits were added after the first approval (2026-11-25T00:47:54Z). The last commit in the PR before the merge queue merge was 'Keep TheRock hash-checked on ModelScope; hash new TheRock versions from AMD' by @iswaryaalex, which was approved. The merge queue commit by @sreeram-11 is a standard merge and does not introduce new code.",
+    "review": "PR #4247 has one substantive approval from @ramkrishna2910 (submitted 2026-11-25T00:47:54Z). @bitgamma and @jeremyfowers were requested reviewers but the PR was merged without their approval. @ramkrishna2910 is an admin maintainer with subject expertise in new backends, NPU, and vLLM — relevant expertise. The PR had 8 inline comments from the author declining feedback with explanations. No commits were added after the first (and latest) approval.",
+    "security": "The mirror script drops Authorization and Cookie headers on redirects to a different host (NoCredentialsAcrossHosts handler). The GitHub token is only sent to api.github.com. The CI workflow uses sparse checkout (only backend_versions.json and the tool directory), scopes MODELSCOPE_API_TOKEN to a modelscope-mirror environment restricted to main, and runs only default-branch code. No user secrets are exposed to the ModelScope dataset.",
+    "tests": "The PR adds 18 offline unit tests for the mirror tool covering pin selection, checksum conflicts, refusing files replaced after pinning, drift reporting, download resume, TheRock hashing, and container backend skipping. test_028d installs llamacpp from the ModelScope mirror and runs inference. 128 cpp-ci tests pass on the merge commit. No tests are weakened or deleted."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 786.7,
+  "maintainer_todos": [
+    {
+      "text": "Set backend_source=modelscope and default_model_source=modelscope in the config, then install any backend and confirm the files come from the ModelScope mirror (not GitHub) and the install completes successfully."
+    }
+  ],
+  "merge_date": "2026-11-25T05:48:39Z",
+  "pr_number": 4247,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-25T06:03:44+00:00",
+  "reviewers": [
+    "@ramkrishna2910"
+  ],
+  "sha": "6e71b7bc8ace0b82172ce6582e80bc32bbd74b08",
+  "shout_outs": [
+    {
+      "handle": "@meghsat",
+      "reason": "Co-authored part of this commit (Co-authored-by: Satya Devineni <meghasri.devineni@gmail.com>)"
+    }
+  ],
+  "subject": "Automate the ModelScope backend mirror and its checksums (#4247)",
+  "summary": "Adds the backend_source config option and --source/--backend-source CLI flags to download backend binaries from a ModelScope dataset mirror, and ships an automated sync workflow and checksum tool that keeps the mirror in sync with backend_versions.json.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "Only one substantive human approval was given on a 22-commit PR that adds a new download source, a 910-line mirror tool, and an automated CI workflow."
+}
