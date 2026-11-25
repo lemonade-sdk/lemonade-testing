@@ -1,0 +1,46 @@
+{
+  "author": "@sreeram-11",
+  "branch": "main",
+  "bucket": "v2026.50",
+  "commit_sha": "5cdbdf6d270f5a35e5bede52f4926d0a64bfbb22",
+  "committed_at": "2026-11-25T22:24:57+00:00",
+  "evidence": {
+    "api_compatibility": "Breaking change: vllm.rocm_bin pinned to an old lemonade-sdk/vllm-rocm release tag (e.g. vllm0.20.1-rocm7.12.0-gfx1151) now throws a runtime error suggesting to set it to builtin. This affects existing configs. The PR declares this as a breaking change. The /install/dry-run API response adds a 'url' field for non-GitHub backends, which is additive. The archive-platform timeouts now scale with file size, which is a behavioral change but unlikely to break clients.",
+    "documentation": "The PR includes updated vLLM docs (guide, FAQ, embeddable, ModelScope), regenerated backend and API reference, and the PR body documents the breaking change. The ModelScope mirror tool correctly skips the new device-all pins but still mirrors legacy vllm-rocm releases for older Lemonade pins. One residual risk: the CDN root URL used by the reachability probe (url_origin strips the path) may behave differently than the tarball index — @fl0rianr flagged this and asked for confirmation, but the exact answer was not in the PR body.",
+    "manual_release_testing": "The vLLM ROCm backend is a large new installation surface (~10 GB bundle from a non-GitHub CDN) and the user-visible behavior changed: a user who had vllm.rocm_bin pinned to an old lemonade-sdk/vllm-rocm tag now gets a clear error. A human should exercise the full install-infer cycle on real hardware before shipping, because the large download, extraction, and GPU loading have not been exercised end-to-end by a person with this specific bundle.",
+    "post_approval_commits": "One post-approval commit (0383d60) was made after @fl0rianr's first approval but before @ramkrishna2910's second. It fixed three issues raised during review: the 403-retry shadowing in backend_utils.cpp, partial-download cleanup in http_client.cpp, and malformed /stats handling in validate_vllm.py. All three are bug fixes responding to review feedback, within the spirit and scope of the approved PR. The changes were reviewed inline by CodeRabbit and the author confirmed each fix; @ramkrishna2910 approved the resulting commit. No new features or risk surface was added post-approval.",
+    "review": "The PR had two substantive human reviews: @fl0rianr (CI expertise) and @ramkrishna2910 (vLLM expertise). @fl0rianr approved on the first two commits and specifically caught the 403-retry shadowing bug that @sreeram-11 fixed in a post-approval commit. @ramkrishna2910 approved the final commit. CodeRabbit raised several issues (non-200 /stats handling, boolean-vs-int for output_tokens, partial download cleanup) that @sreeram-11 addressed inline in follow-up commits, each confirmed by the author and reviewed by CodeRabbit. Reviewers applied the project philosophy — the bundle migration supports Design for Agility (day-0 availability of AMD's new releases), and the gcc missing-toolchain error is a User Error is a Bug fix.",
+    "security": "New download source: the vLLM ROCm bundle is now downloaded from rocm.frameworks-nightlies.amd.com instead of GitHub. The download is SHA-256 verified. The CDN is an AMD-owned endpoint, which is acceptable supply-chain practice. The partial-download cleanup and retry_forbidden changes are hardening improvements, not security concerns. The host_c_toolchain_missing() check is informational only (adds to an error string). No suspicious code, no credential handling, no network calls outside the download path.",
+    "tests": "New C++ unit tests: test_http_download_partial_cleanup.cpp (verifies partials are kept for resumable downloads and deleted when resume_partial=false), test_http_download_retry_forbidden.cpp (verifies 403 is not retried by default and is retried when retry_forbidden=true), test_vllm_cdna_gating.cpp (updated for device-all — gfx942 and gfx950 now pass). Python tests: server_gfx_topology.py (new device-all URL uniformity check), validate_vllm.py (GPU evidence, stricter /stats, streaming install). test_backend_source.cpp (new url_origin tests). All new tests are CI-labeled and buildable. One minor observation: CodeRabbit flagged that test_vllm_cdna_gating.cpp is registered with CI OFF in CMakeLists.txt; this is a packaging detail that does not affect the release binaries."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 290.6,
+  "maintainer_todos": [
+    {
+      "text": "Install the release candidate on a ROCm Linux host with a supported GPU (gfx1151 or gfx942), run the quickstart to load a vLLM model, and confirm the ~10 GB bundle downloads from AMD's CDN, extracts to the bin directory, and inference returns output."
+    },
+    {
+      "text": "Run `lemond config set vllm.rocm_bin \"builtin\"` on an existing installation that previously had an old lemonade-sdk/vllm-rocm tag pinned, restart, and confirm the server no longer errors when the backend is loaded."
+    }
+  ],
+  "merge_date": "2026-11-25T22:24:57Z",
+  "pr_number": 4270,
+  "range_start": "v2026.48.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-25T23:22:16+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@ramkrishna2910"
+  ],
+  "sha": "5cdbdf6d270f5a35e5bede52f4926d0a64bfbb22",
+  "shout_outs": [
+    {
+      "handle": "@fl0rianr",
+      "reason": "Caught the 403-retry shadowing bug (url variable shadowed the direct-URL parameter) and flagged the CDN reachability-probe scope before merge."
+    }
+  ],
+  "subject": "vLLM: install AMD's device-all ROCm bundle instead of lemonade-sdk/vllm-rocm (#4270)",
+  "summary": "Switches vLLM ROCm installation from the now-stopped lemonade-sdk/vllm-rocm GitHub releases to AMD's device-all portable bundles, adds gfx942 (MI300X) and gfx950 (MI350) support, and tightens HTTP download and vLLM validation.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The vLLM ROCm backend now downloads a ~10 GB bundle from an external CDN instead of GitHub; the bundle path, extraction, and GPU inference should be exercised by hand before shipping."
+}
