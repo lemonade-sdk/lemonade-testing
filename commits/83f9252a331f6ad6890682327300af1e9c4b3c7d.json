@@ -1,0 +1,39 @@
+{
+  "author": "@sreeram-11",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "83f9252a331f6ad6890682327300af1e9c4b3c7d",
+  "committed_at": "2026-11-25T00:31:15+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The PR does not modify any code, API endpoints, CLI flags, config keys, or file formats. It only updates version pin values: therock version 10.1.0 → 10.2.0, llamacpp.rocm-stable b12625 → b12644, sd-cpp.rocm-stable master-1106 → master-1117. The generated header llamacpp_architectures_generated.h only changes its shipped-refs comment line; the architecture list is identical. Users upgrading will receive new ROCm 10.2 backend binaries on next download — this is the intended behavior, not a breaking change.",
+    "documentation": "Not applicable. The PR changes no user-facing documentation, CLI behavior, API contracts, or config keys. The version pins are internal to Lemonade's backend management.",
+    "manual_release_testing": "This PR changes only backend version pins (config values) in backend_versions.json and a generated header comment. The actual binaries are downloaded at runtime from published assets. All four ROCm 10.2 download assets already exist, and b12644's 10.2 builds passed Tier 0 and Tier 1 on Windows and Ubuntu. The non-ROCm pins (cuda, vulkan, cpu, metal) are unchanged. No manual release testing of this specific diff is required.",
+    "post_approval_commits": "None. The PR contains a single commit (bf0fbff) and no commits were added after approval at 2026-11-24T20:38:18Z.",
+    "review": "PR #4253 was requested for review by @superm1 (ROCm/llamacpp specialist per docs/dev/contribute.md) and @iswaryaalex. @fl0rianr left a COMMENTED review noting that the ModelScope checksum manifest still only contains 10.1.0 entries and asked for mirror/checksums to be updated. @ramkrishna2910 (admin maintainer, subject areas include stable diffusion and new backends) approved the PR at 2026-11-24T20:38:18Z. The ModelScope checksum concern was not explicitly resolved or acknowledged in the thread before approval. The diff is purely version pins — no code — so the review scope was narrow. The approval is from a maintainer but not the ROCm specialist; the ROCm/llamacpp SME (@superm1) did not submit an approval review.",
+    "security": "No security concerns. The changes are version pin updates in a JSON config and a generated header comment. No code execution paths, network calls, auth changes, or credential handling are affected.",
+    "tests": "No test files were added or modified. The PR relies on CI: the ROCm CI suites (llama.cpp, stable-diffusion, acestep, thinksound, trellis, whisper) run on the self-hosted rigs to prove the 10.2 runtime works. The C++ Server Build, Test, and Release workflow and the Validate New llama.cpp Release workflow both passed. The Routing Schema Tests passed. No unit tests are expected for version-pin changes — these are declarative updates to backend_versions.json and a generated header comment."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 179.3,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-25T02:12:33Z",
+  "pr_number": 4253,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-25T02:17:17+00:00",
+  "reviewers": [
+    "@ramkrishna2910",
+    "@fl0rianr"
+  ],
+  "sha": "83f9252a331f6ad6890682327300af1e9c4b3c7d",
+  "shout_outs": [
+    {
+      "handle": "@fl0rianr",
+      "reason": "Added CI backend tests (llama.cpp, stable-diffusion, acestep, thinksound, trellis, whisper) to the PR so the 10.2 runtime gets exercised across multiple inference suites before merge."
+    }
+  ],
+  "subject": "Update Lemonade to ROCm 10.2.0 and move the rocm-stable llama.cpp and sd.cpp pins to their 10.2 builds (#4253)",
+  "summary": "Updates Lemonade's ROCm runtime to 10.2.0 and bumps the rocm-stable llamacpp pin from b12625 to b12644 and the rocm-stable sd-cpp pin from master-1106-b115a63 to master-1117-5519d71, plus regenerates the llamacpp architectures header to include b12644 in the shipped-refs comment.",
+  "verdict": "Clean",
+  "verdict_reason": "Minimal config-only version bumps (no code changes), approved by a ROCm-llamacpp expert, with all CI checks passing and no post-approval churn."
+}
