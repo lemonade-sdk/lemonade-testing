@@ -1,0 +1,33 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.49",
+  "commit_sha": "1b96879bfb554fa8434b22c0b513d0309d7bd33d",
+  "committed_at": "2026-11-25T12:29:09+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The change adds a .strip() call to a read-only path that processes an environment variable before passing it to a library constructor. Existing setups with clean tokens behave identically. Existing setups with whitespace-padded tokens (which were failing at runtime) now work instead of failing. This is not breaking.",
+    "documentation": "No documentation changes needed. This is a bug fix in an internal mirror-sync tool. The PR body declares 'Documentation is not affected by this change.' No user-facing API, CLI flag, config option, or behavior is documented elsewhere and affected by this change.",
+    "manual_release_testing": "This is a defensive normalization in an internal CLI tool (tools/modelscope_mirror/modelscope_mirror.py), not a shipped user-facing feature. The unit tests cover the token-stripping path directly. The tool itself requires an actual MODELSCOPE_API_TOKEN and a live ModelScope mirror connection to exercise end-to-end, which a release tester would not easily reproduce without that infrastructure. No maintainer to-do written.",
+    "post_approval_commits": "Zero post-approval commits. The PR contained exactly one commit (73c840a93396918a381f085c59b8ccabec8c0bbd), which was approved at the same SHA. The merge commit (1b96879bfb554fa8434b22c0b513d0309d7bd33d) was produced by the merge queue.",
+    "review": "PR #4271 was requested for review by @iswaryaalex, @jeremyfowers, and @sreeram-11. @bitgamma provided an LGTM approval at 2026-11-25T12:24:53Z. Per docs/dev/contribute.md, @bitgamma has subject area expertise in 'new backends' and 'cli', making @bitgamma the appropriate reviewer for this ModelScope mirror backend fix. No inline review comments were filed. The review was proportionate to the scope of the change.",
+    "security": "No concerns. The change hardens token handling by removing whitespace that could cause authentication failures. It reads an existing environment variable and does not introduce new credential handling, network calls, or execution paths.",
+    "tests": "New TokenTest class adds 44 lines covering four scenarios: token with trailing whitespace (verified and non-verified), token with leading whitespace, and whitespace-only tokens. The test patches HubApi to confirm the stripped token value is passed as the token argument, and verifies that whitespace-only tokens are rejected (SystemExit). No existing tests were weakened or deleted; two pre-existing tests received only formatting updates (if statements to with-blocks)."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 173.5,
+  "maintainer_todos": [],
+  "merge_date": "2026-11-25T13:30:32Z",
+  "pr_number": 4271,
+  "range_start": "v2026.47.1",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-25T13:35:15+00:00",
+  "reviewers": [
+    "@bitgamma"
+  ],
+  "sha": "1b96879bfb554fa8434b22c0b513d0309d7bd33d",
+  "shout_outs": [],
+  "subject": "Fix: ModelScope mirror authentication with whitespace in API token (#4271)",
+  "summary": "Strip surrounding whitespace from MODELSCOPE_API_TOKEN before initializing the ModelScope HubApi client, fixing the invalid HTTP authentication header observed in #4267.",
+  "verdict": "Clean",
+  "verdict_reason": "A single-line defensive fix with comprehensive regression tests and a subject-matter-approved review."
+}
