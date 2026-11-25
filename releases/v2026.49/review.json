@@ -1,0 +1,1009 @@
+{
+  "branch": "release-v2026.49",
+  "break_rulings": [
+    {
+      "breaks": [
+        "The --backend cpu and --backend hybrid options are no longer supported; pass --backend npu instead.",
+        "All CPU and hybrid model IDs (e.g., Llama-3.2-1B-Instruct-CPU) were removed; use the new NPU model IDs (e.g., Llama-3.2-1B-Instruct-NPU).",
+        "Checkpoint paths changed from onnx-ryzenai format to *_rai_1.9.0_npu format."
+      ],
+      "id": "b771b4f",
+      "why": "Upgrading from v2026.48, any setup that references --backend cpu or --backend hybrid or uses old CPU/hybrid model IDs will fail to start."
+    },
+    {
+      "breaks": [],
+      "id": "64dff4a",
+      "why": "The container descriptor API gained a new user field and replaced group_id() with device_group_ids(), but the gufo:rocm backend contract is unchanged for users."
+    },
+    {
+      "breaks": [
+        "POST /v1/responses with a collection.router and previous_response_id, conversation, or item_reference now returns 400 instead of routing to a candidate.",
+        "The previous_response_id argument is now marked as Support::Partial because llama.cpp rejects it and router collections also reject it."
+      ],
+      "id": "41736cb",
+      "why": "Upgrading to this release, workflows that continue earlier responses through a router collection will fail with a 400 error."
+    },
+    {
+      "breaks": [],
+      "id": "be9d61d",
+      "why": "Only a version string update in backend_versions.json; no API, CLI, or config change."
+    },
+    {
+      "breaks": [],
+      "id": "b7a6f68",
+      "why": "The four cost metadata keys are optional additions to existing routes; existing clients are unaffected."
+    },
+    {
+      "breaks": [
+        "On Windows, gufo:rocm switches from a containerized backend bound to 0.0.0.0 to a native backend bound to 127.0.0.1, removing external network access."
+      ],
+      "id": "4886311",
+      "why": "Windows users upgrading from v2026.48 where gufo:rocm ran as a container on 0.0.0.0 will find the new native installation binds to localhost only."
+    },
+    {
+      "breaks": [],
+      "id": "ed1bee0",
+      "why": "The former_images field is additive; container upgrade/uninstall logic is internal."
+    },
+    {
+      "breaks": [],
+      "id": "e7e265b",
+      "why": "CI-only workflow changes; no user-facing surface."
+    },
+    {
+      "breaks": [],
+      "id": "c7f0fb4",
+      "why": "The auto value for default_model_source is additive; the default remains huggingface."
+    },
+    {
+      "breaks": [
+        "Models registered, pulled, loaded, or having options patched or deleted through the REST API with backend argument keys (llamacpp_args, whispercpp_args, merge_args) now require the admin API key; the regular API key returns 403.",
+        "The ModelManager C++ API changes: download_model(), register_model(), register_user_model(), and replace_options() now require an allow_backend_args parameter."
+      ],
+      "id": "a4f93a0",
+      "why": "Upgrading to this release with an admin key configured, any request containing backend argument keys will receive 403 unless authenticated with the admin key."
+    },
+    {
+      "breaks": [
+        "For OpenMOSS models, a non-empty voice field now triggers voice design (Generate reference sample) instead of being used as a style instruction; existing clients sending voice=default will see unexpected voice design behavior."
+      ],
+      "id": "285d957",
+      "why": "Upgrading to this release, OpenMOSS models change the semantics of the voice field, breaking existing setups that use it for style instructions."
+    },
+    {
+      "breaks": [],
+      "id": "371f38c",
+      "why": "CI runner inventory JSON only; no user-facing surface."
+    },
+    {
+      "breaks": [
+        "stable-diffusion.cpp backend now explicitly rejects output_format=mp4; use the TheNoise backend for MP4 output."
+      ],
+      "id": "a3729c4",
+      "why": "Upgrading, requests to stable-diffusion.cpp with output_format=mp4 will now be rejected instead of being silently passed through."
+    },
+    {
+      "breaks": [
+        "Loom model bundles cached before this release that lack a Quick start record in info.json will fail to load, even if they worked before.",
+        "The kDefaultDevice constant and BundlePlan::preset field were removed from the Loom public API."
+      ],
+      "id": "be70f87",
+      "why": "Upgrading Loom users with older cached bundles on offline or restricted networks will find their models refuse to load."
+    },
+    {
+      "breaks": [],
+      "id": "83f9252",
+      "why": "Version pin updates in backend_versions.json and a generated header; no API or behavior change."
+    },
+    {
+      "breaks": [],
+      "id": "1b96879",
+      "why": "Token stripping fix hardens existing behavior; setups with clean tokens are unaffected."
+    }
+  ],
+  "breaking_changes": [
+    "The --backend cpu and --backend hybrid options are no longer supported; pass --backend npu instead.",
+    "All CPU and hybrid model IDs (e.g., Llama-3.2-1B-Instruct-CPU) were removed; use the new NPU model IDs (e.g., Llama-3.2-1B-Instruct-NPU).",
+    "Checkpoint paths changed from onnx-ryzenai format to *_rai_1.9.0_npu format.",
+    "POST /v1/responses with a collection.router and previous_response_id, conversation, or item_reference now returns 400 instead of routing to a candidate.",
+    "The previous_response_id argument is now marked as Support::Partial because llama.cpp rejects it and router collections also reject it.",
+    "On Windows, gufo:rocm switches from a containerized backend bound to 0.0.0.0 to a native backend bound to 127.0.0.1, removing external network access.",
+    "Models registered, pulled, loaded, or having options patched or deleted through the REST API with backend argument keys (llamacpp_args, whispercpp_args, merge_args) now require the admin API key; the regular API key returns 403.",
+    "The ModelManager C++ API changes: download_model(), register_model(), register_user_model(), and replace_options() now require an allow_backend_args parameter.",
+    "For OpenMOSS models, a non-empty voice field now triggers voice design (Generate reference sample) instead of being used as a style instruction; existing clients sending voice=default will see unexpected voice design behavior.",
+    "stable-diffusion.cpp backend now explicitly rejects output_format=mp4; use the TheNoise backend for MP4 output.",
+    "Loom model bundles cached before this release that lack a Quick start record in info.json will fail to load, even if they worked before.",
+    "The kDefaultDevice constant and BundlePlan::preset field were removed from the Loom public API."
+  ],
+  "bucket": "v2026.49",
+  "candidate_issues": [],
+  "checklist": [
+    {
+      "author": "@iswaryaalex",
+      "commit": "b771b4fcc672164996cbddabb73dfac01987e98b",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4188,
+      "priority": "P0",
+      "text": "Start the server with --wrapped-server ryzenai --backend npu and run the quickstart to confirm that Llama-3.2-1B-Instruct-NPU downloads, loads, and responds to chat completions."
+    },
+    {
+      "author": "@francescobozzo",
+      "commit": "64dff4ab7d5d2d6a3418ecba407e11818090336e",
+      "platforms": [
+        "Ubuntu PPA",
+        "Snap",
+        "Docker",
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 4159,
+      "priority": "P0",
+      "text": "Install the v2026.49 candidate and run 'lemonade backends install gufo:rocm' to confirm the image is pulled from ghcr.io/gufo-org/toolboxes/gufo-runtime with digest sha256:49b1fce40cb43e33c46d91595e300cb320cdec768fcd976f8c8da24b402fc133."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "82706b28922f1198a631a6ef6f9f44a8f8db6878",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3988,
+      "priority": "P0",
+      "text": "Start a Strix Halo machine with the default 64 GiB GTT, load a Gemma 4 or Flint model, and confirm the auto-detected context size matches the test expectations in test_auto_context_flow.cpp (bounded_kv == 262144 for Gemma 4 on 31.8 GiB, full 262144 for Flint on 31.8 GiB) rather than OOMing."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "82706b28922f1198a631a6ef6f9f44a8f8db6878",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3988,
+      "priority": "P0",
+      "text": "On an AMD UMA system with a model that exceeds the GTT but fits within physical RAM, confirm that llama.cpp can still offload layers to CPU and the model loads rather than being rejected at the auto-tune stage."
+    },
+    {
+      "author": "@itomek",
+      "commit": "a4f93a0a232522f206a5748ab16fa6f583234016",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4211,
+      "priority": "P0",
+      "text": "Start the server with both LEMONADE_API_KEY and LEMONADE_ADMIN_API_KEY set, send a POST to /v1/models/register with a model definition containing recipe_options.llamacpp_args using the regular key, and confirm the response is 403 with no model written."
+    },
+    {
+      "author": "@itomek",
+      "commit": "a4f93a0a232522f206a5748ab16fa6f583234016",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4211,
+      "priority": "P0",
+      "text": "With both keys configured, send the same registration request using the admin key and confirm the model is registered with the backend arguments persisted."
+    },
+    {
+      "author": "@itomek",
+      "commit": "a4f93a0a232522f206a5748ab16fa6f583234016",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4211,
+      "priority": "P0",
+      "text": "Start the server with only LEMONADE_ADMIN_API_KEY set (no regular key), send a model load with llamacpp_args in the body using no Authorization header, and confirm the response is 403."
+    },
+    {
+      "author": "@itomek",
+      "commit": "a4f93a0a232522f206a5748ab16fa6f583234016",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4211,
+      "priority": "P0",
+      "text": "With both keys set, send a POST to /v1/models/register with recipe_options containing llamacpp_args, then reload the same model using the regular key with edited arguments in the body, and confirm the reload returns 403 and the model remains running."
+    },
+    {
+      "author": "@itomek",
+      "commit": "a4f93a0a232522f206a5748ab16fa6f583234016",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4211,
+      "priority": "P0",
+      "text": "Set both keys, register a model with admin arguments, then send a POST DELETE to /v1/models/{name}/options using the regular key and confirm it returns 403 and the saved arguments remain intact."
+    },
+    {
+      "author": "@itomek",
+      "commit": "a4f93a0a232522f206a5748ab16fa6f583234016",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4211,
+      "priority": "P0",
+      "text": "Start the server with no keys at all, send a load with llamacpp_args and confirm it succeeds (fallback to regular key behavior is unchanged)."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "be70f8764e859e1e371bc4297a9e1ab068d5d478",
+      "platforms": [
+        "Windows",
+        "Ubuntu PPA",
+        "Snap",
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 4214,
+      "priority": "P0",
+      "text": "Load a Loom model on a multi-GPU system where the model card's quick_start device is set to a path with a non-empty segment between amdgpu:// and the query string (e.g., amdgpu://1?completion_spin_ns=123), and confirm the server's --device flag contains the device index instead of silently dropping it."
+    },
+    {
+      "author": "@francescobozzo",
+      "commit": "64dff4ab7d5d2d6a3418ecba407e11818090336e",
+      "platforms": [
+        "Ubuntu PPA",
+        "Snap",
+        "Docker",
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 4159,
+      "priority": "P1",
+      "text": "On a Strix Halo (gfx1151) machine with rootless Podman, run 'lemonade load Qwen3.8-27B-Gufo' and then send a chat/stream request to confirm the model loads and generates text without file-permission or GPU-access errors."
+    },
+    {
+      "author": "@francescobozzo",
+      "commit": "64dff4ab7d5d2d6a3418ecba407e11818090336e",
+      "platforms": [
+        "Ubuntu PPA",
+        "Snap",
+        "Docker",
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 4159,
+      "priority": "P1",
+      "text": "On the same machine with Docker or rootful Podman, load the same model and confirm it opens /dev/kfd without 'Permission denied', verifying the container now receives every device-owning group (video, render) rather than only render."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "82706b28922f1198a631a6ef6f9f44a8f8db6878",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3988,
+      "priority": "P1",
+      "text": "On a discrete GPU system, load a model that previously auto-selected a context size below 4096 tokens and confirm it still loads — the old 4096 floor is now min(max_ctx, 4096) so previously-sub-4k estimates that hit 4096 now get the tighter estimate instead."
+    },
+    {
+      "author": "@pwilkin",
+      "commit": "f21b6e2ebb55671815b40c0ea2ea021832fc0233",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 2766,
+      "priority": "P1",
+      "text": "Start the server, load an image model (e.g. Flux), and POST a job with op image_generations including a prompt; confirm the job completes and the context entry contains data with a b64_json field and a top-level size field."
+    },
+    {
+      "author": "@pwilkin",
+      "commit": "f21b6e2ebb55671815b40c0ea2ea021832fc0233",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 2766,
+      "priority": "P1",
+      "text": "Start the server, load a TTS model (e.g. Kokoro), and POST a job with op audio_speech; confirm the job completes and the context entry contains data with mime_type reflecting the negotiated format and a size field."
+    },
+    {
+      "author": "@pwilkin",
+      "commit": "f21b6e2ebb55671815b40c0ea2ea021832fc0233",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 2766,
+      "priority": "P1",
+      "text": "POST a job with op image_editions that references a previous step's b64_json as its image input; confirm the step succeeds and the result contains data with b64_json and size."
+    },
+    {
+      "author": "@pwilkin",
+      "commit": "f21b6e2ebb55671815b40c0ea2ea021832fc0233",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 2766,
+      "priority": "P1",
+      "text": "Start the server, load a 3D model (e.g. TRELLIS-3D), and POST a job with op model_3d_generations; confirm the result has mime_type model/gltf-binary, response_format glb, and a size field."
+    },
+    {
+      "author": "@pwilkin",
+      "commit": "f21b6e2ebb55671815b40c0ea2ea021832fc0233",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 2766,
+      "priority": "P1",
+      "text": "POST a job with op audio_speech using an unsupported response_format value (e.g. banana); confirm the step fails before any backend call and the error message names the rejected format."
+    },
+    {
+      "author": "@pwilkin",
+      "commit": "f21b6e2ebb55671815b40c0ea2ea021832fc0233",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 2766,
+      "priority": "P1",
+      "text": "POST a job that chains two media ops whose combined decoded output exceeds 16 MiB; confirm the second step fails with a per-job media store limit error."
+    },
+    {
+      "author": "@pwilkin",
+      "commit": "f21b6e2ebb55671815b40c0ea2ea021832fc0233",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 2766,
+      "priority": "P1",
+      "text": "While a media job (image, audio, or 3D) is running, delete or interrupt it via the jobs endpoint; confirm the backend call stops within a few seconds rather than waiting for its full timeout."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "c8c2d0a11b9559b1318af57544debe91ac273378",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4213,
+      "priority": "P1",
+      "text": "Unset HF_TOKEN, start the Lemonade server, and request a model that requires authentication; confirm the request succeeds using the token file instead of failing with 401 Unauthorized."
+    },
+    {
+      "author": "@Bekhouche",
+      "commit": "41736cbab034f15ae1bc3729148e63184b61e810",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3497,
+      "priority": "P1",
+      "text": "Start the server with a router collection and send a POST to /v1/responses with previous_response_id set; confirm it returns 400 with error.code router_response_chain_unsupported and a JSON body naming the collection."
+    },
+    {
+      "author": "@zaneni6",
+      "commit": "be9d61d7d8819fac190b0e05b77f2c79af0da43a",
+      "platforms": [
+        "Windows",
+        "Ubuntu PPA",
+        "Snap",
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 4067,
+      "priority": "P1",
+      "text": "Confirm the backend version bump works end-to-end: run lemonade backends on an NPU system and verify it reports FLM v1.0.13, then load an FLM model on NPU to confirm inference succeeds."
+    },
+    {
+      "author": "@meghsat",
+      "commit": "f7077fcfb1b73752a2f380aaace614192a3a0e34",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4217,
+      "priority": "P1",
+      "text": "Start the server with a rule-head prompt router model and send multiple /v1/classify requests with the same label set, then confirm the classification result is correct and response time is noticeably faster than on the previous release."
+    },
+    {
+      "author": "@meghsat",
+      "commit": "f7077fcfb1b73752a2f380aaace614192a3a0e34",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4217,
+      "priority": "P1",
+      "text": "Send /v1/classify requests with text exceeding the model's token window and confirm the text is truncated correctly and the classification result matches the previous release."
+    },
+    {
+      "author": "@Bekhouche",
+      "commit": "b7a6f689da02c4f1a20541a4a7d65db40f0b3682",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3518,
+      "priority": "P1",
+      "text": "Register a user model through POST /models/register with cost_tier, cost_input_per_million, cost_output_per_million and latency_ms_hint, then GET /v1/models and confirm all four fields appear in the model's entry."
+    },
+    {
+      "author": "@Bekhouche",
+      "commit": "b7a6f689da02c4f1a20541a4a7d65db40f0b3682",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3518,
+      "priority": "P1",
+      "text": "Pull a user model through POST /pull with the same four cost fields, then GET /v1/models and confirm they are listed on the pulled model."
+    },
+    {
+      "author": "@Bekhouche",
+      "commit": "b7a6f689da02c4f1a20541a4a7d65db40f0b3682",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3518,
+      "priority": "P1",
+      "text": "Send a POST /pull to re-register the same model with different cost values, then GET /v1/models and confirm the new values appear without restarting lemond."
+    },
+    {
+      "author": "@Bekhouche",
+      "commit": "b7a6f689da02c4f1a20541a4a7d65db40f0b3682",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3518,
+      "priority": "P1",
+      "text": "Execute a routed request through the router and check that the response's outputs.estimated_cost carries the cost metadata (cost_tier, prices, latency_ms_hint) that was set on the selected model."
+    },
+    {
+      "author": "@francescobozzo",
+      "commit": "4886311f8f781ff12b0fd8b4b89123188207769e",
+      "platforms": [
+        "Windows"
+      ],
+      "pr_number": 4218,
+      "priority": "P1",
+      "text": "Install v2026.49 (or later) on a Windows machine with an AMD Strix Halo GPU and run `lemonade backends install gufo:rocm`, then confirm it downloads gufo-v0.35.0-windows-x86_64.zip, loads a model, and serves on localhost."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "361d0dc80f4455ee6e131fa6193f2465db074793",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4004,
+      "priority": "P1",
+      "text": "Open the GPU device setting for TheNoise or sd.cpp in the GUI, select a specific GPU from the list, and confirm the backend starts on that GPU instead of auto-selected."
+    },
+    {
+      "author": "@danielholanda",
+      "commit": "4a5260e61637e287d9bd96a70761af0fc9aa6c46",
+      "platforms": [
+        "Windows",
+        "Ubuntu PPA",
+        "Snap",
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 4162,
+      "priority": "P1",
+      "text": "Start a server on Strix Halo or R9700 hardware and select a Loom model (e.g. Qwen3.5-0.8B-Loom) from the model list, then confirm the chat completions endpoint returns responses without errors."
+    },
+    {
+      "author": "@danielholanda",
+      "commit": "4a5260e61637e287d9bd96a70761af0fc9aa6c46",
+      "platforms": [
+        "Windows",
+        "Ubuntu PPA",
+        "Snap",
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 4162,
+      "priority": "P1",
+      "text": "Run `lemonade pull Qwen3.5-0.8B-Loom` and verify the bundle downloads into `models--loom-fun--unsloth-Qwen3.5-0.8B-loom/snapshots/` in the HF cache layout, then run the model and check the `--wrapped-server loom` logs for a successful startup."
+    },
+    {
+      "author": "@github-actions[bot]",
+      "commit": "47bf50921784491be633757db8710071db694321",
+      "platforms": [
+        "Ubuntu PPA",
+        "Snap",
+        "Docker",
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 4240,
+      "priority": "P1",
+      "text": "Run the container upgrade and uninstall paths for a backend that has been installed from a former repository (e.g., gufo:rocm from docker.io/kyuz0/amd-strix-halo-toolboxes) and confirm the old image is cleaned up and no spurious warnings appear."
+    },
+    {
+      "author": "@github-actions[bot]",
+      "commit": "47bf50921784491be633757db8710071db694321",
+      "platforms": [
+        "Ubuntu PPA",
+        "Snap",
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 4240,
+      "priority": "P1",
+      "text": "Confirm that `lemonade config set llamacpp.rocm_bin=\"latest\"` continues to resolve to the updated rocm-stable or rocm-nightly pin and that inference still works with at least one ROCm-capable GPU."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "ebb471b9137fb46e56e17acb9c39555f2d108c32",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3319,
+      "priority": "P1",
+      "text": "Run the MCP tools/list method via POST /mcp in a running server and verify the response includes lemonade_get_model_info, lemonade_load_model, and lemonade_unload_model alongside the existing tools."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "ebb471b9137fb46e56e17acb9c39555f2d108c32",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3319,
+      "priority": "P1",
+      "text": "Call lemonade_get_model_info with a known model name through an MCP client (e.g. MCP Inspector or Claude Desktop) and confirm the result contains model_name, recipe, and download state fields."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "ebb471b9137fb46e56e17acb9c39555f2d108c32",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3319,
+      "priority": "P1",
+      "text": "Call lemonade_load_model with model_name and ctx_size=4096 through the MCP tools/call method and confirm the load completes with a success status."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "ebb471b9137fb46e56e17acb9c39555f2d108c32",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3319,
+      "priority": "P1",
+      "text": "Call lemonade_unload_model with model_name through the MCP tools/call method and confirm the unload succeeds and the model no longer appears in the loaded models list."
+    },
+    {
+      "author": "@sawansri",
+      "commit": "4bf7242c599f4fdb8efedde1773b586587a44295",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4224,
+      "priority": "P1",
+      "text": "Start the server with the v2026.49 release candidate, browse to the model selection screen, and confirm Inkling-2-Mini-GGUF appears in the list. Then attempt to launch it and note the error — it should fail with an architecture-not-supported or similar backend rejection, confirming the entry exists but is non-functional without the pending backend pin bump."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "c7f0fb4572b8871b0a62fff3b97b2eed6a34f6a8",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4222,
+      "priority": "P1",
+      "text": "Start lemond with default_model_source set to auto and run a source-less pull of a built-in model (for example, the default llama model) to confirm the server selects a registry without adding more than ~10 seconds of startup latency."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "c7f0fb4572b8871b0a62fff3b97b2eed6a34f6a8",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4222,
+      "priority": "P1",
+      "text": "Start lemond with auto mode, pull a model from the selected registry, then restart the server after changing network conditions (e.g. block Hugging Face) and confirm the next source-less pull uses the other registry without re-downloading a model that already exists under the original registry."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "1a018a563ef4521d9d36660a09c46c8620e420ca",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4209,
+      "priority": "P1",
+      "text": "Start the server with a loaded model, open the GUI, click the add-tools button, enable the 'Web search tool' checkbox, and send a message — confirm the response contains numbered search results with title, URL, and snippet."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "1a018a563ef4521d9d36660a09c46c8620e420ca",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4209,
+      "priority": "P1",
+      "text": "Call the /mcp endpoint with tools/call for lemonade_web_search using search_type=news, a valid query, and max_results=3, and confirm the structuredContent contains exactly three results with source and published_at fields."
+    },
+    {
+      "author": "@github-actions[bot]",
+      "commit": "f8db59b8efb9a0cf2fb77d420eb26233a71e2786",
+      "platforms": [
+        "Ubuntu PPA",
+        "Snap",
+        "Docker",
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 4250,
+      "priority": "P1",
+      "text": "Run `lemonade run` with the `gufo:rocm` backend and confirm the container pulls version 0.36.0 and starts inference without error."
+    },
+    {
+      "author": "@github-actions[bot]",
+      "commit": "f8db59b8efb9a0cf2fb77d420eb26233a71e2786",
+      "platforms": [
+        "Ubuntu PPA",
+        "Snap",
+        "Docker",
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 4250,
+      "priority": "P1",
+      "text": "Run `lemonade run` with the `halogen:rocm` backend and confirm it starts with version 0.20.7."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "34f51aa201f021ee370a4d2b1d8a2bad95ced209",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4244,
+      "priority": "P1",
+      "text": "Run the ContextMeter in the GUI with a conversation that has tool-call answers: open the meter popover and confirm the meter reports a non-zero conversation tokens category rather than zero, proving tool-call argument text is included in the estimate."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "bc3d9d006763f381a9fca182dd10ef4468e2d143",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4200,
+      "priority": "P1",
+      "text": "Connect an MCP client to a running Lemonade server, call tools/list, then call each of the new tools — lemonade_get_loaded_models (no arguments), lemonade_pull_model with do_not_upgrade=true on a cached model, and lemonade_delete_model with confirm=true on a disposable model — and verify the responses match the documented schema."
+    },
+    {
+      "author": "@iswaryaalex",
+      "commit": "f9568d493ced11e54112ce9c802e60c91b5f14b2",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4154,
+      "priority": "P1",
+      "text": "Set backend_source=modelscope, install llamacpp:cpu (Linux/Windows) or llamacpp:metal (macOS) from the ModelScope mirror, then load a model and run a chat completion — confirm the backend installs from the mirror with hash verification and inference succeeds."
+    },
+    {
+      "author": "@iswaryaalex",
+      "commit": "f9568d493ced11e54112ce9c802e60c91b5f14b2",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4154,
+      "priority": "P1",
+      "text": "Run lemonade backends install llamacpp:vulkan --source modelscope — confirm the backend installs from the mirror."
+    },
+    {
+      "author": "@Bekhouche",
+      "commit": "2e73c3cbd4dbc3b66a7fc33ecd737e78238646b5",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3506,
+      "priority": "P1",
+      "text": "Start the server with --wrapped-server sdcpp --backend vulkan, POST to /v1/videos with a prompt and a known video model, poll GET /v1/videos/{id} until completed, then GET /v1/videos/{id}/content and verify the payload starts with WebM/Matroska magic bytes (0x1a 0x45 0xdf 0xa3) and reports matching frame_count and fps."
+    },
+    {
+      "author": "@Bekhouche",
+      "commit": "2e73c3cbd4dbc3b66a7fc33ecd737e78238646b5",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3506,
+      "priority": "P1",
+      "text": "POST to /v1/videos to create a long clip (e.g. 81 frames), wait until the status shows running, then POST to /v1/videos/{id}/cancel and verify the job reports canceled and a subsequent shorter clip on the same model starts within 180 seconds (confirming sd-server was stopped and freed the GPU)."
+    },
+    {
+      "author": "@pwilkin",
+      "commit": "285d957597dcd9d053549e3dcf7ca7ee7b3aff55",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 2838,
+      "priority": "P1",
+      "text": "Select OpenMOSS-TTS, choose Describe mode, enter a voice description, and send a message; confirm the server runs the voice design step and produces speech without showing a voice-design model."
+    },
+    {
+      "author": "@pwilkin",
+      "commit": "285d957597dcd9d053549e3dcf7ca7ee7b3aff55",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 2838,
+      "priority": "P1",
+      "text": "Select MOSS-SoundEffect, set Steps to 30 and Negative prompt to music, send a prompt, and confirm the request includes steps=30 and the negative prompt."
+    },
+    {
+      "author": "@pwilkin",
+      "commit": "285d957597dcd9d053549e3dcf7ca7ee7b3aff55",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 2838,
+      "priority": "P1",
+      "text": "Select MOSS-SoundEffect, change Steps and CFG while the model options are loading, then send a prompt; confirm both your edited values appear in the request."
+    },
+    {
+      "author": "@pwilkin",
+      "commit": "285d957597dcd9d053549e3dcf7ca7ee7b3aff55",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 2838,
+      "priority": "P1",
+      "text": "Select OpenMOSS-TTS in clone mode, attach a WAV sample and enter a style note, then send a message; confirm the style note is sent as voice and the WAV as reference_wav_b64."
+    },
+    {
+      "author": "@pwilkin",
+      "commit": "285d957597dcd9d053549e3dcf7ca7ee7b3aff55",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 2838,
+      "priority": "P1",
+      "text": "Select MOSS-SoundEffect, leave the seed blank or enter -1, and send a prompt twice; confirm both generations differ (random seed, not repeating)."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "a3729c483d0b85a13521b19aff107719ee11908c",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4255,
+      "priority": "P1",
+      "text": "Start a server with TheNoise backend and a Wan 2.2 video model, POST a video generation to the /v1/videos endpoint, and confirm the response includes the expected frame count, fps, and MIME type."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "a3729c483d0b85a13521b19aff107719ee11908c",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4255,
+      "priority": "P1",
+      "text": "Submit a video generation with the /v1/videos endpoint and cancel it mid-generation via the /v1/videos/{id}/cancel endpoint, then confirm the job reports canceled and the next generation completes without re-downloading the model."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "a3729c483d0b85a13521b19aff107719ee11908c",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4255,
+      "priority": "P1",
+      "text": "Request a video with output_format set to mp4 and confirm the response MIME type is video/mp4 and the clip is valid."
+    },
+    {
+      "author": "@danielholanda",
+      "commit": "c653daa4c67dea7fbde9545957e720c7dbbe21c2",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4241,
+      "priority": "P1",
+      "text": "Open the Lemonade GUI, search for a Loom model repository name from Hugging Face, select it, trigger the pull, and confirm the model appears in search results and the Load button works afterward."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "be70f8764e859e1e371bc4297a9e1ab068d5d478",
+      "platforms": [
+        "Windows",
+        "Ubuntu PPA",
+        "Snap",
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 4214,
+      "priority": "P1",
+      "text": "Load a Loom model whose bundle was cached before this release — before cards recorded a Quick start for the system's GPU — and confirm the server fetches the updated card to obtain the missing Quick start record before launching."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "865c16fe928618b0bbb541d17e3581d9e0e45398",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4203,
+      "priority": "P1",
+      "text": "Start the Lemonade server with an audio-generation model loaded (or let one pull on demand), call the lemonade_generate_audio tool with a prompt, and confirm the MCP response returns a non-empty audio payload with a valid mime_type."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "865c16fe928618b0bbb541d17e3581d9e0e45398",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4203,
+      "priority": "P1",
+      "text": "Start the Lemonade server with a TTS model loaded, call the lemonade_text_to_speech tool with input text, and confirm the MCP response returns a non-empty audio payload with the correct mime_type for the chosen response_format."
+    },
+    {
+      "author": "@iswaryaalex",
+      "commit": "6e71b7bc8ace0b82172ce6582e80bc32bbd74b08",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4247,
+      "priority": "P1",
+      "text": "Set backend_source=modelscope and default_model_source=modelscope in the config, then install any backend and confirm the files come from the ModelScope mirror (not GitHub) and the install completes successfully."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "281dcea8a8b61a23bfef37a650d2a2e6a576bdd1",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3965,
+      "priority": "P2",
+      "text": "Trigger the 'Create update PR' workflow via GitHub Actions workflow dispatch and intentionally cause a validation failure to confirm a draft PR with '[Validation failed]' title and CAUTION body is created."
+    },
+    {
+      "author": "@pwilkin",
+      "commit": "f21b6e2ebb55671815b40c0ea2ea021832fc0233",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 2766,
+      "priority": "P2",
+      "text": "GET the jobs/{id} endpoint for a completed job and confirm the response does not contain a media_extract_bytes field in any step output."
+    },
+    {
+      "author": "@meghsat",
+      "commit": "f7077fcfb1b73752a2f380aaace614192a3a0e34",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4217,
+      "priority": "P2",
+      "text": "Send a /v1/classify request with a label set never seen before, then reload the server (or send a second request with the same new label set) and confirm classification still works correctly after the cache is warmed."
+    },
+    {
+      "author": "@meghsat",
+      "commit": "939a21dd905bd2407bf835a84c93da49e0411767",
+      "platforms": [
+        "Windows"
+      ],
+      "pr_number": 4225,
+      "priority": "P2",
+      "text": "Start an RDP session on a Windows machine with an AMD GPU, open the Lemonade monitor tab, and confirm only the physical GPU is shown (no phantom RDP indirect display adapter)."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "361d0dc80f4455ee6e131fa6193f2465db074793",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4004,
+      "priority": "P2",
+      "text": "Call the system info endpoint and confirm amd_gpu entries carry hip_index, pci_bus_id, and uuid fields, and that runtime_devices appears on installed backends."
+    },
+    {
+      "author": "@danielholanda",
+      "commit": "4a5260e61637e287d9bd96a70761af0fc9aa6c46",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4162,
+      "priority": "P2",
+      "text": "Call the registry search endpoint with `GET /api/search?query=qwen&format=loom` and confirm it returns Hugging Face repositories tagged `loom-serve` rather than GGUF repositories."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "3609f34d0de1993d051061abc849e431e0a3d58f",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4231,
+      "priority": "P2",
+      "text": "Check the PR description for remaining TODO placeholders and clean them up before release notes are drafted, since the Summary table and Testing section contain unresolved blanks."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "3609f34d0de1993d051061abc849e431e0a3d58f",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4231,
+      "priority": "P2",
+      "text": "Confirm that @superm1 reviewed the ROCm-specific aspects of this CI test configuration, since the new job installs and runs the gufo:rocm backend and no ROCm-expert reviewer is on record."
+    },
+    {
+      "author": "@sreeram-11",
+      "commit": "e7e265baba2c0b55ef411578f8fca37891ac7e58",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4245,
+      "priority": "P2",
+      "text": "Run the App checks workflow (lemonade-app-checks.yml) manually on a merge group PR and confirm the 25c/25d Playwright race no longer causes intermittent failures — open the Models tab, click a model to load it, switch back to Models, and verify the Save button is still enabled."
+    },
+    {
+      "author": "@sreeram-11",
+      "commit": "e7e265baba2c0b55ef411578f8fca37891ac7e58",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4245,
+      "priority": "P2",
+      "text": "Confirm the _pull_model_streaming auth fix works end-to-end by running a CI test that sets LEMONADE_API_KEY and verifying the server accepts the pull request instead of rejecting it with an auth error."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "c7f0fb4572b8871b0a62fff3b97b2eed6a34f6a8",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4222,
+      "priority": "P2",
+      "text": "Set default_model_source to auto and verify the /pull/variants endpoint for a built-in model returns the resolved source (huggingface or modelscope) matching the probe result."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "1a018a563ef4521d9d36660a09c46c8620e420ca",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4209,
+      "priority": "P2",
+      "text": "In the Tools dialog, enable web_search alongside an existing external MCP server and confirm only web_search is added to the selection — no other default tools should appear."
+    },
+    {
+      "author": "@fl0rianr",
+      "commit": "1a018a563ef4521d9d36660a09c46c8620e420ca",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4209,
+      "priority": "P2",
+      "text": "Call lemonade_web_search with query set to 257 spaces and confirm the server returns isError: true without making any external request."
+    },
+    {
+      "author": "@iswaryaalex",
+      "commit": "f9568d493ced11e54112ce9c802e60c91b5f14b2",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 4154,
+      "priority": "P2",
+      "text": "Set backend_source to an invalid value and confirm it warns and falls back to github."
+    },
+    {
+      "author": "@Bekhouche",
+      "commit": "6880d50053b30938222b027e8c1824fdf2e27dc4",
+      "platforms": [
+        "all"
+      ],
+      "pr_number": 3501,
+      "priority": "P2",
+      "text": "Start the server with a collection.router that routes to a loaded model, send a routed chat completion request with the telemetry WebSocket open, and confirm the exported span carries llm.route.collection, llm.route.to, llm.route.matched_rule, llm.route.default_used, and any cost fields present in the policy, then send an unrouted request on the same connection and confirm no llm.route.* attributes are present."
+    },
+    {
+      "author": "@jeremyfowers",
+      "commit": "be70f8764e859e1e371bc4297a9e1ab068d5d478",
+      "platforms": [
+        "Windows",
+        "Ubuntu PPA",
+        "Snap",
+        "Fedora",
+        "Debian"
+      ],
+      "pr_number": 4214,
+      "priority": "P2",
+      "text": "Load a Loom model whose cached bundle lacks a Quick start for the system's GPU while the server has no network access, and confirm the server fails with a clear error message instead of launching with wrong defaults."
+    }
+  ],
+  "commits_reviewed": 50,
+  "commits_unreviewed": 0,
+  "evidence": {
+    "blockers": "The ryzenai NPU upgrade (b771b4f) needs real NPU hardware verification. The gufo:rocm migration (64dff4a, f8db59b) requires testing on Strix Halo with rootless Podman and Docker. The Loom quick_start requirement (be70f87) will break older cached bundles on offline systems. The backend args authorization boundary (a4f93a0) needs testing with all key configurations. The auto-tune context-size changes (82706b2) need verification on Strix Halo and discrete GPU systems.",
+    "breaking_changes": "ryzenai drops all CPU and hybrid model support in favor of NPU-only; model IDs and checkpoint paths changed. /v1/responses now rejects previous_response_id, conversation, and item_reference on collection.router. On Windows, gufo:rocm switches from container (0.0.0.0) to native (127.0.0.1). Backend args authorization requires admin API key for any request with backend argument keys. OpenMOSS voice field semantics changed: non-empty voice triggers voice design instead of style instruction. Loom bundles without Quick start fail to load. stable-diffusion.cpp rejects output_format=mp4.",
+    "coverage": "All 50 commits in the release range were reviewed. One commit (47bf509) had a post-approval merge from another PR that changed container-backend code without renewed review. The CI test-exe-devlab-backends job (3609f34) was not run on this PR due to workflow gating.",
+    "manual_testing": "Real GPU hardware verification needed: (1) NPU inference with ryzenai, (2) gufo:rocm on Strix Halo with rootless Podman and Docker, (3) auto-tune context sizing on AMD UMA and discrete GPUs, (4) Loom inference on Strix Halo/R9700, (5) all six media job operations with real models, (6) video generation with sd-cpp and TheNoise, (7) web search through GUI and MCP, (8) ModelScope mirror install, (9) MCP model management tools through an MCP client, (10) the a4f93a0 security boundary with all key configurations.",
+    "security": "PR #4211 closes an authorization gap where regular API callers could override backend command-line arguments. The fix adds an allow_backend_args gate to every mutating path. PR #4201 adds web search with bounded RSS parsing and follow_redirects=false. The oversized GGUF array guard prevents DoS. The ModelScope mirror sync uses sparse checkout and scoped tokens."
+  },
+  "generation_seconds": 857.1,
+  "head_sha": "1b96879bfb554fa8434b22c0b513d0309d7bd33d",
+  "is_hotfix": false,
+  "last_stable_tag": "",
+  "range_start": "origin/release-v2026.48",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-25T16:22:45+00:00"
+}
