@@ -1,0 +1,38 @@
+{
+  "author": "@mikemikimike",
+  "branch": "main",
+  "bucket": "v2026.50",
+  "commit_sha": "a7e443476560b30b95a0ce0455235df7dcac13e2",
+  "committed_at": "2026-11-26T15:35:24+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking changes. The PR adds new behavior to POST /routing/validate (transient helper lifecycle) but does not change the response schema, request format, or existing routing behavior for registered policies. The API documentation was regenerated to reflect the new lifetime description, and the PR author corrected the Documentation checkbox in the PR body to match.",
+    "documentation": "The PR updates the generated API documentation (docs/api/router.md) via gen_api_boilerplate.py to reflect the new transient helper release behavior in the routing_validate route help text. This was called out by @SlawomirNowaczyk during review and addressed before approval.",
+    "manual_release_testing": "POST /api/v1/routing/validate was not manually exercised before merge. This is a user-reachable API endpoint that now exhibits new behavior: transient judge helpers are loaded for the request and released afterward. CI checks (C++ build, llama.cpp validate, stable-diffusion.cpp validate) passed but none drive this specific HTTP path with an unregistered policy and LLM judge.",
+    "post_approval_commits": "No post-approval commits. The PR head commit (f6806a55, 'Merge upstream/main into issue_4171_routing_validate_llm_judge') was the last author commit on the PR branch, submitted before @SlawomirNowaczyk's final approval. The merge commit (a7e4434) is a standard GitHub merge on gh-readonly-queue with no content changes.",
+    "review": "The PR received two substantive reviews. @fl0rianr (smart router maintainer, per contribute.md) identified a residency regression — a pre-existing Standard model could be wrongly evicted after transient validation — and requested independent router-maintainer review. @SlawomirNowaczyk (also a listed smart router reviewer) performed that independent review, found two concrete test bugs (a regression test passing when the model had disappeared, and an endpoint test accepting failed health responses), one CI failure (repeated comment check in router.h), a test gap (no actual load failure exercised for transient helpers), and documentation drift. The author addressed all items across multiple iterations. The final CI was green. @fl0rianr approved on 2026-11-19T16:45:05Z after fixes landed; @SlawomirNowaczyk approved on 2026-11-26T15:31:27Z after the documentation fix. No post-approval commits were added by the author.",
+    "security": "No security concerns. The transient lease is reference-counted and scoped to the request lifetime. No network calls are added outside existing validation paths. No credential handling or supply-chain changes.",
+    "tests": "Extensive test coverage across unit and integration layers. Unit tests in test/cpp/test_routing_helper_reconcile.cpp cover: lease survives policy reconcile, overlapping leases, concurrent lease release and reconcile, registered policy preserves a helper under transient lease, transient lease preserves pre-existing Standard model, second-load check preserves same Standard model instance, transient-only failures skip nuclear retry, transient load failure allows later load, last lease release waits for load slot, last lease release waits for exclusive session, busy helper rescue by new lease, busy helper reclaims without rescue, registered policy promotes Standard model, and shutdown with pending reclaim. Integration test test_021zma_routing_validate_runs_transient_llm_router exercises the full HTTP path with a mock cloud provider. 98/113 cpp-ci tests pass; the same 15 failures existed on base, and the endpoint suite was noted to stop early on a pre-existing /health streaming assertion failure."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 275.5,
+  "maintainer_todos": [
+    {
+      "text": "Call POST /api/v1/routing/validate with an unregistered policy that uses an LLM judge model backed by a cloud provider, confirm the judge runs and selects a route, then call GET /health and confirm the judge model is not listed among loaded models."
+    }
+  ],
+  "merge_date": "2026-11-26T16:29:49Z",
+  "pr_number": 4199,
+  "range_start": "v2026.48.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-26T16:36:23+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@SlawomirNowaczyk"
+  ],
+  "sha": "a7e443476560b30b95a0ce0455235df7dcac13e2",
+  "shout_outs": [],
+  "subject": "Fix transient LLM judge loading in routing validation (#4199)",
+  "summary": "Adds a RoutingHelperLease ref-counted lease so that POST /api/v1/routing/validate temporarily keeps an LLM judge helper loaded during validation and releases it when the request ends, while preventing pre-existing Standard models from being wrongly evicted or promoted.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "This commit introduces new shipped behavior on the user-reachable POST /routing/validate endpoint — transient judge loading and release — that was not manually exercised by a human before merging."
+}
