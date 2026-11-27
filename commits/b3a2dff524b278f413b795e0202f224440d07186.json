@@ -1,0 +1,37 @@
+{
+  "author": "@sunilmehta-si",
+  "branch": "main",
+  "bucket": "v2026.50",
+  "commit_sha": "b3a2dff524b278f413b795e0202f224440d07186",
+  "committed_at": "2026-11-27T09:34:51+00:00",
+  "evidence": {
+    "api_compatibility": "The span attribute key llm.vllm.gpu_cache_usage_factor is unchanged; its source metric changes from the nonexistent vllm:gpu_cache_usage_factor to vllm:kv_cache_usage_perc (a 0-1 fraction). The span keys llm.vllm.cpu_cache_usage_factor and llm.vllm.num_requests_swapped are being dropped — they only existed in the V0 engine and no vLLM release exports them anyway, so existing setups will not break but will continue to see them absent.",
+    "documentation": "docs/guide/configuration/README.md was updated to reflect the corrected metric names (vllm:kv_cache_usage_perc mapping, removal of cpu_cache_usage_factor and num_requests_swapped from the documented vLLM span attributes).",
+    "manual_release_testing": "No human exercised this against a live vLLM backend. The telemetry span attributes llm.vllm.gpu_cache_usage_factor, llm.vllm.num_requests_waiting, and llm.vllm.num_requests_running are user-visible via the tracing/telemetry system, so manual verification with a running vLLM instance is needed before release.",
+    "post_approval_commits": "No commits were added after the first and latest approval at 2026-11-25T18:27:56Z. The branch tip at merge time (87fde11fe04b708a803707ff854402f38e263223) is the same commit that was approved, with no post-approval churn.",
+    "review": "PR #4239 received one approval from @fl0rianr ('Thanks, very nice!'). Per docs/dev/contribute.md, @fl0rianr's subject areas are LMX omni models, GUI, CI, and smart router — not vLLM. The vLLM subject-matter maintainers are @ramkrishna2910 and @sawansri, neither of whom reviewed. No inline comments were filed. The change is small and well-scoped, but the lack of domain expertise in the review is a quality gap.",
+    "security": "No security concerns. The change only affects how prometheus-style text is parsed for metrics.",
+    "tests": "Unit tests in test/cpp/test_telemetry_helpers.cpp comprehensively cover three scenarios: gauges without labels, labeled gauges in the order vLLM 0.20 emits them (including the waiting_by_reason prefix fix), and malformed input. All 122 tests pass. The author did not run against a live vLLM backend (no AMD GPU)."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 245.8,
+  "maintainer_todos": [
+    {
+      "text": "Start Lemonade with a vLLM backend and run a generation request; confirm the trace span includes llm.vllm.gpu_cache_usage_factor with a value in the 0-1 range and llm.vllm.num_requests_waiting is present, and that no cpu_cache_usage_factor or num_requests_swapped keys appear."
+    }
+  ],
+  "merge_date": "2026-11-27T10:28:00Z",
+  "pr_number": 4239,
+  "range_start": "v2026.48.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-27T10:33:52+00:00",
+  "reviewers": [
+    "@fl0rianr"
+  ],
+  "sha": "b3a2dff524b278f413b795e0202f224440d07186",
+  "shout_outs": [],
+  "subject": "fix(vllm): read the KV cache and waiting metrics vLLM exports (#4239)",
+  "summary": "Fixes the vLLM telemetry metrics parser to read the actual metrics exported by vLLM 0.19/0.20 (maps vllm:kv_cache_usage_perc to the existing llm.vllm.gpu_cache_usage_factor span attribute, drops V0-only metrics cpu_cache_usage_factor and num_requests_swapped, and matches whole metric names to prevent vllm:num_requests_waiting_by_reason from overwriting vllm:num_requests_waiting) and updates the vLLM backend version pins in backend_versions.json.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "No vLLM-subject-matter reviewer approved the PR and the telemetry behavior changes were not exercised against a live vLLM backend before merge."
+}
