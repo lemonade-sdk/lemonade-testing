@@ -1,0 +1,43 @@
+{
+  "author": "@meghsat",
+  "branch": "main",
+  "bucket": "v2026.50",
+  "commit_sha": "dfecb75155f9190093d438f278c1fae1644d288f",
+  "committed_at": "2026-11-27T09:53:11+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking API changes. This is an internal memory estimation change that only affects the auto context size calculation (ctx_size=-1). No CLI flags, config values, API endpoints, saved files, or persistence formats are changed. The new functions (auto_context_available_split_gpu_gib, gpu_memory_spans_amd_heaps, auto_context_device, auto_context_llamacpp_full_offload) are internal helpers with no external contract. The change to CPU/backend=none sizing from the previous logic to system RAM is a behavior correction, not a breaking change.",
+    "documentation": "No documentation changes needed. The change is internal to the auto context size calculation and does not affect user-facing documentation, API specs, or CLI references. The PR body explicitly notes 'Documentation is not affected by this change.'",
+    "manual_release_testing": "No manual end-to-end testing evidence on the release-candidate build was provided for the new AMD iGPU combined memory budget. The PR body documents testing on specific hardware (STX Halo with 128GB RAM, Qwen3-Coder-GGUF achieving 262k context), but this is pre-merge testing on a development branch, not release candidate validation. The change introduces new behavior (combined dedicated + shared memory budget for vulkan/nathanw) that a user can reach via ctx_size=-1, and no human exercised the release candidate with this setting.",
+    "post_approval_commits": "The post-approval commits diff contains router changes (router.h, router.cpp, routing_validate.cpp, test_routing_helper_reconcile.cpp, test/server_endpoints.py) from an unrelated PR in the same merge group. There is no evidence of post-approval commits from PR #4273 itself (the 7 AMD iGPU files were all added before the final approval). The merge commit is a squash merge of the entire merge group (1416 files, 438524 insertions), but PR #4273's specific changes are limited to 7 files (329 insertions, 12 deletions).",
+    "review": "PR #4273 was reviewed by @fl0rianr who initially requested changes on architectural approach, suggested a simpler host-reserve adjustment, proposed simplifying the headroom calculation to use dedicated_free, and requested backend gating for the combined-heap accounting. The author implemented the backend gate (gpu_memory_spans_amd_heaps) and made several iterations. @fl0rianr's final approval (2026-11-27T09:38:42Z) came after the backend gating was added. @danielholanda confirmed functionality on STX Halo hardware. @itomek tested on Ubuntu 24. @bitgamma gave final approval (2026-11-27T09:53:02Z). CodeRabbit flagged a ROCm heap-overestimation issue at 2026-11-25T18:31:54Z noting the fallback path still uses combined total; this was not addressed in subsequent approvals. Subject matter expertise in 'system info' (covered by @superm1) was not involved in the review.",
+    "security": "No security concerns. The change adds memory budget calculations; it does not introduce new network calls, credential handling, code execution paths, telemetry, or permission changes.",
+    "tests": "Three new test files: test_auto_context_flow.cpp (139 lines) covering compute_auto_context_size with bounded SWA, GPU device resolution, and recipe gating. test_auto_tune.cpp (1001 lines) covering GPU memory pool selection, headroom estimation, split-heap budget calculation, and the full offload check. test_gpu_memory_selection.cpp (252 lines) covering gpu_memory_spans_amd_heaps gating, Vulkan ordinal resolution, NVIDIA exclusion, and system+vulkan device matching. The PR author also reported testing on STX Halo hardware with Qwen3-Coder-GGUF and noted a ROCm instability with gpt-oss-120b causing system restarts when RAM and swap were exhausted."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 1175.5,
+  "maintainer_todos": [
+    {
+      "text": "On an AMD iGPU system with the Vulkan or nathanw backend and auto context size (ctx_size=-1), load a large model and confirm the context size reflects the combined dedicated and shared memory budget, producing a significantly larger context than the previous release which used only OS-visible RAM."
+    },
+    {
+      "text": "On an AMD iGPU system with the ROCm backend and auto context size, load a model and confirm the system does not run out of memory (swap exhaustion or crash), which would indicate the pre-existing combined heap budget for unified pools is overestimating available capacity."
+    }
+  ],
+  "merge_date": "2026-11-27T10:46:47Z",
+  "pr_number": 4273,
+  "range_start": "v2026.48.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-27T11:08:05+00:00",
+  "reviewers": [
+    "@fl0rianr",
+    "@danielholanda",
+    "@itomek",
+    "@bitgamma"
+  ],
+  "sha": "dfecb75155f9190093d438f278c1fae1644d288f",
+  "shout_outs": [],
+  "subject": "fix(server): Auto context size feature: use dedicated and shared memory on AMD iGPUs (#4273)",
+  "summary": "Fixes auto context size calculation on AMD iGPUs by using dedicated and shared memory instead of only OS-visible RAM for Vulkan and nathanw backends, enabling Qwen3-Coder-GGUF and other large models to achieve 262k context on STX Halo machines with large firmware memory carve-outs.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The PR introduces new combined dedicated-and-shared memory budget calculation for AMD iGPUs with Vulkan and nathanw backends that warrants manual release-candidate validation, and a ROCm heap-overestimation concern flagged by CodeRabbit after fl0rianr's approval was not addressed before merge."
+}
