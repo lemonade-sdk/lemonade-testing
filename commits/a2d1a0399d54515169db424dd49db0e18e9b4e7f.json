@@ -1,0 +1,46 @@
+{
+  "author": "@zaneni6",
+  "branch": "main",
+  "bucket": "v2026.50",
+  "commit_sha": "a2d1a0399d54515169db424dd49db0e18e9b4e7f",
+  "committed_at": "2026-11-27T14:32:39+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking change. The FLM version pin is updated from v1.0.13 to v1.0.14 with identical asset set. build_flm_serve_args() replaces an inline block in the server but produces the same arguments (same --asr, --embed, --decision, --ctx-len flags, --host 127.0.0.1, --quiet). The model label change preserves explicit modes instead of defaulting R2T2 to 'chat', which changes the server's serving mode for R2T2 but does not alter any public CLI, API, or config contract. v1.0.13 ModelScope-only users can no longer install the old version (checksums removed), but the default v1.0.14 path is unaffected.",
+    "documentation": "Docstring change in flm_model_labels.h clarifies the label-inference logic. No external documentation or release notes updated — a version bump with R2T2 support should be noted in release notes and the Discord post.",
+    "manual_release_testing": "CI (C++ Server Build, llama.cpp validation, stable-diffusion.cpp validation) all passed, but CI does not exercise the FLM server with an actual ASR model on NPU hardware. Two unverified test-plan items remain in the PR body: 'CI passes' and 'an FLM model loads/runs on NPU'. The v1.0.14 version bump and R2T2 ASR support are user-reachable behaviors.",
+    "post_approval_commits": "No commits were added after the latest approval. The PR contained two commits (1fafe84 and 936667f); both landed before @julianxhokaxhiu's approval at 14:28 and @fl0rianr's second approval at 14:32.",
+    "review": "Two human reviewers: @julianxhokaxhiu approved (LGTM) and @fl0rianr approved. @fl0rianr originally requested changes (use --write-checksums, fix R2T2 transcription, add regression tests); the second commit by @fl0rianr addressed all three. No commits were added after the final approval (2026-11-27T14:32:33Z). The second review commit is from @fl0rianr, who also authored the change — they reviewed their own fix, which is acceptable since the substantive reviewer @julianxhokaxhiu approved the merged result. CodeRabbit bot raised two comments: a major finding about missing ModelScope checksums (addressed) and a minor finding about v1.0.13 rollback path for ModelScope (left open but low risk).",
+    "security": "No concern. SHA-256 checksums are added for FLM v1.0.14 assets from GitHub releases, enabling safe ModelScope downloads. The server binds FLM to 127.0.0.1 only (unchanged). No supply-chain changes, credential handling, or code execution paths altered.",
+    "tests": "New unit tests for build_flm_serve_args() cover all five ModelType branches (TRANSCRIPTION, EMBEDDING, CLASSIFICATION, LLM) including R2T2 and Whisper ASR. New unit tests for add_flm_mode_labels() cover R2T2, Whisper, audio-chat, Omni, and embedding scenarios. The CMake change enables the FlmArgResolverTest in CI. No evidence of tests being weakened or deleted."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 222.5,
+  "maintainer_todos": [
+    {
+      "text": "Install FLM v1.0.14 on an NPU and run an R2T2 ASR model through `lemonade backends`; confirm the model starts as ASR (not chat) and transcribes audio correctly."
+    },
+    {
+      "text": "Run `lemonade backends` and confirm the FLM backend reports version v1.0.14 and an FLM chat model loads normally."
+    }
+  ],
+  "merge_date": "2026-11-27T15:24:57Z",
+  "pr_number": 4275,
+  "range_start": "v2026.48.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-27T15:30:23+00:00",
+  "reviewers": [
+    "@julianxhokaxhiu",
+    "@fl0rianr"
+  ],
+  "sha": "a2d1a0399d54515169db424dd49db0e18e9b4e7f",
+  "shout_outs": [
+    {
+      "handle": "@fl0rianr",
+      "reason": "Co-authored the fix commit (936667f) that added ModelScope checksums, implemented R2T2 ASR support, refactored the serve-argument builder, and wrote the regression tests — a substantial hands-on contribution beyond review."
+    }
+  ],
+  "subject": "chore(flm): bump FLM to v1.0.14 (#4275)",
+  "summary": "Bumps the pinned FastFlowLM (FLM) NPU backend to v1.0.14, adds ModelScope SHA-256 checksums for every FLM v1.0.14 asset, refactors the FLM serve-argument construction into build_flm_serve_args(), and adds R2T2 ASR model support (passing model_info.checkpoint() with --asr and preserving the model's explicit transcription label so R2T2 serves as ASR instead of chat).",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The FLM version bump with R2T2 ASR support and checksums should be manually exercised on NPU hardware before release; CI alone does not prove the FLM server starts with a real ASR model."
+}
