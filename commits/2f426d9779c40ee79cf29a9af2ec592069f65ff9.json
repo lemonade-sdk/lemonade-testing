@@ -1,0 +1,37 @@
+{
+  "author": "@fl0rianr",
+  "branch": "main",
+  "bucket": "v2026.50",
+  "commit_sha": "2f426d9779c40ee79cf29a9af2ec592069f65ff9",
+  "committed_at": "2026-11-28T11:22:24+00:00",
+  "evidence": {
+    "api_compatibility": "No breaking change. HTTP 4xx/5xx status-code errors retain their original error message format. The new retryable reset behavior is an internal control flow change — the client-facing SSE stream interface is unchanged, and the error response format for cancellations remains the same.",
+    "documentation": "Not affected. No API surface, CLI flag, or config default changed. The author checked 'Documentation is not affected' which is correct.",
+    "manual_release_testing": "This commit changes user-visible behavior: when the Trellis 3D backend process dies or drops the connection during a generation, the server now throws a BackendStreamRetryableReset that triggers a watchdog reset and stream retry, whereas previously the uncaught transport error could leave the stream in a broken state. This is a real surface a tester can exercise via the 3D generation endpoint.",
+    "post_approval_commits": "Zero. The PR contained a single commit (f32156c) which was the approved commit. No post-approval churn.",
+    "review": "@pwilkin — a maintainer whose subject area includes Trellis — approved the PR at 2026-11-28T11:22:15Z, just one second before the merge commit. The review decision is APPROVED with no inline comments. CodeRabbit posted a COMMENTED review noting PR body inconsistencies (redundant sentence, claim about improved error reporting not matched by the diff) but flagged no substantive code issues. No other human reviewers participated.",
+    "security": "No concerns. The code uses HttpSecurityPolicy::TrustedLoopback (unchanged). The added include <curl/curl.h> is already transitively included elsewhere. No credential, network, or permission changes.",
+    "tests": "No automated tests for the Trellis backend were found in the repository. The author reports local testing ('Trellis 3D still works fine and correct report'). The diff changes error-handling control flow (removing an inline transport-error check and replacing it with exception handlers), which is difficult to cover with unit tests without mocking the HTTP client. No test weakening or deletion."
+  },
+  "fixes_prs": [],
+  "generation_seconds": 166.7,
+  "maintainer_todos": [
+    {
+      "text": "Start the server with the Trellis 3D backend loaded, submit a 3D generation request with an image, and then stop or crash the trellis process mid-stream; confirm the SSE stream returns a retryable reset error that a client can catch and re-submit."
+    }
+  ],
+  "merge_date": "2026-11-28T12:14:31Z",
+  "pr_number": 3935,
+  "range_start": "v2026.48.3",
+  "repo": "lemonade-sdk/lemonade",
+  "reviewed_at": "2026-11-28T12:18:58+00:00",
+  "reviewers": [
+    "@pwilkin"
+  ],
+  "sha": "2f426d9779c40ee79cf29a9af2ec592069f65ff9",
+  "shout_outs": [],
+  "subject": "fix(trellis): correct HTTP error handling and watchdog retrial (#3935)",
+  "summary": "Fixes the Trellis 3D generation endpoint to catch CURL transport-level errors (previously silently ignored) and triggers a watchdog-based automatic backend reset and stream retry when the Trellis process disconnects.",
+  "verdict": "Needs Attention",
+  "verdict_reason": "The change alters how the Trellis 3D generation endpoint responds when the backend disconnects — clients receive a retryable reset error instead of a generic failure — but no human exercised this behavior before merge."
+}
